@@ -5,6 +5,7 @@
 .nitro
 .cache
 dist
+# docs/ 是 GitHub Pages 來源，不加入 .gitignore
 
 # Node
 node_modules

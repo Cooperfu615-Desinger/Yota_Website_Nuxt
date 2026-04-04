@@ -22,6 +22,8 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   app: {
+    // GitHub Pages 子路徑：https://xxx.github.io/Yota_Website_Nuxt/
+    baseURL: '/Yota_Website_Nuxt/',
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no',
@@ -42,7 +44,11 @@ export default defineNuxtConfig({
   },
 
   // Nitro static preset for nuxt generate
+  // 輸出到 docs/ 讓 GitHub Pages main branch 可直接讀取
   nitro: {
     preset: 'static',
+    output: {
+      publicDir: 'docs',
+    },
   },
 })
