@@ -74,8 +74,11 @@ const memberTabs = [
 
     <!-- 已登入狀態 -->
     <template v-else>
+      <div class="lg:grid lg:grid-cols-[280px_1fr] lg:gap-6 lg:items-start">
+      <!-- 左欄：會員資訊卡 -->
+      <div>
       <!-- 會員資訊卡 -->
-      <div class="card-gold-border mx-4 mt-4 p-5">
+      <div class="card-gold-border mx-4 mt-4 p-5 lg:mx-0">
         <div class="flex items-center gap-4 mb-4">
           <div class="relative">
             <div class="w-20 h-20 rounded-full flex items-center justify-center text-3xl flex-shrink-0"
@@ -116,8 +119,12 @@ const memberTabs = [
         </div>
       </div>
 
+      </div><!-- end left sidebar -->
+
+      <!-- 右欄：Tab 內容 -->
+      <div>
       <!-- 分頁 Tab -->
-      <div class="px-4 mt-4 mb-4">
+      <div class="px-4 mt-4 mb-4 lg:px-0 lg:mt-4">
         <div class="grid grid-cols-4 gap-1" style="background:rgba(0,0,0,0.3); border-radius:10px; padding:4px;" role="tablist">
           <button
             v-for="tab in memberTabs"
@@ -137,7 +144,7 @@ const memberTabs = [
 
       <!-- Tab 內容 -->
       <Transition name="tab-fade" mode="out-in">
-        <div :key="activeTab" class="px-4">
+        <div :key="activeTab" class="px-4 lg:px-0">
 
           <!-- 個人資料 -->
           <div v-if="activeTab === 'profile'" class="card-purple p-4 flex flex-col gap-4">
@@ -201,6 +208,8 @@ const memberTabs = [
 
         </div>
       </Transition>
+      </div><!-- end right content -->
+      </div><!-- end lg:grid -->
     </template>
   </div>
 </template>

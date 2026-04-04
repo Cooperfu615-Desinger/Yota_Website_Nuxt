@@ -6,7 +6,7 @@ const isActive = (path: string) => route.path === path
 </script>
 
 <template>
-  <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-2" aria-label="主要導覽">
+  <nav id="bottom-nav" class="lg:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around px-2" aria-label="主要導覽">
     <!-- 首頁 -->
     <NuxtLink to="/" class="bottom-nav-item" :class="{ active: isActive('/') }" aria-label="首頁">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">

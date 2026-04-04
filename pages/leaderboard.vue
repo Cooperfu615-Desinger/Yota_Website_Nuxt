@@ -74,8 +74,8 @@ const tabData = computed<TabData>(() => {
     <Transition name="tab-fade" mode="out-in">
       <div :key="activeTab">
         <!-- 頒獎台 Top 3 -->
-        <div class="px-4 mb-4">
-          <div class="flex items-end justify-center gap-3" style="height:160px;">
+        <div class="px-4 mb-4 lg:px-8">
+          <div class="flex items-end justify-center gap-3 lg:gap-6 lg:max-w-lg lg:mx-auto" style="height:160px;">
             <!-- 第2名 -->
             <div class="flex flex-col items-center gap-2 flex-1">
               <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background:linear-gradient(135deg,#A855F7,#6B21A8); border:2px solid #C0C0C0; font-size:22px;">👤</div>
@@ -104,7 +104,7 @@ const tabData = computed<TabData>(() => {
           </div>
 
           <!-- Top3 分數 -->
-          <div class="flex gap-3 mt-3">
+          <div class="flex gap-3 mt-3 lg:max-w-lg lg:mx-auto">
             <div v-for="item in tabData.top3" :key="item.rank" class="flex-1 card-purple p-2 text-center">
               <div class="text-xs font-bold" :style="{ color: item.color }">{{ item.amount }}</div>
               <div class="text-xs mt-0.5" style="color:var(--color-text-muted);">{{ item.game }}</div>
@@ -113,7 +113,7 @@ const tabData = computed<TabData>(() => {
         </div>
 
         <!-- 4–10 名 -->
-        <div class="card-purple mx-4 mb-6">
+        <div class="card-purple mx-4 mb-6 lg:mx-8 lg:max-w-2xl lg:mx-auto">
           <div v-for="item in tabData.rest" :key="item.rank" class="rank-item">
             <div class="rank-badge rn" :aria-label="`第${item.rank}名`">{{ item.rank }}</div>
             <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm" style="background:rgba(168,85,247,0.2);" aria-hidden="true">👤</div>

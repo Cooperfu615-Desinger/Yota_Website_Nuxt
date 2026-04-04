@@ -1,1 +1,0 @@
-import{s as a}from"./CiwlI2YD.js";import{f as o,g as n,i as u,h as l}from"./DYhnSJ5X.js";const i=()=>{const e=u(0),t=l(()=>e.value<60?`${e.value} 秒前`:e.value<3600?`${Math.floor(e.value/60)} 分鐘前`:`${Math.floor(e.value/3600)} 小時前`);let r=null;return o(()=>{r=a(()=>e.value++,1e3)}),n(()=>{r&&clearInterval(r)}),{seconds:e,lastUpdate:t}};export{i as u};

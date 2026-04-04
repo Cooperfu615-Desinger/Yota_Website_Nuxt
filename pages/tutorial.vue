@@ -71,7 +71,7 @@ const androidSteps = [
     <Transition name="tab-fade" mode="out-in">
       <!-- 遊戲介紹 -->
       <div v-if="activeTab === 'games'" key="games" class="px-4">
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
           <article
             v-for="game in games"
             :key="game.name"
@@ -103,7 +103,7 @@ const androidSteps = [
       </div>
 
       <!-- APP 特色 -->
-      <div v-else-if="activeTab === 'features'" key="features" class="px-4 flex flex-col gap-4">
+      <div v-else-if="activeTab === 'features'" key="features" class="px-4 grid gap-4 lg:grid-cols-2">
         <div v-for="feat in features" :key="feat.title" class="card-purple p-4 flex gap-4 items-start">
           <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
                style="background:rgba(168,85,247,0.15);" aria-hidden="true">{{ feat.icon }}</div>
@@ -115,7 +115,7 @@ const androidSteps = [
       </div>
 
       <!-- 安裝教學 -->
-      <div v-else key="install" class="px-4">
+      <div v-else key="install" class="px-4 lg:grid lg:grid-cols-2 lg:gap-6">
         <!-- iOS -->
         <section class="mb-6" aria-labelledby="ios-heading">
           <div class="flex items-center gap-2 mb-3">

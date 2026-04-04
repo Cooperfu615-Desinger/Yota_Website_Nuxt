@@ -55,6 +55,20 @@ body::before {
   z-index: 1;
 }
 
+/* ── 桌面版：移除 bottom nav 留白，header 加高 ── */
+@media (min-width: 1024px) {
+  :root { --nav-h: 72px; }
+  .main-content {
+    padding-bottom: 48px;
+  }
+  /* 桌面版最大寬度容器 */
+  .desktop-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+}
+
 /* ── 頂部導航 ── */
 #top-nav {
   height: var(--nav-h);

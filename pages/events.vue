@@ -73,7 +73,7 @@ const tabs = [
 
     <!-- 活動列表 -->
     <Transition name="tab-fade" mode="out-in">
-      <div :key="activeTab" class="px-4 flex flex-col gap-4">
+      <div :key="activeTab" class="px-4 grid gap-4 lg:grid-cols-2">
         <article
           v-for="event in filteredEvents"
           :key="event.id"
@@ -108,7 +108,7 @@ const tabs = [
         </article>
 
         <!-- 已結束獲獎名單 -->
-        <div v-if="activeTab === 'ended'" class="card-purple p-4 mt-2">
+        <div v-if="activeTab === 'ended'" class="card-purple p-4 mt-2 lg:col-span-2">
           <h2 class="text-sm font-bold mb-3" style="color:var(--color-gold);">🏆 獲獎名單</h2>
           <table class="w-full text-xs">
             <thead>

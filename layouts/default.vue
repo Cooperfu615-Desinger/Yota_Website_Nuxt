@@ -2,7 +2,9 @@
   <div>
     <AppHeader />
     <main class="main-content fade-in">
-      <slot />
+      <div class="desktop-container">
+        <slot />
+      </div>
     </main>
     <AppBottomNav />
     <LoginModal />

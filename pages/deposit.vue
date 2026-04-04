@@ -37,13 +37,15 @@ const pointBrands = [
 </script>
 
 <template>
-  <div class="pb-6">
-    <div class="px-4 pt-4 pb-2">
+  <div class="pb-6 lg:grid lg:grid-cols-[1fr_360px] lg:gap-6 lg:items-start">
+    <!-- 左欄：主要操作 -->
+    <div>
+    <div class="px-4 pt-4 pb-2 lg:px-0">
       <h1 class="section-title">儲值專區</h1>
     </div>
 
     <!-- 付款方式 Tab -->
-    <div class="px-4 mb-4">
+    <div class="px-4 mb-4 lg:px-0">
       <div class="tab-bar" role="tablist" aria-label="付款方式">
         <button
           v-for="method in payMethods"
@@ -60,9 +62,9 @@ const pointBrands = [
     </div>
 
     <!-- 方案選擇 -->
-    <section class="px-4 mb-5" aria-labelledby="plan-heading">
+    <section class="px-4 mb-5 lg:px-0" aria-labelledby="plan-heading">
       <h2 id="plan-heading" class="text-sm font-bold mb-3" style="color:var(--color-text-muted);">選擇儲值方案</h2>
-      <div class="grid grid-cols-2 gap-3">
+      <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
         <button
           v-for="plan in plans"
           :key="plan.id"
@@ -82,7 +84,7 @@ const pointBrands = [
 
     <!-- 點數卡品牌選擇（只在點數卡模式下顯示） -->
     <Transition name="tab-fade">
-      <section v-if="payMethod === 'point'" class="px-4 mb-5">
+      <section v-if="payMethod === 'point'" class="px-4 mb-5 lg:px-0">
         <h2 class="text-sm font-bold mb-3" style="color:var(--color-text-muted);">選擇點數卡品牌</h2>
         <div class="flex gap-2">
           <button
@@ -108,7 +110,7 @@ const pointBrands = [
 
     <!-- 信用卡資訊（只在信用卡模式下顯示） -->
     <Transition name="tab-fade">
-      <section v-if="payMethod === 'card'" class="px-4 mb-5">
+      <section v-if="payMethod === 'card'" class="px-4 mb-5 lg:px-0">
         <h2 class="text-sm font-bold mb-3" style="color:var(--color-text-muted);">信用卡資訊</h2>
         <div class="card-purple p-4 flex flex-col gap-3">
           <div>
@@ -131,7 +133,7 @@ const pointBrands = [
 
     <!-- ATM 說明 -->
     <Transition name="tab-fade">
-      <section v-if="payMethod === 'atm'" class="px-4 mb-5">
+      <section v-if="payMethod === 'atm'" class="px-4 mb-5 lg:px-0">
         <div class="card-purple p-4">
           <h2 class="text-sm font-bold mb-3" style="color:var(--color-text-muted);">ATM 轉帳說明</h2>
           <div class="flex flex-col gap-3 text-sm">
@@ -154,7 +156,7 @@ const pointBrands = [
 
     <!-- 超商說明 -->
     <Transition name="tab-fade">
-      <section v-if="payMethod === 'store'" class="px-4 mb-5">
+      <section v-if="payMethod === 'store'" class="px-4 mb-5 lg:px-0">
         <div class="card-purple p-4">
           <h2 class="text-sm font-bold mb-3" style="color:var(--color-text-muted);">超商繳費說明</h2>
           <div class="flex gap-3 mb-4">
@@ -166,7 +168,7 @@ const pointBrands = [
     </Transition>
 
     <!-- 確認儲值按鈕 -->
-    <div class="px-4">
+    <div class="px-4 lg:px-0">
       <button
         class="btn-gold w-full justify-center text-lg py-4"
         style="border-radius:14px;"
@@ -180,6 +182,40 @@ const pointBrands = [
         🔒 所有交易均採用 SSL 加密保護
       </p>
     </div>
+    </div>
+
+    <!-- 右欄（桌面版側邊資訊） -->
+    <aside class="hidden lg:block pt-4 space-y-4">
+      <div class="card-purple p-5">
+        <h2 class="font-bold mb-4" style="color:var(--color-gold);">儲值說明</h2>
+        <div class="flex flex-col gap-3 text-sm">
+          <div class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style="background:rgba(245,200,66,0.2); color:var(--color-gold);">1</span>
+            <span style="color:var(--color-text-muted);">選擇付款方式與儲值方案</span>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style="background:rgba(245,200,66,0.2); color:var(--color-gold);">2</span>
+            <span style="color:var(--color-text-muted);">完成付款，系統即時確認</span>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style="background:rgba(245,200,66,0.2); color:var(--color-gold);">3</span>
+            <span style="color:var(--color-text-muted);">點數自動到帳，立即可用</span>
+          </div>
+        </div>
+        <div class="divider-purple mt-4" />
+        <div class="mt-3 text-xs" style="color:var(--color-text-muted);">
+          <div class="flex justify-between mb-1"><span>信用卡</span><span>即時到帳</span></div>
+          <div class="flex justify-between mb-1"><span>ATM轉帳</span><span>5–15 分鐘</span></div>
+          <div class="flex justify-between mb-1"><span>超商繳費</span><span>約 30 分鐘</span></div>
+          <div class="flex justify-between"><span>點數卡</span><span>即時到帳</span></div>
+        </div>
+      </div>
+      <div class="p-4 rounded-xl" style="background:linear-gradient(135deg,#06C755,#00A041);">
+        <div class="font-black text-white mb-1">儲值有問題？</div>
+        <div class="text-xs mb-3" style="color:rgba(255,255,255,0.8);">LINE 客服 24 小時為您服務</div>
+        <NuxtLink to="/support" class="block text-center py-2 rounded-lg text-sm font-bold" style="background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.3);">聯繫客服</NuxtLink>
+      </div>
+    </aside>
   </div>
 </template>
 
