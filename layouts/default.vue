@@ -7,7 +7,9 @@
       </div>
     </main>
     <AppBottomNav />
-    <LoginModal />
-    <LobbyModal />
+    <ClientOnly>
+      <LoginModal />
+      <LobbyModal />
+    </ClientOnly>
   </div>
 </template>

@@ -134,6 +134,7 @@ body::before {
   overflow: hidden;
   background: var(--color-bg-card);
   aspect-ratio: 16/7;
+  touch-action: pan-y;
 }
 .banner-slides {
   display: flex;
