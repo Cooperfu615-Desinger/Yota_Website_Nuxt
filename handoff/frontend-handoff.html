@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>巨亨 ONLINE 前端交接文件</title>
+  <style>
+    :root {
+      --bg: #0f0020;
+      --panel: #1c0a3a;
+      --panel-2: #250d48;
+      --purple: #7c3aed;
+      --purple-light: #c084fc;
+      --gold: #f5c842;
+      --text: #f3e8ff;
+      --muted: #c4b5d5;
+      --border: rgba(168, 85, 247, 0.28);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      line-height: 1.75;
+      background:
+        radial-gradient(circle at top right, rgba(124, 58, 237, 0.22), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(245, 200, 66, 0.08), transparent 24%),
+        var(--bg);
+    }
+
+    .wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    .hero, .card {
+      background: linear-gradient(135deg, rgba(28, 10, 58, 0.96), rgba(37, 13, 72, 0.94));
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    h1, h2, h3 { margin: 0 0 12px; line-height: 1.3; }
+    h1 { font-size: 34px; }
+    h2 {
+      margin-top: 36px;
+      font-size: 24px;
+      padding-left: 14px;
+      position: relative;
+    }
+
+    h2::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 6px;
+      width: 4px;
+      height: 22px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, var(--gold), var(--purple-light));
+    }
+
+    h3 {
+      margin-top: 24px;
+      font-size: 18px;
+      color: var(--gold);
+    }
+
+    p, li { color: var(--muted); }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    code {
+      color: #fde68a;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    pre {
+      background: #120324;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      overflow: auto;
+      color: #f5eaff;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .card {
+      padding: 18px 20px;
+    }
+
+    .footer {
+      margin-top: 48px;
+      color: rgba(243, 232, 255, 0.56);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">FRONTEND HANDOFF</div>
+      <h1>巨亨 ONLINE 前端交接文件</h1>
+      <p>這份文件提供給前端接手、維護與二次開發使用，目標是讓新同事快速理解專案架構、內容來源、互動邏輯、部署方式與後續擴充方向。</p>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h3>專案定位</h3>
+        <p>Nuxt 3 官網型靜態網站，主打品牌展示、活動導流、排行榜、會員展示與客服入口。</p>
+      </section>
+      <section class="card">
+        <h3>核心來源</h3>
+        <p>內容資料集中在 <code>data/siteContent.ts</code>，樣式主題集中在 <code>assets/css/main.css</code>，build 後輸出到 <code>docs/</code>。</p>
+      </section>
+    </div>
+
+    <h2>技術堆疊</h2>
+    <ul>
+      <li>Nuxt 3 + Vue 3</li>
+      <li>Tailwind CSS + 自訂 <code>main.css</code></li>
+      <li>Nuxt <code>useState</code> + composables</li>
+      <li>Google Fonts：<code>Noto Sans TC</code></li>
+      <li>Nitro static preset，輸出到 <code>docs/</code></li>
+    </ul>
+
+    <h2>常用指令</h2>
+    <pre>npm install
+npm run dev
+npm run build
+npm run preview</pre>
+
+    <h2>重要目錄</h2>
+    <pre>app.vue                    app 入口
+assets/css/main.css        全站主題樣式、色票、按鈕、卡片、輪播、modal
+components/                共用 UI 元件
+composables/               狀態與互動邏輯
+data/siteContent.ts        集中內容資料來源
+layouts/default.vue        全站 layout
+pages/                     各頁面路由
+public/                    靜態素材
+docs/                      build 後的靜態部署輸出
+handoff/                   交接文件</pre>
+
+    <h2>內容資料來源</h2>
+    <p>目前首頁、活動、排行榜、FAQ、會員資料都集中在 <code>data/siteContent.ts</code>。建議前端改內容時先從這裡下手，不要把大量靜態文案重新散落回元件。</p>
+
+    <h2>互動與狀態</h2>
+    <ul>
+      <li><code>useAppState.ts</code>：登入 modal、大廳 modal、會員狀態</li>
+      <li><code>useBannerSlider.ts</code>：Banner 自動輪播、前後切換、手機觸控滑動</li>
+      <li><code>useLeaderboardTimer.ts</code>：排行榜更新時間</li>
+    </ul>
+
+    <h2>主要元件</h2>
+    <ul>
+      <li><code>AppHeader.vue</code>：頂部導覽、Logo、登入按鈕</li>
+      <li><code>AppBottomNav.vue</code>：手機底部導覽</li>
+      <li><code>AppMarquee.vue</code>：跑馬燈</li>
+      <li><code>BannerSlider.vue</code>：首頁 Banner</li>
+      <li><code>LoginModal.vue</code>：登入 / 註冊彈窗</li>
+      <li><code>LobbyModal.vue</code>：遊戲大廳 iframe / placeholder</li>
+    </ul>
+
+    <h2>部署注意事項</h2>
+    <p><code>nuxt.config.ts</code> 內設定了 <code>app.baseURL = '/Yota_Website_Nuxt/'</code> 與 <code>nitro.output.publicDir = 'docs'</code>，代表這份專案是部署在子路徑，且正式部署檔案以 <code>docs/</code> 為準。</p>
+
+    <h2>目前較偏 mock 的部分</h2>
+    <ul>
+      <li>登入流程仍是前端模擬</li>
+      <li>遊戲大廳 URL 仍是 placeholder</li>
+      <li>試玩 iframe 仍是示意用途</li>
+      <li>排行榜與活動資料目前是靜態資料</li>
+    </ul>
+
+    <h2>接手建議</h2>
+    <ul>
+      <li>短期先補 <code>deposit</code>、<code>tutorial</code> 的資料整合</li>
+      <li>補 lint、typecheck 與共用元件抽離</li>
+      <li>中期再做 API 串接與素材目錄標準化</li>
+    </ul>
+
+    <div class="footer">
+      快速原則：改內容看 <code>data/siteContent.ts</code>；改主題看 <code>assets/css/main.css</code>；改互動看 <code>composables/</code> 與對應元件。
+    </div>
+  </div>
+</body>
+</html>

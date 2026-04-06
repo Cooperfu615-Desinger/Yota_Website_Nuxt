@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>巨亨 ONLINE 美術交接文件</title>
+  <style>
+    :root {
+      --bg: #0f0020;
+      --panel: #1c0a3a;
+      --panel-2: #250d48;
+      --purple: #7c3aed;
+      --purple-light: #c084fc;
+      --gold: #f5c842;
+      --gold-dark: #d97706;
+      --text: #f3e8ff;
+      --muted: #c4b5d5;
+      --border: rgba(168, 85, 247, 0.28);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      line-height: 1.75;
+      background:
+        radial-gradient(circle at top right, rgba(124, 58, 237, 0.22), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(245, 200, 66, 0.08), transparent 24%),
+        var(--bg);
+    }
+
+    .wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    .hero, .card {
+      background: linear-gradient(135deg, rgba(28, 10, 58, 0.96), rgba(59, 7, 100, 0.88));
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    h1, h2, h3 { margin: 0 0 12px; line-height: 1.3; }
+    h1 { font-size: 34px; }
+    h2 {
+      margin-top: 36px;
+      font-size: 24px;
+      padding-left: 14px;
+      position: relative;
+    }
+
+    h2::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 6px;
+      width: 4px;
+      height: 22px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, var(--gold), var(--purple-light));
+    }
+
+    h3 {
+      margin-top: 24px;
+      font-size: 18px;
+      color: var(--gold);
+    }
+
+    p, li { color: var(--muted); }
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    code {
+      color: #fde68a;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    pre {
+      background: #120324;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      overflow: auto;
+      color: #f5eaff;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .card {
+      padding: 18px 20px;
+    }
+
+    .swatch {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 6px 16px 6px 0;
+    }
+
+    .dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+      flex-shrink: 0;
+    }
+
+    .footer {
+      margin-top: 48px;
+      color: rgba(243, 232, 255, 0.56);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">ART HANDOFF</div>
+      <h1>巨亨 ONLINE 美術交接文件</h1>
+      <p>這份文件提供給美術、視覺設計與素材協作使用，目標是讓接手的人知道哪些區塊是 CSS 做出來的、哪些地方適合替換圖檔，以及配色與素材建議該怎麼給前端。</p>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h3>視覺方向</h3>
+        <p>目前網站以深紫底、金色 CTA、紫色霓虹感為主，偏娛樂城 / 線上遊戲官網氛圍。</p>
+      </section>
+      <section class="card">
+        <h3>重要觀念</h3>
+        <p>很多看起來像圖的區塊其實是 CSS。改版前先判斷是要換圖檔，還是只要改色票、gradient 與按鈕樣式。</p>
+      </section>
+    </div>
+
+    <h2>最常需要調整的區塊</h2>
+    <ul>
+      <li><code>components/AppHeader.vue</code>：Logo、標題文字、左上角色塊</li>
+      <li><code>components/BannerSlider.vue</code>：首頁 Banner 背景、標題、說明、按鈕</li>
+      <li><code>pages/index.vue</code>：快速入口、排行榜快報、熱門活動</li>
+      <li><code>pages/events.vue</code>：活動卡與活動視覺</li>
+      <li><code>pages/support.vue</code>、<code>pages/member.vue</code>：資訊卡片與分區樣式</li>
+    </ul>
+
+    <h2>配色總表</h2>
+    <p>色票集中在 <code>assets/css/main.css</code>：</p>
+    <div class="swatch"><span class="dot" style="background:#0F0020"></span><code>--color-bg #0F0020</code></div>
+    <div class="swatch"><span class="dot" style="background:#1C0A3A"></span><code>--color-bg-card #1C0A3A</code></div>
+    <div class="swatch"><span class="dot" style="background:#250D48"></span><code>--color-bg-card2 #250D48</code></div>
+    <div class="swatch"><span class="dot" style="background:#7C3AED"></span><code>--color-purple-mid #7C3AED</code></div>
+    <div class="swatch"><span class="dot" style="background:#C084FC"></span><code>--color-purple-glow #C084FC</code></div>
+    <div class="swatch"><span class="dot" style="background:#F5C842"></span><code>--color-gold #F5C842</code></div>
+    <div class="swatch"><span class="dot" style="background:#FDE68A"></span><code>--color-gold-light #FDE68A</code></div>
+    <div class="swatch"><span class="dot" style="background:#D97706"></span><code>--color-gold-dark #D97706</code></div>
+
+    <h2>圖檔提供建議</h2>
+    <pre>public/images/
+public/images/banner/
+public/images/logo/
+public/images/events/
+public/images/icons/</pre>
+
+    <ul>
+      <li>Banner 主視覺建議桌機與手機各一版</li>
+      <li>Logo 優先使用 SVG</li>
+      <li>活動主圖與縮圖建議使用 webp</li>
+      <li>icon 以 SVG 優先</li>
+      <li>檔名使用英文小寫與 <code>-</code>，避免中文與空白</li>
+    </ul>
+
+    <h2>建議比例</h2>
+    <ul>
+      <li>Banner 主視覺：16:7 或接近比例</li>
+      <li>活動卡：16:9</li>
+      <li>小圖示：正方形</li>
+    </ul>
+
+    <h2>前後端分工建議</h2>
+    <ul>
+      <li>美術提供：色票、主視覺圖、活動圖、Logo、icon、卡片背景圖、按鈕狀態規範</li>
+      <li>前端負責：掛圖、裁切、響應式、路徑處理、互動狀態與整合</li>
+    </ul>
+
+    <h2>目前較偏示意的部分</h2>
+    <ul>
+      <li>Banner 多數仍是 CSS 視覺</li>
+      <li>活動卡目前偏資料驅動色塊</li>
+      <li>FAQ / 會員 / 教學頁仍偏資訊卡片風格</li>
+    </ul>
+
+    <h2>建議未來優先補的素材</h2>
+    <ul>
+      <li>正式 Logo 套件</li>
+      <li>Banner 桌機 / 手機雙版本</li>
+      <li>活動主視覺圖與縮圖</li>
+      <li>排行榜 rank badge 規格</li>
+      <li>CTA 按鈕 hover / active 狀態規範</li>
+    </ul>
+
+    <div class="footer">
+      快速原則：想換整站風格先看 <code>assets/css/main.css</code>；想換 Banner 或活動視覺，請同步看 <code>components/BannerSlider.vue</code> 與 <code>data/siteContent.ts</code>。
+    </div>
+  </div>
+</body>
+</html>
