@@ -81,6 +81,14 @@ export interface FeaturedEventCard {
   background: string
 }
 
+export interface LeaderboardTab {
+  key: LeaderboardTabKey
+  label: string
+  items: LeaderboardItem[]
+  top3: LeaderboardItem[]
+  rest: LeaderboardItem[]
+}
+
 const winLeaderboardTop3 = [
   { rank: 1, name: '玩家***旺', amount: 'NT$2,580,000', game: '老虎機', time: '最近活躍', color: 'var(--color-gold)' },
   { rank: 2, name: '玩家***福', amount: 'NT$1,820,000', game: '百家樂', time: '3小時前', color: '#C0C0C0' },
@@ -109,6 +117,8 @@ const winLeaderboardRest = [
   { rank: 10, name: '玩家***順', amount: 'NT$320,000', game: '捕魚' },
 ] satisfies LeaderboardItem[]
 
+const winLeaderboardPreview = [...winLeaderboardTop3, ...winLeaderboardRest.slice(0, 2)] satisfies LeaderboardItem[]
+
 const multiLeaderboardRest = [
   { rank: 4, name: '玩家***風', amount: '×1,100 倍', game: '老虎機' },
   { rank: 5, name: '玩家***雲', amount: '×1,000 倍', game: '捕魚機' },
@@ -119,6 +129,8 @@ const multiLeaderboardRest = [
   { rank: 10, name: '玩家***土', amount: '×500 倍', game: '老虎機' },
 ] satisfies LeaderboardItem[]
 
+const multiLeaderboardPreview = [...multiLeaderboardTop3, ...multiLeaderboardRest.slice(0, 2)] satisfies LeaderboardItem[]
+
 const eventLeaderboardRest = [
   { rank: 4, name: '玩家***相', amount: '5,200 分', game: '百萬大獎賽' },
   { rank: 5, name: '玩家***士', amount: '4,900 分', game: '百萬大獎賽' },
@@ -128,6 +140,8 @@ const eventLeaderboardRest = [
   { rank: 9, name: '玩家***砲', amount: '3,700 分', game: '百萬大獎賽' },
   { rank: 10, name: '玩家***卒', amount: '3,400 分', game: '百萬大獎賽' },
 ] satisfies LeaderboardItem[]
+
+const eventLeaderboardPreview = [...eventLeaderboardTop3, ...eventLeaderboardRest.slice(0, 2)] satisfies LeaderboardItem[]
 
 export const siteContent = {
   marqueeAnnouncements: [
@@ -209,24 +223,27 @@ export const siteContent = {
   leaderboard: {
     tabs: [
       {
-        key: 'win' as LeaderboardTabKey,
+        key: 'win',
         label: '總贏分',
+        items: winLeaderboardPreview,
         top3: winLeaderboardTop3,
         rest: winLeaderboardRest,
       },
       {
-        key: 'multi' as LeaderboardTabKey,
+        key: 'multi',
         label: '倍率榜',
+        items: multiLeaderboardPreview,
         top3: multiLeaderboardTop3,
         rest: multiLeaderboardRest,
       },
       {
-        key: 'event' as LeaderboardTabKey,
+        key: 'event',
         label: '活動榜',
+        items: eventLeaderboardPreview,
         top3: eventLeaderboardTop3,
         rest: eventLeaderboardRest,
       },
-    ],
+    ] satisfies LeaderboardTab[],
   },
   events: [
     { id: 1, title: '百萬大獎賽', subtitle: '累積積分衝頂，贏取百萬獎金', status: 'active', endDate: '2026/12/31', prize: 'NT$1,280,000', gradient: 'linear-gradient(135deg,#1a003a,#7C3AED)' },
