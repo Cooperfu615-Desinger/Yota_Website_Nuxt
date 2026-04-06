@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { siteContent, type LeaderboardTabKey } from '~/data/siteContent'
+
 useSeoMeta({
   title: '巨亨 ONLINE — 官方網站 | 全台頂級線上娛樂城',
   description: '巨亨ONLINE官方網站，提供老虎機、百家樂等多種博弈遊戲，立即試玩！快速儲值、安全有保障，支援iOS/Android APP下載。',
@@ -10,25 +12,14 @@ useSeoMeta({
 const { openLobby } = useAppState()
 const { lastUpdate } = useLeaderboardTimer()
 
-const leaderboardTab = ref<'win' | 'multi'>('win')
-
-const winRanks = [
-  { rank: 1, name: '玩家***旺', amount: 'NT$2,580,000', game: '老虎機', time: '最近活躍', color: 'var(--color-gold)' },
-  { rank: 2, name: '玩家***福', amount: 'NT$1,820,000', game: '百家樂', time: '3小時前',  color: '#C0C0C0' },
-  { rank: 3, name: '玩家***星', amount: 'NT$960,000',   game: '老虎機', time: '1天前',    color: '#CD7F32' },
-]
-const multiRanks = [
-  { rank: 1, name: '玩家***龍', amount: '×2,560 倍', game: '水果老虎機', time: '5分鐘前', color: 'var(--color-gold)' },
-  { rank: 2, name: '玩家***鳳', amount: '×1,888 倍', game: '老虎機',     time: '2小時前', color: '#C0C0C0' },
-  { rank: 3, name: '玩家***虎', amount: '×1,280 倍', game: '捕魚機',     time: '4小時前', color: '#CD7F32' },
-]
-const currentRanks = computed(() => leaderboardTab.value === 'win' ? winRanks : multiRanks)
-
-const news = [
-  { type: 'activity', label: '活動', title: '百萬排行榜決賽倒數中！最後衝刺機會不容錯過', time: '1小時前' },
-  { type: 'system',   label: '公告', title: '系統維護公告：2024/01/15 凌晨 05:00–05:30',  time: '3小時前' },
-  { type: 'activity', label: '活動', title: '新手首儲禮包升級！最高獲得 5,000 點額外贈點', time: '昨天' },
-]
+const leaderboardTabs = computed(() => siteContent.leaderboard.tabs.filter(tab => tab.key !== 'event'))
+const leaderboardTab = ref<LeaderboardTabKey>(leaderboardTabs.value[0].key)
+const currentLeaderboard = computed(() =>
+  leaderboardTabs.value.find(tab => tab.key === leaderboardTab.value) ?? leaderboardTabs.value[0],
+)
+const quickLinks = siteContent.homepage.quickLinks
+const news = siteContent.homepage.news
+const featuredEvents = siteContent.homepage.featuredEvents
 </script>
 
 <template>
@@ -59,21 +50,18 @@ const news = [
 
           <!-- 快速入口 -->
           <div class="grid grid-cols-4 gap-2 lg:gap-3">
-            <NuxtLink to="/deposit"     class="flex flex-col items-center gap-1.5 py-2 lg:py-3 rounded-xl no-underline" style="background:rgba(168,85,247,0.1); border:1px solid var(--color-border);">
-              <svg class="w-6 h-6" style="color:var(--color-gold);" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-              <span class="text-xs" style="color:var(--color-text-muted);">儲值</span>
-            </NuxtLink>
-            <NuxtLink to="/events"      class="flex flex-col items-center gap-1.5 py-2 lg:py-3 rounded-xl no-underline" style="background:rgba(168,85,247,0.1); border:1px solid var(--color-border);">
-              <svg class="w-6 h-6" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
-              <span class="text-xs" style="color:var(--color-text-muted);">活動</span>
-            </NuxtLink>
-            <NuxtLink to="/leaderboard" class="flex flex-col items-center gap-1.5 py-2 lg:py-3 rounded-xl no-underline" style="background:rgba(168,85,247,0.1); border:1px solid var(--color-border);">
-              <svg class="w-6 h-6" style="color:#4ade80;" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 8v8m-4-5v5m-4-2v2M4 20h16"/></svg>
-              <span class="text-xs" style="color:var(--color-text-muted);">排行榜</span>
-            </NuxtLink>
-            <NuxtLink to="/tutorial"    class="flex flex-col items-center gap-1.5 py-2 lg:py-3 rounded-xl no-underline" style="background:rgba(168,85,247,0.1); border:1px solid var(--color-border);">
-              <svg class="w-6 h-6" style="color:var(--color-purple-glow);" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-              <span class="text-xs" style="color:var(--color-text-muted);">教學</span>
+            <NuxtLink
+              v-for="link in quickLinks"
+              :key="link.key"
+              :to="link.to"
+              class="flex flex-col items-center gap-1.5 py-2 lg:py-3 rounded-xl no-underline"
+              style="background:rgba(168,85,247,0.1); border:1px solid var(--color-border);"
+            >
+              <svg v-if="link.key === 'deposit'" class="w-6 h-6" style="color:var(--color-gold);" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+              <svg v-else-if="link.key === 'events'" class="w-6 h-6" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+              <svg v-else-if="link.key === 'leaderboard'" class="w-6 h-6" style="color:#4ade80;" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 8v8m-4-5v5m-4-2v2M4 20h16"/></svg>
+              <svg v-else class="w-6 h-6" style="color:var(--color-purple-glow);" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+              <span class="text-xs" :style="{ color: link.color }">{{ link.label }}</span>
             </NuxtLink>
           </div>
         </div>
@@ -90,12 +78,21 @@ const news = [
           </div>
           <div class="card-purple p-3">
             <div class="tab-bar mb-3" role="tablist">
-              <button class="tab-btn" :class="{ active: leaderboardTab === 'win' }"   role="tab" :aria-selected="leaderboardTab === 'win'"   @click="leaderboardTab = 'win'">總贏分榜</button>
-              <button class="tab-btn" :class="{ active: leaderboardTab === 'multi' }" role="tab" :aria-selected="leaderboardTab === 'multi'" @click="leaderboardTab = 'multi'">倍率榜</button>
+              <button
+                v-for="tab in leaderboardTabs"
+                :key="tab.key"
+                class="tab-btn"
+                :class="{ active: leaderboardTab === tab.key }"
+                role="tab"
+                :aria-selected="leaderboardTab === tab.key"
+                @click="leaderboardTab = tab.key"
+              >
+                {{ tab.label }}
+              </button>
             </div>
             <Transition name="tab-fade" mode="out-in">
               <div :key="leaderboardTab">
-                <div v-for="item in currentRanks" :key="item.rank" class="rank-item">
+                <div v-for="item in currentLeaderboard.items" :key="item.rank" class="rank-item">
                   <div class="rank-badge" :class="`r${item.rank}`">{{ item.rank }}</div>
                   <div class="flex-1">
                     <div class="flex justify-between">
@@ -138,12 +135,21 @@ const news = [
           </div>
           <div class="card-purple p-3">
             <div class="tab-bar mb-3" role="tablist">
-              <button class="tab-btn" :class="{ active: leaderboardTab === 'win' }"   role="tab" :aria-selected="leaderboardTab === 'win'"   @click="leaderboardTab = 'win'">總贏分榜</button>
-              <button class="tab-btn" :class="{ active: leaderboardTab === 'multi' }" role="tab" :aria-selected="leaderboardTab === 'multi'" @click="leaderboardTab = 'multi'">倍率榜</button>
+              <button
+                v-for="tab in leaderboardTabs"
+                :key="tab.key"
+                class="tab-btn"
+                :class="{ active: leaderboardTab === tab.key }"
+                role="tab"
+                :aria-selected="leaderboardTab === tab.key"
+                @click="leaderboardTab = tab.key"
+              >
+                {{ tab.label }}
+              </button>
             </div>
             <Transition name="tab-fade" mode="out-in">
               <div :key="leaderboardTab">
-                <div v-for="item in currentRanks" :key="item.rank" class="rank-item">
+                <div v-for="item in currentLeaderboard.items" :key="item.rank" class="rank-item">
                   <div class="rank-badge" :class="`r${item.rank}`">{{ item.rank }}</div>
                   <div class="flex-1">
                     <div class="flex justify-between">
@@ -163,15 +169,16 @@ const news = [
         <section>
           <h2 class="section-title mb-3">熱門活動</h2>
           <div class="flex flex-col gap-2">
-            <NuxtLink to="/events" class="card-purple p-4 no-underline block" style="background:linear-gradient(135deg,#1a003a,#7C3AED);">
-              <div class="text-xs font-bold mb-1" style="color:var(--color-gold);">進行中</div>
-              <div class="font-black text-white">百萬大獎賽</div>
-              <div class="text-xs mt-1" style="color:rgba(255,255,255,0.6);">獎金池 NT$1,280,000</div>
-            </NuxtLink>
-            <NuxtLink to="/events" class="card-purple p-4 no-underline block" style="background:linear-gradient(135deg,#1a0a00,#D97706);">
-              <div class="text-xs font-bold mb-1" style="color:var(--color-gold);">長期活動</div>
-              <div class="font-black text-white">新手首儲 +100%</div>
-              <div class="text-xs mt-1" style="color:rgba(255,255,255,0.6);">首次儲值即享雙倍點數</div>
+            <NuxtLink
+              v-for="event in featuredEvents"
+              :key="event.title"
+              :to="event.to"
+              class="card-purple p-4 no-underline block"
+              :style="{ background: event.background }"
+            >
+              <div class="text-xs font-bold mb-1" style="color:var(--color-gold);">{{ event.status }}</div>
+              <div class="font-black text-white">{{ event.title }}</div>
+              <div class="text-xs mt-1" style="color:rgba(255,255,255,0.6);">{{ event.subtitle }}</div>
             </NuxtLink>
           </div>
         </section>

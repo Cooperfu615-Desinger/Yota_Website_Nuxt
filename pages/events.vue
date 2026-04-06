@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { siteContent } from '~/data/siteContent'
+
 useSeoMeta({
   title: '熱門活動 — 巨亨ONLINE | 最新優惠與賽事',
   description: '巨亨ONLINE最新活動！百萬大獎賽、新手好禮、儲值加倍等限時優惠，立即參與贏取豐厚獎金。',
@@ -7,25 +9,7 @@ useSeoMeta({
 
 type EventStatus = 'active' | 'upcoming' | 'ended'
 const activeTab = ref<EventStatus>('active')
-
-interface GameEvent {
-  id: number
-  title: string
-  subtitle: string
-  status: EventStatus
-  endDate: string
-  prize: string
-  gradient: string
-}
-
-const events: GameEvent[] = [
-  { id: 1, title: '百萬大獎賽', subtitle: '累積積分衝頂，贏取百萬獎金', status: 'active', endDate: '2024/01/31', prize: 'NT$1,280,000', gradient: 'linear-gradient(135deg,#1a003a,#7C3AED)' },
-  { id: 2, title: '新手首儲禮', subtitle: '首次儲值享最高 100% 加碼', status: 'active', endDate: '長期', prize: '+100%', gradient: 'linear-gradient(135deg,#1a0a00,#D97706)' },
-  { id: 3, title: '每日簽到獎', subtitle: '連續簽到 7 天，累積豐厚獎勵', status: 'active', endDate: '長期', prize: '每日點數', gradient: 'linear-gradient(135deg,#0a1a00,#166534)' },
-  { id: 4, title: '春節限定活動', subtitle: '農曆新年特別回饋，限時限量', status: 'upcoming', endDate: '2024/02/10', prize: 'NT$500,000', gradient: 'linear-gradient(135deg,#2d0a0a,#991b1b)' },
-  { id: 5, title: '情人節特別賽', subtitle: '雙人對戰，贏取情侶大禮包', status: 'upcoming', endDate: '2024/02/14', prize: '神秘禮物', gradient: 'linear-gradient(135deg,#1a003a,#be185d)' },
-  { id: 6, title: '跨年倒數賽', subtitle: '2024 年倒數特別活動（已結束）', status: 'ended', endDate: '2024/01/01', prize: 'NT$800,000', gradient: 'linear-gradient(135deg,#1a1a1a,#374151)' },
-]
+const events = siteContent.events
 
 const counts = computed(() => ({
   active:   events.filter(e => e.status === 'active').length,
@@ -34,7 +18,7 @@ const counts = computed(() => ({
 }))
 const filteredEvents = computed(() => events.filter(e => e.status === activeTab.value))
 
-const selectedEvent = ref<GameEvent | null>(null)
+const selectedEvent = ref<(typeof siteContent.events)[number] | null>(null)
 
 const tabs = [
   { key: 'active'   as EventStatus, label: '進行中' },

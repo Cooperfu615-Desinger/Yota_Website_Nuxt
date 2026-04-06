@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { siteContent } from '~/data/siteContent'
+
 useSeoMeta({
   title: '客服中心 — 巨亨ONLINE | 24小時線上客服',
   description: '巨亨ONLINE客服中心，提供LINE即時客服、常見問題解答，全天候為您服務。',
@@ -7,40 +9,8 @@ useSeoMeta({
 
 type FaqCategory = 'account' | 'deposit' | 'game' | 'install'
 const activeCategory = ref<FaqCategory>('account')
-
-const categories: { key: FaqCategory; label: string }[] = [
-  { key: 'account', label: '帳號相關' },
-  { key: 'deposit', label: '儲值問題' },
-  { key: 'game',    label: '遊戲問題' },
-  { key: 'install', label: '安裝問題' },
-]
-
-const faqs: Record<FaqCategory, { q: string; a: string }[]> = {
-  account: [
-    { q: '忘記帳號密碼怎麼辦？', a: '您可以透過手機號碼驗證重設密碼。請點選登入頁面的「忘記密碼」，輸入您的手機號碼，收到驗證碼後即可設定新密碼。' },
-    { q: '如何更換手機號碼？', a: '請聯繫客服提出申請，需提供帳號驗證資訊進行身份確認。為保護您的帳號安全，此操作需要人工審核。' },
-    { q: '帳號被停用了怎麼辦？', a: '帳號停用可能因違反使用條款或異常活動所致。請聯繫客服說明情況，我們的客服人員將協助您處理。' },
-    { q: '如何修改個人資料？', a: '登入後前往「會員專區」，點選「個人資料」即可修改暱稱、頭像等資訊。基本資料（真實姓名、身分證）修改需聯繫客服。' },
-  ],
-  deposit: [
-    { q: '儲值後點數沒有到帳？', a: '儲值完成後通常在 5 分鐘內到帳。若超過 30 分鐘仍未到帳，請保留儲值證明並聯繫客服。不同支付方式的到帳時間可能有所不同。' },
-    { q: '支援哪些付款方式？', a: '目前支援：信用卡（Visa/MasterCard）、ATM 轉帳、超商代碼繳費（7-11/全家/萊爾富/OK超商）、MyCard、GASH、FunPay、iWin 點數卡。' },
-    { q: '儲值有上下限嗎？', a: '最低儲值金額為 NT$300，每日最高儲值上限依 VIP 等級不同：一般玩家 NT$50,000 / VIP3 NT$200,000 / VIP6 無上限。' },
-    { q: '如何申請提款？', a: '提款需完成身份認證，登入後前往「會員專區」→「申請提款」，填寫銀行帳戶資訊。審核時間約 1-3 個工作天。' },
-  ],
-  game: [
-    { q: '遊戲載入失敗怎麼辦？', a: '請先確認網路連線是否穩定。若使用 iOS 設備，請確保已完成信任設定。建議清除瀏覽器快取後重試，或改用 APP 進行遊戲。' },
-    { q: '遊戲過程中斷線怎麼辦？', a: '我們的系統會自動記錄您斷線前的遊戲狀態。重新連線後，您的資產不會有任何損失，遊戲紀錄也會完整保存。' },
-    { q: '試玩模式與正式模式有何不同？', a: '試玩模式使用虛擬點數，不消耗真實餘額，適合熟悉遊戲規則。正式模式使用真實餘額，贏得的獎金可提款。' },
-    { q: '遊戲公平性如何保障？', a: '我們所有遊戲均採用國際認證的 RNG（隨機數生成器），確保每局結果完全隨機公正。相關認證報告可在官網查詢。' },
-  ],
-  install: [
-    { q: 'iOS 設備無法安裝 APP？', a: '由於 App Store 審核限制，iOS 版本需透過企業憑證安裝。請至「新手教學」頁面，按照 iOS 安裝步驟操作，並完成「信任企業開發者」設定。' },
-    { q: 'Android 安裝顯示「禁止安裝未知來源」？', a: '請至手機「設定」→「安全性」→ 開啟「允許安裝未知來源應用程式」。安裝完成後可選擇關閉此設定。' },
-    { q: 'APP 更新後無法開啟？', a: '請先嘗試重新啟動手機，若問題仍存在，請解除安裝後重新從官網下載最新版本。您的帳號資料不會遺失。' },
-    { q: 'APP 與網頁版有什麼差異？', a: 'APP 版本支援推播通知、離線下載、更流暢的遊戲體驗，以及獨家 APP 用戶優惠。整體功能與網頁版一致，建議優先使用 APP。' },
-  ],
-}
+const categories = siteContent.faq.categories
+const faqs = siteContent.faq.items
 
 const openFaqs = ref<Record<number, boolean>>({})
 function toggleFaq(index: number) {

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { siteContent } from '~/data/siteContent'
+
 useSeoMeta({
   title: '會員專區 — 巨亨ONLINE | VIP等級與個人資料',
   description: '巨亨ONLINE會員中心，查看VIP等級、點數餘額、遊戲紀錄，兌換獎勵碼，管理您的帳號。',
@@ -11,7 +13,7 @@ type MemberTab = 'profile' | 'history' | 'vip' | 'redeem'
 const activeTab = ref<MemberTab>('profile')
 
 const vipProgress = computed(() => {
-  const targets = [0, 10000, 50000, 200000, 500000, 2000000]
+  const targets = siteContent.member.vipTargets
   const current = 68500
   const vipLevel = userInfo.value.vip
   const next = targets[vipLevel] ?? targets[targets.length - 1]
@@ -19,31 +21,12 @@ const vipProgress = computed(() => {
   return Math.min(100, Math.round(((current - prev) / (next - prev)) * 100))
 })
 
-const vipLevels = [
-  { level: 1, name: 'VIP 1', color: '#CD7F32', limit: 'NT$50,000/日', benefits: ['每日簽到獎 ×1.2', '優先客服'] },
-  { level: 2, name: 'VIP 2', color: '#C0C0C0', limit: 'NT$100,000/日', benefits: ['每日簽到獎 ×1.5', '專屬活動'] },
-  { level: 3, name: 'VIP 3', color: '#F5C842', limit: 'NT$200,000/日', benefits: ['每日簽到獎 ×2.0', '生日禮金'] },
-  { level: 4, name: 'VIP 4', color: '#60A5FA', limit: 'NT$500,000/日', benefits: ['每日簽到獎 ×3.0', '專屬包廂'] },
-  { level: 5, name: 'VIP 5', color: '#A855F7', limit: '無上限',        benefits: ['每日簽到獎 ×5.0', '專屬秘書'] },
-  { level: 6, name: 'VIP 6', color: '#EC4899', limit: '無上限',        benefits: ['無限簽到獎', '頂級禮遇'] },
-]
-
-const historyItems = [
-  { date: '2024/01/15 14:32', game: '老虎機 — 水果大豐收', result: '+NT$2,580', positive: true },
-  { date: '2024/01/15 13:20', game: '百家樂',              result: '-NT$500',   positive: false },
-  { date: '2024/01/14 22:15', game: '老虎機 — 招財貓',    result: '+NT$1,200', positive: true },
-  { date: '2024/01/14 20:08', game: '捕魚機',              result: '+NT$380',   positive: true },
-  { date: '2024/01/14 18:55', game: '百家樂',              result: '-NT$1,000', positive: false },
-]
+const vipLevels = siteContent.member.vipLevels
+const historyItems = siteContent.member.historyItems
 
 const redeemCode = ref('')
 
-const memberTabs = [
-  { key: 'profile' as MemberTab, label: '個人資料', icon: '👤' },
-  { key: 'history' as MemberTab, label: '遊戲紀錄', icon: '📊' },
-  { key: 'vip'     as MemberTab, label: 'VIP 等級', icon: '👑' },
-  { key: 'redeem'  as MemberTab, label: '兌換碼',   icon: '🎁' },
-]
+const memberTabs = siteContent.member.tabs
 </script>
 
 <template>
