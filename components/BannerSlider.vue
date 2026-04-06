@@ -26,8 +26,7 @@ const { current, total, slideStyle, next, prev, goTo, onTouchStart, onTouchEnd }
           <div v-if="slide.kind === 'lobby'" class="float-anim flex flex-col items-center gap-3">
             <div
               class="text-5xl font-black text-center leading-tight"
-              style="white-space:pre-line; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter:drop-shadow(0 0 20px rgba(245,200,66,0.3));"
-              :style="{ background: slide.accent }"
+              style="white-space:pre-line; color:var(--color-gold-light); text-shadow:0 0 20px rgba(245,200,66,0.25);"
             >
               {{ slide.title }}
             </div>
