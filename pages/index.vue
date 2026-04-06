@@ -12,11 +12,16 @@ useSeoMeta({
 const { openLobby } = useAppState()
 const { lastUpdate } = useLeaderboardTimer()
 
-const leaderboardTabs = computed(() => siteContent.leaderboard.tabs.filter(tab => tab.key !== 'event'))
-const leaderboardTab = ref<LeaderboardTabKey>(leaderboardTabs.value[0].key)
-const currentLeaderboard = computed(() =>
-  leaderboardTabs.value.find(tab => tab.key === leaderboardTab.value) ?? leaderboardTabs.value[0],
-)
+const leaderboardTabs = siteContent.leaderboard.tabs.filter(tab => tab.key !== 'event')
+const leaderboardTab = ref<LeaderboardTabKey>(leaderboardTabs[0].key)
+const leaderboardTabMap = Object.fromEntries(
+  leaderboardTabs.map(tab => [tab.key, tab] as const),
+) as Record<LeaderboardTabKey, typeof leaderboardTabs[number]>
+const currentLeaderboard = computed(() => leaderboardTabMap[leaderboardTab.value] ?? leaderboardTabs[0])
+
+function setLeaderboardTab(tabKey: LeaderboardTabKey) {
+  leaderboardTab.value = tabKey
+}
 const quickLinks = siteContent.homepage.quickLinks
 const news = siteContent.homepage.news
 const featuredEvents = siteContent.homepage.featuredEvents
@@ -81,11 +86,13 @@ const featuredEvents = siteContent.homepage.featuredEvents
               <button
                 v-for="tab in leaderboardTabs"
                 :key="tab.key"
+                type="button"
                 class="tab-btn"
                 :class="{ active: leaderboardTab === tab.key }"
                 role="tab"
                 :aria-selected="leaderboardTab === tab.key"
-                @click="leaderboardTab = tab.key"
+                @pointerdown="setLeaderboardTab(tab.key)"
+                @click="setLeaderboardTab(tab.key)"
               >
                 {{ tab.label }}
               </button>
@@ -138,11 +145,13 @@ const featuredEvents = siteContent.homepage.featuredEvents
               <button
                 v-for="tab in leaderboardTabs"
                 :key="tab.key"
+                type="button"
                 class="tab-btn"
                 :class="{ active: leaderboardTab === tab.key }"
                 role="tab"
                 :aria-selected="leaderboardTab === tab.key"
-                @click="leaderboardTab = tab.key"
+                @pointerdown="setLeaderboardTab(tab.key)"
+                @click="setLeaderboardTab(tab.key)"
               >
                 {{ tab.label }}
               </button>
