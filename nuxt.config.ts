@@ -6,6 +6,15 @@ export default defineNuxtConfig({
   // SSG for SEO + static hosting (GitHub Pages / CDN)
   ssr: true,
 
+  // 停用 App Manifest：
+  // Nuxt 3.9+ 預設開啟此功能，會在客戶端輪詢 /_nuxt/builds/latest.json
+  // 每次 nuxt generate 產生新 build ID → 偵測到版本不符 → 強制 reload
+  // GitHub Pages CDN 快取尚未更新 → 舊 HTML 引用舊 chunk → 404 → hydration 失敗
+  // 此外在 dev 模式下 #app-manifest 虛擬模組無法正確解析 → 同樣導致 hydration 失效
+  experimental: {
+    appManifest: false,
+  },
+
   modules: [
     '@nuxtjs/tailwindcss',
     '@nuxtjs/google-fonts',
@@ -49,6 +58,10 @@ export default defineNuxtConfig({
     preset: 'static',
     output: {
       publicDir: 'docs',
+    },
+    // dev server 不監看 docs/ 目錄，避免靜態輸出觸發反覆 reload
+    watchOptions: {
+      ignored: ['**/docs/**'],
     },
   },
 })
