@@ -81,6 +81,14 @@ export interface FeaturedEventCard {
   background: string
 }
 
+export interface GameItem {
+  name: string
+  desc: string
+  badge: string | null
+  rtp: string
+  color: string
+}
+
 export interface LeaderboardTab {
   key: LeaderboardTabKey
   label: string
@@ -218,8 +226,17 @@ export const siteContent = {
     featuredEvents: [
       { to: '/events', status: '進行中', title: '百萬大獎賽', subtitle: '獎金池 NT$1,280,000', background: 'linear-gradient(135deg,#1a003a,#7C3AED)' },
       { to: '/events', status: '長期活動', title: '新手首儲 +100%', subtitle: '首次儲值即享雙倍點數', background: 'linear-gradient(135deg,#1a0a00,#D97706)' },
+      { to: '/tutorial', status: 'APP 限定', title: '新手下載禮', subtitle: '下載 APP 即送 $50 體驗金', background: 'linear-gradient(135deg,#042f4b,#0369a1)' },
     ] satisfies FeaturedEventCard[],
   },
+  games: [
+    { name: '水果老虎機', desc: '經典水果符號，多線賠率', badge: '熱門', rtp: '96.5%', color: '#F5C842' },
+    { name: '招財貓百家樂', desc: '亞洲最受歡迎桌遊', badge: '新上線', rtp: '98.9%', color: '#60A5FA' },
+    { name: '海洋捕魚機', desc: '射擊系遊戲，越大越賺', badge: null, rtp: '95.8%', color: '#4ade80' },
+    { name: '麻將胡了', desc: '麻將主題老虎機', badge: null, rtp: '96.2%', color: '#F87171' },
+    { name: '神龍傳奇', desc: '亞洲神話主題大獎機', badge: '熱門', rtp: '95.5%', color: '#A855F7' },
+    { name: '魚蝦蟹', desc: '傳統骰子遊戲，簡單好玩', badge: null, rtp: '97.1%', color: '#FBBF24' },
+  ] satisfies GameItem[],
   leaderboard: {
     tabs: [
       {

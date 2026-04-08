@@ -6,6 +6,7 @@
         <slot />
       </div>
     </main>
+    <AppFooter />
     <AppBottomNav />
     <ClientOnly>
       <LoginModal />

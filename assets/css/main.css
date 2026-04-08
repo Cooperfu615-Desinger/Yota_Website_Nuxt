@@ -693,6 +693,91 @@ body::before {
   border-radius: 0 10px 0 10px;
 }
 
+/* ── 內容窄版容器（首頁 section 用） ── */
+.content-narrow {
+  max-width: 860px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ── Footer ── */
+.app-footer {
+  background: var(--color-bg-card);
+  border-top: 1px solid var(--color-border);
+  padding: 40px 0 28px;
+  position: relative;
+  z-index: 1;
+}
+@media (max-width: 1023px) {
+  .app-footer { padding-bottom: calc(var(--bottom-nav-h) + 28px); }
+}
+.footer-grid {
+  display: grid;
+  gap: 28px;
+  margin-bottom: 28px;
+}
+@media (min-width: 640px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 1024px) {
+  .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; }
+}
+.footer-col-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.footer-links li,
+.footer-links a,
+.footer-links span { font-size: 13px; color: var(--color-text-muted); text-decoration: none; transition: color 0.2s; }
+.footer-links a:hover { color: var(--color-purple-light); }
+.footer-social { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.footer-social-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: rgba(255,255,255,0.04);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+.footer-social-btn:hover {
+  border-color: var(--color-purple-light);
+  background: rgba(168,85,247,0.12);
+  color: var(--color-purple-light);
+  transform: translateY(-2px);
+}
+.footer-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+@media (min-width: 640px) {
+  .footer-bottom { flex-direction: row; justify-content: space-between; align-items: center; }
+}
+.footer-legal { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.footer-legal a {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-legal a:hover { color: var(--color-purple-light); }
+
 /* ── 響應式：平板以上 ── */
 @media (min-width: 640px) {
   :root { --nav-h: 70px; }

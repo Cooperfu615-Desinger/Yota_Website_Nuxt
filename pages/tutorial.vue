@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { siteContent } from '~/data/siteContent'
+
 useSeoMeta({
   title: '新手教學 — 巨亨ONLINE | APP下載與遊戲介紹',
   description: '巨亨ONLINE新手教學！了解各種遊戲玩法、APP下載安裝步驟（iOS/Android），快速上手開始試玩。',
@@ -21,14 +23,7 @@ function closeTrial() {
   trialGame.value = null
 }
 
-const games = [
-  { name: '水果老虎機', desc: '經典水果符號，多線賠率', badge: '熱門', rtp: '96.5%', color: '#F5C842' },
-  { name: '招財貓百家樂', desc: '亞洲最受歡迎桌遊', badge: '新上線', rtp: '98.9%', color: '#60A5FA' },
-  { name: '海洋捕魚機', desc: '射擊系遊戲，越大越賺', badge: null, rtp: '95.8%', color: '#4ade80' },
-  { name: '麻將胡了', desc: '麻將主題老虎機', badge: null, rtp: '96.2%', color: '#F87171' },
-  { name: '神龍傳奇', desc: '亞洲神話主題大獎機', badge: '熱門', rtp: '95.5%', color: '#A855F7' },
-  { name: '魚蝦蟹', desc: '傳統骰子遊戲，簡單好玩', badge: null, rtp: '97.1%', color: '#FBBF24' },
-]
+const games = siteContent.games
 
 const features = [
   { icon: '🎰', title: '保留座功能', desc: '暫時離開不怕位置被搶，系統自動保留您的遊戲席位長達 10 分鐘。' },
