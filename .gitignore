@@ -5,7 +5,9 @@
 .nitro
 .cache
 dist
-# docs/ 是 GitHub Pages 來源，不加入 .gitignore
+
+# docs/ 由 GitHub Actions 自動 generate 並部署，不 commit 進 repo
+docs/
 
 # Node
 node_modules

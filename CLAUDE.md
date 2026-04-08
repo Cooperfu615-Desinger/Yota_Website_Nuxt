@@ -18,7 +18,7 @@
 | Vue | 3.4.x |
 | CSS 框架 | Tailwind CSS + 自訂 `assets/css/main.css` |
 | 字型 | Noto Sans TC（Google Fonts） |
-| 部署 | GitHub Pages，`main` 分支，`docs/` 目錄 |
+| 部署 | GitHub Pages，GitHub Actions 自動部署（push to main 觸發） |
 | baseURL | `/Yota_Website_Nuxt/` |
 
 ---
@@ -37,13 +37,13 @@ PATH="/opt/homebrew/opt/node/bin:$PATH" npm run dev
 # 本機開發
 npm run dev
 
-# 靜態產生（部署前必跑）
-npm run generate
-# → 自動輸出至 docs/，並建立 docs/.nojekyll
+# 部署（只需 push，CI 自動 generate + 部署）
+git add [修改的src檔案] && git commit -m "feat/fix: ..." && git push
+# → GitHub Actions 自動跑 npm run generate 並部署至 GitHub Pages
+# → 約需 2–5 分鐘完成
 
-# 部署
-git add docs/ && git commit -m "deploy: ..." && git push
-# → GitHub Pages CDN 約需 5–10 分鐘更新
+# 本地預覽靜態輸出（可選）
+npm run generate && npx serve docs
 ```
 
 ---
@@ -79,14 +79,18 @@ experimental: {
 
 ---
 
-### 3. `docs/.nojekyll` 必須存在
+### 3. `docs/.nojekyll` 必須存在（CI 環境）
 **原因**：GitHub Pages 預設透過 Jekyll 處理，Jekyll 會抑制 `_nuxt/` 目錄（以 `_` 開頭），導致所有 JS 無法被存取。
 
-**已自動化**：`package.json` 的 `generate` 指令已加入 `&& touch docs/.nojekyll`，每次 build 自動建立。
+**已自動化**：`package.json` 的 `generate` 指令已加入 `&& touch docs/.nojekyll`，CI 每次 build 自動建立。
+
+**注意**：`docs/` 已加入 `.gitignore`，由 GitHub Actions（`.github/workflows/deploy.yml`）負責 generate 並部署，不再手動 commit docs/。
 
 ---
 
-### 4. `docs/` 不監看（dev server）
+### 4. `docs/` 不 commit、不監看
+**原因**：Nuxt dev server 啟動時會清空 `nitro.output.publicDir`（即 `docs/`），導致手動 commit 的靜態檔案消失。改用 CI 自動部署後此問題消失。
+
 **nuxt.config.ts 固定設定**：
 ```ts
 nitro: {
@@ -171,6 +175,39 @@ mcp__f9553461-75b6-424d-b7eb-2c118c433eb8__use_figma
 
 ---
 
+## Figma 設計稿腳本 SOP
+
+`figma-scripts/` 內的腳本使用 Figma Plugin API，透過 MCP 工具直接在 Figma 繪製可編輯的 Layout Frame，供美術團隊修改。
+
+### 腳本對應表
+
+| 腳本 | 對應頁面 | 產出 Frame |
+|------|---------|-----------|
+| `01_events_page.js`      | `events.vue`    | 活動頁 — 進行中 / 即將開始 / 詳情 Modal |
+| `02_leaderboard_page.js` | `leaderboard.vue` | 排行榜 — 總贏分 / 倍率榜 / 活動榜 |
+| `03_homepage.js`         | `index.vue`     | 首頁 — 手機版 |
+| `04_tutorial_page.js`    | `tutorial.vue`  | 新手教學 — 遊戲介紹 / APP特色 / 安裝教學 |
+
+### 執行方式（透過 Claude Code MCP）
+
+```
+# 執行單一腳本（例如更新活動頁）
+→ 請 Claude 執行 figma-scripts/01_events_page.js
+→ Claude 會使用 mcp__f9553461-75b6-424d-b7eb-2c118c433eb8__use_figma 寫入 Figma
+
+# 執行全部（初始建立或全部重繪）
+→ 請 Claude 依序執行 01 → 02 → 03 → 04
+```
+
+### 注意事項
+
+- 每支腳本執行時會**自動清除同名舊 Frame**再重繪，安全重跑不會堆疊
+- Banner 圖片區塊標注「← 美術出圖替換此區塊」，遊戲卡片封面標注「← 遊戲圖片」
+- 佈局調整腳本（排列 Frame 位置）可單獨執行，不影響 Frame 內容
+- **已知 Figma Plugin API 限制**：`primaryAxisAlignItems` 不支援 `'SPACE_AROUND'`，底部導覽列一律使用 `'SPACE_BETWEEN'` + `paddingLeft/Right=8` 替代
+
+---
+
 ## 資料管理
 
 所有文案、資料集中在 `data/siteContent.ts`，各元件 import 使用：
@@ -185,20 +222,21 @@ import { siteContent } from '~/data/siteContent'
 ## 部署 SOP
 
 ```bash
-# 1. 修改程式碼後
-PATH="/opt/homebrew/opt/node/bin:$PATH" npm run generate
-
-# 2. 確認 .nojekyll 存在
-ls docs/.nojekyll
-
-# 3. Commit & Push
-git add docs/ [修改的src檔案]
+# 1. 修改程式碼後，只需 commit 原始碼（不需要 generate）
+git add [修改的src檔案]
 git commit -m "fix/feat: 說明"
 git push origin main
 
-# 4. 等待 CDN 更新（約 5–10 分鐘）
-# 5. 測試：https://cooperfu615-desinger.github.io/Yota_Website_Nuxt/
+# 2. GitHub Actions 自動觸發（.github/workflows/deploy.yml）
+#    → 在 CI 環境跑 npm run generate
+#    → 輸出 docs/ 並部署至 GitHub Pages
+#    → 約 2–5 分鐘完成
+
+# 3. 測試：https://cooperfu615-desinger.github.io/Yota_Website_Nuxt/
 ```
+
+> **注意**：`docs/` 已加入 `.gitignore`，本地 generate 的輸出不會被 commit。
+> 若要在本地預覽靜態版本，執行 `npm run generate && npx serve docs`。
 
 ---
 
