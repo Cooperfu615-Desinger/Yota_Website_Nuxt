@@ -35,6 +35,31 @@
         <!-- 分隔線 -->
         <div class="divider-gold" style="margin:0;" />
 
+        <!-- APP 下載 -->
+        <div class="flex flex-col gap-3">
+          <div class="footer-col-title" style="margin-bottom:0;">APP 下載</div>
+          <div class="footer-download-grid">
+            <a href="#" class="footer-download-btn" aria-label="Google Play 下載">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 flex-shrink-0" aria-hidden="true">
+                <path d="M3.609 1.814 13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92Zm10.89 10.893-2.208 2.208-6.49-3.72 8.698 1.512Zm-2.208-2.915L20 5.765l-1.368 2.868-6.341 1.159ZM12.292 12 20 18.235l-8.109-1.46 2.208-2.208 2.193-2.567Z"/>
+              </svg>
+              Google Play
+            </a>
+            <a href="#" class="footer-download-btn" aria-label="App Store 下載">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 flex-shrink-0" aria-hidden="true">
+                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+              </svg>
+              App Store
+            </a>
+            <a href="#" class="footer-download-btn footer-download-btn-apk" aria-label="APK 下載">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 flex-shrink-0" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v11.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.22 3.22V3a.75.75 0 0 1 .75-.75Zm-9 13.5a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+              </svg>
+              APK 下載
+            </a>
+          </div>
+        </div>
+
         <!-- 法律連結 + 版權 -->
         <div class="flex flex-col gap-2">
           <div class="footer-legal">

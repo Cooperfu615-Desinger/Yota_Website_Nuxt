@@ -12,8 +12,33 @@ function handleDeposit() {
 </script>
 
 <template>
+  <!-- ══ 手機版：精簡浮動按鈕 ══ -->
+  <div class="fp-mobile-wrap lg:hidden">
+    <button class="fp-mobile-btn fp-mobile-btn-deposit" @click="handleDeposit">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true">
+        <path d="M4.5 3.75a3 3 0 0 0-3 3v.75h21v-.75a3 3 0 0 0-3-3h-15Z" />
+        <path fill-rule="evenodd" d="M22.5 9.75h-21v7.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3v-7.5Zm-18 3.75a.75.75 0 0 1 .75-.75h6a.75.75 0 0 1 0 1.5h-6a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z" clip-rule="evenodd" />
+      </svg>
+      <span>立即儲</span>
+    </button>
+
+    <button
+      class="fp-mobile-btn"
+      :class="isLoggedIn ? 'fp-mobile-btn-play' : 'fp-mobile-btn-login'"
+      @click="isLoggedIn ? openLobby() : openLogin()"
+    >
+      <svg v-if="!isLoggedIn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true">
+        <path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v4.19l1.72-1.72a.75.75 0 1 1 1.06 1.06l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 1 1 1.06-1.06l1.72 1.72V3a.75.75 0 0 1 .75-.75Zm-7.5 9A.75.75 0 0 1 5.25 12h13.5a.75.75 0 0 1 0 1.5H5.25a.75.75 0 0 1-.75-.75Zm2.25 4.5A2.25 2.25 0 0 0 9 18h6a2.25 2.25 0 0 0 2.25-2.25.75.75 0 0 1 1.5 0A3.75 3.75 0 0 1 15 19.5H9a3.75 3.75 0 0 1-3.75-3.75.75.75 0 0 1 1.5 0Z" clip-rule="evenodd" />
+      </svg>
+      <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true">
+        <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
+      </svg>
+      <span>{{ isLoggedIn ? '立即玩' : '登入 / 註冊' }}</span>
+    </button>
+  </div>
+
   <!-- ══ 左側：立即儲 ══ -->
-  <div class="fp fp-left">
+  <div class="fp fp-left hidden lg:flex">
     <div class="fp-deco fp-deco-deposit">
       <div class="fp-deco-media" aria-hidden="true" />
       <div class="fp-deco-icon">
@@ -62,7 +87,7 @@ function handleDeposit() {
   </div>
 
   <!-- ══ 右側：立即玩 / 玩家資訊 ══ -->
-  <div class="fp fp-right">
+  <div class="fp fp-right hidden lg:flex">
     <div
       class="fp-deco"
       :class="isLoggedIn ? 'fp-deco-member' : 'fp-deco-play'"

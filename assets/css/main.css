@@ -760,6 +760,35 @@ body::before {
   color: var(--color-purple-light);
   transform: translateY(-2px);
 }
+.footer-download-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.footer-download-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background: rgba(255,255,255,0.04);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+.footer-download-btn:hover {
+  border-color: var(--color-purple-light);
+  background: rgba(168,85,247,0.12);
+  color: var(--color-purple-light);
+}
+.footer-download-btn-apk:hover {
+  border-color: var(--color-gold);
+  background: rgba(245,200,66,0.1);
+  color: var(--color-gold);
+}
 .footer-bottom {
   display: flex;
   flex-direction: column;
@@ -793,6 +822,50 @@ body::before {
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 18px 40px rgba(0,0,0,0.38);
   overflow: hidden;
+}
+.fp-mobile-wrap {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: calc(var(--bottom-nav-h) + 16px);
+  z-index: 220;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  pointer-events: none;
+}
+.fp-mobile-btn {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.fp-mobile-btn:active {
+  transform: scale(0.98);
+}
+.fp-mobile-btn-deposit {
+  background: linear-gradient(135deg, rgba(217,119,6,0.95) 0%, rgba(120,53,15,0.95) 100%);
+}
+.fp-mobile-btn-login {
+  background: linear-gradient(135deg, rgba(124,58,237,0.95) 0%, rgba(76,29,149,0.95) 100%);
+}
+.fp-mobile-btn-play {
+  background: linear-gradient(135deg, rgba(245,200,66,0.96) 0%, rgba(217,119,6,0.96) 100%);
+  color: #1a0a00;
 }
 .fp-left {
   left: 20px;
@@ -1055,6 +1128,13 @@ body::before {
     margin: 20px;
     max-width: 420px;
   }
+  .fp-mobile-wrap {
+    left: 24px;
+    right: 24px;
+    bottom: calc(var(--bottom-nav-h) + 20px);
+  }
+}
+@media (min-width: 1024px) {
   .fp {
     top: calc(var(--nav-h) + 56px);
   }
