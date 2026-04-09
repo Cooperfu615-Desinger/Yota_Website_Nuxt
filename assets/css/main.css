@@ -781,27 +781,26 @@ body::before {
 /* ── 懸浮固定側邊面板 ── */
 .fp {
   position: fixed;
-  top: calc(var(--nav-h) + 32px); /* header + marquee */
+  top: calc(var(--nav-h) + 48px);
   z-index: 200;
   width: 150px;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, #1C0A3A 0%, #12062A 100%);
+  background: linear-gradient(180deg, rgba(28,10,58,0.96) 0%, rgba(18,6,42,0.96) 100%);
   border: 1px solid var(--color-border);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.38);
   overflow: hidden;
 }
 .fp-left {
-  left: 0;
-  border-left: none;
-  border-radius: 0 0 14px 0;
-  box-shadow: 4px 4px 24px rgba(107,33,168,0.35);
+  left: 20px;
+  box-shadow: 0 18px 36px rgba(107,33,168,0.24);
 }
 .fp-right {
-  right: 0;
-  border-right: none;
-  border-radius: 0 0 0 14px;
-  box-shadow: -4px 4px 24px rgba(245,200,66,0.25);
+  right: 20px;
+  box-shadow: 0 18px 36px rgba(245,200,66,0.18);
 }
 
 /* 裝飾標題區 */
@@ -810,7 +809,7 @@ body::before {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 14px 8px 12px;
+  padding: 12px 8px 10px;
   position: relative;
 }
 .fp-deco-play {
@@ -822,25 +821,25 @@ body::before {
   border-bottom: 1px solid rgba(245,200,66,0.5);
 }
 .fp-deco-icon {
-  width: 52px;
-  height: 52px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: rgba(255,255,255,0.15);
   border: 2px solid rgba(255,255,255,0.3);
-  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.22);
 }
 .fp-deco-play .fp-deco-icon { background: rgba(245,200,66,0.2); border-color: rgba(245,200,66,0.5); }
 .fp-deco-deposit .fp-deco-icon { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.4); }
-.fp-deco-icon svg { width: 28px; height: 28px; color: #fff; }
+.fp-deco-icon svg { width: 24px; height: 24px; color: #fff; }
 .fp-deco-title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 900;
   color: #fff;
   letter-spacing: 0.08em;
-  text-shadow: 0 0 12px rgba(255,255,255,0.5);
+  text-shadow: 0 0 10px rgba(255,255,255,0.35);
 }
 .fp-deco-play .fp-deco-title { color: var(--color-gold); text-shadow: 0 0 16px rgba(245,200,66,0.8); }
 
@@ -850,7 +849,7 @@ body::before {
   flex-direction: column;
   align-items: stretch;
   gap: 8px;
-  padding: 12px 10px 14px;
+  padding: 12px 12px 14px;
 }
 
 .fp-desc {
@@ -1036,5 +1035,14 @@ body::before {
     border-radius: 20px;
     margin: 20px;
     max-width: 420px;
+  }
+  .fp {
+    top: calc(var(--nav-h) + 56px);
+  }
+  .fp-left {
+    left: 24px;
+  }
+  .fp-right {
+    right: 24px;
   }
 }
