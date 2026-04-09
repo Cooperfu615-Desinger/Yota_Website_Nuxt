@@ -1,3 +1,8 @@
+<script setup lang="ts">
+const { initFromStorage } = useAppState()
+onMounted(() => { initFromStorage() })
+</script>
+
 <template>
   <div>
     <AppHeader />
@@ -9,6 +14,7 @@
     <AppFooter />
     <AppBottomNav />
     <ClientOnly>
+      <FloatingPanels />
       <LoginModal />
       <LobbyModal />
     </ClientOnly>
