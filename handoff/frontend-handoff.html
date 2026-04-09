@@ -161,6 +161,7 @@ handoff/                   交接文件</pre>
     <ul>
       <li>Banner 已改成純圖片輪播，內文與 CTA 已移除</li>
       <li>Banner 資料格式支援 <code>imageSrc</code>、<code>mobileImageSrc</code>、<code>imageAlt</code>、<code>targetUrl</code></li>
+      <li><code>siteContent.games</code> 為首頁與教學頁共用資料來源</li>
       <li>桌機右側懸浮卡：未登入顯示 <code>立即玩 + 登入/註冊</code>，已登入顯示 <code>玩家資訊 + 立即玩</code></li>
       <li>手機右側懸浮按鈕固定為紫色 <code>立即玩</code></li>
       <li>手機登入後，Header 右上會顯示會員資訊列</li>
@@ -177,7 +178,7 @@ handoff/                   交接文件</pre>
 
     <h2>互動與狀態</h2>
     <ul>
-      <li><code>useAppState.ts</code>：登入 modal、大廳 modal、會員狀態</li>
+      <li><code>useAppState.ts</code>：登入 modal、大廳 modal、會員狀態，並透過 localStorage 保存 <code>jh_isLoggedIn</code> / <code>jh_userInfo</code></li>
       <li><code>useBannerSlider.ts</code>：Banner 自動輪播、前後切換、手機觸控滑動</li>
       <li><code>useLeaderboardTimer.ts</code>：排行榜更新時間</li>
     </ul>
@@ -186,10 +187,28 @@ handoff/                   交接文件</pre>
     <ul>
       <li><code>AppHeader.vue</code>：導覽、Logo、手機登入後會員資訊列</li>
       <li><code>AppBottomNav.vue</code>：手機底部導覽</li>
-      <li><code>AppFooter.vue</code>：Footer 與手機 APP 下載區</li>
+      <li><code>AppFooter.vue</code>：Footer 與手機 APP 下載區，桌機 / 手機結構不同</li>
       <li><code>BannerSlider.vue</code>：純圖片 Banner 輪播</li>
       <li><code>FloatingPanels.vue</code>：左右懸浮介面與手機精簡按鈕</li>
       <li><code>LoginModal.vue</code>、<code>LobbyModal.vue</code>：登入與大廳 modal</li>
+    </ul>
+
+    <h2>手機與桌機互動規格補充</h2>
+    <ul>
+      <li>手機左側按鈕使用 <code>fp-mobile-btn-left</code>，已登入前往 <code>/deposit</code>，未登入先開 LoginModal</li>
+      <li>手機右側按鈕使用 <code>fp-mobile-btn-right</code>，未登入開 LoginModal，已登入開 LobbyModal</li>
+      <li>手機按鈕透過 <code>lg:hidden</code> 控制，只在手機顯示</li>
+      <li>首頁使用 <code>.content-narrow</code>（<code>max-width: 860px</code>）實現 Banner 全寬、內容縮窄</li>
+      <li>首頁內容主順序為：最新消息、熱門活動、熱門遊戲、排行榜快報</li>
+    </ul>
+
+    <h2>Footer 補充</h2>
+    <ul>
+      <li>桌機版為 4 欄 grid：品牌、連結、聯絡方式、社群</li>
+      <li>手機版為精簡結構：Logo、社群、APP 下載、法律聲明</li>
+      <li>目前社群按鈕有 LINE、Facebook、Instagram、Telegram、X 五個</li>
+      <li>社群連結目前多為 placeholder</li>
+      <li>手機版 Footer 已考量 bottom nav 高度</li>
     </ul>
 
     <h2>部署注意事項</h2>
@@ -198,6 +217,7 @@ handoff/                   交接文件</pre>
     <h2>目前較偏 mock 的部分</h2>
     <ul>
       <li>登入流程仍是前端模擬</li>
+      <li>登入狀態持久化已是真實的 localStorage 實作，只有驗證邏輯仍是 mock</li>
       <li>遊戲大廳 URL 仍是 placeholder</li>
       <li>試玩 iframe 仍是示意用途</li>
       <li>排行榜與活動資料仍為靜態資料</li>

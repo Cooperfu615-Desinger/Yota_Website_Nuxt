@@ -166,6 +166,28 @@
       <li>適合提供三種卡頭裝飾圖：儲值 / 立即玩 / 玩家資訊</li>
     </ul>
 
+    <h2>Footer 視覺規格</h2>
+    <ul>
+      <li>桌機版為 4 欄 grid：品牌、快速連結、聯絡方式、社群媒體</li>
+      <li>手機版為精簡版：Logo、社群按鈕、APP 下載、法律聲明</li>
+      <li>社群 icon 目前為 inline SVG，未來建議換成各平台官方品牌版 icon</li>
+      <li>Footer 背景沿用深色系，icon 需考慮在暗底上的辨識度</li>
+    </ul>
+
+    <h2>首頁熱門遊戲卡</h2>
+    <ul>
+      <li>首頁顯示 3 張熱門遊戲卡，教學頁顯示完整 6 張</li>
+      <li>兩者共用同一份 <code>siteContent.games</code> 資料來源</li>
+      <li>目前以色條做識別，未來若改成封面圖需同步考慮兩個頁面</li>
+    </ul>
+
+    <h2>手機懸浮按鈕</h2>
+    <ul>
+      <li>手機版為兩顆獨立精簡按鈕，不是桌機懸浮卡的縮小版</li>
+      <li>左側為 <code>立即儲</code>，右側為 <code>立即玩</code></li>
+      <li>若未來提供手機版素材，請獨立思考這套視覺規格</li>
+    </ul>
+
     <h2>建議圖檔路徑</h2>
     <pre>public/images/
 public/images/banner/
@@ -191,6 +213,8 @@ public/images/decorations/</pre>
       <li>正式 Logo 套件</li>
       <li>懸浮卡頭部裝飾圖</li>
       <li>活動主視覺圖與縮圖</li>
+      <li>Footer 社群 icon 正式品牌版</li>
+      <li>遊戲卡封面圖</li>
       <li>排行榜 rank badge 規格</li>
       <li>CTA 按鈕 hover / active 規範</li>
     </ul>

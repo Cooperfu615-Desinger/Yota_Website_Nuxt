@@ -46,6 +46,9 @@
 | 快速入口 icon | ☐ | 未開始 / 製作中 / 已交付 |  |
 | 排行榜 badge / 裝飾 | ☐ | 未開始 / 製作中 / 已交付 |  |
 | CTA 按鈕狀態圖 / 規範 | ☐ | 未開始 / 製作中 / 已交付 |  |
+| Footer 社群品牌 icon | ☐ | 未開始 / 製作中 / 已交付 |  |
+| 遊戲卡封面圖 | ☐ | 未開始 / 製作中 / 已交付 |  |
+| 手機懸浮按鈕視覺規格 | ☐ | 未開始 / 製作中 / 已交付 |  |
 | Footer APP 下載素材 | ☐ | 未開始 / 製作中 / 已交付 |  |
 | 頁面背景 / 裝飾元素 | ☐ | 未開始 / 製作中 / 已交付 |  |
 
@@ -112,6 +115,12 @@ public/images/icons/nav-deposit.svg
 | Rank 1 badge | 排行榜第一名裝飾 | `rank-badge-1.svg` | 依 UI 設計 | svg | 建議 |  |  |  |
 | Rank 2 badge | 排行榜第二名裝飾 | `rank-badge-2.svg` | 依 UI 設計 | svg | 建議 |  |  |  |
 | Rank 3 badge | 排行榜第三名裝飾 | `rank-badge-3.svg` | 依 UI 設計 | svg | 建議 |  |  |  |
+| Footer 社群 icon | LINE / Facebook / Instagram / Telegram / X | `footer-line.svg` 等 | 正方形 | svg | 建議 |  |  |  |
+| 遊戲卡封面 01 | 首頁 / 教學頁共用 | `game-cover-01.webp` | 依卡片比例 | webp | 視需求 |  |  |  |
+| 遊戲卡封面 02 | 首頁 / 教學頁共用 | `game-cover-02.webp` | 依卡片比例 | webp | 視需求 |  |  |  |
+| 遊戲卡封面 03 | 首頁 / 教學頁共用 | `game-cover-03.webp` | 依卡片比例 | webp | 視需求 |  |  |  |
+| 手機懸浮儲值按鈕規格 | `fp-mobile-btn-left` | `mobile-float-deposit-spec` | 元件規格 | figma / pdf | 視需求 |  |  |  |
+| 手機懸浮立即玩按鈕規格 | `fp-mobile-btn-right` | `mobile-float-play-spec` | 元件規格 | figma / pdf | 視需求 |  |  |  |
 | Footer APP 下載圖示 | Footer 下載入口 | `footer-app-download.svg` | 依 UI 設計 | svg / png | 視需求 |  |  |  |
 
 ---
@@ -126,6 +135,11 @@ public/images/icons/nav-deposit.svg
 - 是否提供手機圖：☐ 是 / ☐ 否
 - 是否提供 alt 文案：☐ 是 / ☐ 否
 - 是否需要點擊跳轉連結：☐ 是 / ☐ 否
+
+補充：
+
+- 若未提供 `mobileImageSrc`，前端目前會沿用桌機圖
+- 這表示不是每張 Banner 都一定要先出手機版，但若桌機圖在手機裁切後資訊會跑掉，仍建議另出 mobile 版本
 
 ### 5.2 Banner 素材表
 

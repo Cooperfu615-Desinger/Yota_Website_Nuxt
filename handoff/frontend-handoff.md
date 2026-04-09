@@ -74,11 +74,11 @@ handoff/                   交接文件
 - 首頁快速入口 `homepage.quickLinks`
 - 首頁熱門活動 `homepage.featuredEvents`
 - 首頁最新消息 `homepage.news`
+- 共用遊戲資料 `games`
 - 排行榜資料 `leaderboard.tabs`
 - 活動資料 `events`
 - FAQ 資料 `faq`
 - 會員預設資料與紀錄 `member`
-- 首頁遊戲卡資料 `games`
 
 ### 6.1 Banner 資料格式
 
@@ -99,6 +99,15 @@ Banner 現在已整理成偏後台導向的資料格式：
 
 這樣後續若要串接後台上傳，只要餵入 `desktop image / mobile image / alt / link` 即可
 
+### 6.2 共用遊戲資料
+
+`siteContent.games` 目前同時提供給：
+
+- 首頁「熱門遊戲」區
+- 教學頁「遊戲介紹」分頁
+
+接手時若要修改遊戲名稱、RTP、色條或之後補封面圖，請優先從同一份 `games` 資料來源調整，不要分別在首頁與教學頁各改一份。
+
 ## 7. 全站狀態與互動邏輯
 
 ### 7.1 `composables/useAppState.ts`
@@ -109,6 +118,19 @@ Banner 現在已整理成偏後台導向的資料格式：
 - 遊戲大廳 modal 開關
 - 會員登入狀態
 - 預設會員資料
+
+目前另外已包含 localStorage 持久化：
+
+- `login()` / `logout()` 會寫入或清除
+  - `jh_isLoggedIn`
+  - `jh_userInfo`
+- `initFromStorage()` 會在客戶端還原登入狀態
+- `layouts/default.vue` 會在 `onMounted()` 呼叫 `initFromStorage()`
+
+這表示：
+
+- 重新整理後登入狀態仍會保留
+- 目前真正 mock 的部分是「驗證流程」，不是「登入狀態持久化」
 
 ### 7.2 `composables/useBannerSlider.ts`
 
@@ -138,7 +160,7 @@ Banner 現在已整理成偏後台導向的資料格式：
 - `components/AppBottomNav.vue`
   - 手機版底部導覽
 - `components/AppFooter.vue`
-  - Footer 與手機版 APP 下載區
+  - Footer、手機版 APP 下載區、桌機 / 手機不同結構
 - `components/AppMarquee.vue`
   - 跑馬燈
 - `components/BannerSlider.vue`
@@ -182,6 +204,19 @@ Banner 現在已整理成偏後台導向的資料格式：
   - Header 右上顯示會員資訊列
   - 右側 `立即玩` 點下去直接開遊戲大廳
 
+實作補充：
+
+- 手機按鈕使用：
+  - `fp-mobile-btn-left`
+  - `fp-mobile-btn-right`
+- 透過 `lg:hidden` 控制只在手機顯示
+- 左側 `立即儲` 的點擊規則與桌機一致：
+  - 已登入前往 `/deposit`
+  - 未登入先開 `LoginModal`
+- 右側 `立即玩`：
+  - 未登入開 `LoginModal`
+  - 已登入開 `LobbyModal`
+
 ### 9.3 手機 Header
 
 目前手機登入後，Header 右上會顯示：
@@ -192,6 +227,54 @@ Banner 現在已整理成偏後台導向的資料格式：
 - 頭像
 
 並且可連到 `/member`
+
+### 9.4 Footer
+
+`AppFooter.vue` 目前分成兩套結構：
+
+- 桌機版：
+  - 4 欄 grid
+  - 品牌介紹
+  - 快速連結
+  - 聯絡方式
+  - 社群媒體
+- 手機版：
+  - 精簡版
+  - Logo
+  - 社群按鈕
+  - APP 下載
+  - 法律聲明
+
+補充：
+
+- 社群按鈕目前有 5 個：
+  - LINE
+  - Facebook
+  - Instagram
+  - Telegram
+  - X
+- 目前多為 placeholder 連結
+- 手機版 `padding-bottom` 已考量 bottom nav 高度
+
+### 9.5 首頁內容與版寬
+
+首頁目前主要內容順序為：
+
+- 最新消息
+- 熱門活動
+- 熱門遊戲
+- 排行榜快報
+
+首頁使用 `.content-narrow` 來實現：
+
+- Banner 全寬
+- 內容區縮窄
+
+`content-narrow` 目前為：
+
+- `max-width: 860px`
+
+之後若要新增首頁同風格區塊，或建立「主視覺全寬、內容單欄縮窄」的新頁面，可直接沿用這個 class。
 
 ## 10. 樣式與主題管理
 
@@ -236,6 +319,7 @@ Banner 現在已整理成偏後台導向的資料格式：
 ## 12. 目前較偏 mock 的部分
 
 - 登入流程仍是前端模擬
+- 登入狀態持久化已是真實的 localStorage 實作
 - 遊戲大廳 URL 仍是 placeholder
 - 試玩 iframe 仍是示意用途
 - 排行榜與活動資料目前是靜態資料
