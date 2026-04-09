@@ -11,20 +11,12 @@ export interface HomepageQuickLink {
 }
 
 export interface BannerSlide {
-  kind: 'lobby' | 'promo' | 'dual-link'
   ariaLabel: string
+  imageAlt: string
   background: string
-  accent: string
-  eyebrowColor?: string
-  title?: string
-  subtitle?: string
-  eyebrow?: string
-  headline?: string
-  highlight?: string
-  note?: string
-  buttonLabel?: string
-  buttonTo?: string
-  buttons?: Array<{ label: string; to: string }>
+  imageSrc?: string
+  mobileImageSrc?: string
+  targetUrl?: string
 }
 
 export interface NewsItem {
@@ -162,53 +154,24 @@ export const siteContent = {
   ],
   bannerSlides: [
     {
-      kind: 'lobby',
-      ariaLabel: '第1張，立即玩',
+      ariaLabel: '第1張，首頁主視覺 Banner',
+      imageAlt: '巨亨 ONLINE 首頁主視覺 Banner',
       background: 'linear-gradient(135deg, #1a003a 0%, #3B0764 40%, #6B21A8 100%)',
-      accent: 'linear-gradient(135deg,#F5C842,#fff,#C084FC)',
-      eyebrowColor: 'var(--color-gold)',
-      title: '巨亨\nONLINE',
-      subtitle: '全台最刺激的線上娛樂城',
-      buttonLabel: '立即玩',
     },
     {
-      kind: 'promo',
-      ariaLabel: '第2張，首儲加倍',
+      ariaLabel: '第2張，活動 Banner',
+      imageAlt: '巨亨 ONLINE 活動宣傳 Banner',
       background: 'linear-gradient(135deg, #1a0a00 0%, #7C2D12 50%, #1a003a 100%)',
-      accent: 'linear-gradient(135deg,#F5C842,#FDE68A)',
-      eyebrowColor: 'var(--color-gold)',
-      eyebrow: '新手限定',
-      headline: '首儲最高',
-      highlight: '+100%',
-      note: '首次儲值即享雙倍點數',
-      buttonLabel: '前往儲值',
-      buttonTo: '/deposit',
     },
     {
-      kind: 'promo',
-      ariaLabel: '第3張，百萬大獎賽',
+      ariaLabel: '第3張，排行榜 Banner',
+      imageAlt: '巨亨 ONLINE 排行榜宣傳 Banner',
       background: 'linear-gradient(135deg, #0a1a00 0%, #166534 50%, #1a003a 100%)',
-      accent: 'linear-gradient(135deg,#F5C842,#4ade80)',
-      eyebrowColor: '#4ade80',
-      eyebrow: '限時活動',
-      headline: '百萬大獎賽',
-      highlight: 'NT$1,280,000',
-      note: '獎金池累積至',
-      buttonLabel: '查看活動',
-      buttonTo: '/events',
     },
     {
-      kind: 'dual-link',
-      ariaLabel: '第4張，APP下載',
+      ariaLabel: '第4張，APP Banner',
+      imageAlt: '巨亨 ONLINE APP 下載 Banner',
       background: 'linear-gradient(135deg, #1a003a 0%, #0F0020 50%, #1C0A3A 100%)',
-      accent: 'var(--color-purple-glow)',
-      eyebrowColor: 'var(--color-purple-glow)',
-      eyebrow: 'APP 下載',
-      headline: '隨時隨地，\n享受精彩娛樂',
-      buttons: [
-        { label: 'iOS 下載', to: '/tutorial' },
-        { label: 'Android 下載', to: '/tutorial' },
-      ],
     },
   ] satisfies BannerSlide[],
   homepage: {
