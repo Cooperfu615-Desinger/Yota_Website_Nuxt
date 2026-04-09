@@ -8,7 +8,6 @@
     :root {
       --bg: #0f0020;
       --panel: #1c0a3a;
-      --panel-2: #250d48;
       --purple: #7c3aed;
       --purple-light: #c084fc;
       --gold: #f5c842;
@@ -17,7 +16,6 @@
       --muted: #c4b5d5;
       --border: rgba(168, 85, 247, 0.28);
     }
-
     * { box-sizing: border-box; }
     body {
       margin: 0;
@@ -29,25 +27,21 @@
         radial-gradient(circle at bottom left, rgba(245, 200, 66, 0.08), transparent 24%),
         var(--bg);
     }
-
     .wrap {
       max-width: 1080px;
       margin: 0 auto;
       padding: 40px 20px 80px;
     }
-
     .hero, .card {
       background: linear-gradient(135deg, rgba(28, 10, 58, 0.96), rgba(59, 7, 100, 0.88));
       border: 1px solid var(--border);
       border-radius: 22px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
     }
-
     .hero {
       padding: 28px;
       margin-bottom: 24px;
     }
-
     .eyebrow {
       display: inline-block;
       font-size: 12px;
@@ -56,7 +50,6 @@
       color: var(--gold);
       margin-bottom: 8px;
     }
-
     h1, h2, h3 { margin: 0 0 12px; line-height: 1.3; }
     h1 { font-size: 34px; }
     h2 {
@@ -65,7 +58,6 @@
       padding-left: 14px;
       position: relative;
     }
-
     h2::before {
       content: "";
       position: absolute;
@@ -76,25 +68,21 @@
       border-radius: 999px;
       background: linear-gradient(180deg, var(--gold), var(--purple-light));
     }
-
     h3 {
       margin-top: 24px;
       font-size: 18px;
       color: var(--gold);
     }
-
     p, li { color: var(--muted); }
     code, pre {
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
-
     code {
       color: #fde68a;
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255,255,255,0.06);
       padding: 2px 6px;
       border-radius: 6px;
     }
-
     pre {
       background: #120324;
       border: 1px solid var(--border);
@@ -103,25 +91,21 @@
       overflow: auto;
       color: #f5eaff;
     }
-
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 16px;
       margin: 20px 0;
     }
-
     .card {
       padding: 18px 20px;
     }
-
     .swatch {
       display: inline-flex;
       align-items: center;
       gap: 10px;
       margin: 6px 16px 6px 0;
     }
-
     .dot {
       width: 16px;
       height: 16px;
@@ -129,7 +113,6 @@
       border: 1px solid rgba(255,255,255,0.2);
       flex-shrink: 0;
     }
-
     .footer {
       margin-top: 48px;
       color: rgba(243, 232, 255, 0.56);
@@ -142,86 +125,78 @@
     <section class="hero">
       <div class="eyebrow">ART HANDOFF</div>
       <h1>巨亨 ONLINE 美術交接文件</h1>
-      <p>這份文件提供給美術、視覺設計與素材協作使用，目標是讓接手的人知道哪些區塊是 CSS 做出來的、哪些地方適合替換圖檔，以及配色與素材建議該怎麼給前端。</p>
+      <p>更新日期：2026-04-09。這份文件以目前版本為準，重點補上 Banner 純圖片化、懸浮卡頭部裝飾圖與手機 / 桌機的視覺分工。</p>
     </section>
 
     <div class="grid">
       <section class="card">
-        <h3>視覺方向</h3>
-        <p>目前網站以深紫底、金色 CTA、紫色霓虹感為主，偏娛樂城 / 線上遊戲官網氛圍。</p>
+        <h3>Banner 現況</h3>
+        <p>Banner 已改成純圖片輪播，不再需要 Banner 內文與 CTA 設計。</p>
       </section>
       <section class="card">
-        <h3>重要觀念</h3>
-        <p>很多看起來像圖的區塊其實是 CSS。改版前先判斷是要換圖檔，還是只要改色票、gradient 與按鈕樣式。</p>
+        <h3>懸浮介面</h3>
+        <p>懸浮卡上方已預留可替換背景圖，前端保留 icon 與標題文字。</p>
+      </section>
+      <section class="card">
+        <h3>CTA 邏輯</h3>
+        <p><code>立即儲</code> 維持金色系，<code>立即玩</code> 已統一為紫色系。</p>
       </section>
     </div>
 
-    <h2>最常需要調整的區塊</h2>
+    <h2>目前適合直接換圖的區塊</h2>
     <ul>
-      <li><code>components/AppHeader.vue</code>：Logo、標題文字、左上角色塊</li>
-      <li><code>components/BannerSlider.vue</code>：首頁 Banner 背景、標題、說明、按鈕</li>
-      <li><code>pages/index.vue</code>：快速入口、排行榜快報、熱門活動</li>
-      <li><code>pages/events.vue</code>：活動卡與活動視覺</li>
-      <li><code>pages/support.vue</code>、<code>pages/member.vue</code>：資訊卡片與分區樣式</li>
+      <li><code>components/BannerSlider.vue</code>：首頁 Banner，已純圖片化</li>
+      <li><code>components/FloatingPanels.vue</code>：懸浮卡頂部裝飾區</li>
+      <li><code>pages/events.vue</code>：活動主視覺與縮圖</li>
     </ul>
 
+    <h2>Banner 規格</h2>
+    <ul>
+      <li>比例：<code>16:7</code></li>
+      <li>建議桌機尺寸：<code>1600 x 700</code></li>
+      <li>建議另提供手機版裁切圖</li>
+      <li>目前已不需要 Banner 內文與 CTA 分層</li>
+    </ul>
+
+    <h2>懸浮介面規格</h2>
+    <ul>
+      <li>左側：<code>立即儲</code></li>
+      <li>右側：<code>立即玩 / 玩家資訊</code></li>
+      <li>手機登入後，會員資訊顯示在 Header 右上，不在懸浮按鈕裡</li>
+      <li>適合提供三種卡頭裝飾圖：儲值 / 立即玩 / 玩家資訊</li>
+    </ul>
+
+    <h2>建議圖檔路徑</h2>
+    <pre>public/images/
+public/images/banner/
+public/images/logo/
+public/images/events/
+public/images/icons/
+public/images/floating/
+public/images/decorations/</pre>
+
     <h2>配色總表</h2>
-    <p>色票集中在 <code>assets/css/main.css</code>：</p>
+    <p>主要色票集中在 <code>assets/css/main.css</code>：</p>
     <div class="swatch"><span class="dot" style="background:#0F0020"></span><code>--color-bg #0F0020</code></div>
     <div class="swatch"><span class="dot" style="background:#1C0A3A"></span><code>--color-bg-card #1C0A3A</code></div>
     <div class="swatch"><span class="dot" style="background:#250D48"></span><code>--color-bg-card2 #250D48</code></div>
     <div class="swatch"><span class="dot" style="background:#7C3AED"></span><code>--color-purple-mid #7C3AED</code></div>
     <div class="swatch"><span class="dot" style="background:#C084FC"></span><code>--color-purple-glow #C084FC</code></div>
     <div class="swatch"><span class="dot" style="background:#F5C842"></span><code>--color-gold #F5C842</code></div>
-    <div class="swatch"><span class="dot" style="background:#FDE68A"></span><code>--color-gold-light #FDE68A</code></div>
     <div class="swatch"><span class="dot" style="background:#D97706"></span><code>--color-gold-dark #D97706</code></div>
 
-    <h2>圖檔提供建議</h2>
-    <pre>public/images/
-public/images/banner/
-public/images/logo/
-public/images/events/
-public/images/icons/</pre>
-
+    <h2>建議優先補的素材</h2>
     <ul>
-      <li>Banner 主視覺建議桌機與手機各一版</li>
-      <li>Logo 優先使用 SVG</li>
-      <li>活動主圖與縮圖建議使用 webp</li>
-      <li>icon 以 SVG 優先</li>
-      <li>檔名使用英文小寫與 <code>-</code>，避免中文與空白</li>
-    </ul>
-
-    <h2>建議比例</h2>
-    <ul>
-      <li>Banner 主視覺：16:7 或接近比例</li>
-      <li>活動卡：16:9</li>
-      <li>小圖示：正方形</li>
-    </ul>
-
-    <h2>前後端分工建議</h2>
-    <ul>
-      <li>美術提供：色票、主視覺圖、活動圖、Logo、icon、卡片背景圖、按鈕狀態規範</li>
-      <li>前端負責：掛圖、裁切、響應式、路徑處理、互動狀態與整合</li>
-    </ul>
-
-    <h2>目前較偏示意的部分</h2>
-    <ul>
-      <li>Banner 多數仍是 CSS 視覺</li>
-      <li>活動卡目前偏資料驅動色塊</li>
-      <li>FAQ / 會員 / 教學頁仍偏資訊卡片風格</li>
-    </ul>
-
-    <h2>建議未來優先補的素材</h2>
-    <ul>
-      <li>正式 Logo 套件</li>
       <li>Banner 桌機 / 手機雙版本</li>
+      <li>正式 Logo 套件</li>
+      <li>懸浮卡頭部裝飾圖</li>
       <li>活動主視覺圖與縮圖</li>
       <li>排行榜 rank badge 規格</li>
-      <li>CTA 按鈕 hover / active 狀態規範</li>
+      <li>CTA 按鈕 hover / active 規範</li>
     </ul>
 
     <div class="footer">
-      快速原則：想換整站風格先看 <code>assets/css/main.css</code>；想換 Banner 或活動視覺，請同步看 <code>components/BannerSlider.vue</code> 與 <code>data/siteContent.ts</code>。
+      快速原則：換 Banner 看 <code>components/BannerSlider.vue</code>；換懸浮介面視覺看 <code>components/FloatingPanels.vue</code>；換整站風格看 <code>assets/css/main.css</code>。
     </div>
   </div>
 </body>

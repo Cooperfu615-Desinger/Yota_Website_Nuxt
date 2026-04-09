@@ -1,33 +1,79 @@
 # 巨亨 ONLINE 美術交接文件
 
-更新日期：2026-04-06
+更新日期：2026-04-09
 
-這份文件提供給美術、視覺設計與素材協作使用，目標是讓接手的人可以快速知道這個網站目前哪些區塊是 CSS 做出來的、哪些地方適合替換圖檔、配色與按鈕應該從哪裡調整，以及提供素材時前端最需要的規格。
+這份文件提供給美術、視覺設計與素材協作使用，目標是讓接手的人可以快速知道目前網站哪些區塊是 CSS 做出來的、哪些區塊已經適合直接換圖、Banner 和懸浮介面的素材該怎麼提供，以及目前的主要配色和規格。
 
 ## 1. 專案視覺方向
 
 - 網站類型：遊戲官網 / 活動導流頁
-- 目前主視覺風格：深紫底、金色 CTA、紫色霓虹感、偏娛樂城 / 線上遊戲官網氛圍
-- 視覺呈現方式：大量使用 CSS 漸層、色塊、光暈、描邊與文字版型，不是大量圖片直出
+- 目前主視覺風格：深紫底、金色儲值 CTA、紫色遊戲 CTA、霓虹感娛樂城風格
+- 視覺組成：CSS 漸層、光暈、描邊、文字版型與少量可替換圖像混合
 
-## 2. 先理解一件重要的事
+## 2. 目前哪些區塊已適合直接換圖
+
+### 2.1 Banner
+
+位置：
+
+- `components/BannerSlider.vue`
+- `data/siteContent.ts > bannerSlides`
+
+目前狀態：
+
+- 已改成純圖片輪播
+- 已移除 Banner 內文案與按鈕
+- 若沒有圖，才會退回到漸層背景 fallback
+
+這代表：
+
+- 之後 Banner 主要就是換圖檔
+- 很適合由後台上傳桌機圖 / 手機圖
+- 美術不用再配合前端做 Banner 內文分層
+
+### 2.2 懸浮介面頂部裝飾區
+
+位置：
+
+- `components/FloatingPanels.vue`
+- `assets/css/main.css`
+
+目前狀態：
+
+- 懸浮卡上方標題區已做成可替換背景圖容器
+- 前端保留 icon 與標題文字
+- 背景裝飾圖可由美術提供
+
+目前有三種頂部狀態：
+
+- `立即儲`
+- `立即玩`
+- `玩家資訊`
+
+建議提供：
+
+- `floating-deposit-header.webp`
+- `floating-play-header.webp`
+- `floating-member-header.webp`
+
+## 3. 先理解一件重要的事
 
 目前網站很多「看起來像圖」的地方，其實不是圖片，而是 CSS 效果，像是：
 
-- Banner 背景漸層
-- 按鈕金色立體感
+- 背景光斑
 - 卡片紫色邊框與光暈
-- 大面積底色與圓形光斑
+- 按鈕漸層與陰影
+- 大面積底色與圓形裝飾
 - 部分 icon 為 inline SVG
 
 所以如果要改版，第一步要先判斷：
 
-- 是要「換圖檔」
-- 還是只要「調色 / 改 gradient / 改按鈕樣式」
+- 是要直接換圖檔
+- 還是只要改顏色 / gradient / 邊框 / 陰影
 
-## 3. 美術最常需要處理的區塊
+## 4. 美術最常需要處理的區塊
 
-### 3.1 Header / Logo
+### 4.1 Header / Logo
 
 位置：
 
@@ -35,44 +81,58 @@
 
 目前內容：
 
-- 左上 Logo 方塊是色塊風格
-- `巨亨ONLINE` 為文字呈現
+- 左上 Logo 為前端色塊 + 文字組合
+- 手機登入後，右上會顯示會員資訊列
 
-若要改正式品牌視覺，建議提供：
+如果之後要改正式品牌視覺，建議提供：
 
 - 主 Logo：SVG
 - 深底版 Logo
-- 淺底版 Logo
-- 小尺寸 favicon / icon 版本
+- favicon / 小 icon 版
 
-### 3.2 首頁 Banner
+### 4.2 首頁 Banner
+
+目前 Banner 規格：
+
+- 比例：`16:7`
+- 目前輪播結構已純圖片化
+
+建議尺寸：
+
+- 桌機主圖：`1600 x 700`
+- 也可接受同比例尺寸，例如 `1440 x 630`
+- 手機版建議另外提供 mobile crop
+
+建議欄位：
+
+- 桌機圖
+- 手機圖
+- alt 文案
+- 連結（若有）
+
+### 4.3 懸浮介面
 
 位置：
 
-- `components/BannerSlider.vue`
-- `data/siteContent.ts > bannerSlides`
+- `components/FloatingPanels.vue`
 
-目前內容：
+目前視覺分工：
 
-- Banner 主要由 CSS gradient 與文字組成
-- 每張 Banner 的背景、標題、說明、按鈕文字都可以調整
+- 左側：`立即儲`
+- 右側：`立即玩 / 玩家資訊`
 
-若要改成圖像式主視覺，建議提供：
+互動方向：
 
-- 桌機版 Banner 主圖
-- 手機版 Banner 主圖
-- 主標題與副標是否需要保留文字層
-- CTA 按鈕的 hover / active 樣式方向
+- `立即儲` 維持金色系
+- `立即玩` 已統一改成紫色系
 
-建議不要把所有文字都直接做死在圖裡，最好保留：
+適合美術提供：
 
-- 主視覺圖
-- 文案文字層
-- CTA 按鈕層
+- 懸浮卡上方背景裝飾圖
+- 懸浮卡按鈕風格方向
+- 玩家資訊卡的背景紋理 / 裝飾
 
-這樣前端比較容易做響應式與後續改文案。
-
-### 3.3 首頁快速入口
+### 4.4 首頁快速入口
 
 位置：
 
@@ -80,73 +140,38 @@
 
 目前內容：
 
-- 儲值 / 活動 / 排行榜 / 教學 這四塊主要以 icon + 文字 + 紫色卡片呈現
+- 儲值 / 活動 / 排行榜 / 教學
+- 主要以 icon + 文字 + 紫色卡片呈現
 
-若要調整，建議提供：
+適合提供：
 
-- icon 視覺方向
-- 卡片底圖或卡片背景規範
-- hover / active 樣式
+- icon 規格
+- 卡片背景或 hover 規範
 
-### 3.4 排行榜快報
+### 4.5 排行榜 / 活動 / FAQ / 教學 / 會員頁
 
 位置：
 
 - `pages/index.vue`
 - `pages/leaderboard.vue`
-
-目前內容：
-
-- 主要是卡片、數字、字色、排名徽章與 tab 視覺
-
-建議提供：
-
-- rank 1 / 2 / 3 的視覺規範
-- tab 的 active / inactive 樣式
-- 排行榜卡片底色與邊框規範
-
-### 3.5 熱門活動 / 活動頁
-
-位置：
-
-- `pages/index.vue`
 - `pages/events.vue`
-- `data/siteContent.ts > events`
-
-目前內容：
-
-- 活動卡以色塊與漸層為主
-- 尚未大量使用正式活動主圖
-
-若未來活動頁要更像正式官網，建議提供：
-
-- 活動主視覺圖
-- 活動縮圖
-- 活動 badge / 標籤風格
-- 活動倒數 / CTA 樣式
-
-### 3.6 FAQ / 儲值 / 教學 / 會員頁
-
-位置：
-
 - `pages/support.vue`
-- `pages/deposit.vue`
 - `pages/tutorial.vue`
 - `pages/member.vue`
 
 目前內容：
 
-- 這些頁面圖像依賴度較低
-- 主要還是卡片、標題、底色與資訊分區
+- 以卡片、色塊、分區資訊為主
+- 圖像依賴度低於 Banner
 
-適合美術提供：
+適合提供：
 
-- 頁面背景方向
 - 區塊標題樣式
-- 卡片規範
-- 插圖或裝飾圖
+- rank badge
+- 活動主視覺圖與縮圖
+- 頁面背景裝飾圖
 
-## 4. 全站主要色票
+## 5. 全站主要色票
 
 色票集中在：
 
@@ -172,37 +197,29 @@
 --color-border-gold:  rgba(245,200,66,0.4);
 ```
 
-## 5. 建議的改色方式
+## 6. 目前版本的關鍵視覺規格
 
-### 5.1 整站換主題
+### 6.1 Banner
 
-請優先調整：
+- 比例：`16:7`
+- 建議桌機輸出：`1600 x 700`
+- 建議手機版另出一張裁切圖
+- 目前不需要 Banner 內文與 CTA 設計，因為前台已移除
 
-- `assets/css/main.css` 的 `:root` 色票變數
+### 6.2 懸浮介面
 
-適合情境：
+- 桌機為左右兩張懸浮卡
+- 手機為左右上方兩顆精簡按鈕
+- 手機登入後，會員資訊顯示在 Header，不是在浮動按鈕內
 
-- 品牌換色
-- 主視覺從紫金改成其他色系
-- 全站統一轉換風格
+### 6.3 APP 下載
 
-### 5.2 單一活動 / 單一區塊微調
+- 已從手機懸浮介面移到 Footer
+- 若需要改視覺，主要看 Footer 區塊而不是懸浮卡
 
-請優先調整：
+## 7. 圖檔提供建議
 
-- `data/siteContent.ts` 中對應卡片或 Banner 的 gradient 與內容
-
-適合情境：
-
-- 活動檔期換色
-- Banner 針對特定活動做視覺差異
-- 熱門活動卡片換背景色
-
-## 6. 圖檔提供建議
-
-### 6.1 放置位置
-
-建議未來素材集中在：
+### 7.1 建議路徑
 
 ```text
 public/images/
@@ -210,14 +227,14 @@ public/images/banner/
 public/images/logo/
 public/images/events/
 public/images/icons/
+public/images/floating/
+public/images/decorations/
 ```
 
-### 6.2 檔名規則
-
-建議：
+### 7.2 檔名規則
 
 - 使用英文小寫
-- 單字以 `-` 連接
+- 單字之間以 `-` 連接
 - 避免中文
 - 避免空白
 
@@ -226,25 +243,20 @@ public/images/icons/
 ```text
 public/images/banner/home-hero-01.webp
 public/images/banner/home-hero-01-mobile.webp
+public/images/floating/floating-play-header.webp
+public/images/floating/floating-deposit-header.webp
 public/images/logo/logo-main.svg
 public/images/events/event-million-race.webp
 ```
 
-### 6.3 建議格式
+### 7.3 建議格式
 
 - Logo：`svg`
 - Banner / 活動主圖：`webp`
 - 需要透明背景的素材：`png` 或 `svg`
 - icon：`svg` 優先
 
-### 6.4 建議比例
-
-- Banner 主視覺：16:7 或接近比例
-- 活動卡：16:9
-- Logo：SVG 向量優先
-- 小圖示：正方形為主
-
-## 7. 美術與前端分工建議
+## 8. 美術與前端分工建議
 
 ### 美術提供
 
@@ -252,37 +264,29 @@ public/images/events/event-million-race.webp
 - 主視覺圖
 - 活動圖
 - Logo / icon
-- 卡片背景圖
-- 按鈕樣式方向
-- hover / active 規範
+- 懸浮卡頂部裝飾圖
+- rank badge
+- 按鈕 hover / active 規範
 
 ### 前端負責
 
-- 圖檔掛載
-- 響應式裁切與位置調整
-- 路徑處理與 baseURL
-- hover / active / mobile 行為實作
-- 與現有元件整合
+- 掛圖、裁切、響應式處理
+- 路徑與 baseURL 處理
+- 手機 / 桌機版型適配
+- 互動狀態與按鈕邏輯整合
 
-## 8. 目前網站較偏示意的部分
+## 9. 建議未來優先補的素材
 
-- Banner 多數仍是 CSS 視覺，不是正式大圖版型
-- 活動卡目前偏資料驅動色塊，尚未全面圖像化
-- FAQ / 會員 / 教學頁仍偏資訊卡片風格
-
-## 9. 建議未來補齊的美術資產
-
-- 正式 Logo 套件
 - Banner 桌機 / 手機雙版本
-- 活動縮圖與主視覺圖
-- 快速入口 icon 規格
-- 排行榜 rank badge 套件
+- 正式 Logo 套件
+- 懸浮卡頭部裝飾圖
+- 活動主視覺圖與縮圖
+- 排行榜 rank badge 規格
 - CTA 按鈕狀態規範
-- 全站背景裝飾元素
 
 ## 10. 快速交接摘要
 
-- 想換整站風格：先從 `assets/css/main.css` 色票下手
-- 想換 Banner / 活動視覺：同步看 `components/BannerSlider.vue` 與 `data/siteContent.ts`
-- 想換正式圖檔：建議放 `public/images/`
-- 想讓畫面更像正式官網：優先補 Banner、活動圖、Logo、icon 與按鈕狀態規範
+- 想換 Banner：先看 `components/BannerSlider.vue` + `data/siteContent.ts`
+- 想換懸浮介面視覺：先看 `components/FloatingPanels.vue` + `assets/css/main.css`
+- 想換全站主題色：先看 `assets/css/main.css`
+- 想整理圖檔路徑：用 `public/images/...` 結構
