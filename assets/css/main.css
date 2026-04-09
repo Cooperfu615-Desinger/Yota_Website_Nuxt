@@ -875,8 +875,8 @@ body::before {
   background: linear-gradient(135deg, rgba(124,58,237,0.95) 0%, rgba(76,29,149,0.95) 100%);
 }
 .fp-mobile-btn-play {
-  background: linear-gradient(135deg, rgba(245,200,66,0.96) 0%, rgba(217,119,6,0.96) 100%);
-  color: #1a0a00;
+  background: linear-gradient(135deg, rgba(124,58,237,0.96) 0%, rgba(91,33,182,0.96) 100%);
+  color: #fff;
 }
 .fp-left {
   left: 20px;
@@ -982,6 +982,16 @@ body::before {
   white-space: nowrap;
 }
 .fp-btn-primary:hover { background: rgba(168,85,247,0.35); }
+
+.fp-btn-play {
+  background: linear-gradient(135deg, rgba(124,58,237,0.95) 0%, rgba(76,29,149,0.95) 100%);
+  border-color: rgba(168,85,247,0.35);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(124,58,237,0.28);
+}
+.fp-btn-play:hover {
+  background: linear-gradient(135deg, rgba(139,92,246,0.98) 0%, rgba(91,33,182,0.98) 100%);
+}
 
 .fp-btn-gold {
   display: flex;
