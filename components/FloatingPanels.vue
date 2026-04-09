@@ -12,72 +12,10 @@ function handleDeposit() {
 </script>
 
 <template>
-  <!-- ══ 左側：立即玩 ══ -->
+  <!-- ══ 左側：立即儲 ══ -->
   <div class="fp fp-left">
-    <!-- 裝飾圖示標題區 -->
-    <div class="fp-deco fp-deco-play">
-      <div class="fp-deco-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm14.024-.983a1.125 1.125 0 0 1 0 1.966l-5.603 3.113A1.125 1.125 0 0 1 9 15.113V8.887c0-.857.921-1.4 1.671-.983l5.603 3.113Z" clip-rule="evenodd" />
-        </svg>
-      </div>
-      <div class="fp-deco-title">立即玩</div>
-    </div>
-
-    <!-- 內容區 -->
-    <div class="fp-body">
-      <!-- 未登入 -->
-      <template v-if="!isLoggedIn">
-        <p class="fp-desc">登入後進入遊戲大廳，享受百款精彩遊戲！</p>
-        <button class="fp-btn-primary" @click="openLogin">
-          登入 / 註冊
-        </button>
-      </template>
-
-      <!-- 已登入 -->
-      <template v-else>
-        <div class="fp-section-label">我的資訊</div>
-
-        <!-- 頭像 + 帳號 -->
-        <div class="fp-avatar-row">
-          <div class="fp-avatar">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-white" aria-hidden="true">
-              <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
-            </svg>
-          </div>
-          <div class="fp-account">{{ userInfo.name }}</div>
-        </div>
-
-        <!-- 資訊列表 -->
-        <div class="fp-info-list">
-          <div class="fp-info-row">
-            <span class="fp-info-label">VIP</span>
-            <span class="fp-info-val fp-info-vip">LV {{ userInfo.vip }}</span>
-          </div>
-          <div class="fp-info-row">
-            <span class="fp-info-label">餘額</span>
-            <span class="fp-info-val fp-info-balance">${{ userInfo.balance.toLocaleString() }}</span>
-          </div>
-        </div>
-
-        <!-- 進入大廳 -->
-        <button class="fp-btn-gold" @click="openLobby()">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true">
-            <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
-          </svg>
-          開始遊戲
-        </button>
-
-        <!-- 登出 -->
-        <button class="fp-btn-logout" @click="logout">登出</button>
-      </template>
-    </div>
-  </div>
-
-  <!-- ══ 右側：立即儲 ══ -->
-  <div class="fp fp-right">
-    <!-- 裝飾圖示標題區 -->
     <div class="fp-deco fp-deco-deposit">
+      <div class="fp-deco-media" aria-hidden="true" />
       <div class="fp-deco-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M10.464 8.746c.227-.18.497-.311.786-.394v2.795a2.252 2.252 0 0 1-.786-.393c-.394-.313-.546-.681-.546-1.004 0-.323.152-.691.546-1.004ZM12.75 15.662v-2.824c.347.085.664.228.921.421.427.32.579.686.579.991 0 .305-.152.671-.579.991a2.534 2.534 0 0 1-.921.42Z" />
@@ -87,9 +25,7 @@ function handleDeposit() {
       <div class="fp-deco-title">立即儲</div>
     </div>
 
-    <!-- 內容區 -->
     <div class="fp-body">
-      <!-- 儲值按鈕 -->
       <button class="fp-btn-gold" @click="handleDeposit">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true">
           <path d="M4.5 3.75a3 3 0 0 0-3 3v.75h21v-.75a3 3 0 0 0-3-3h-15Z" />
@@ -100,7 +36,6 @@ function handleDeposit() {
 
       <div class="fp-divider">APP 下載</div>
 
-      <!-- Google Play -->
       <a href="#" class="fp-dl-btn" aria-label="Google Play 下載">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 flex-shrink-0" aria-hidden="true">
           <path d="M3.609 1.814 13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92Zm10.89 10.893-2.208 2.208-6.49-3.72 8.698 1.512Zm-2.208-2.915L20 5.765l-1.368 2.868-6.341 1.159ZM12.292 12 20 18.235l-8.109-1.46 2.208-2.208 2.193-2.567Z"/>
@@ -123,6 +58,63 @@ function handleDeposit() {
         </svg>
         APK 下載
       </a>
+    </div>
+  </div>
+
+  <!-- ══ 右側：立即玩 / 玩家資訊 ══ -->
+  <div class="fp fp-right">
+    <div
+      class="fp-deco"
+      :class="isLoggedIn ? 'fp-deco-member' : 'fp-deco-play'"
+    >
+      <div class="fp-deco-media" aria-hidden="true" />
+      <div class="fp-deco-icon">
+        <svg v-if="!isLoggedIn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm14.024-.983a1.125 1.125 0 0 1 0 1.966l-5.603 3.113A1.125 1.125 0 0 1 9 15.113V8.887c0-.857.921-1.4 1.671-.983l5.603 3.113Z" clip-rule="evenodd" />
+        </svg>
+        <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div class="fp-deco-title">{{ isLoggedIn ? '玩家資訊' : '立即玩' }}</div>
+    </div>
+
+    <div class="fp-body">
+      <template v-if="!isLoggedIn">
+        <p class="fp-desc">登入後即可快速進入遊戲大廳，立即開玩。</p>
+        <button class="fp-btn-primary" @click="openLogin">
+          登入 / 註冊
+        </button>
+      </template>
+
+      <template v-else>
+        <div class="fp-section-label">我的資訊</div>
+        <div class="fp-avatar-row">
+          <div class="fp-avatar">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-white" aria-hidden="true">
+              <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="fp-account">{{ userInfo.name }}</div>
+        </div>
+        <div class="fp-info-list">
+          <div class="fp-info-row">
+            <span class="fp-info-label">VIP</span>
+            <span class="fp-info-val fp-info-vip">LV {{ userInfo.vip }}</span>
+          </div>
+          <div class="fp-info-row">
+            <span class="fp-info-label">餘額</span>
+            <span class="fp-info-val fp-info-balance">${{ userInfo.balance.toLocaleString() }}</span>
+          </div>
+        </div>
+        <button class="fp-btn-gold" @click="openLobby()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true">
+            <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
+          </svg>
+          開始遊戲
+        </button>
+        <button class="fp-btn-logout" @click="logout">登出</button>
+      </template>
     </div>
   </div>
 </template>
