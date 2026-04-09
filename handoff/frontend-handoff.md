@@ -241,27 +241,75 @@ Banner 現在已整理成偏後台導向的資料格式：
 - 排行榜與活動資料目前是靜態資料
 - Banner 雖然已改成圖片輪播結構，但目前尚未真正串接後台圖片來源
 
-## 13. 接手建議
+## 13. SEO 現況與補強清單
 
-### 13.1 短期
+### 13.1 目前已完成
+
+- 已採用 `ssr: true` + static build，搜尋引擎可讀取預渲染 HTML
+- 各主要頁面已使用 `useSeoMeta`
+- 首頁、活動、排行榜、儲值、教學、客服、會員頁都有基本 `title` / `description`
+- 全站已設定 `lang="zh-TW"`、`charset`、`viewport`
+
+### 13.2 目前狀態
+
+- 目前 `robots` 仍為 `noindex, nofollow`
+- 代表網站尚未進入正式收錄階段
+- 現階段 SEO 屬於「基礎結構已鋪好，但尚未正式開放索引」
+
+### 13.3 上線前建議補強項目
+
+1. 調整 `robots`
+   - 將 `noindex, nofollow` 改為正式可收錄設定
+2. 補 `robots.txt`
+   - 明確告知搜尋引擎可抓取路徑與 sitemap 位置
+3. 補 `sitemap.xml`
+   - 包含首頁、活動、排行榜、儲值、教學、客服等可收錄頁
+4. 補 canonical
+   - 為每個主要頁面設定正式 canonical URL
+5. 補 Open Graph 完整欄位
+   - `og:image`
+   - `og:url`
+   - `twitter:card`
+   - `twitter:image`
+6. 規劃結構化資料
+   - 可考慮 `Organization`、`WebSite`、`BreadcrumbList`
+7. 確認 favicon / OG 圖實體檔
+   - 補到 `public/` 並確認部署後可正常讀取
+
+### 13.4 前端接手建議順序
+
+1. 等品牌文案、Banner 圖、OG 圖定稿
+2. 先補 `robots.txt`、`sitemap.xml`、canonical
+3. 再補各頁 `og:image` 與 social sharing 圖
+4. 最後再把 `robots` 開放成可收錄
+
+### 13.5 補充說明
+
+- 目前不建議在前期階段先把 SEO 全部做死
+- 因為 Banner、品牌素材、最終文案、分享圖仍可能變動
+- 現在最適合的做法是保留基礎 meta，並把正式 SEO 補強工作交接給上線前的前端階段完成
+
+## 14. 接手建議
+
+### 14.1 短期
 
 - 把 `deposit`、`tutorial` 也更完整整理進單一資料來源
 - 為 Banner 建立更明確的 `desktop/mobile/link/sort/isActive` 型別
 - 補 `lint`、`typecheck`
 
-### 13.2 中期
+### 14.2 中期
 
 - 串接正式 API
 - 將 `siteContent.ts` 拆成多個 domain 檔案
 - 建立素材與圖檔結構規範
 - 把 Banner 圖片與活動圖改成正式後台管理流程
 
-### 13.3 長期
+### 14.3 長期
 
 - 導入 CMS 或完整內容後台
 - 將 mock 互動改成真實登入 / 活動 / 排行榜資料流
 
-## 14. 快速交接摘要
+## 15. 快速交接摘要
 
 - 改內容：先看 `data/siteContent.ts`
 - 改 Banner：先看 `components/BannerSlider.vue` + `data/siteContent.ts`

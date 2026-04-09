@@ -203,6 +203,44 @@ handoff/                   交接文件</pre>
       <li>排行榜與活動資料仍為靜態資料</li>
     </ul>
 
+    <h2>SEO 現況與補強清單</h2>
+    <h3>目前已完成</h3>
+    <ul>
+      <li>已採用 <code>ssr: true</code> + static build，搜尋引擎可讀取預渲染 HTML</li>
+      <li>各主要頁面已使用 <code>useSeoMeta</code></li>
+      <li>首頁、活動、排行榜、儲值、教學、客服、會員頁都有基本 <code>title</code> / <code>description</code></li>
+      <li>全站已設定 <code>lang="zh-TW"</code>、<code>charset</code>、<code>viewport</code></li>
+    </ul>
+
+    <h3>目前狀態</h3>
+    <ul>
+      <li><code>robots</code> 仍為 <code>noindex, nofollow</code></li>
+      <li>網站尚未進入正式收錄階段</li>
+      <li>目前 SEO 屬於「基礎結構已鋪好，但尚未正式開放索引」</li>
+    </ul>
+
+    <h3>上線前建議補強項目</h3>
+    <ol>
+      <li>調整 <code>robots</code> 為正式可收錄設定</li>
+      <li>補 <code>robots.txt</code></li>
+      <li>補 <code>sitemap.xml</code></li>
+      <li>補 canonical</li>
+      <li>補完整 Open Graph 與 Twitter sharing 欄位</li>
+      <li>規劃結構化資料，例如 <code>Organization</code>、<code>WebSite</code>、<code>BreadcrumbList</code></li>
+      <li>確認 favicon / OG 圖實體檔已放入 <code>public/</code></li>
+    </ol>
+
+    <h3>前端接手建議順序</h3>
+    <ol>
+      <li>等品牌文案、Banner 圖、OG 圖定稿</li>
+      <li>先補 <code>robots.txt</code>、<code>sitemap.xml</code>、canonical</li>
+      <li>再補各頁 <code>og:image</code> 與 social sharing 圖</li>
+      <li>最後再把 <code>robots</code> 開放成可收錄</li>
+    </ol>
+
+    <h3>補充說明</h3>
+    <p>目前不建議在前期階段先把 SEO 全部做死，因為 Banner、品牌素材、最終文案、分享圖仍可能變動。現在最適合的做法是保留基礎 meta，並把正式 SEO 補強工作交接給上線前的前端階段完成。</p>
+
     <div class="footer">
       快速原則：改內容看 <code>data/siteContent.ts</code>；改 Banner 看 <code>components/BannerSlider.vue</code>；改懸浮介面看 <code>components/FloatingPanels.vue</code>；改全站視覺看 <code>assets/css/main.css</code>。
     </div>
