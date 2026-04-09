@@ -341,6 +341,8 @@ public/images/events/event-million-race.webp
 - 正式 Logo 套件
 - 懸浮卡頭部裝飾圖
 - 活動主視覺圖與縮圖
+- Footer 社群品牌 icon（LINE / Facebook / Instagram / Telegram / X）
+- 遊戲卡封面圖
 - 排行榜 rank badge 規格
 - CTA 按鈕狀態規範
 
