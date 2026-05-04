@@ -30,26 +30,29 @@ const drawerLinks = [
 <template>
   <header id="top-nav" class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 lg:px-6">
 
-    <!-- 漢堡按鈕（手機限定） -->
-    <button
-      class="lg:hidden flex-shrink-0 mr-1.5 w-9 h-9 flex items-center justify-center rounded-xl transition-all"
-      style="background:rgba(168,85,247,0.12); border:1px solid rgba(168,85,247,0.25);"
-      aria-label="開啟選單"
-      @click="openDrawer"
-    >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-      </svg>
-    </button>
+    <!-- 左側群組：漢堡 + Logo（確保永遠靠左貼齊） -->
+    <div class="flex items-center gap-2 flex-shrink-0">
+      <!-- 漢堡按鈕（手機限定） -->
+      <button
+        class="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl transition-all flex-shrink-0"
+        style="background:rgba(168,85,247,0.12); border:1px solid rgba(168,85,247,0.25);"
+        aria-label="開啟選單"
+        @click="openDrawer"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
 
-    <!-- Logo -->
-    <NuxtLink to="/" class="flex items-center gap-2 no-underline flex-shrink-0" aria-label="巨亨ONLINE 首頁">
-      <div class="w-9 h-9 rounded-xl flex items-center justify-center"
-           style="background: linear-gradient(135deg, #6B21A8, #F5C842);">
-        <span style="color:#fff; font-size:16px; font-weight:900; letter-spacing:-1px;">巨</span>
-      </div>
-      <span class="logo-text text-xl">巨亨ONLINE</span>
-    </NuxtLink>
+      <!-- Logo -->
+      <NuxtLink to="/" class="flex items-center gap-2 no-underline flex-shrink-0" aria-label="巨亨ONLINE 首頁">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center"
+             style="background: linear-gradient(135deg, #6B21A8, #F5C842);">
+          <span style="color:#fff; font-size:16px; font-weight:900; letter-spacing:-1px;">巨</span>
+        </div>
+        <span class="logo-text text-xl">巨亨ONLINE</span>
+      </NuxtLink>
+    </div>
 
     <!-- 桌面版中央導覽連結 -->
     <nav class="hidden lg:flex items-center gap-1" aria-label="主要導覽">
