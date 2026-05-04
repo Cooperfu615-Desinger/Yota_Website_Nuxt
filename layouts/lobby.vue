@@ -2,10 +2,11 @@
 const { initFromStorage } = useAppState()
 onMounted(() => { initFromStorage() })
 
-// Web館：另開新視窗（後續換成真實 WEB 版 URL）
-const webUrl = 'https://example.com/h5'
+// Web館：另開 /h5 頁面（App 風格遊戲大廳）
+const router = useRouter()
 function openWebVersion() {
-  window.open(webUrl, '_blank', 'noopener,noreferrer')
+  const resolved = router.resolve('/h5')
+  window.open(resolved.href, '_blank', 'noopener,noreferrer')
 }
 </script>
 
