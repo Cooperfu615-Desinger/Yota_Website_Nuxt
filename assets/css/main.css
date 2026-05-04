@@ -1325,13 +1325,18 @@ body::before {
 }
 
 /* ── Lobby Sidebar ── */
+:root {
+  --lobby-sidebar-icon-w: 60px;
+}
+
 .lobby-sidebar {
   width: var(--lobby-sidebar-w);
-  background: rgba(28, 10, 58, 0.8);
+  background: rgba(28, 10, 58, 0.92);
   border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  overflow: hidden;
   /* Mobile: hidden until open */
   position: fixed;
   top: var(--lobby-header-h);
@@ -1339,20 +1344,28 @@ body::before {
   bottom: 0;
   z-index: 90;
   transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  transition: transform 0.28s ease, width 0.28s ease;
 }
-.lobby-sidebar-open {
+/* Mobile open */
+.lobby-sidebar.sidebar-mobile-open {
   transform: translateX(0);
 }
+/* Desktop: always visible */
 @media (min-width: 1024px) {
   .lobby-sidebar {
     position: sticky;
     top: var(--lobby-header-h);
     height: calc(100vh - var(--lobby-header-h));
-    transform: none;
+    transform: none !important;
+    width: var(--lobby-sidebar-w);
+  }
+  /* Desktop collapsed → icon-only */
+  .lobby-sidebar.sidebar-desktop-collapsed {
+    width: var(--lobby-sidebar-icon-w);
   }
 }
 
+/* Overlay (mobile only) */
 .lobby-sidebar-overlay {
   position: fixed;
   inset: 0;
@@ -1361,34 +1374,20 @@ body::before {
   backdrop-filter: blur(2px);
 }
 
-.lobby-sidebar-close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  border: none;
-  background: rgba(168,85,247,0.1);
-  color: var(--color-text-muted);
-  cursor: pointer;
-  margin: 12px 12px 0 auto;
-  transition: background 0.2s;
-}
-.lobby-sidebar-close:hover {
-  background: rgba(168,85,247,0.2);
-  color: var(--color-text);
-}
-
+/* Nav container */
 .lobby-nav {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 12px 8px;
+  padding: 10px 8px;
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
 }
+.lobby-nav::-webkit-scrollbar { display: none; }
 
+/* Nav item */
 .lobby-nav-item {
   display: flex;
   align-items: center;
@@ -1404,10 +1403,10 @@ body::before {
   cursor: pointer;
   width: 100%;
   text-align: left;
+  white-space: nowrap;
   transition: background 0.2s, color 0.2s;
 }
-.lobby-nav-item:hover,
-.lobby-nav-active {
+.lobby-nav-item:hover {
   background: rgba(168,85,247,0.15);
   color: var(--color-text);
 }
@@ -1417,21 +1416,49 @@ body::before {
   border-left: 3px solid var(--color-purple-light);
 }
 
+/* Icon + Label */
 .lobby-nav-icon {
-  font-size: 16px;
+  font-size: 17px;
   flex-shrink: 0;
+  width: 22px;
+  text-align: center;
 }
 .lobby-nav-label {
   flex: 1;
-}
-.lobby-nav-site {
-  color: var(--color-text-muted);
-  font-size: 13px;
+  transition: opacity 0.2s;
 }
 
+/* Divider between sections */
+.lobby-nav-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 8px 12px;
+  flex-shrink: 0;
+}
+
+/* Sidebar footer */
 .lobby-sidebar-footer {
   padding: 8px 8px 16px;
   border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+.lobby-nav-site {
+  font-size: 13px;
+}
+
+/* Collapsed: icon-only (desktop) */
+@media (min-width: 1024px) {
+  .sidebar-desktop-collapsed .lobby-nav-item {
+    justify-content: center;
+    padding: 10px 0;
+    border-left: none !important;
+  }
+  .sidebar-desktop-collapsed .lobby-nav-active {
+    border-left: none !important;
+    border-bottom: 2px solid var(--color-purple-light);
+  }
+  .sidebar-desktop-collapsed .lobby-nav-label { display: none; }
+  .sidebar-desktop-collapsed .lobby-nav-divider { margin: 8px 10px; }
 }
 
 /* ── Lobby Main ── */
@@ -1463,8 +1490,19 @@ body::before {
   color: var(--color-text-muted);
 }
 
-/* ── Back to Site Button ── */
-.lobby-back-btn {
+/* ── Lobby Mini Footer ── */
+.lobby-footer {
+  text-align: center;
+  padding: 12px 16px;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border);
+  background: rgba(28, 10, 58, 0.6);
+  flex-shrink: 0;
+}
+
+/* ── Web館 浮動按鈕 ── */
+.lobby-web-btn {
   position: fixed;
   bottom: 24px;
   right: 24px;
@@ -1472,21 +1510,22 @@ body::before {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
+  padding: 9px 16px;
   border-radius: 20px;
   font-size: 13px;
   font-weight: 700;
-  text-decoration: none;
-  background: rgba(28, 10, 58, 0.9);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-muted);
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--color-purple-mid), var(--color-purple));
+  border: 1px solid rgba(168,85,247,0.4);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(124,58,237,0.4);
   backdrop-filter: blur(8px);
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
 }
-.lobby-back-btn:hover {
-  background: rgba(168,85,247,0.15);
-  color: var(--color-text);
-  border-color: var(--color-purple-light);
+.lobby-web-btn:hover {
+  opacity: 0.92;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(124,58,237,0.55);
 }
 
 /* ── Game Categories ── */
