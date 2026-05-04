@@ -35,6 +35,14 @@ function handlePlay(key: string, mode: 'real' | 'demo') {
 function closeGame() {
   currentGameKey.value = null
 }
+
+function switchMode(mode: 'real' | 'demo') {
+  if (mode === 'real' && !isLoggedIn.value) {
+    openLogin()
+    return
+  }
+  currentGameMode.value = mode
+}
 </script>
 
 <template>
@@ -45,6 +53,7 @@ function closeGame() {
       :game-key="currentGameKey"
       :mode="currentGameMode"
       @close="closeGame"
+      @switch-mode="switchMode"
     />
 
     <!-- 遊戲大廳 -->

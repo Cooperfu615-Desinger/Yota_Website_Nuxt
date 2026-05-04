@@ -1738,86 +1738,259 @@ body::before {
   color: var(--color-purple-light);
 }
 
-/* ── Game View ── */
-.game-view {
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh - var(--lobby-header-h));
-  background: #000;
+/* ── Game View (Stake-style) ── */
+.gv-wrap {
+  width: 100%;
+  background: var(--color-bg);
 }
 
-.game-view-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px;
-  background: rgba(28, 10, 58, 0.95);
-  border-bottom: 1px solid var(--color-border);
-  flex-shrink: 0;
+/* 返回列 */
+.gv-back-row {
+  padding: 10px 16px 6px;
 }
-.game-view-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.game-view-name {
-  font-size: 15px;
-  font-weight: 700;
-}
-.game-view-mode {
-  padding: 3px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 700;
-}
-.mode-real {
-  background: rgba(245,200,66,0.2);
-  color: var(--color-gold);
-  border: 1px solid rgba(245,200,66,0.4);
-}
-.mode-demo {
-  background: rgba(168,85,247,0.2);
-  color: var(--color-purple-light);
-  border: 1px solid var(--color-border);
-}
-.game-view-close {
-  display: flex;
+.gv-back-btn {
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 14px;
-  border-radius: 20px;
   font-size: 13px;
   font-weight: 700;
-  background: rgba(168,85,247,0.1);
-  border: 1px solid var(--color-border);
   color: var(--color-text-muted);
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: color 0.2s;
 }
-.game-view-close:hover {
-  background: rgba(239,68,68,0.15);
-  color: #f87171;
-  border-color: rgba(239,68,68,0.3);
-}
+.gv-back-btn:hover { color: var(--color-purple-light); }
 
-.game-view-frame {
-  flex: 1;
-  min-height: 0;
+/* iframe 外框：固定 16:9 比例 */
+.gv-frame-outer {
   position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  overflow: hidden;
 }
-.game-iframe {
+.gv-iframe {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   border: none;
 }
-.game-frame-loading {
+
+/* 載入動畫 */
+.gv-loading {
   position: absolute;
   inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 14px;
   color: var(--color-text-muted);
   font-size: 14px;
+}
+.gv-loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(168,85,247,0.2);
+  border-top-color: var(--color-purple-light);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 控制列 */
+.gv-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: rgba(20,8,46,0.95);
+  border-bottom: 1px solid rgba(168,85,247,0.15);
+}
+.gv-ctrl-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.gv-ctrl-icon:hover {
+  background: rgba(168,85,247,0.15);
+  color: var(--color-purple-light);
+}
+.gv-brand {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  background: linear-gradient(90deg, var(--color-purple-light), var(--color-gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.gv-mode-tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(168,85,247,0.1);
+  border: 1px solid rgba(168,85,247,0.2);
+  border-radius: 20px;
+  padding: 3px;
+}
+.gv-mode-btn {
+  padding: 5px 14px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.gv-mode-btn.gv-mode-active {
+  background: linear-gradient(135deg, var(--color-purple-mid), var(--color-purple));
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(124,58,237,0.4);
+}
+
+/* 遊戲資訊區 */
+.gv-info {
+  padding: 20px 16px 32px;
+  max-width: 860px;
+}
+
+/* 供應商列 */
+.gv-provider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.gv-provider-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(168,85,247,0.2);
+  border: 1px solid rgba(168,85,247,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--color-purple-light);
+  flex-shrink: 0;
+}
+.gv-provider-name {
+  font-size: 15px;
+  font-weight: 700;
+}
+.gv-provider-status {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+.gv-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  margin-right: 5px;
+  box-shadow: 0 0 6px rgba(74,222,128,0.6);
+}
+
+/* 遊戲名稱 */
+.gv-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.gv-game-title {
+  font-size: 22px;
+  font-weight: 900;
+}
+.gv-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: rgba(245,200,66,0.2);
+  color: var(--color-gold);
+  border: 1px solid rgba(245,200,66,0.35);
+}
+
+/* 標籤 */
+.gv-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.gv-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(168,85,247,0.1);
+  border: 1px solid rgba(168,85,247,0.2);
+  color: var(--color-text-muted);
+}
+.gv-tag-rtp {
+  background: rgba(245,200,66,0.1);
+  border-color: rgba(245,200,66,0.25);
+  color: var(--color-gold);
+}
+
+/* 分隔線 */
+.gv-divider {
+  height: 1px;
+  background: rgba(168,85,247,0.12);
+  margin-bottom: 20px;
+}
+
+/* 描述 */
+.gv-desc-section {
+  margin-bottom: 24px;
+}
+.gv-desc-title {
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: var(--color-gold);
+}
+.gv-desc-text {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--color-text-muted);
+}
+
+/* 規格表 */
+.gv-spec-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (min-width: 640px) {
+  .gv-spec-grid { grid-template-columns: repeat(4, 1fr); }
+}
+.gv-spec-item {
+  background: rgba(168,85,247,0.07);
+  border: 1px solid rgba(168,85,247,0.15);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.gv-spec-label {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-bottom: 5px;
+}
+.gv-spec-value {
+  font-size: 13px;
+  font-weight: 700;
 }
