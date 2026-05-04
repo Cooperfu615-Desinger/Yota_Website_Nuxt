@@ -32,7 +32,7 @@ const drawerLinks = [
 
     <!-- 漢堡按鈕（手機限定） -->
     <button
-      class="lg:hidden flex-shrink-0 mr-3 w-9 h-9 flex items-center justify-center rounded-xl transition-all"
+      class="lg:hidden flex-shrink-0 mr-1.5 w-9 h-9 flex items-center justify-center rounded-xl transition-all"
       style="background:rgba(168,85,247,0.12); border:1px solid rgba(168,85,247,0.25);"
       aria-label="開啟選單"
       @click="openDrawer"
