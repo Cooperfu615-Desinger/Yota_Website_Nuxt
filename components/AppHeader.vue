@@ -100,7 +100,7 @@ const drawerLinks = [
       <Transition name="drawer-overlay">
         <div
           v-if="drawerOpen"
-          class="fixed inset-0 z-[200]"
+          class="fixed inset-0 z-[300]"
           style="background:rgba(0,0,0,0.55);"
           aria-hidden="true"
           @click="closeDrawer"
@@ -110,7 +110,7 @@ const drawerLinks = [
       <Transition name="drawer-slide">
         <nav
           v-if="drawerOpen"
-          class="fixed top-0 left-0 bottom-0 z-[201] flex flex-col"
+          class="fixed top-0 left-0 bottom-0 z-[301] flex flex-col"
           style="width:260px; background:linear-gradient(180deg,#1a003e 0%,#0f0020 100%); border-right:1px solid rgba(168,85,247,0.2); box-shadow:4px 0 32px rgba(0,0,0,0.5);"
           aria-label="手機導覽選單"
         >
