@@ -1,6 +1,14 @@
 <script setup lang="ts">
-const { isLoggedIn, userInfo, openLogin, openLobby, logout } = useAppState()
+const { isLoggedIn, userInfo, openLogin, logout } = useAppState()
 const router = useRouter()
+
+function handlePlay() {
+  if (isLoggedIn.value) {
+    router.push('/lobby')
+  } else {
+    openLogin()
+  }
+}
 
 function handleDeposit() {
   if (isLoggedIn.value) {
@@ -23,7 +31,7 @@ function handleDeposit() {
     </div>
   </button>
 
-  <button class="fp-mobile-btn fp-mobile-btn-right lg:hidden" @click="isLoggedIn ? openLobby() : openLogin()">
+  <button class="fp-mobile-btn fp-mobile-btn-right lg:hidden" @click="handlePlay">
     <div class="fp-mobile-btn-inner fp-mobile-btn-play">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true">
         <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
@@ -127,7 +135,7 @@ function handleDeposit() {
             <span class="fp-info-val fp-info-balance">${{ userInfo.balance.toLocaleString() }}</span>
           </div>
         </div>
-        <button class="fp-btn-primary fp-btn-play" @click="openLobby()">
+        <button class="fp-btn-primary fp-btn-play" @click="router.push('/lobby')">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true">
             <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
           </svg>

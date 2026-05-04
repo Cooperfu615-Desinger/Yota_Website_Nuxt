@@ -74,11 +74,20 @@ export interface FeaturedEventCard {
 }
 
 export interface GameItem {
+  key: string
   name: string
   desc: string
   badge: string | null
   rtp: string
   color: string
+  category: string
+  provider: string
+}
+
+export interface GameCategory {
+  key: string
+  label: string
+  icon: string
 }
 
 export interface LeaderboardTab {
@@ -192,13 +201,45 @@ export const siteContent = {
       { to: '/tutorial', status: 'APP 限定', title: '新手下載禮', subtitle: '下載 APP 即送 $50 體驗金', background: 'linear-gradient(135deg,#042f4b,#0369a1)' },
     ] satisfies FeaturedEventCard[],
   },
+  gameCategories: [
+    { key: 'all',      label: '全部',   icon: '🎮' },
+    { key: 'hot',      label: '熱門',   icon: '🔥' },
+    { key: 'slots',    label: '老虎機', icon: '🎰' },
+    { key: 'baccarat', label: '百家樂', icon: '🃏' },
+    { key: 'fish',     label: '捕魚機', icon: '🐟' },
+    { key: 'dice',     label: '骰子',   icon: '🎲' },
+    { key: 'cards',    label: '棋牌',   icon: '♠️' },
+  ] satisfies GameCategory[],
   games: [
-    { name: '水果老虎機', desc: '經典水果符號，多線賠率', badge: '熱門', rtp: '96.5%', color: '#F5C842' },
-    { name: '招財貓百家樂', desc: '亞洲最受歡迎桌遊', badge: '新上線', rtp: '98.9%', color: '#60A5FA' },
-    { name: '海洋捕魚機', desc: '射擊系遊戲，越大越賺', badge: null, rtp: '95.8%', color: '#4ade80' },
-    { name: '麻將胡了', desc: '麻將主題老虎機', badge: null, rtp: '96.2%', color: '#F87171' },
-    { name: '神龍傳奇', desc: '亞洲神話主題大獎機', badge: '熱門', rtp: '95.5%', color: '#A855F7' },
-    { name: '魚蝦蟹', desc: '傳統骰子遊戲，簡單好玩', badge: null, rtp: '97.1%', color: '#FBBF24' },
+    // ── 老虎機 ──
+    { key: 'fruit-slots',     name: '水果老虎機',   desc: '經典水果符號，多線賠率',        badge: '熱門',  rtp: '96.5%', color: '#F5C842', category: 'slots',    provider: 'JH Gaming' },
+    { key: 'dragon-legend',   name: '神龍傳奇',     desc: '亞洲神話主題大獎機',            badge: '熱門',  rtp: '95.5%', color: '#A855F7', category: 'slots',    provider: 'JH Gaming' },
+    { key: 'lucky-cat-slots', name: '招財貓老虎機', desc: '招財主題，Free Spin 加倍',      badge: '新上線', rtp: '97.2%', color: '#60A5FA', category: 'slots',    provider: 'PG Soft'   },
+    { key: 'mahjong-wins',    name: '麻將胡了',     desc: '麻將主題老虎機',                badge: null,   rtp: '96.2%', color: '#F87171', category: 'slots',    provider: 'PG Soft'   },
+    { key: 'treasure-hunt',   name: '尋寶大冒險',   desc: '冒險主題，寶藏彩蛋多多',        badge: null,   rtp: '96.8%', color: '#4ade80', category: 'slots',    provider: 'JH Gaming' },
+    { key: 'golden-phoenix',  name: '金鳳凰',       desc: '東方神話，倍率驚人',            badge: '熱門',  rtp: '96.0%', color: '#FCD34D', category: 'slots',    provider: 'JH Gaming' },
+    { key: 'zeus-thunder',    name: '宙斯雷神',     desc: '西方神話主題，免費旋轉多',      badge: null,   rtp: '95.9%', color: '#93C5FD', category: 'slots',    provider: 'PG Soft'   },
+    { key: 'candy-blast',     name: '糖果爆爆樂',   desc: '甜蜜主題，Megaways 玩法',       badge: '新上線', rtp: '97.5%', color: '#FB7185', category: 'slots',    provider: 'PG Soft'   },
+    // ── 百家樂 ──
+    { key: 'lucky-cat-baccarat', name: '招財貓百家樂', desc: '亞洲最受歡迎桌遊',          badge: '新上線', rtp: '98.9%', color: '#60A5FA', category: 'baccarat', provider: 'Evolution' },
+    { key: 'classic-baccarat',   name: '經典百家樂',   desc: '正宗六副牌，極速開牌',      badge: '熱門',  rtp: '98.9%', color: '#818CF8', category: 'baccarat', provider: 'Evolution' },
+    { key: 'speed-baccarat',     name: '極速百家樂',   desc: '快速開牌，30 秒一局',       badge: null,   rtp: '98.9%', color: '#C4B5FD', category: 'baccarat', provider: 'Evolution' },
+    { key: 'dragon-tiger',       name: '龍虎鬥',       desc: '簡單刺激，一張定輸贏',      badge: '熱門',  rtp: '96.3%', color: '#FCA5A5', category: 'baccarat', provider: 'JH Gaming' },
+    // ── 捕魚機 ──
+    { key: 'ocean-fish',     name: '海洋捕魚機', desc: '射擊系遊戲，越大越賺',            badge: null,   rtp: '95.8%', color: '#4ade80', category: 'fish',     provider: 'JH Gaming' },
+    { key: 'deep-sea',       name: '深海獵人',   desc: '深海 Boss，擊殺倍率高',           badge: '熱門',  rtp: '96.1%', color: '#22D3EE', category: 'fish',     provider: 'JH Gaming' },
+    { key: 'dragon-fish',    name: '龍宮捕魚',   desc: '神龍主題，有料必中',              badge: null,   rtp: '95.5%', color: '#38BDF8', category: 'fish',     provider: 'PG Soft'   },
+    { key: 'neon-fish',      name: '霓虹捕魚',   desc: '炫彩霓虹，特殊武器連鎖',         badge: '新上線', rtp: '96.4%', color: '#86EFAC', category: 'fish',     provider: 'PG Soft'   },
+    // ── 骰子 ──
+    { key: 'fish-shrimp-crab', name: '魚蝦蟹',    desc: '傳統骰子遊戲，簡單好玩',        badge: null,   rtp: '97.1%', color: '#FBBF24', category: 'dice',     provider: 'JH Gaming' },
+    { key: 'sic-bo',           name: '骰寶',      desc: '多種玩法，贏法多多',            badge: '熱門',  rtp: '97.0%', color: '#FDE68A', category: 'dice',     provider: 'JH Gaming' },
+    { key: 'roulette',         name: '歐式輪盤',  desc: '歐洲經典，策略玩法',            badge: null,   rtp: '97.3%', color: '#6EE7B7', category: 'dice',     provider: 'Evolution' },
+    { key: 'andar-bahar',      name: 'Andar Bahar', desc: '印度經典紙牌遊戲',           badge: '新上線', rtp: '97.1%', color: '#FCA5A5', category: 'dice',     provider: 'Evolution' },
+    // ── 棋牌 ──
+    { key: 'three-card',   name: '三公撲克',   desc: '三張牌決勝負，快速刺激',            badge: '熱門',  rtp: '96.7%', color: '#F472B6', category: 'cards',    provider: 'JH Gaming' },
+    { key: 'texas-holdem', name: '德州撲克',   desc: '最經典的撲克遊戲',                 badge: null,   rtp: '97.5%', color: '#34D399', category: 'cards',    provider: 'JH Gaming' },
+    { key: 'pai-gow',      name: '牌九',       desc: '傳統骨牌遊戲，策略深',             badge: null,   rtp: '97.2%', color: '#FCD34D', category: 'cards',    provider: 'JH Gaming' },
+    { key: 'teen-patti',   name: 'Teen Patti', desc: '南亞最夯紙牌遊戲',                badge: '新上線', rtp: '96.9%', color: '#A78BFA', category: 'cards',    provider: 'Evolution' },
   ] satisfies GameItem[],
   leaderboard: {
     tabs: [

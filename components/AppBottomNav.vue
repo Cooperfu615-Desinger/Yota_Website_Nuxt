@@ -1,8 +1,17 @@
 <script setup lang="ts">
-const { openLobby } = useAppState()
+const { isLoggedIn, openLogin } = useAppState()
+const router = useRouter()
 const route = useRoute()
 
 const isActive = (path: string) => route.path === path
+
+function handleLobby() {
+  if (isLoggedIn.value) {
+    router.push('/lobby')
+  } else {
+    openLogin()
+  }
+}
 </script>
 
 <template>
@@ -27,7 +36,7 @@ const isActive = (path: string) => route.path === path
     <button
       class="bottom-nav-center"
       aria-label="進入遊戲大廳"
-      @click="openLobby('https://example.com/h5')"
+      @click="handleLobby"
     >
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
