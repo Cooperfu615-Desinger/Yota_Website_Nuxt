@@ -12,7 +12,6 @@ onMounted(() => { initFromStorage() })
       </div>
     </main>
     <AppFooter />
-    <AppBottomNav />
     <ClientOnly>
       <FloatingPanels />
       <LoginModal />

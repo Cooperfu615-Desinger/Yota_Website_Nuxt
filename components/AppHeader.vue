@@ -10,10 +10,38 @@ const navLinks = [
   { to: '/tutorial',   label: '新手教學' },
   { to: '/support',    label: '客服中心' },
 ]
+
+// 手機漢堡抽屜
+const drawerOpen = ref(false)
+function openDrawer()  { drawerOpen.value = true }
+function closeDrawer() { drawerOpen.value = false }
+
+// 抽屜導覽（手機版，順序依需求）
+const drawerLinks = [
+  { to: '/deposit',    label: '儲值',    icon: '💰' },
+  { to: '/events',     label: '活動',    icon: '🎉' },
+  { to: '/leaderboard',label: '排行榜',  icon: '🏆' },
+  { to: '/tutorial',   label: '新手教學',icon: '📖' },
+  { to: '/support',    label: '客服中心',icon: '🎧' },
+  { to: '/',           label: '回首頁',  icon: '🏠' },
+]
 </script>
 
 <template>
   <header id="top-nav" class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 lg:px-6">
+
+    <!-- 漢堡按鈕（手機限定） -->
+    <button
+      class="lg:hidden flex-shrink-0 mr-3 w-9 h-9 flex items-center justify-center rounded-xl transition-all"
+      style="background:rgba(168,85,247,0.12); border:1px solid rgba(168,85,247,0.25);"
+      aria-label="開啟選單"
+      @click="openDrawer"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+
     <!-- Logo -->
     <NuxtLink to="/" class="flex items-center gap-2 no-underline flex-shrink-0" aria-label="巨亨ONLINE 首頁">
       <div class="w-9 h-9 rounded-xl flex items-center justify-center"
@@ -30,9 +58,7 @@ const navLinks = [
         :key="link.to"
         :to="link.to"
         class="px-4 py-2 rounded-lg text-sm font-semibold transition-all no-underline"
-        :class="route.path === link.to
-          ? 'text-white'
-          : 'hover:text-white'"
+        :class="route.path === link.to ? 'text-white' : 'hover:text-white'"
         :style="route.path === link.to
           ? 'background:rgba(124,58,237,0.3); color:var(--color-gold); border:1px solid rgba(124,58,237,0.4);'
           : 'color:var(--color-text-muted); border:1px solid transparent;'"
@@ -41,6 +67,7 @@ const navLinks = [
       </NuxtLink>
     </nav>
 
+    <!-- 右側：登入 / 用戶資訊 -->
     <template v-if="isLoggedIn">
       <NuxtLink to="/member" class="flex items-center gap-2 no-underline lg:hidden" aria-label="會員專區">
         <div class="flex flex-col items-end min-w-0">
@@ -63,4 +90,79 @@ const navLinks = [
 
     <div class="hidden lg:block w-24 flex-shrink-0" aria-hidden="true" />
   </header>
+
+  <!-- 手機抽屜（ClientOnly 避免 SSG Teleport hydration mismatch） -->
+  <ClientOnly>
+    <Teleport to="body">
+      <Transition name="drawer-overlay">
+        <div
+          v-if="drawerOpen"
+          class="fixed inset-0 z-[200]"
+          style="background:rgba(0,0,0,0.55);"
+          aria-hidden="true"
+          @click="closeDrawer"
+        />
+      </Transition>
+
+      <Transition name="drawer-slide">
+        <nav
+          v-if="drawerOpen"
+          class="fixed top-0 left-0 bottom-0 z-[201] flex flex-col"
+          style="width:260px; background:linear-gradient(180deg,#1a003e 0%,#0f0020 100%); border-right:1px solid rgba(168,85,247,0.2); box-shadow:4px 0 32px rgba(0,0,0,0.5);"
+          aria-label="手機導覽選單"
+        >
+          <!-- 抽屜頂部 Logo -->
+          <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid rgba(168,85,247,0.15);">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center"
+                   style="background:linear-gradient(135deg,#6B21A8,#F5C842);">
+                <span style="color:#fff; font-size:14px; font-weight:900;">巨</span>
+              </div>
+              <span class="font-black text-base" style="color:var(--color-text);">巨亨ONLINE</span>
+            </div>
+            <button
+              class="w-8 h-8 flex items-center justify-center rounded-lg"
+              style="background:rgba(168,85,247,0.1); color:var(--color-text-muted);"
+              aria-label="關閉選單"
+              @click="closeDrawer"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- 導覽項目 -->
+          <div class="flex-1 overflow-y-auto py-3">
+            <NuxtLink
+              v-for="link in drawerLinks"
+              :key="link.to"
+              :to="link.to"
+              class="flex items-center gap-3 px-5 py-3.5 no-underline transition-all"
+              :style="route.path === link.to
+                ? 'background:rgba(124,58,237,0.2); border-left:3px solid var(--color-purple-light); color:var(--color-purple-light);'
+                : 'color:var(--color-text-muted); border-left:3px solid transparent;'"
+              @click="closeDrawer"
+            >
+              <span class="text-xl w-7 text-center">{{ link.icon }}</span>
+              <span class="font-bold text-sm">{{ link.label }}</span>
+            </NuxtLink>
+          </div>
+
+          <!-- 底部版權 -->
+          <div class="px-5 py-4" style="border-top:1px solid rgba(168,85,247,0.12); color:var(--color-text-muted); font-size:11px;">
+            © 2024 巨亨ONLINE 版權所有
+          </div>
+        </nav>
+      </Transition>
+    </Teleport>
+  </ClientOnly>
 </template>
+
+<style scoped>
+.drawer-overlay-enter-active, .drawer-overlay-leave-active { transition: opacity 0.25s; }
+.drawer-overlay-enter-from, .drawer-overlay-leave-to { opacity: 0; }
+
+.drawer-slide-enter-active, .drawer-slide-leave-active { transition: transform 0.28s ease; }
+.drawer-slide-enter-from, .drawer-slide-leave-to { transform: translateX(-100%); }
+</style>

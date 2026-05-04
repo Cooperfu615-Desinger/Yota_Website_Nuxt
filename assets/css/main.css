@@ -1252,53 +1252,64 @@ body::before {
   gap: 10px;
 }
 
-.lobby-header-balance {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-.lobby-balance-label {
-  font-size: 10px;
-  color: var(--color-text-muted);
-}
-.lobby-balance-val {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--color-gold);
-}
-
-.lobby-header-deposit-btn {
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--color-gold-dark), var(--color-gold));
-  color: #1a0a00;
-  border: none;
-  cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
-  flex-shrink: 0;
-}
-.lobby-header-deposit-btn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-.lobby-header-avatar {
+/* 登入後使用者卡片（統一官網樣式） */
+.lobby-user-card {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  background: rgba(168,85,247,0.15);
-  border: 1px solid var(--color-border);
+  gap: 8px;
+  padding: 5px 10px 5px 8px;
+  border-radius: 22px;
+  background: rgba(168,85,247,0.12);
+  border: 1px solid rgba(168,85,247,0.25);
   cursor: pointer;
   transition: background 0.2s;
+  flex-shrink: 0;
 }
-.lobby-header-avatar:hover {
-  background: rgba(168,85,247,0.25);
+.lobby-user-card:hover {
+  background: rgba(168,85,247,0.22);
+}
+.lobby-user-vip {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--color-gold-dark), var(--color-gold));
+  color: #1a0a00;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.lobby-user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+.lobby-user-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
+}
+.lobby-user-balance {
+  font-size: 13px;
+  font-weight: 800;
+  color: #4ade80;
+  white-space: nowrap;
+}
+.lobby-user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #6B21A8, #A855F7);
+  border: 2px solid var(--color-gold);
+  color: #fff;
 }
 
 .lobby-header-login-btn {
