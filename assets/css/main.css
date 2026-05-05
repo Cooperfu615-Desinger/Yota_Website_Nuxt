@@ -813,7 +813,7 @@ body {
   z-index: 200;
   width: 150px;
   flex-direction: column;
-  border: 1px solid transparent;
+  border: 2.5px solid rgba(255,255,255,0.55);
   border-radius: 18px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -869,33 +869,19 @@ body {
 }
 .fp-left {
   left: 20px;
-  background:
-    linear-gradient(180deg,
-      rgba(255,255,255,0.05)  0%,
-      rgba(255,255,255,0.10) 50%,
-      rgba(255,255,255,0.20) 100%
-    ) padding-box,
-    linear-gradient(145deg,
-      rgba(255,255,255,0.85)  0%,
-      rgba(255,255,255,0.30) 30%,
-      rgba(255,255,255,0.30) 70%,
-      rgba(255,255,255,0.65) 100%
-    ) border-box;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.05)  0%,
+    rgba(255,255,255,0.10) 50%,
+    rgba(255,255,255,0.20) 100%
+  );
 }
 .fp-right {
   right: 20px;
-  background:
-    linear-gradient(180deg,
-      rgba(255,255,255,0.05)  0%,
-      rgba(255,255,255,0.10) 50%,
-      rgba(255,255,255,0.20) 100%
-    ) padding-box,
-    linear-gradient(145deg,
-      rgba(255,255,255,0.85)  0%,
-      rgba(255,255,255,0.30) 30%,
-      rgba(255,255,255,0.30) 70%,
-      rgba(255,255,255,0.65) 100%
-    ) border-box;
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.05)  0%,
+    rgba(255,255,255,0.10) 50%,
+    rgba(255,255,255,0.20) 100%
+  );
 }
 
 /* 裝飾標題區 */
