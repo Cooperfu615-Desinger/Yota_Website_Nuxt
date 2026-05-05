@@ -932,14 +932,14 @@ body::before {
   isolation: isolate;
 }
 .fp-deco-play {
-  --fp-deco-bg: linear-gradient(160deg, #4C1D95 0%, #7C3AED 60%, #5B21B6 100%);
+  --fp-deco-bg: none;   /* 透出 .fp-right 的統一漸層底色 */
   --fp-deco-image: none;
-  border-bottom: 1px solid rgba(168,85,247,0.5);
+  border-bottom: 1px solid rgba(168,85,247,0.35);
 }
 .fp-deco-deposit {
-  --fp-deco-bg: linear-gradient(160deg, #78350F 0%, #D97706 60%, #92400E 100%);
+  --fp-deco-bg: none;   /* 透出 .fp-left 的統一漸層底色 */
   --fp-deco-image: none;
-  border-bottom: 1px solid rgba(245,200,66,0.5);
+  border-bottom: 1px solid rgba(245,200,66,0.35);
 }
 .fp-deco-member {
   --fp-deco-bg: linear-gradient(160deg, #312E81 0%, #6D28D9 55%, #A855F7 100%);
