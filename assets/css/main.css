@@ -35,17 +35,7 @@ body {
   overflow-x: hidden;
 }
 
-/* 背景星點紋理 */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    radial-gradient(circle at 20% 20%, rgba(107,33,168,0.15) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(107,33,168,0.1) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
+/* 背景裝飾（光暈已移除，避免影響玻璃懸浮卡透色） */
 
 /* ── 主內容區留空給 header + bottom nav ── */
 .main-content {
