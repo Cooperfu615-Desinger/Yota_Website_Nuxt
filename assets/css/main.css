@@ -1156,8 +1156,8 @@ body {
   /* inset shadow 模擬左上角光澤，不依賴 background-clip */
   box-shadow:
     0 18px 40px rgba(0, 0, 0, 0.38),
-    inset 2px 2px 4px rgba(255, 255, 255, 0.28),
-    inset -2px -2px 4px rgba(255, 255, 255, 0.10);
+    inset 2px 2px 4px rgba(255, 255, 255, 0.13),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.13);
 }
 
 .fp-right {
@@ -1168,8 +1168,8 @@ body {
       rgba(255, 255, 255, 0.20) 100%);
   box-shadow:
     0 18px 40px rgba(0, 0, 0, 0.38),
-    inset 3px 3px 8px rgba(255, 255, 255, 0.28),
-    inset -1px -1px 4px rgba(255, 255, 255, 0.10);
+    inset 2px 2px 4px rgba(255, 255, 255, 0.13),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.13);
 }
 
 /* 裝飾標題區 */
