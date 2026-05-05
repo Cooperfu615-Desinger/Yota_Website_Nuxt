@@ -42,7 +42,6 @@ function handleDeposit() {
 
   <!-- ══ 左側：立即儲 ══ -->
   <div class="fp fp-left hidden lg:flex">
-    <div class="fp-inner">
     <div class="fp-deco fp-deco-deposit">
       <div class="fp-deco-media" aria-hidden="true" />
       <div class="fp-deco-icon">
@@ -88,12 +87,10 @@ function handleDeposit() {
         APK 下載
       </a>
     </div>
-    </div><!-- /.fp-inner -->
   </div>
 
   <!-- ══ 右側：立即玩 / 玩家資訊 ══ -->
   <div class="fp fp-right hidden lg:flex">
-    <div class="fp-inner">
     <div
       class="fp-deco"
       :class="isLoggedIn ? 'fp-deco-member' : 'fp-deco-play'"
@@ -147,6 +144,5 @@ function handleDeposit() {
         <button class="fp-btn-logout" @click="logout">登出</button>
       </template>
     </div>
-    </div><!-- /.fp-inner -->
   </div>
 </template>
