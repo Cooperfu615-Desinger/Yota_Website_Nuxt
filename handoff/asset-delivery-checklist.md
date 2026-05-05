@@ -1,6 +1,6 @@
 # 巨亨 ONLINE 素材交付清單模板
 
-更新日期：2026-04-09
+更新日期：2026-05-05
 
 這份模板提供給美術、前端、PM 協作使用，目標是讓每一次素材交付都有一致格式，避免發生以下問題：
 
@@ -8,6 +8,7 @@
 - 檔名不一致
 - Banner 桌機 / 手機版漏圖
 - 懸浮介面裝飾圖缺件
+- 遊戲卡封面交付不完整
 - 按鈕狀態與色票沒有一起交付
 - 前端拿到圖後還要反覆追問規格
 
@@ -37,18 +38,21 @@
 | 類別 | 是否需要 | 狀態 | 備註 |
 | --- | --- | --- | --- |
 | Logo / 品牌識別 | ☐ | 未開始 / 製作中 / 已交付 |  |
-| Header 素材 | ☐ | 未開始 / 製作中 / 已交付 |  |
+| 官網 Header 素材 | ☐ | 未開始 / 製作中 / 已交付 |  |
+| 大廳 Header 素材 | ☐ | 未開始 / 製作中 / 已交付 |  |
 | Banner 桌機版 | ☐ | 未開始 / 製作中 / 已交付 |  |
 | Banner 手機版 | ☐ | 未開始 / 製作中 / 已交付 |  |
 | 懸浮卡頂部裝飾圖 | ☐ | 未開始 / 製作中 / 已交付 |  |
+| 遊戲卡封面圖（24 款） | ☐ | 未開始 / 製作中 / 已交付 |  |
 | 活動主視覺圖 | ☐ | 未開始 / 製作中 / 已交付 |  |
 | 活動縮圖 | ☐ | 未開始 / 製作中 / 已交付 |  |
 | 快速入口 icon | ☐ | 未開始 / 製作中 / 已交付 |  |
+| 漢堡抽屜 / 側邊欄 icon | ☐ | 未開始 / 製作中 / 已交付 |  |
 | 排行榜 badge / 裝飾 | ☐ | 未開始 / 製作中 / 已交付 |  |
 | CTA 按鈕狀態圖 / 規範 | ☐ | 未開始 / 製作中 / 已交付 |  |
 | Footer 社群品牌 icon | ☐ | 未開始 / 製作中 / 已交付 |  |
-| 遊戲卡封面圖 | ☐ | 未開始 / 製作中 / 已交付 |  |
 | 手機懸浮按鈕視覺規格 | ☐ | 未開始 / 製作中 / 已交付 |  |
+| Web館預覽圖（lobby.jpeg） | ☐ | 未開始 / 製作中 / 已交付 |  |
 | Footer APP 下載素材 | ☐ | 未開始 / 製作中 / 已交付 |  |
 | 頁面背景 / 裝飾元素 | ☐ | 未開始 / 製作中 / 已交付 |  |
 
@@ -65,8 +69,12 @@ public/images/logo/
 public/images/events/
 public/images/icons/
 public/images/floating/
+public/images/games/
 public/images/decorations/
 ```
+
+特殊路徑：
+- `public/lobby.jpeg`：Web館預覽圖（固定路徑，前端直接引用）
 
 ### 3.2 命名規則
 
@@ -86,6 +94,8 @@ public/images/floating/floating-play-header.webp
 public/images/floating/floating-deposit-header.webp
 public/images/events/event-summer-campaign.webp
 public/images/icons/nav-deposit.svg
+public/images/games/fruit-slots.webp
+public/images/games/dragon-legend.webp
 ```
 
 ---
@@ -99,13 +109,14 @@ public/images/icons/nav-deposit.svg
 | Header Logo 主版 | 導覽列品牌識別 | `logo-main.svg` | SVG 向量 | svg | 必要 |  |  |  |
 | Header Logo 深底版 | 深色背景使用 | `logo-main-dark.svg` | SVG 向量 | svg | 建議 |  |  |  |
 | favicon | 瀏覽器 icon | `favicon.png` / `favicon.ico` | 32x32 / 48x48 | png / ico | 建議 |  |  |  |
-| Banner 01 桌機版 | 首頁主視覺 | `home-hero-01.webp` | 1600x700 / 16:7 | webp | 必要 |  |  |  |
-| Banner 01 手機版 | 首頁主視覺 mobile | `home-hero-01-mobile.webp` | mobile crop | webp | 建議 |  |  |  |
+| Banner 01 桌機版 | 官網首頁主視覺 | `home-hero-01.webp` | 1600x700 / 16:7 | webp | 必要 |  |  |  |
+| Banner 01 手機版 | 官網首頁主視覺 mobile | `home-hero-01-mobile.webp` | mobile crop | webp | 建議 |  |  |  |
 | Banner 02 桌機版 | 第二張 Banner | `home-hero-02.webp` | 1600x700 / 16:7 | webp | 視需求 |  |  |  |
 | Banner 02 手機版 | 第二張 Banner mobile | `home-hero-02-mobile.webp` | mobile crop | webp | 視需求 |  |  |  |
-| 懸浮卡儲值頭圖 | 左側立即儲裝飾 | `floating-deposit-header.webp` | 依卡頭比例 | webp / png | 建議 |  |  |  |
-| 懸浮卡立即玩頭圖 | 右側立即玩裝飾 | `floating-play-header.webp` | 依卡頭比例 | webp / png | 建議 |  |  |  |
-| 懸浮卡玩家資訊頭圖 | 玩家資訊裝飾 | `floating-member-header.webp` | 依卡頭比例 | webp / png | 視需求 |  |  |  |
+| 懸浮卡儲值頭圖 | 官網左側立即儲裝飾 | `floating-deposit-header.webp` | 依卡頭比例 | webp / png | 建議 |  |  |  |
+| 懸浮卡立即玩頭圖 | 官網右側立即玩裝飾 | `floating-play-header.webp` | 依卡頭比例 | webp / png | 建議 |  |  |  |
+| 懸浮卡玩家資訊頭圖 | 官網玩家資訊裝飾 | `floating-member-header.webp` | 依卡頭比例 | webp / png | 視需求 |  |  |  |
+| Web館預覽圖 | Web館按鈕目標頁 | `lobby.jpeg` | 全螢幕手機截圖 | jpeg | 必要 | ✅ 已交付 | `public/lobby.jpeg` | 直接放 public/ 根目錄 |
 | 活動主視覺圖 A | 活動卡 / 活動頁 | `event-campaign-a.webp` | 16:9 | webp | 視需求 |  |  |  |
 | 活動縮圖 A | 活動列表縮圖 | `event-campaign-a-thumb.webp` | 16:9 | webp | 建議 |  |  |  |
 | 儲值 icon | 快速入口 / 導覽 icon | `nav-deposit.svg` | 正方形 | svg | 建議 |  |  |  |
@@ -116,18 +127,49 @@ public/images/icons/nav-deposit.svg
 | Rank 2 badge | 排行榜第二名裝飾 | `rank-badge-2.svg` | 依 UI 設計 | svg | 建議 |  |  |  |
 | Rank 3 badge | 排行榜第三名裝飾 | `rank-badge-3.svg` | 依 UI 設計 | svg | 建議 |  |  |  |
 | Footer 社群 icon | LINE / Facebook / Instagram / Telegram / X | `footer-line.svg` 等 | 正方形 | svg | 建議 |  |  |  |
-| 遊戲卡封面 01 | 首頁 / 教學頁共用 | `game-cover-01.webp` | 依卡片比例 | webp | 視需求 |  |  |  |
-| 遊戲卡封面 02 | 首頁 / 教學頁共用 | `game-cover-02.webp` | 依卡片比例 | webp | 視需求 |  |  |  |
-| 遊戲卡封面 03 | 首頁 / 教學頁共用 | `game-cover-03.webp` | 依卡片比例 | webp | 視需求 |  |  |  |
 | 手機懸浮儲值按鈕規格 | `fp-mobile-btn-left` | `mobile-float-deposit-spec` | 元件規格 | figma / pdf | 視需求 |  |  |  |
 | 手機懸浮立即玩按鈕規格 | `fp-mobile-btn-right` | `mobile-float-play-spec` | 元件規格 | figma / pdf | 視需求 |  |  |  |
 | Footer APP 下載圖示 | Footer 下載入口 | `footer-app-download.svg` | 依 UI 設計 | svg / png | 視需求 |  |  |  |
 
 ---
 
-## 5. Banner 專用交付欄位
+## 5. 遊戲卡封面圖交付清單（大廳 / 官網共用）
 
-### 5.1 目前前端規格
+> 24 款遊戲目前以色條暫代，後續換圖請依 `key` 對應。
+> 建議尺寸：`3:4` 比例（如 300×400）。存放路徑：`public/images/games/{key}.webp`。
+
+| key | 遊戲名稱 | 分類 | 建議檔名 | 是否提供 | 狀態 |
+| --- | --- | --- | --- | --- | --- |
+| `fruit-slots` | 水果老虎機 | 老虎機 | `fruit-slots.webp` | ☐ |  |
+| `dragon-legend` | 神龍傳奇 | 老虎機 | `dragon-legend.webp` | ☐ |  |
+| `lucky-cat-slots` | 招財貓老虎機 | 老虎機 | `lucky-cat-slots.webp` | ☐ |  |
+| `mahjong-wins` | 麻將胡了 | 老虎機 | `mahjong-wins.webp` | ☐ |  |
+| `treasure-hunt` | 尋寶大冒險 | 老虎機 | `treasure-hunt.webp` | ☐ |  |
+| `golden-phoenix` | 金鳳凰 | 老虎機 | `golden-phoenix.webp` | ☐ |  |
+| `zeus-thunder` | 宙斯雷神 | 老虎機 | `zeus-thunder.webp` | ☐ |  |
+| `candy-blast` | 糖果爆爆樂 | 老虎機 | `candy-blast.webp` | ☐ |  |
+| `lucky-cat-baccarat` | 招財貓百家樂 | 百家樂 | `lucky-cat-baccarat.webp` | ☐ |  |
+| `classic-baccarat` | 經典百家樂 | 百家樂 | `classic-baccarat.webp` | ☐ |  |
+| `speed-baccarat` | 極速百家樂 | 百家樂 | `speed-baccarat.webp` | ☐ |  |
+| `dragon-tiger` | 龍虎鬥 | 百家樂 | `dragon-tiger.webp` | ☐ |  |
+| `ocean-fish` | 海洋捕魚機 | 捕魚機 | `ocean-fish.webp` | ☐ |  |
+| `deep-sea` | 深海獵人 | 捕魚機 | `deep-sea.webp` | ☐ |  |
+| `dragon-fish` | 龍宮捕魚 | 捕魚機 | `dragon-fish.webp` | ☐ |  |
+| `neon-fish` | 霓虹捕魚 | 捕魚機 | `neon-fish.webp` | ☐ |  |
+| `fish-shrimp-crab` | 魚蝦蟹 | 骰子 | `fish-shrimp-crab.webp` | ☐ |  |
+| `sic-bo` | 骰寶 | 骰子 | `sic-bo.webp` | ☐ |  |
+| `roulette` | 歐式輪盤 | 骰子 | `roulette.webp` | ☐ |  |
+| `andar-bahar` | Andar Bahar | 骰子 | `andar-bahar.webp` | ☐ |  |
+| `three-card` | 三公撲克 | 棋牌 | `three-card.webp` | ☐ |  |
+| `texas-holdem` | 德州撲克 | 棋牌 | `texas-holdem.webp` | ☐ |  |
+| `pai-gow` | 牌九 | 棋牌 | `pai-gow.webp` | ☐ |  |
+| `teen-patti` | Teen Patti | 棋牌 | `teen-patti.webp` | ☐ |  |
+
+---
+
+## 6. Banner 專用交付欄位
+
+### 6.1 目前前端規格
 
 目前 Banner 已改成純圖片輪播，因此請確認：
 
@@ -139,9 +181,9 @@ public/images/icons/nav-deposit.svg
 補充：
 
 - 若未提供 `mobileImageSrc`，前端目前會沿用桌機圖
-- 這表示不是每張 Banner 都一定要先出手機版，但若桌機圖在手機裁切後資訊會跑掉，仍建議另出 mobile 版本
+- 若桌機圖在手機裁切後資訊會跑掉，仍建議另出 mobile 版本
 
-### 5.2 Banner 素材表
+### 6.2 Banner 素材表
 
 | Banner 編號 | 用途 | 桌機圖檔 | 手機圖檔 | alt 文案 | 連結 | 備註 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -151,16 +193,16 @@ public/images/icons/nav-deposit.svg
 
 ---
 
-## 6. 懸浮介面專用交付欄位
+## 7. 懸浮介面專用交付欄位
 
-### 6.1 目前前端規格
+### 7.1 目前前端規格
 
-- 左側：`立即儲`
-- 右側：`立即玩 / 玩家資訊`
+- 左側：`立即儲`（金色系）
+- 右側：`立即玩 / 玩家資訊`（紫色系）
 - 前端保留 icon 與標題文字
 - 美術主要提供頂部裝飾背景圖
 
-### 6.2 懸浮介面素材表
+### 7.2 懸浮介面素材表
 
 | 區塊 | 桌機版 | 手機版是否沿用 | 檔名 | 備註 |
 | --- | --- | --- | --- | --- |
@@ -170,7 +212,25 @@ public/images/icons/nav-deposit.svg
 
 ---
 
-## 7. 按鈕與互動狀態交付
+## 8. 大廳側邊欄 Icon 交付欄位
+
+> 目前側邊欄以 emoji 暫代，後續可換成正式 SVG icon。
+
+| 功能 | 路由 | 目前 emoji | 建議檔名 | 是否提供 | 備註 |
+| --- | --- | --- | --- | --- | --- |
+| 遊戲大廳 | `/lobby` | 🎮 | `sidebar-lobby.svg` | ☐ |  |
+| 活動 | `/lobby/events` | 🎉 | `sidebar-events.svg` | ☐ |  |
+| 排行榜 | `/lobby/leaderboard` | 🏆 | `sidebar-leaderboard.svg` | ☐ |  |
+| 個人資訊 | `/lobby/member` | 👤 | `sidebar-member.svg` | ☐ |  |
+| 銀行 | `/lobby/bank` | 🏦 | `sidebar-bank.svg` | ☐ |  |
+| 信箱 | `/lobby/inbox` | 📬 | `sidebar-inbox.svg` | ☐ |  |
+| 聊天 | `/lobby/chat` | 💬 | `sidebar-chat.svg` | ☐ |  |
+| 設置 | `/lobby/settings` | ⚙️ | `sidebar-settings.svg` | ☐ |  |
+| 官網首頁 | `/` | 🌐 | `sidebar-home.svg` | ☐ |  |
+
+---
+
+## 9. 按鈕與互動狀態交付
 
 若按鈕不是沿用目前系統樣式，請一併提供：
 
@@ -180,15 +240,17 @@ public/images/icons/nav-deposit.svg
 | 儲值 CTA Hover | ☐ | 顏色 / 發光 / 位移 |  |
 | 立即玩 CTA Normal | ☐ | 紫色主按鈕規格 |  |
 | 立即玩 CTA Hover | ☐ | 顏色 / 發光 / 位移 |  |
+| Web館按鈕 Normal | ☐ | 紫色漸層 + 脈衝光暈 |  |
+| Web館按鈕 Hover | ☐ | 加強發光效果 |  |
+| 試玩模式 Tab | ☐ | 遊戲視圖控制列 Tab 規格 |  |
+| 真錢模式 Tab | ☐ | 遊戲視圖控制列 Tab 規格 |  |
 | CTA Active | ☐ | 壓下效果 / 陰影變化 |  |
 | CTA Disabled | ☐ | 不可點擊狀態 |  |
-| Tab Active | ☐ | 選中狀態 |  |
-| Tab Inactive | ☐ | 未選中狀態 |  |
 | Card Hover | ☐ | 卡片 hover 樣式 |  |
 
 ---
 
-## 8. 色票交付欄位
+## 10. 色票交付欄位
 
 若本次檔期或改版有新色票，請填寫：
 
@@ -206,31 +268,34 @@ public/images/icons/nav-deposit.svg
 
 ---
 
-## 9. 交付驗收檢查
+## 11. 交付驗收檢查
 
 ### 美術交付前自檢
 
-- ☐ 檔名符合規則
+- ☐ 檔名符合規則（英文小寫、`-` 分隔）
 - ☐ Banner 有提供桌機版與手機版
 - ☐ 有註明尺寸 / 比例
 - ☐ 有註明格式
 - ☐ 有提供 alt 文案
+- ☐ 遊戲卡封面依 `key` 命名
 - ☐ 有提供懸浮卡頭部裝飾圖
+- ☐ 有提供大廳側邊欄 icon（若本次需要）
 - ☐ 有提供按鈕狀態規格
 - ☐ 有提供對應色票
 
 ### 前端接收後確認
 
 - ☐ 檔案可正常開啟
-- ☐ 路徑已整理到 `public/images/...`
+- ☐ 路徑已整理到 `public/images/...`（lobby.jpeg 除外）
 - ☐ Banner 桌機與手機裁切合理
+- ☐ 遊戲卡封面 `key` 對應正確
 - ☐ 圖檔大小可接受
 - ☐ 與現有版型相容
 - ☐ baseURL 路徑可正常部署
 
 ---
 
-## 10. 補充欄位
+## 12. 補充欄位
 
 ### 本次不需要交付的項目
 

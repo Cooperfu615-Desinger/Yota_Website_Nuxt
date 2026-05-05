@@ -27,244 +27,232 @@
         radial-gradient(circle at bottom left, rgba(245, 200, 66, 0.08), transparent 24%),
         var(--bg);
     }
-    .wrap {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 40px 20px 80px;
-    }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 20px 80px; }
     .hero, .card {
-      background: linear-gradient(135deg, rgba(28, 10, 58, 0.96), rgba(37, 13, 72, 0.94));
+      background: linear-gradient(135deg, rgba(28,10,58,0.96), rgba(37,13,72,0.94));
       border: 1px solid var(--border);
       border-radius: 22px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
     }
-    .hero {
-      padding: 28px;
-      margin-bottom: 24px;
-    }
-    .eyebrow {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      color: var(--gold);
-      margin-bottom: 8px;
-    }
+    .hero { padding: 28px; margin-bottom: 24px; }
+    .eyebrow { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.08em; color: var(--gold); margin-bottom: 8px; }
+    .badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; background: rgba(245,200,66,0.15); border: 1px solid rgba(245,200,66,0.4); color: var(--gold); margin-left: 8px; vertical-align: middle; }
     h1, h2, h3 { margin: 0 0 12px; line-height: 1.3; }
     h1 { font-size: 34px; }
-    h2 {
-      margin-top: 36px;
-      font-size: 24px;
-      padding-left: 14px;
-      position: relative;
-    }
-    h2::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 6px;
-      width: 4px;
-      height: 22px;
-      border-radius: 999px;
-      background: linear-gradient(180deg, var(--gold), var(--purple-light));
-    }
-    h3 {
-      margin-top: 24px;
-      font-size: 18px;
-      color: var(--gold);
-    }
+    h2 { margin-top: 36px; font-size: 24px; padding-left: 14px; position: relative; }
+    h2::before { content: ""; position: absolute; left: 0; top: 6px; width: 4px; height: 22px; border-radius: 999px; background: linear-gradient(180deg, var(--gold), var(--purple-light)); }
+    h3 { margin-top: 24px; font-size: 18px; color: var(--gold); }
     p, li { color: var(--muted); }
-    code, pre {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    }
-    code {
-      color: #fde68a;
-      background: rgba(255, 255, 255, 0.06);
-      padding: 2px 6px;
-      border-radius: 6px;
-    }
-    pre {
-      background: #120324;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      overflow: auto;
-      color: #f5eaff;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
-      margin: 20px 0;
-    }
-    .card {
-      padding: 18px 20px;
-    }
-    .footer {
-      margin-top: 48px;
-      color: rgba(243, 232, 255, 0.56);
-      font-size: 14px;
-    }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code { color: #fde68a; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 6px; }
+    pre { background: #120324; border: 1px solid var(--border); border-radius: 16px; padding: 16px; overflow: auto; color: #f5eaff; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 20px 0; }
+    .card { padding: 18px 20px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+    th { background: rgba(124,58,237,0.2); color: var(--gold); font-weight: 700; padding: 10px 14px; text-align: left; border: 1px solid var(--border); }
+    td { padding: 8px 14px; border: 1px solid var(--border); color: var(--muted); vertical-align: top; }
+    tr:nth-child(even) td { background: rgba(124,58,237,0.05); }
+    .warn { background: rgba(245,200,66,0.08); border: 1px solid rgba(245,200,66,0.3); border-radius: 12px; padding: 14px 18px; margin: 16px 0; }
+    .warn strong { color: var(--gold); }
+    .footer { margin-top: 48px; color: rgba(243,232,255,0.56); font-size: 14px; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <section class="hero">
-      <div class="eyebrow">FRONTEND HANDOFF</div>
-      <h1>巨亨 ONLINE 前端交接文件</h1>
-      <p>更新日期：2026-04-09。這份文件以目前版本為準，重點包含 Banner 純圖片輪播、懸浮介面手機 / 桌機差異，以及 GitHub Actions 部署流程。</p>
+<div class="wrap">
+  <section class="hero">
+    <div class="eyebrow">FRONTEND HANDOFF</div>
+    <h1>巨亨 ONLINE 前端交接文件</h1>
+    <p>更新日期：2026-05-05。本版本新增遊戲大廳平台（<code>/lobby</code>），官網手機導覽改為漢堡抽屜，移除底部導覽列，並全面更新各元件樣式。</p>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <h3>專案定位</h3>
+      <p>Nuxt 3 SSG 靜態網站，分為官網（<code>/</code>）與遊戲大廳平台（<code>/lobby</code>）兩套獨立架構。</p>
     </section>
-
-    <div class="grid">
-      <section class="card">
-        <h3>專案定位</h3>
-        <p>Nuxt 3 官網型靜態網站，主打品牌展示、活動導流、排行榜、會員展示與客服入口。</p>
-      </section>
-      <section class="card">
-        <h3>內容中心</h3>
-        <p>主要內容集中在 <code>data/siteContent.ts</code>，樣式主題集中在 <code>assets/css/main.css</code>。</p>
-      </section>
-      <section class="card">
-        <h3>部署方式</h3>
-        <p>正式部署已改成 GitHub Actions 自動 build，不再依賴手動提交 <code>docs/</code>。</p>
-      </section>
-    </div>
-
-    <h2>技術堆疊</h2>
-    <ul>
-      <li>Nuxt 3 + Vue 3</li>
-      <li>Tailwind CSS + 自訂 <code>assets/css/main.css</code></li>
-      <li>Nuxt <code>useState</code> + composables</li>
-      <li>Google Fonts：<code>Noto Sans TC</code></li>
-      <li>Nitro static preset</li>
-    </ul>
-
-    <h2>常用指令</h2>
-    <pre>npm install
-npm run dev
-npm run build
-npm run preview</pre>
-
-    <h2>重要目錄</h2>
-    <pre>app.vue                    app 入口
-assets/css/main.css        全站主題樣式、色票、輪播、modal、懸浮介面
-components/                共用 UI 元件
-composables/               狀態與互動邏輯
-data/siteContent.ts        集中內容資料來源
-layouts/default.vue        全站 layout
-pages/                     各頁面路由
-public/                    靜態素材
-docs/                      本機 build 輸出成品
-handoff/                   交接文件</pre>
-
-    <h2>目前版本重點</h2>
-    <ul>
-      <li>Banner 已改成純圖片輪播，內文與 CTA 已移除</li>
-      <li>Banner 資料格式支援 <code>imageSrc</code>、<code>mobileImageSrc</code>、<code>imageAlt</code>、<code>targetUrl</code></li>
-      <li><code>siteContent.games</code> 為首頁與教學頁共用資料來源</li>
-      <li>首頁內容主順序為：最新消息、熱門活動、熱門遊戲、排行榜快報</li>
-      <li>桌機右側懸浮卡：未登入顯示 <code>立即玩 + 登入/註冊</code>，已登入顯示 <code>玩家資訊 + 立即玩</code></li>
-      <li>手機右側懸浮按鈕固定為紫色 <code>立即玩</code></li>
-      <li>手機登入後，Header 右上會顯示會員資訊列</li>
-      <li>手機版 APP 下載已移到 Footer</li>
-    </ul>
-
-    <h2>Banner 規格</h2>
-    <ul>
-      <li>目前比例：<code>16:7</code></li>
-      <li>建議桌機輸出尺寸：<code>1600 x 700</code></li>
-      <li>建議另提供手機版裁切圖</li>
-      <li>若沒有圖檔，前端會先用 <code>background</code> 作為 fallback</li>
-    </ul>
-
-    <h2>互動與狀態</h2>
-    <ul>
-      <li><code>useAppState.ts</code>：登入 modal、大廳 modal、會員狀態，並透過 localStorage 保存 <code>jh_isLoggedIn</code> / <code>jh_userInfo</code></li>
-      <li><code>useBannerSlider.ts</code>：Banner 自動輪播、前後切換、手機觸控滑動</li>
-      <li><code>useLeaderboardTimer.ts</code>：排行榜更新時間</li>
-    </ul>
-
-    <h2>主要元件</h2>
-    <ul>
-      <li><code>AppHeader.vue</code>：導覽、Logo、手機登入後會員資訊列</li>
-      <li><code>AppBottomNav.vue</code>：手機底部導覽</li>
-      <li><code>AppFooter.vue</code>：Footer 與手機 APP 下載區，桌機 / 手機結構不同</li>
-      <li><code>BannerSlider.vue</code>：純圖片 Banner 輪播</li>
-      <li><code>FloatingPanels.vue</code>：左右懸浮介面與手機精簡按鈕</li>
-      <li><code>LoginModal.vue</code>、<code>LobbyModal.vue</code>：登入與大廳 modal</li>
-    </ul>
-
-    <h2>手機與桌機互動規格補充</h2>
-    <ul>
-      <li>手機左側按鈕使用 <code>fp-mobile-btn-left</code>，已登入前往 <code>/deposit</code>，未登入先開 LoginModal</li>
-      <li>手機右側按鈕使用 <code>fp-mobile-btn-right</code>，未登入開 LoginModal，已登入開 LobbyModal</li>
-      <li>手機按鈕透過 <code>lg:hidden</code> 控制，只在手機顯示</li>
-      <li>首頁使用 <code>.content-narrow</code>（<code>max-width: 860px</code>）實現 Banner 全寬、內容縮窄</li>
-      <li>首頁內容主順序為：最新消息、熱門活動、熱門遊戲、排行榜快報</li>
-    </ul>
-
-    <h2>Footer 補充</h2>
-    <ul>
-      <li>桌機版為 4 欄 grid：品牌、連結、聯絡方式、社群</li>
-      <li>手機版為精簡結構：Logo、社群、APP 下載、法律聲明</li>
-      <li>目前社群按鈕有 LINE、Facebook、Instagram、Telegram、X 五個</li>
-      <li>社群連結目前多為 placeholder</li>
-      <li>手機版 Footer 已考量 bottom nav 高度</li>
-    </ul>
-
-    <h2>部署注意事項</h2>
-    <p><code>nuxt.config.ts</code> 內設定了 <code>app.baseURL = '/Yota_Website_Nuxt/'</code> 與 <code>nitro.output.publicDir = 'docs'</code>。本機 build 仍會產生 <code>docs/</code>，但正式部署已改由 GitHub Actions 自動處理。</p>
-
-    <h2>目前較偏 mock 的部分</h2>
-    <ul>
-      <li>登入流程仍是前端模擬</li>
-      <li>登入狀態持久化已是真實的 localStorage 實作，只有驗證邏輯仍是 mock</li>
-      <li>遊戲大廳 URL 仍是 placeholder</li>
-      <li>試玩 iframe 仍是示意用途</li>
-      <li>排行榜與活動資料仍為靜態資料</li>
-    </ul>
-
-    <h2>SEO 現況與補強清單</h2>
-    <h3>目前已完成</h3>
-    <ul>
-      <li>已採用 <code>ssr: true</code> + static build，搜尋引擎可讀取預渲染 HTML</li>
-      <li>各主要頁面已使用 <code>useSeoMeta</code></li>
-      <li>首頁、活動、排行榜、儲值、教學、客服、會員頁都有基本 <code>title</code> / <code>description</code></li>
-      <li>全站已設定 <code>lang="zh-TW"</code>、<code>charset</code>、<code>viewport</code></li>
-    </ul>
-
-    <h3>目前狀態</h3>
-    <ul>
-      <li><code>robots</code> 仍為 <code>noindex, nofollow</code></li>
-      <li>網站尚未進入正式收錄階段</li>
-      <li>目前 SEO 屬於「基礎結構已鋪好，但尚未正式開放索引」</li>
-    </ul>
-
-    <h3>上線前建議補強項目</h3>
-    <ol>
-      <li>調整 <code>robots</code> 為正式可收錄設定</li>
-      <li>補 <code>robots.txt</code></li>
-      <li>補 <code>sitemap.xml</code></li>
-      <li>補 canonical</li>
-      <li>補完整 Open Graph 與 Twitter sharing 欄位</li>
-      <li>規劃結構化資料，例如 <code>Organization</code>、<code>WebSite</code>、<code>BreadcrumbList</code></li>
-      <li>確認 favicon / OG 圖實體檔已放入 <code>public/</code></li>
-    </ol>
-
-    <h3>前端接手建議順序</h3>
-    <ol>
-      <li>等品牌文案、Banner 圖、OG 圖定稿</li>
-      <li>先補 <code>robots.txt</code>、<code>sitemap.xml</code>、canonical</li>
-      <li>再補各頁 <code>og:image</code> 與 social sharing 圖</li>
-      <li>最後再把 <code>robots</code> 開放成可收錄</li>
-    </ol>
-
-    <h3>補充說明</h3>
-    <p>目前不建議在前期階段先把 SEO 全部做死，因為 Banner、品牌素材、最終文案、分享圖仍可能變動。現在最適合的做法是保留基礎 meta，並把正式 SEO 補強工作交接給上線前的前端階段完成。</p>
-
-    <div class="footer">
-      快速原則：改內容看 <code>data/siteContent.ts</code>；改 Banner 看 <code>components/BannerSlider.vue</code>；改懸浮介面看 <code>components/FloatingPanels.vue</code>；改全站視覺看 <code>assets/css/main.css</code>。
-    </div>
+    <section class="card">
+      <h3>內容中心</h3>
+      <p>內容集中在 <code>data/siteContent.ts</code>，樣式主題集中在 <code>assets/css/main.css</code>。</p>
+    </section>
+    <section class="card">
+      <h3>部署方式</h3>
+      <p>GitHub Actions 自動 build，不再依賴手動提交 <code>docs/</code>。Push to main 後約 2–5 分鐘完成部署。</p>
+    </section>
   </div>
+
+  <h2>技術堆疊</h2>
+  <ul>
+    <li>Nuxt 3 + Vue 3，SSG 模式</li>
+    <li>Tailwind CSS + 自訂 <code>assets/css/main.css</code></li>
+    <li>Nuxt <code>useState</code> + composables（SSR-safe 狀態管理）</li>
+    <li>Google Fonts：<code>Noto Sans TC</code></li>
+    <li>Nitro static preset，輸出至 <code>docs/</code></li>
+    <li>GitHub Pages，baseURL：<code>/Yota_Website_Nuxt/</code></li>
+  </ul>
+
+  <h2>重要目錄</h2>
+  <pre>assets/css/main.css          全站主題、色票、所有自訂 class
+components/
+  AppHeader.vue              官網 Header（含手機漢堡抽屜）
+  AppFooter.vue              官網 Footer
+  FloatingPanels.vue         左右懸浮介面
+  LoginModal.vue             登入 / 註冊彈窗（需 ClientOnly）
+  LobbyHeader.vue            大廳 Header（VIP 卡片 + 漢堡）
+  LobbySidebar.vue           大廳左側側邊欄（三分區）
+  lobby/GameCard.vue         遊戲卡片
+  lobby/GameGrid.vue         遊戲格（含分類 Tab）
+  lobby/GameView.vue         遊戲視圖（Stake 風格）
+  shared/DepositContent.vue  儲值共用（官網 & 大廳）
+  shared/EventsContent.vue
+  shared/LeaderboardContent.vue
+  shared/SupportContent.vue
+  shared/TutorialContent.vue
+layouts/
+  default.vue                官網 layout
+  lobby.vue                  大廳 layout（Header + Sidebar + Web館按鈕）
+pages/
+  index.vue / events.vue / leaderboard.vue / deposit.vue / tutorial.vue / support.vue / member.vue
+  h5.vue                     Web館目標頁（layout: false，顯示 public/lobby.jpeg）
+  lobby/
+    index.vue                遊戲大廳主頁
+    member.vue / bank.vue / inbox.vue / chat.vue / settings.vue
+data/siteContent.ts          集中內容資料來源（含 24 款遊戲）
+public/lobby.jpeg            Web館預覽圖</pre>
+
+  <h2>路由與頁面功能</h2>
+  <h3>官網（default layout）</h3>
+  <table>
+    <tr><th>路由</th><th>功能</th></tr>
+    <tr><td><code>/</code></td><td>首頁：跑馬燈、Banner、快速入口、最新消息、熱門活動、遊戲、排行榜快報</td></tr>
+    <tr><td><code>/events</code></td><td>活動列表 + 詳情 modal</td></tr>
+    <tr><td><code>/leaderboard</code></td><td>排行榜，含 Top 3 + 4–10 名</td></tr>
+    <tr><td><code>/deposit</code></td><td>儲值說明</td></tr>
+    <tr><td><code>/tutorial</code></td><td>新手教學、遊戲介紹、試玩入口</td></tr>
+    <tr><td><code>/support</code></td><td>客服 & FAQ</td></tr>
+    <tr><td><code>/member</code></td><td>會員資料、VIP、遊戲紀錄</td></tr>
+    <tr><td><code>/h5</code></td><td>Web館目標頁（顯示 lobby.jpeg 預覽圖）</td></tr>
+  </table>
+
+  <h3>遊戲大廳平台（lobby layout）</h3>
+  <p>各頁面均以 <code>definePageMeta({ layout: 'lobby' })</code> 指定佈局。</p>
+  <table>
+    <tr><th>路由</th><th>功能</th></tr>
+    <tr><td><code>/lobby</code></td><td>遊戲大廳主頁：分類 Tab、24 款遊戲格、遊戲視圖（頁內展開）</td></tr>
+    <tr><td><code>/lobby/member</code></td><td>玩家資訊、VIP 進度條、遊戲紀錄、快捷操作、登出</td></tr>
+    <tr><td><code>/lobby/bank</code></td><td>銀行儲值（複用 SharedDepositContent）</td></tr>
+    <tr><td><code>/lobby/inbox</code></td><td>站內信：分類篩選（全部/系統/活動/帳務）+ 詳情 Modal</td></tr>
+    <tr><td><code>/lobby/chat</code></td><td>聊天室：世界 / 私人 / 客服三頻道</td></tr>
+    <tr><td><code>/lobby/settings</code></td><td>音效、通知、語言、版本資訊設定</td></tr>
+  </table>
+
+  <h2>遊戲大廳平台架構</h2>
+  <h3>Layout 結構（layouts/lobby.vue）</h3>
+  <pre>┌──────────────────────────────────┐
+│          LobbyHeader             │  fixed, 56px
+├──────────────────────────────────┤
+│ LobbySidebar │    &lt;slot /&gt;       │  大廳主內容
+├──────────────────────────────────┤
+│ lobby-footer（版權聲明）          │
+└──────────────────────────────────┘
+         [Web館按鈕]  fixed，Header 正下方右側</pre>
+
+  <h3>側邊欄三分區（LobbySidebar）</h3>
+  <pre>遊戲大廳（/lobby）
+─────────────────
+活動（/lobby/events 或 /events）
+排行榜（/lobby/leaderboard 或 /leaderboard）
+─────────────────
+個人資訊 / 銀行 / 信箱 / 聊天 / 設置
+─────────────────
+官網首頁（/）</pre>
+  <ul>
+    <li>桌機展開：<code>200px</code>；收合：<code>60px</code>（icon-only）</li>
+    <li>手機：overlay 模式，`transform: translateX(-100%)` 動畫</li>
+    <li>狀態以 Nuxt <code>useState</code> 跨元件共享</li>
+  </ul>
+
+  <h3>遊戲視圖（GameView，Stake 風格）</h3>
+  <ul>
+    <li>點擊遊戲卡後，<code>/lobby/index.vue</code> 以 <code>v-if</code> 替換顯示 <code>&lt;LobbyGameView&gt;</code></li>
+    <li>Iframe 固定 <code>aspect-ratio: 16/9</code>，非全螢幕</li>
+    <li>控制列：全螢幕 icon / 品牌名 / 試玩 & 真錢模式切換 Tab</li>
+    <li>下方：供應商資訊、遊戲名、RTP 標籤、遊戲描述、規格表</li>
+    <li>試玩無需登入；真錢模式未登入觸發 LoginModal</li>
+  </ul>
+
+  <h3>Web館按鈕</h3>
+  <ul>
+    <li>位置：<code>position: fixed; top: 64px; right: 12px</code>（Header 正下方）</li>
+    <li>尺寸：<code>padding: 14px 28px</code>，字體 18px，圓角膠囊形</li>
+    <li>效果：紫色漸層 + 脈衝光暈動畫（<code>web-btn-pulse</code>）</li>
+    <li>點擊：<code>router.resolve('/h5').href</code> 另開新分頁</li>
+  </ul>
+
+  <h2>官網手機導覽（重大更新）</h2>
+  <div class="warn"><strong>⚠️ AppBottomNav 已移除</strong>：<code>AppBottomNav.vue</code> 已從 <code>layouts/default.vue</code> 中移除，手機不再有底部導覽列。</div>
+
+  <h3>AppHeader 手機漢堡抽屜</h3>
+  <p>手機版 Header 左側新增漢堡鍵（<code>lg:hidden</code>），點擊後從左側滑出抽屜（<code>ClientOnly + Teleport to="body"</code>，z-index <code>300/301</code>）。</p>
+  <table>
+    <tr><th>順序</th><th>項目</th><th>路由</th></tr>
+    <tr><td>1</td><td>💰 儲值</td><td><code>/deposit</code></td></tr>
+    <tr><td>2</td><td>🎉 活動</td><td><code>/events</code></td></tr>
+    <tr><td>3</td><td>🏆 排行榜</td><td><code>/leaderboard</code></td></tr>
+    <tr><td>4</td><td>📖 新手教學</td><td><code>/tutorial</code></td></tr>
+    <tr><td>5</td><td>🎧 客服中心</td><td><code>/support</code></td></tr>
+    <tr><td>6</td><td>🏠 回首頁</td><td><code>/</code></td></tr>
+  </table>
+
+  <h3>大廳 Header 登入後用戶卡</h3>
+  <pre>[ VIP 3 ]  玩家888    [ 👤 ]
+           $12,580</pre>
+  <p>整個 <code>.lobby-user-card</code> 可點擊，跳轉 <code>/lobby/member</code>。</p>
+
+  <h2>狀態管理</h2>
+  <h3>useAppState.ts</h3>
+  <ul>
+    <li><code>isLoggedIn</code>、<code>userInfo</code>（name / vip / balance）</li>
+    <li><code>login()</code> / <code>logout()</code> 寫入 / 清除 localStorage</li>
+    <li><code>initFromStorage()</code> 在 <code>onMounted</code> 還原登入狀態</li>
+    <li><code>openLogin()</code>、<code>openLobby()</code> 控制 modal</li>
+  </ul>
+  <h3>大廳側邊欄狀態（跨元件共享）</h3>
+  <pre>const sidebarMobileOpen      = useState('lobby-sidebar-mobile-open',      () => false)
+const sidebarDesktopCollapsed = useState('lobby-sidebar-desktop-collapsed', () => false)</pre>
+
+  <h2>SSG 已知地雷（必讀）</h2>
+  <table>
+    <tr><th>地雷</th><th>說明</th><th>處理方式</th></tr>
+    <tr><td><code>&lt;Teleport&gt;</code> mismatch</td><td>SSG 下 Teleport 造成全站 @click 失效</td><td>一律包入 <code>&lt;ClientOnly&gt;</code></td></tr>
+    <tr><td><code>appManifest</code></td><td>Nuxt 3.9+ build ID 版本衝突 → hydration 失敗</td><td><code>nuxt.config.ts</code> 永遠設 <code>appManifest: false</code></td></tr>
+    <tr><td><code>.nojekyll</code></td><td>Jekyll 抑制 <code>_nuxt/</code> 目錄</td><td><code>generate</code> 指令自動建立</td></tr>
+    <tr><td><code>useState</code> vs <code>ref</code></td><td>SSG hydration 狀態不一致</td><td>跨元件共享狀態一律用 <code>useState</code></td></tr>
+  </table>
+
+  <h2>CSS 命名慣例</h2>
+  <table>
+    <tr><th>前綴</th><th>用途</th></tr>
+    <tr><td><code>.lobby-header-*</code></td><td>大廳頂部 Header</td></tr>
+    <tr><td><code>.lobby-user-*</code></td><td>大廳登入後用戶卡</td></tr>
+    <tr><td><code>.lobby-sidebar</code> / <code>.lobby-nav-*</code></td><td>大廳側邊欄</td></tr>
+    <tr><td><code>.gv-*</code></td><td>遊戲視圖（GameView）</td></tr>
+    <tr><td><code>.lobby-web-btn</code></td><td>Web館浮動按鈕</td></tr>
+    <tr><td><code>.fp</code> / <code>.fp-*</code></td><td>官網懸浮介面</td></tr>
+  </table>
+
+  <h2>快速交接摘要</h2>
+  <div class="grid">
+    <section class="card"><h3>改官網內容</h3><p><code>data/siteContent.ts</code></p></section>
+    <section class="card"><h3>改漢堡抽屜項目</h3><p><code>AppHeader.vue &gt; drawerLinks</code></p></section>
+    <section class="card"><h3>改大廳遊戲列表</h3><p><code>siteContent.ts &gt; games</code></p></section>
+    <section class="card"><h3>改大廳側邊欄</h3><p><code>LobbySidebar.vue</code></p></section>
+    <section class="card"><h3>改遊戲視圖樣式</h3><p><code>main.css &gt; .gv-*</code></p></section>
+    <section class="card"><h3>改 Web館目標頁</h3><p><code>public/lobby.jpeg</code> 換圖</p></section>
+    <section class="card"><h3>改全站主題色</h3><p><code>main.css &gt; :root</code></p></section>
+    <section class="card"><h3>改部署設定</h3><p><code>nuxt.config.ts</code></p></section>
+  </div>
+
+  <p class="footer">巨亨 ONLINE 前端交接文件 · 更新日期：2026-05-05</p>
+</div>
 </body>
 </html>

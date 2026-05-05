@@ -3,211 +3,292 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>巨亨 ONLINE 素材交付清單模板</title>
+  <title>巨亨 ONLINE 素材交付清單</title>
   <style>
     :root {
-      --bg: #0f0020;
-      --panel: #1c0a3a;
-      --purple: #7c3aed;
-      --purple-light: #c084fc;
-      --gold: #f5c842;
-      --text: #f3e8ff;
-      --muted: #c4b5d5;
-      --border: rgba(168, 85, 247, 0.28);
-      --ok: #4ade80;
+      --bg: #0f0020; --panel: #1c0a3a;
+      --purple: #7c3aed; --purple-light: #c084fc;
+      --gold: #f5c842; --text: #f3e8ff; --muted: #c4b5d5;
+      --border: rgba(168,85,247,0.28);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
-      line-height: 1.75;
+      color: var(--text); line-height: 1.75;
       background:
-        radial-gradient(circle at top right, rgba(124, 58, 237, 0.22), transparent 30%),
-        radial-gradient(circle at bottom left, rgba(245, 200, 66, 0.08), transparent 24%),
+        radial-gradient(circle at top right, rgba(124,58,237,0.22), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(245,200,66,0.08), transparent 24%),
         var(--bg);
     }
-    .wrap {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 40px 20px 80px;
-    }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 20px 80px; }
     .hero {
-      padding: 28px;
-      border-radius: 24px;
-      border: 1px solid var(--border);
-      background: linear-gradient(135deg, rgba(28, 10, 58, 0.96), rgba(59, 7, 100, 0.88));
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
-      margin-bottom: 24px;
+      background: linear-gradient(135deg, rgba(28,10,58,0.96), rgba(37,13,72,0.94));
+      border: 1px solid var(--border); border-radius: 22px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+      padding: 28px; margin-bottom: 24px;
     }
-    .eyebrow {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      color: var(--gold);
-      margin-bottom: 8px;
-    }
+    .eyebrow { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.08em; color: var(--gold); margin-bottom: 8px; }
     h1, h2, h3 { margin: 0 0 12px; line-height: 1.3; }
     h1 { font-size: 34px; }
-    h2 {
-      margin-top: 36px;
-      font-size: 24px;
-      padding-left: 14px;
-      position: relative;
-    }
-    h2::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 6px;
-      width: 4px;
-      height: 22px;
-      border-radius: 999px;
-      background: linear-gradient(180deg, var(--gold), var(--purple-light));
-    }
+    h2 { margin-top: 36px; font-size: 24px; padding-left: 14px; position: relative; }
+    h2::before { content: ""; position: absolute; left: 0; top: 6px; width: 4px; height: 22px; border-radius: 999px; background: linear-gradient(180deg, var(--gold), var(--purple-light)); }
+    h3 { margin-top: 24px; font-size: 18px; color: var(--gold); }
     p, li { color: var(--muted); }
-    code, pre {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    }
-    code {
-      color: #fde68a;
-      background: rgba(255,255,255,0.06);
-      padding: 2px 6px;
-      border-radius: 6px;
-    }
-    pre {
-      background: #120324;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      overflow: auto;
-      color: #f5eaff;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0 24px;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
-    }
-    th, td {
-      padding: 12px 14px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      text-align: left;
-      vertical-align: top;
-    }
-    th {
-      background: rgba(124, 58, 237, 0.18);
-      color: var(--text);
-      white-space: nowrap;
-    }
-    tr:nth-child(even) td {
-      background: rgba(255,255,255,0.02);
-    }
-    .note {
-      border-left: 4px solid var(--ok);
-      background: rgba(74, 222, 128, 0.08);
-      border-radius: 12px;
-      padding: 12px 14px;
-      color: #dcffe8;
-      margin: 18px 0;
-    }
-    .footer {
-      margin-top: 48px;
-      color: rgba(243, 232, 255, 0.56);
-      font-size: 14px;
-    }
+    code { color: #fde68a; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 6px; font-family: monospace; }
+    pre { background: #120324; border: 1px solid var(--border); border-radius: 16px; padding: 16px; overflow: auto; color: #f5eaff; font-family: monospace; font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+    th { background: rgba(124,58,237,0.2); color: var(--gold); font-weight: 700; padding: 10px 14px; text-align: left; border: 1px solid var(--border); white-space: nowrap; }
+    td { padding: 8px 14px; border: 1px solid var(--border); color: var(--muted); vertical-align: top; }
+    tr:nth-child(even) td { background: rgba(124,58,237,0.05); }
+    .status-done { color: #4ade80; font-weight: 700; }
+    .status-wip { color: var(--gold); }
+    .status-none { color: rgba(196,181,213,0.4); }
+    .note { background: rgba(124,58,237,0.08); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; margin: 16px 0; font-size: 14px; color: var(--muted); }
+    .footer { margin-top: 48px; color: rgba(243,232,255,0.56); font-size: 14px; }
+    hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <section class="hero">
-      <div class="eyebrow">ASSET DELIVERY CHECKLIST</div>
-      <h1>巨亨 ONLINE 素材交付清單模板</h1>
-      <p>更新日期：2026-04-09。這份模板已更新到目前版本，補上 Banner 純圖片交付、懸浮卡頭部裝飾圖，以及 Footer APP 下載素材需求。</p>
-    </section>
+<div class="wrap">
+  <section class="hero">
+    <div class="eyebrow">ASSET DELIVERY CHECKLIST</div>
+    <h1>巨亨 ONLINE 素材交付清單</h1>
+    <p>更新日期：2026-05-05。本版本新增遊戲大廳平台素材需求（24 款遊戲卡封面、大廳側邊欄 icon），並標注已完成的 Web館預覽圖交付狀態。</p>
+  </section>
 
-    <div class="note">
-      建議流程：每次活動檔期或改版先複製一份模板，由美術先填預計交付，前端收到後再補實際路徑與落地備註。
-    </div>
-
-    <h2>素材交付總覽</h2>
-    <table>
-      <tr><th>類別</th><th>是否需要</th><th>狀態</th><th>備註</th></tr>
-      <tr><td>Logo / 品牌識別</td><td>☐</td><td>未開始 / 製作中 / 已交付</td><td></td></tr>
-      <tr><td>Banner 桌機版</td><td>☐</td><td>未開始 / 製作中 / 已交付</td><td></td></tr>
-      <tr><td>Banner 手機版</td><td>☐</td><td>未開始 / 製作中 / 已交付</td><td></td></tr>
-      <tr><td>懸浮卡頂部裝飾圖</td><td>☐</td><td>未開始 / 製作中 / 已交付</td><td></td></tr>
-      <tr><td>活動主視覺圖</td><td>☐</td><td>未開始 / 製作中 / 已交付</td><td></td></tr>
-      <tr><td>活動縮圖</td><td>☐</td><td>未開始 / 製作中 / 已交付</td><td></td></tr>
-      <tr><td>CTA 按鈕狀態圖 / 規範</td><td>☐</td><td>未開始 / 製作中 / 已交付</td><td></td></tr>
-      <tr><td>Footer 社群品牌 icon</td><td>☐</td><td>未開始 / 製作中 / 已交付</td><td></td></tr>
-      <tr><td>遊戲卡封面圖</td><td>☐</td><td>未開始 / 製作中 / 已交付</td><td></td></tr>
-      <tr><td>手機懸浮按鈕視覺規格</td><td>☐</td><td>未開始 / 製作中 / 已交付</td><td></td></tr>
-      <tr><td>Footer APP 下載素材</td><td>☐</td><td>未開始 / 製作中 / 已交付</td><td></td></tr>
-    </table>
-
-    <h2>建議路徑與命名</h2>
-    <pre>public/images/
-public/images/banner/
-public/images/logo/
-public/images/events/
-public/images/icons/
-public/images/floating/
-public/images/decorations/</pre>
-
-    <ul>
-      <li>使用英文小寫</li>
-      <li>單字間以 <code>-</code> 連接</li>
-      <li>避免中文與空白</li>
-    </ul>
-
-    <h2>素材詳細清單</h2>
-    <table>
-      <tr><th>區塊</th><th>建議檔名</th><th>建議尺寸 / 比例</th><th>格式</th><th>備註</th></tr>
-      <tr><td>Banner 01 桌機版</td><td><code>home-hero-01.webp</code></td><td>1600x700 / 16:7</td><td>webp</td><td>必要</td></tr>
-      <tr><td>Banner 01 手機版</td><td><code>home-hero-01-mobile.webp</code></td><td>mobile crop</td><td>webp</td><td>建議</td></tr>
-      <tr><td>Banner 02 桌機版</td><td><code>home-hero-02.webp</code></td><td>1600x700 / 16:7</td><td>webp</td><td>視需求</td></tr>
-      <tr><td>浮動卡儲值頭圖</td><td><code>floating-deposit-header.webp</code></td><td>依卡頭比例</td><td>webp / png</td><td>建議</td></tr>
-      <tr><td>浮動卡立即玩頭圖</td><td><code>floating-play-header.webp</code></td><td>依卡頭比例</td><td>webp / png</td><td>建議</td></tr>
-      <tr><td>浮動卡玩家資訊頭圖</td><td><code>floating-member-header.webp</code></td><td>依卡頭比例</td><td>webp / png</td><td>視需求</td></tr>
-      <tr><td>活動主圖</td><td><code>event-campaign-a.webp</code></td><td>16:9</td><td>webp</td><td>視需求</td></tr>
-      <tr><td>活動縮圖</td><td><code>event-campaign-a-thumb.webp</code></td><td>16:9</td><td>webp</td><td>建議</td></tr>
-      <tr><td>Footer 社群 icon</td><td><code>footer-line.svg</code> 等</td><td>正方形</td><td>svg</td><td>建議</td></tr>
-      <tr><td>遊戲卡封面 01~06</td><td><code>game-cover-01.webp</code> 等</td><td>依卡片比例</td><td>webp</td><td>視需求</td></tr>
-      <tr><td>手機懸浮按鈕規格</td><td><code>mobile-float-play-spec</code> 等</td><td>元件規格</td><td>figma / pdf</td><td>視需求</td></tr>
-    </table>
-
-    <h2>Banner 專用交付</h2>
-    <ul>
-      <li>Banner 已改成純圖片輪播</li>
-      <li>請提供桌機圖、手機圖、alt 文案，若有需要再補連結</li>
-      <li>目前不需要 Banner 內文與 CTA 設計</li>
-      <li>若未提供 <code>mobileImageSrc</code>，前端會沿用桌機圖</li>
-    </ul>
-
-    <h2>懸浮介面專用交付</h2>
-    <table>
-      <tr><th>區塊</th><th>檔名</th><th>備註</th></tr>
-      <tr><td>立即儲頭部裝飾</td><td></td><td></td></tr>
-      <tr><td>立即玩頭部裝飾</td><td></td><td></td></tr>
-      <tr><td>玩家資訊頭部裝飾</td><td></td><td></td></tr>
-    </table>
-
-    <h2>按鈕與互動狀態交付</h2>
-    <table>
-      <tr><th>項目</th><th>是否提供</th><th>內容</th></tr>
-      <tr><td>儲值 CTA Normal / Hover</td><td>☐</td><td>金色主按鈕規格</td></tr>
-      <tr><td>立即玩 CTA Normal / Hover</td><td>☐</td><td>紫色主按鈕規格</td></tr>
-      <tr><td>CTA Active</td><td>☐</td><td>壓下效果 / 陰影變化</td></tr>
-      <tr><td>Tab Active / Inactive</td><td>☐</td><td>排行榜 tab 規格</td></tr>
-    </table>
-
-    <div class="footer">
-      快速原則：Banner 交付以純圖片為主；懸浮介面交付以頂部裝飾圖為主；手機版 APP 下載已在 Footer，不在懸浮介面內。
-    </div>
+  <div class="note">
+    📋 使用方式：每次活動或改版複製一份，由美術先填「預計交付」，前端收到後補「實際路徑 / 備註」，完成後存回 <code>handoff/</code> 或專案管理工具。
   </div>
+
+  <h2>1. 專案資訊</h2>
+  <table>
+    <tr><th>欄位</th><th>內容</th></tr>
+    <tr><td>專案名稱</td><td></td></tr>
+    <tr><td>檔期 / 版本名稱</td><td></td></tr>
+    <tr><td>需求提出日期</td><td></td></tr>
+    <tr><td>預計交付日期</td><td></td></tr>
+    <tr><td>美術負責人</td><td></td></tr>
+    <tr><td>前端負責人</td><td></td></tr>
+    <tr><td>PM / 窗口</td><td></td></tr>
+  </table>
+
+  <hr>
+
+  <h2>2. 素材交付總覽</h2>
+  <table>
+    <tr><th>類別</th><th>是否需要</th><th>狀態</th><th>備註</th></tr>
+    <tr><td>Logo / 品牌識別</td><td>☐</td><td>未開始</td><td></td></tr>
+    <tr><td>官網 Header 素材</td><td>☐</td><td>未開始</td><td></td></tr>
+    <tr><td>大廳 Header 素材</td><td>☐</td><td>未開始</td><td></td></tr>
+    <tr><td>Banner 桌機版</td><td>☐</td><td>未開始</td><td></td></tr>
+    <tr><td>Banner 手機版</td><td>☐</td><td>未開始</td><td></td></tr>
+    <tr><td>懸浮卡頂部裝飾圖</td><td>☐</td><td>未開始</td><td></td></tr>
+    <tr><td>遊戲卡封面圖（24 款）</td><td>☐</td><td>未開始</td><td>3:4 比例，依 key 命名</td></tr>
+    <tr><td>活動主視覺圖</td><td>☐</td><td>未開始</td><td></td></tr>
+    <tr><td>活動縮圖</td><td>☐</td><td>未開始</td><td></td></tr>
+    <tr><td>快速入口 icon</td><td>☐</td><td>未開始</td><td></td></tr>
+    <tr><td>漢堡抽屜 icon（6 個）</td><td>☐</td><td>未開始</td><td>取代目前 emoji</td></tr>
+    <tr><td>大廳側邊欄 icon（9 個）</td><td>☐</td><td>未開始</td><td>取代目前 emoji</td></tr>
+    <tr><td>排行榜 badge / 裝飾</td><td>☐</td><td>未開始</td><td></td></tr>
+    <tr><td>CTA 按鈕狀態規範</td><td>☐</td><td>未開始</td><td></td></tr>
+    <tr><td>Footer 社群品牌 icon</td><td>☐</td><td>未開始</td><td></td></tr>
+    <tr><td>手機懸浮按鈕視覺規格</td><td>☐</td><td>未開始</td><td></td></tr>
+    <tr><td>Web館預覽圖（lobby.jpeg）</td><td>☑</td><td class="status-done">✅ 已交付</td><td>public/lobby.jpeg</td></tr>
+    <tr><td>Footer APP 下載素材</td><td>☐</td><td>未開始</td><td></td></tr>
+    <tr><td>頁面背景 / 裝飾元素</td><td>☐</td><td>未開始</td><td></td></tr>
+  </table>
+
+  <hr>
+
+  <h2>3. 檔名與路徑規範</h2>
+  <pre>public/images/banner/         官網 Banner
+public/images/logo/           Logo 套件
+public/images/events/         活動主圖與縮圖
+public/images/icons/          導覽 icon
+public/images/floating/       懸浮卡頭部裝飾
+public/images/games/          遊戲卡封面（依 key 命名）
+public/images/decorations/    裝飾元素
+public/lobby.jpeg             Web館預覽圖（固定路徑，勿移動）</pre>
+
+  <h3>命名規則</h3>
+  <ul>
+    <li>英文小寫，單字以 <code>-</code> 連接</li>
+    <li>避免中文、空白、版本後綴如 <code>final-final-2</code></li>
+  </ul>
+
+  <h3>命名範例</h3>
+  <pre>public/images/logo/logo-main.svg
+public/images/banner/home-hero-01.webp
+public/images/banner/home-hero-01-mobile.webp
+public/images/games/fruit-slots.webp
+public/images/games/dragon-legend.webp
+public/images/floating/floating-deposit-header.webp
+public/images/events/event-summer-campaign.webp
+public/images/icons/sidebar-lobby.svg</pre>
+
+  <hr>
+
+  <h2>4. 通用素材詳細清單</h2>
+  <table>
+    <tr><th>區塊</th><th>用途</th><th>建議檔名</th><th>尺寸 / 比例</th><th>格式</th><th>必要性</th><th>狀態</th><th>備註</th></tr>
+    <tr><td>Header Logo 主版</td><td>品牌識別</td><td>logo-main.svg</td><td>SVG 向量</td><td>svg</td><td>必要</td><td></td><td></td></tr>
+    <tr><td>Header Logo 深底版</td><td>深色背景使用</td><td>logo-main-dark.svg</td><td>SVG 向量</td><td>svg</td><td>建議</td><td></td><td></td></tr>
+    <tr><td>favicon</td><td>瀏覽器 icon</td><td>favicon.ico</td><td>32×32 / 48×48</td><td>ico/png</td><td>建議</td><td></td><td></td></tr>
+    <tr><td>Banner 01 桌機版</td><td>官網首頁主視覺</td><td>home-hero-01.webp</td><td>1600×700 / 16:7</td><td>webp</td><td>必要</td><td></td><td></td></tr>
+    <tr><td>Banner 01 手機版</td><td>首頁 mobile</td><td>home-hero-01-mobile.webp</td><td>mobile crop</td><td>webp</td><td>建議</td><td></td><td></td></tr>
+    <tr><td>Banner 02 桌機版</td><td>第二張</td><td>home-hero-02.webp</td><td>1600×700 / 16:7</td><td>webp</td><td>視需求</td><td></td><td></td></tr>
+    <tr><td>懸浮卡儲值頭圖</td><td>官網左側裝飾</td><td>floating-deposit-header.webp</td><td>依卡頭比例</td><td>webp</td><td>建議</td><td></td><td></td></tr>
+    <tr><td>懸浮卡立即玩頭圖</td><td>官網右側裝飾</td><td>floating-play-header.webp</td><td>依卡頭比例</td><td>webp</td><td>建議</td><td></td><td></td></tr>
+    <tr><td>懸浮卡玩家資訊頭圖</td><td>玩家資訊裝飾</td><td>floating-member-header.webp</td><td>依卡頭比例</td><td>webp</td><td>視需求</td><td></td><td></td></tr>
+    <tr><td>Web館預覽圖</td><td>Web館按鈕目標頁</td><td>lobby.jpeg</td><td>全螢幕截圖</td><td>jpeg</td><td>必要</td><td class="status-done">✅ 已交付</td><td>放 public/ 根目錄</td></tr>
+    <tr><td>活動主視覺 A</td><td>活動頁 / 活動卡</td><td>event-campaign-a.webp</td><td>16:9</td><td>webp</td><td>視需求</td><td></td><td></td></tr>
+    <tr><td>活動縮圖 A</td><td>活動列表縮圖</td><td>event-campaign-a-thumb.webp</td><td>16:9</td><td>webp</td><td>建議</td><td></td><td></td></tr>
+    <tr><td>Rank 1–3 badge</td><td>排行榜 Top 3 裝飾</td><td>rank-badge-1.svg 等</td><td>依 UI 設計</td><td>svg</td><td>建議</td><td></td><td></td></tr>
+    <tr><td>Footer 社群 icon</td><td>LINE / FB / IG / TG / X</td><td>footer-line.svg 等</td><td>正方形</td><td>svg</td><td>建議</td><td></td><td></td></tr>
+    <tr><td>Footer APP 下載圖示</td><td>Footer 下載入口</td><td>footer-app-download.svg</td><td>依 UI 設計</td><td>svg</td><td>視需求</td><td></td><td></td></tr>
+  </table>
+
+  <hr>
+
+  <h2>5. 遊戲卡封面圖清單（24 款）</h2>
+  <p>建議尺寸：<code>3:4</code>（如 300×400）。存放路徑：<code>public/images/games/{key}.webp</code>。</p>
+  <table>
+    <tr><th>key</th><th>遊戲名稱</th><th>分類</th><th>供應商</th><th>建議檔名</th><th>是否提供</th><th>狀態</th></tr>
+    <tr><td><code>fruit-slots</code></td><td>水果老虎機</td><td>老虎機</td><td>JH Gaming</td><td>fruit-slots.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>dragon-legend</code></td><td>神龍傳奇</td><td>老虎機</td><td>JH Gaming</td><td>dragon-legend.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>lucky-cat-slots</code></td><td>招財貓老虎機</td><td>老虎機</td><td>PG Soft</td><td>lucky-cat-slots.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>mahjong-wins</code></td><td>麻將胡了</td><td>老虎機</td><td>PG Soft</td><td>mahjong-wins.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>treasure-hunt</code></td><td>尋寶大冒險</td><td>老虎機</td><td>JH Gaming</td><td>treasure-hunt.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>golden-phoenix</code></td><td>金鳳凰</td><td>老虎機</td><td>JH Gaming</td><td>golden-phoenix.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>zeus-thunder</code></td><td>宙斯雷神</td><td>老虎機</td><td>PG Soft</td><td>zeus-thunder.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>candy-blast</code></td><td>糖果爆爆樂</td><td>老虎機</td><td>PG Soft</td><td>candy-blast.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>lucky-cat-baccarat</code></td><td>招財貓百家樂</td><td>百家樂</td><td>Evolution</td><td>lucky-cat-baccarat.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>classic-baccarat</code></td><td>經典百家樂</td><td>百家樂</td><td>Evolution</td><td>classic-baccarat.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>speed-baccarat</code></td><td>極速百家樂</td><td>百家樂</td><td>Evolution</td><td>speed-baccarat.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>dragon-tiger</code></td><td>龍虎鬥</td><td>百家樂</td><td>JH Gaming</td><td>dragon-tiger.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>ocean-fish</code></td><td>海洋捕魚機</td><td>捕魚機</td><td>JH Gaming</td><td>ocean-fish.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>deep-sea</code></td><td>深海獵人</td><td>捕魚機</td><td>JH Gaming</td><td>deep-sea.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>dragon-fish</code></td><td>龍宮捕魚</td><td>捕魚機</td><td>PG Soft</td><td>dragon-fish.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>neon-fish</code></td><td>霓虹捕魚</td><td>捕魚機</td><td>PG Soft</td><td>neon-fish.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>fish-shrimp-crab</code></td><td>魚蝦蟹</td><td>骰子</td><td>JH Gaming</td><td>fish-shrimp-crab.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>sic-bo</code></td><td>骰寶</td><td>骰子</td><td>JH Gaming</td><td>sic-bo.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>roulette</code></td><td>歐式輪盤</td><td>骰子</td><td>Evolution</td><td>roulette.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>andar-bahar</code></td><td>Andar Bahar</td><td>骰子</td><td>Evolution</td><td>andar-bahar.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>three-card</code></td><td>三公撲克</td><td>棋牌</td><td>JH Gaming</td><td>three-card.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>texas-holdem</code></td><td>德州撲克</td><td>棋牌</td><td>JH Gaming</td><td>texas-holdem.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>pai-gow</code></td><td>牌九</td><td>棋牌</td><td>JH Gaming</td><td>pai-gow.webp</td><td>☐</td><td></td></tr>
+    <tr><td><code>teen-patti</code></td><td>Teen Patti</td><td>棋牌</td><td>Evolution</td><td>teen-patti.webp</td><td>☐</td><td></td></tr>
+  </table>
+
+  <hr>
+
+  <h2>6. 大廳側邊欄 Icon 清單</h2>
+  <p>目前以 emoji 暫代，後續可換成正式 SVG icon，建議路徑 <code>public/images/icons/sidebar-{name}.svg</code>。</p>
+  <table>
+    <tr><th>功能</th><th>路由</th><th>目前 emoji</th><th>建議檔名</th><th>是否提供</th></tr>
+    <tr><td>遊戲大廳</td><td>/lobby</td><td>🎮</td><td>sidebar-lobby.svg</td><td>☐</td></tr>
+    <tr><td>活動</td><td>/lobby/events</td><td>🎉</td><td>sidebar-events.svg</td><td>☐</td></tr>
+    <tr><td>排行榜</td><td>/lobby/leaderboard</td><td>🏆</td><td>sidebar-leaderboard.svg</td><td>☐</td></tr>
+    <tr><td>個人資訊</td><td>/lobby/member</td><td>👤</td><td>sidebar-member.svg</td><td>☐</td></tr>
+    <tr><td>銀行</td><td>/lobby/bank</td><td>🏦</td><td>sidebar-bank.svg</td><td>☐</td></tr>
+    <tr><td>信箱</td><td>/lobby/inbox</td><td>📬</td><td>sidebar-inbox.svg</td><td>☐</td></tr>
+    <tr><td>聊天</td><td>/lobby/chat</td><td>💬</td><td>sidebar-chat.svg</td><td>☐</td></tr>
+    <tr><td>設置</td><td>/lobby/settings</td><td>⚙️</td><td>sidebar-settings.svg</td><td>☐</td></tr>
+    <tr><td>官網首頁</td><td>/</td><td>🌐</td><td>sidebar-home.svg</td><td>☐</td></tr>
+  </table>
+
+  <hr>
+
+  <h2>7. Banner 專用交付欄位</h2>
+  <table>
+    <tr><th>確認項目</th><th>是否提供</th></tr>
+    <tr><td>提供桌機圖</td><td>☐ 是 / ☐ 否</td></tr>
+    <tr><td>提供手機圖</td><td>☐ 是 / ☐ 否</td></tr>
+    <tr><td>提供 alt 文案</td><td>☐ 是 / ☐ 否</td></tr>
+    <tr><td>需要點擊跳轉連結</td><td>☐ 是 / ☐ 否</td></tr>
+  </table>
+
+  <table>
+    <tr><th>Banner 編號</th><th>用途</th><th>桌機圖檔</th><th>手機圖檔</th><th>alt 文案</th><th>連結</th><th>備註</th></tr>
+    <tr><td>Banner 01</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>Banner 02</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>Banner 03</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  </table>
+
+  <hr>
+
+  <h2>8. 按鈕與互動狀態交付</h2>
+  <table>
+    <tr><th>項目</th><th>是否提供</th><th>內容</th><th>備註</th></tr>
+    <tr><td>儲值 CTA Normal</td><td>☐</td><td>顏色 / 漸層 / 描邊 / 陰影</td><td></td></tr>
+    <tr><td>儲值 CTA Hover</td><td>☐</td><td>顏色 / 發光 / 位移</td><td></td></tr>
+    <tr><td>立即玩 CTA Normal</td><td>☐</td><td>紫色主按鈕規格</td><td></td></tr>
+    <tr><td>立即玩 CTA Hover</td><td>☐</td><td>顏色 / 發光 / 位移</td><td></td></tr>
+    <tr><td>Web館按鈕 Normal</td><td>☐</td><td>紫色漸層 + 脈衝光暈</td><td>目前 18px 字 + 22px icon</td></tr>
+    <tr><td>Web館按鈕 Hover</td><td>☐</td><td>加強發光效果</td><td></td></tr>
+    <tr><td>試玩模式 Tab</td><td>☐</td><td>遊戲視圖控制列</td><td></td></tr>
+    <tr><td>真錢模式 Tab</td><td>☐</td><td>遊戲視圖控制列</td><td></td></tr>
+    <tr><td>Card Hover</td><td>☐</td><td>遊戲卡 hover 樣式</td><td></td></tr>
+    <tr><td>CTA Disabled</td><td>☐</td><td>不可點擊狀態</td><td></td></tr>
+  </table>
+
+  <hr>
+
+  <h2>9. 色票交付欄位</h2>
+  <table>
+    <tr><th>色票名稱</th><th>HEX / RGBA</th><th>用途</th><th>對應區塊</th><th>備註</th></tr>
+    <tr><td>主背景色</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>次背景色</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>主紫色</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>紫色發光</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>主金色</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>次金色</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>主文字色</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>次文字色</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>邊框色</td><td></td><td></td><td></td><td></td></tr>
+  </table>
+
+  <hr>
+
+  <h2>10. 交付驗收檢查</h2>
+  <h3>美術交付前自檢</h3>
+  <ul>
+    <li>☐ 檔名符合規則（英文小寫、<code>-</code> 分隔）</li>
+    <li>☐ Banner 有提供桌機版與手機版</li>
+    <li>☐ 有註明尺寸 / 比例</li>
+    <li>☐ 有提供 alt 文案</li>
+    <li>☐ 遊戲卡封面依 <code>key</code> 命名（共 24 款）</li>
+    <li>☐ 有提供懸浮卡頭部裝飾圖（3 張）</li>
+    <li>☐ 大廳側邊欄 icon 已提供（若本次需要）</li>
+    <li>☐ 有提供按鈕狀態規格</li>
+    <li>☐ 有提供對應色票</li>
+  </ul>
+
+  <h3>前端接收後確認</h3>
+  <ul>
+    <li>☐ 檔案可正常開啟</li>
+    <li>☐ 路徑已整理至 <code>public/images/...</code>（<code>lobby.jpeg</code> 放根目錄）</li>
+    <li>☐ Banner 桌機與手機裁切合理</li>
+    <li>☐ 遊戲卡封面 <code>key</code> 對應正確（24 款）</li>
+    <li>☐ 圖檔大小可接受</li>
+    <li>☐ 與現有版型相容</li>
+    <li>☐ baseURL 路徑可正常部署</li>
+  </ul>
+
+  <hr>
+
+  <h2>11. 補充欄位</h2>
+  <h3>本次不需要交付的項目</h3>
+  <p style="color:rgba(196,181,213,0.4);">（填寫後刪除此說明）</p>
+  <h3>需特別注意的版位</h3>
+  <p style="color:rgba(196,181,213,0.4);">（填寫後刪除此說明）</p>
+  <h3>前端落地備註</h3>
+  <p style="color:rgba(196,181,213,0.4);">（填寫後刪除此說明）</p>
+  <h3>美術備註</h3>
+  <p style="color:rgba(196,181,213,0.4);">（填寫後刪除此說明）</p>
+
+  <p class="footer">巨亨 ONLINE 素材交付清單 · 更新日期：2026-05-05</p>
+</div>
 </body>
 </html>

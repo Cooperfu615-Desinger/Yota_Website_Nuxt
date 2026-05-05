@@ -6,222 +6,191 @@
   <title>巨亨 ONLINE 美術交接文件</title>
   <style>
     :root {
-      --bg: #0f0020;
-      --panel: #1c0a3a;
-      --purple: #7c3aed;
-      --purple-light: #c084fc;
-      --gold: #f5c842;
-      --gold-dark: #d97706;
-      --text: #f3e8ff;
-      --muted: #c4b5d5;
-      --border: rgba(168, 85, 247, 0.28);
+      --bg: #0f0020; --panel: #1c0a3a; --panel-2: #250d48;
+      --purple: #7c3aed; --purple-light: #c084fc;
+      --gold: #f5c842; --text: #f3e8ff; --muted: #c4b5d5;
+      --border: rgba(168,85,247,0.28);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
-      line-height: 1.75;
+      color: var(--text); line-height: 1.75;
       background:
-        radial-gradient(circle at top right, rgba(124, 58, 237, 0.22), transparent 30%),
-        radial-gradient(circle at bottom left, rgba(245, 200, 66, 0.08), transparent 24%),
+        radial-gradient(circle at top right, rgba(124,58,237,0.22), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(245,200,66,0.08), transparent 24%),
         var(--bg);
     }
-    .wrap {
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 40px 20px 80px;
-    }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 20px 80px; }
     .hero, .card {
-      background: linear-gradient(135deg, rgba(28, 10, 58, 0.96), rgba(59, 7, 100, 0.88));
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+      background: linear-gradient(135deg, rgba(28,10,58,0.96), rgba(37,13,72,0.94));
+      border: 1px solid var(--border); border-radius: 22px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
     }
-    .hero {
-      padding: 28px;
-      margin-bottom: 24px;
-    }
-    .eyebrow {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      color: var(--gold);
-      margin-bottom: 8px;
-    }
+    .hero { padding: 28px; margin-bottom: 24px; }
+    .eyebrow { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 0.08em; color: var(--gold); margin-bottom: 8px; }
     h1, h2, h3 { margin: 0 0 12px; line-height: 1.3; }
     h1 { font-size: 34px; }
-    h2 {
-      margin-top: 36px;
-      font-size: 24px;
-      padding-left: 14px;
-      position: relative;
-    }
-    h2::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 6px;
-      width: 4px;
-      height: 22px;
-      border-radius: 999px;
-      background: linear-gradient(180deg, var(--gold), var(--purple-light));
-    }
-    h3 {
-      margin-top: 24px;
-      font-size: 18px;
-      color: var(--gold);
-    }
+    h2 { margin-top: 36px; font-size: 24px; padding-left: 14px; position: relative; }
+    h2::before { content: ""; position: absolute; left: 0; top: 6px; width: 4px; height: 22px; border-radius: 999px; background: linear-gradient(180deg, var(--gold), var(--purple-light)); }
+    h3 { margin-top: 24px; font-size: 18px; color: var(--gold); }
     p, li { color: var(--muted); }
-    code, pre {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    }
-    code {
-      color: #fde68a;
-      background: rgba(255,255,255,0.06);
-      padding: 2px 6px;
-      border-radius: 6px;
-    }
-    pre {
-      background: #120324;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      overflow: auto;
-      color: #f5eaff;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
-      margin: 20px 0;
-    }
-    .card {
-      padding: 18px 20px;
-    }
-    .swatch {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      margin: 6px 16px 6px 0;
-    }
-    .dot {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.2);
-      flex-shrink: 0;
-    }
-    .footer {
-      margin-top: 48px;
-      color: rgba(243, 232, 255, 0.56);
-      font-size: 14px;
-    }
+    code { color: #fde68a; background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 6px; font-family: monospace; }
+    pre { background: #120324; border: 1px solid var(--border); border-radius: 16px; padding: 16px; overflow: auto; color: #f5eaff; font-family: monospace; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin: 20px 0; }
+    .card { padding: 18px 20px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+    th { background: rgba(124,58,237,0.2); color: var(--gold); font-weight: 700; padding: 10px 14px; text-align: left; border: 1px solid var(--border); }
+    td { padding: 8px 14px; border: 1px solid var(--border); color: var(--muted); vertical-align: top; }
+    tr:nth-child(even) td { background: rgba(124,58,237,0.05); }
+    .swatch-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
+    .swatch { display: flex; align-items: center; gap: 10px; background: rgba(28,10,58,0.8); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; min-width: 220px; }
+    .swatch-dot { width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; }
+    .swatch-name { font-weight: 700; color: var(--text); font-size: 13px; }
+    .swatch-hex { color: var(--muted); font-size: 12px; font-family: monospace; }
+    .priority { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-left: 6px; }
+    .p1 { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+    .p2 { background: rgba(245,200,66,0.15); color: var(--gold); border: 1px solid rgba(245,200,66,0.3); }
+    .p3 { background: rgba(168,85,247,0.15); color: var(--purple-light); border: 1px solid var(--border); }
+    .footer { margin-top: 48px; color: rgba(243,232,255,0.56); font-size: 14px; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <section class="hero">
-      <div class="eyebrow">ART HANDOFF</div>
-      <h1>巨亨 ONLINE 美術交接文件</h1>
-      <p>更新日期：2026-04-09。這份文件以目前版本為準，重點補上 Banner 純圖片化、懸浮卡頭部裝飾圖與手機 / 桌機的視覺分工。</p>
-    </section>
+<div class="wrap">
+  <section class="hero">
+    <div class="eyebrow">ART HANDOFF</div>
+    <h1>巨亨 ONLINE 美術交接文件</h1>
+    <p>更新日期：2026-05-05。本版本涵蓋官網與遊戲大廳平台（<code>/lobby</code>）的完整美術規格，包含 24 款遊戲卡封面清單、大廳側邊欄 icon 需求、Web館按鈕視覺規格。</p>
+  </section>
 
-    <div class="grid">
-      <section class="card">
-        <h3>Banner 現況</h3>
-        <p>Banner 已改成純圖片輪播，不再需要 Banner 內文與 CTA 設計。</p>
-      </section>
-      <section class="card">
-        <h3>懸浮介面</h3>
-        <p>懸浮卡上方已預留可替換背景圖，前端保留 icon 與標題文字。</p>
-      </section>
-      <section class="card">
-        <h3>CTA 邏輯</h3>
-        <p><code>立即儲</code> 維持金色系，<code>立即玩</code> 已統一為紫色系。</p>
-      </section>
-    </div>
-
-    <h2>目前適合直接換圖的區塊</h2>
-    <ul>
-      <li><code>components/BannerSlider.vue</code>：首頁 Banner，已純圖片化</li>
-      <li><code>components/FloatingPanels.vue</code>：懸浮卡頂部裝飾區</li>
-      <li><code>pages/events.vue</code>：活動主視覺與縮圖</li>
-    </ul>
-
-    <h2>Banner 規格</h2>
-    <ul>
-      <li>比例：<code>16:7</code></li>
-      <li>建議桌機尺寸：<code>1600 x 700</code></li>
-      <li>建議另提供手機版裁切圖</li>
-      <li>目前已不需要 Banner 內文與 CTA 分層</li>
-    </ul>
-
-    <h2>懸浮介面規格</h2>
-    <ul>
-      <li>左側：<code>立即儲</code></li>
-      <li>右側：<code>立即玩 / 玩家資訊</code></li>
-      <li>手機登入後，會員資訊顯示在 Header 右上，不在懸浮按鈕裡</li>
-      <li>適合提供三種卡頭裝飾圖：儲值 / 立即玩 / 玩家資訊</li>
-    </ul>
-
-    <h2>Footer 視覺規格</h2>
-    <ul>
-      <li>桌機版為 4 欄 grid：品牌、快速連結、聯絡方式、社群媒體</li>
-      <li>手機版為精簡版：Logo、社群按鈕、APP 下載、法律聲明</li>
-      <li>社群 icon 目前為 inline SVG，未來建議換成各平台官方品牌版 icon</li>
-      <li>Footer 背景沿用深色系，icon 需考慮在暗底上的辨識度</li>
-    </ul>
-
-    <h2>首頁熱門遊戲卡</h2>
-    <ul>
-      <li>首頁顯示 3 張熱門遊戲卡，教學頁顯示完整 6 張</li>
-      <li>兩者共用同一份 <code>siteContent.games</code> 資料來源</li>
-      <li>目前以色條做識別，未來若改成封面圖需同步考慮兩個頁面</li>
-    </ul>
-
-    <h2>手機懸浮按鈕</h2>
-    <ul>
-      <li>手機版為兩顆獨立精簡按鈕，不是桌機懸浮卡的縮小版</li>
-      <li>左側為 <code>立即儲</code>，右側為 <code>立即玩</code></li>
-      <li>若未來提供手機版素材，請獨立思考這套視覺規格</li>
-    </ul>
-
-    <h2>建議圖檔路徑</h2>
-    <pre>public/images/
-public/images/banner/
-public/images/logo/
-public/images/events/
-public/images/icons/
-public/images/floating/
-public/images/decorations/</pre>
-
-    <h2>配色總表</h2>
-    <p>主要色票集中在 <code>assets/css/main.css</code>：</p>
-    <div class="swatch"><span class="dot" style="background:#0F0020"></span><code>--color-bg #0F0020</code></div>
-    <div class="swatch"><span class="dot" style="background:#1C0A3A"></span><code>--color-bg-card #1C0A3A</code></div>
-    <div class="swatch"><span class="dot" style="background:#250D48"></span><code>--color-bg-card2 #250D48</code></div>
-    <div class="swatch"><span class="dot" style="background:#7C3AED"></span><code>--color-purple-mid #7C3AED</code></div>
-    <div class="swatch"><span class="dot" style="background:#C084FC"></span><code>--color-purple-glow #C084FC</code></div>
-    <div class="swatch"><span class="dot" style="background:#F5C842"></span><code>--color-gold #F5C842</code></div>
-    <div class="swatch"><span class="dot" style="background:#D97706"></span><code>--color-gold-dark #D97706</code></div>
-
-    <h2>建議優先補的素材</h2>
-    <ul>
-      <li>Banner 桌機 / 手機雙版本</li>
-      <li>正式 Logo 套件</li>
-      <li>懸浮卡頭部裝飾圖</li>
-      <li>活動主視覺圖與縮圖</li>
-      <li>Footer 社群 icon 正式品牌版</li>
-      <li>遊戲卡封面圖</li>
-      <li>排行榜 rank badge 規格</li>
-      <li>CTA 按鈕 hover / active 規範</li>
-    </ul>
-
-    <div class="footer">
-      快速原則：換 Banner 看 <code>components/BannerSlider.vue</code>；換懸浮介面視覺看 <code>components/FloatingPanels.vue</code>；換整站風格看 <code>assets/css/main.css</code>。
-    </div>
+  <div class="grid">
+    <section class="card"><h3>風格定位</h3><p>深紫底、金色儲值 CTA、紫色遊戲 CTA，霓虹感娛樂城風格。CSS 漸層 + 光暈為主，少量圖像點綴。</p></section>
+    <section class="card"><h3>兩個平台</h3><p>官網（<code>/</code>）與大廳（<code>/lobby</code>）共用設計語言，但 Layout 架構完全獨立，需分別考慮。</p></section>
+    <section class="card"><h3>重要提醒</h3><p>很多「看起來像圖」的地方其實是 CSS 效果。改版前先判斷：換圖檔，還是改色票 / gradient？</p></section>
   </div>
+
+  <h2>主要色票</h2>
+  <div class="swatch-row">
+    <div class="swatch"><div class="swatch-dot" style="background:#0F0020;border:1px solid #555;"></div><div><div class="swatch-name">主背景</div><div class="swatch-hex">#0F0020</div></div></div>
+    <div class="swatch"><div class="swatch-dot" style="background:#1C0A3A;"></div><div><div class="swatch-name">卡片背景</div><div class="swatch-hex">#1C0A3A</div></div></div>
+    <div class="swatch"><div class="swatch-dot" style="background:#7C3AED;"></div><div><div class="swatch-name">主紫色</div><div class="swatch-hex">#7C3AED</div></div></div>
+    <div class="swatch"><div class="swatch-dot" style="background:#A855F7;"></div><div><div class="swatch-name">淺紫</div><div class="swatch-hex">#A855F7</div></div></div>
+    <div class="swatch"><div class="swatch-dot" style="background:#F5C842;"></div><div><div class="swatch-name">主金色</div><div class="swatch-hex">#F5C842</div></div></div>
+    <div class="swatch"><div class="swatch-dot" style="background:#D97706;"></div><div><div class="swatch-name">深金色</div><div class="swatch-hex">#D97706</div></div></div>
+    <div class="swatch"><div class="swatch-dot" style="background:#F3E8FF;border:1px solid #555;"></div><div><div class="swatch-name">主文字</div><div class="swatch-hex">#F3E8FF</div></div></div>
+    <div class="swatch"><div class="swatch-dot" style="background:#C4B5D5;"></div><div><div class="swatch-name">次文字</div><div class="swatch-hex">#C4B5D5</div></div></div>
+  </div>
+
+  <h2>可直接換圖的區塊</h2>
+
+  <h3>官網首頁 Banner</h3>
+  <ul>
+    <li>位置：<code>components/BannerSlider.vue</code> / <code>data/siteContent.ts &gt; bannerSlides</code></li>
+    <li>比例：<code>16:7</code>，桌機建議 <code>1600×700</code></li>
+    <li>純圖片輪播，不需要 Banner 內文與 CTA 分層</li>
+    <li>手機若另出 <code>mobileImageSrc</code> 則使用手機版，否則沿用桌機圖</li>
+  </ul>
+
+  <h3>Web館預覽圖</h3>
+  <ul>
+    <li>位置：<code>public/lobby.jpeg</code>（固定路徑，前端直接引用）</li>
+    <li>替換方式：直接蓋掉此檔即可，前端不需改程式</li>
+    <li>目前顯示 App 版遊戲大廳截圖；未來 Web 版上線後改為真實 iframe</li>
+  </ul>
+
+  <h3>24 款遊戲卡封面</h3>
+  <p>目前以 <code>color</code> 色條暫代。封面建議 <code>3:4</code> 比例，路徑 <code>public/images/games/{key}.webp</code>。</p>
+  <table>
+    <tr><th>key</th><th>遊戲名稱</th><th>分類</th><th>供應商</th></tr>
+    <tr><td><code>fruit-slots</code></td><td>水果老虎機</td><td>老虎機</td><td>JH Gaming</td></tr>
+    <tr><td><code>dragon-legend</code></td><td>神龍傳奇</td><td>老虎機</td><td>JH Gaming</td></tr>
+    <tr><td><code>lucky-cat-slots</code></td><td>招財貓老虎機</td><td>老虎機</td><td>PG Soft</td></tr>
+    <tr><td><code>mahjong-wins</code></td><td>麻將胡了</td><td>老虎機</td><td>PG Soft</td></tr>
+    <tr><td><code>treasure-hunt</code></td><td>尋寶大冒險</td><td>老虎機</td><td>JH Gaming</td></tr>
+    <tr><td><code>golden-phoenix</code></td><td>金鳳凰</td><td>老虎機</td><td>JH Gaming</td></tr>
+    <tr><td><code>zeus-thunder</code></td><td>宙斯雷神</td><td>老虎機</td><td>PG Soft</td></tr>
+    <tr><td><code>candy-blast</code></td><td>糖果爆爆樂</td><td>老虎機</td><td>PG Soft</td></tr>
+    <tr><td><code>lucky-cat-baccarat</code></td><td>招財貓百家樂</td><td>百家樂</td><td>Evolution</td></tr>
+    <tr><td><code>classic-baccarat</code></td><td>經典百家樂</td><td>百家樂</td><td>Evolution</td></tr>
+    <tr><td><code>speed-baccarat</code></td><td>極速百家樂</td><td>百家樂</td><td>Evolution</td></tr>
+    <tr><td><code>dragon-tiger</code></td><td>龍虎鬥</td><td>百家樂</td><td>JH Gaming</td></tr>
+    <tr><td><code>ocean-fish</code></td><td>海洋捕魚機</td><td>捕魚機</td><td>JH Gaming</td></tr>
+    <tr><td><code>deep-sea</code></td><td>深海獵人</td><td>捕魚機</td><td>JH Gaming</td></tr>
+    <tr><td><code>dragon-fish</code></td><td>龍宮捕魚</td><td>捕魚機</td><td>PG Soft</td></tr>
+    <tr><td><code>neon-fish</code></td><td>霓虹捕魚</td><td>捕魚機</td><td>PG Soft</td></tr>
+    <tr><td><code>fish-shrimp-crab</code></td><td>魚蝦蟹</td><td>骰子</td><td>JH Gaming</td></tr>
+    <tr><td><code>sic-bo</code></td><td>骰寶</td><td>骰子</td><td>JH Gaming</td></tr>
+    <tr><td><code>roulette</code></td><td>歐式輪盤</td><td>骰子</td><td>Evolution</td></tr>
+    <tr><td><code>andar-bahar</code></td><td>Andar Bahar</td><td>骰子</td><td>Evolution</td></tr>
+    <tr><td><code>three-card</code></td><td>三公撲克</td><td>棋牌</td><td>JH Gaming</td></tr>
+    <tr><td><code>texas-holdem</code></td><td>德州撲克</td><td>棋牌</td><td>JH Gaming</td></tr>
+    <tr><td><code>pai-gow</code></td><td>牌九</td><td>棋牌</td><td>JH Gaming</td></tr>
+    <tr><td><code>teen-patti</code></td><td>Teen Patti</td><td>棋牌</td><td>Evolution</td></tr>
+  </table>
+
+  <h2>各區塊視覺規格摘要</h2>
+  <table>
+    <tr><th>區塊</th><th>目前狀態</th><th>美術可提供</th></tr>
+    <tr><td>官網 Banner</td><td>色塊 fallback</td><td>桌機 1600×700 + 手機 crop，WebP</td></tr>
+    <tr><td>Web館預覽圖</td><td>lobby.jpeg（已交付）</td><td>更換同路徑圖片即可</td></tr>
+    <tr><td>遊戲卡封面</td><td>色條暫代</td><td>24 張 3:4 WebP，依 key 命名</td></tr>
+    <tr><td>懸浮卡頭部</td><td>純色塊</td><td>3 張裝飾圖（儲值/立即玩/玩家資訊）</td></tr>
+    <tr><td>漢堡抽屜 icon</td><td>emoji 暫代</td><td>6 個 SVG icon</td></tr>
+    <tr><td>大廳側邊欄 icon</td><td>emoji 暫代</td><td>9 個 SVG icon</td></tr>
+    <tr><td>Logo</td><td>CSS 色塊 + 文字</td><td>SVG 主版 + 深底版 + favicon</td></tr>
+    <tr><td>排行榜 badge</td><td>CSS 數字色塊</td><td>Top 1/2/3 badge SVG</td></tr>
+    <tr><td>Web館按鈕</td><td>紫色漸層脈衝</td><td>替代視覺方案（可選）</td></tr>
+    <tr><td>Footer 社群 icon</td><td>inline SVG</td><td>LINE / FB / IG / TG / X 官方視覺版</td></tr>
+  </table>
+
+  <h2>遊戲視圖規格（Stake 風格）</h2>
+  <ul>
+    <li>Iframe 固定 <code>16:9</code> 比例，頁內展開（非全螢幕）</li>
+    <li>控制列：品牌名稱（目前文字）+ 試玩/真錢 Tab</li>
+    <li>下方資訊區：供應商 Logo（目前色塊首字）+ 遊戲名 + RTP 標籤 + 描述</li>
+    <li>供應商 Logo 建議提供：JH Gaming、PG Soft、Evolution 三家圖示</li>
+  </ul>
+
+  <h2>建議優先補的素材</h2>
+  <table>
+    <tr><th>優先</th><th>素材</th><th>用途</th></tr>
+    <tr><td><span class="priority p1">P1</span></td><td>Banner 桌機 / 手機各版本</td><td>官網首頁主視覺</td></tr>
+    <tr><td><span class="priority p1">P1</span></td><td>24 款遊戲卡封面（3:4 WebP）</td><td>大廳 + 官網共用</td></tr>
+    <tr><td><span class="priority p2">P2</span></td><td>正式 Logo SVG 套件</td><td>官網 + 大廳 Header</td></tr>
+    <tr><td><span class="priority p2">P2</span></td><td>懸浮卡頭部裝飾圖（3 張）</td><td>官網懸浮介面</td></tr>
+    <tr><td><span class="priority p2">P2</span></td><td>活動主視覺 + 縮圖</td><td>活動頁</td></tr>
+    <tr><td><span class="priority p3">P3</span></td><td>Footer 社群品牌 icon</td><td>LINE / FB / IG / TG / X</td></tr>
+    <tr><td><span class="priority p3">P3</span></td><td>導覽 icon SVG（取代 emoji）</td><td>漢堡抽屜 + 大廳側邊欄</td></tr>
+    <tr><td><span class="priority p3">P3</span></td><td>排行榜 rank badge</td><td>排行榜 Top 3</td></tr>
+  </table>
+
+  <h2>分工建議</h2>
+  <div class="grid">
+    <section class="card">
+      <h3>美術提供</h3>
+      <ul>
+        <li>色票 / 品牌識別</li>
+        <li>主視覺圖（Banner、活動）</li>
+        <li>Logo / icon SVG</li>
+        <li>遊戲卡封面（3:4，依 key 命名）</li>
+        <li>懸浮卡頭部裝飾（3 張）</li>
+        <li>rank badge 設計</li>
+        <li>按鈕 hover / active 規範</li>
+      </ul>
+    </section>
+    <section class="card">
+      <h3>前端負責</h3>
+      <ul>
+        <li>掛圖、裁切、響應式適配</li>
+        <li>路徑與 baseURL 處理</li>
+        <li>手機 / 桌機版型適配</li>
+        <li>互動狀態整合</li>
+        <li>遊戲 key 對應圖檔</li>
+      </ul>
+    </section>
+  </div>
+
+  <p class="footer">巨亨 ONLINE 美術交接文件 · 更新日期：2026-05-05</p>
+</div>
 </body>
 </html>
