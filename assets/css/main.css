@@ -813,12 +813,20 @@ body {
   z-index: 200;
   width: 150px;
   flex-direction: column;
-  border: 2.5px solid rgba(255,255,255,0.55);
+  border: 1px solid transparent;
   border-radius: 18px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 18px 40px rgba(0,0,0,0.38);
+  /* overflow: hidden 移至 .fp-inner，避免干擾 background-clip 邊框光澤 */
+}
+/* 內容裁切層：負責 overflow hidden 與圓角，不影響外層邊框渲染 */
+.fp-inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
   overflow: hidden;
+  border-radius: 17px; /* 比 .fp 的 18px 少 1px（border 厚度） */
 }
 .fp-mobile-btn {
   position: fixed;
@@ -869,19 +877,33 @@ body {
 }
 .fp-left {
   left: 20px;
-  background: linear-gradient(180deg,
-    rgba(255,255,255,0.05)  0%,
-    rgba(255,255,255,0.10) 50%,
-    rgba(255,255,255,0.20) 100%
-  );
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,0.05)  0%,
+      rgba(255,255,255,0.10) 50%,
+      rgba(255,255,255,0.20) 100%
+    ) padding-box,
+    linear-gradient(145deg,
+      rgba(255,255,255,0.85)  0%,
+      rgba(255,255,255,0.30) 30%,
+      rgba(255,255,255,0.30) 70%,
+      rgba(255,255,255,0.65) 100%
+    ) border-box;
 }
 .fp-right {
   right: 20px;
-  background: linear-gradient(180deg,
-    rgba(255,255,255,0.05)  0%,
-    rgba(255,255,255,0.10) 50%,
-    rgba(255,255,255,0.20) 100%
-  );
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,0.05)  0%,
+      rgba(255,255,255,0.10) 50%,
+      rgba(255,255,255,0.20) 100%
+    ) padding-box,
+    linear-gradient(145deg,
+      rgba(255,255,255,0.85)  0%,
+      rgba(255,255,255,0.30) 30%,
+      rgba(255,255,255,0.30) 70%,
+      rgba(255,255,255,0.65) 100%
+    ) border-box;
 }
 
 /* 裝飾標題區 */
