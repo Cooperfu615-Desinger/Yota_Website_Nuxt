@@ -81,6 +81,7 @@ export interface GameItem {
   color: string
   category: string
   provider: string
+  imageSrc?: string
 }
 
 export interface GameCategory {
@@ -211,16 +212,16 @@ export const siteContent = {
   ] satisfies GameCategory[],
   games: [
     // ── 老虎機 ──
-    { key: 'fruit-slots',     name: '水果老虎機',   desc: '經典水果符號，多線賠率',        badge: '熱門',  rtp: '96.5%', color: '#F5C842', category: 'slots',    provider: 'JH Gaming' },
-    { key: 'dragon-legend',   name: '神龍傳奇',     desc: '亞洲神話主題大獎機',            badge: '熱門',  rtp: '95.5%', color: '#A855F7', category: 'slots',    provider: 'JH Gaming' },
-    { key: 'lucky-cat-slots', name: '招財貓老虎機', desc: '招財主題，Free Spin 加倍',      badge: '新上線', rtp: '97.2%', color: '#60A5FA', category: 'slots',    provider: 'PG Soft'   },
-    { key: 'mahjong-wins',    name: '麻將胡了',     desc: '麻將主題老虎機',                badge: null,   rtp: '96.2%', color: '#F87171', category: 'slots',    provider: 'PG Soft'   },
-    { key: 'treasure-hunt',   name: '尋寶大冒險',   desc: '冒險主題，寶藏彩蛋多多',        badge: null,   rtp: '96.8%', color: '#4ade80', category: 'slots',    provider: 'JH Gaming' },
-    { key: 'golden-phoenix',  name: '金鳳凰',       desc: '東方神話，倍率驚人',            badge: '熱門',  rtp: '96.0%', color: '#FCD34D', category: 'slots',    provider: 'JH Gaming' },
-    { key: 'zeus-thunder',    name: '宙斯雷神',     desc: '西方神話主題，免費旋轉多',      badge: null,   rtp: '95.9%', color: '#93C5FD', category: 'slots',    provider: 'PG Soft'   },
-    { key: 'candy-blast',     name: '糖果爆爆樂',   desc: '甜蜜主題，Megaways 玩法',       badge: '新上線', rtp: '97.5%', color: '#FB7185', category: 'slots',    provider: 'PG Soft'   },
+    { key: 'fruit-slots',     name: '水果老虎機',   desc: '經典水果符號，多線賠率',        badge: '熱門',  rtp: '96.5%', color: '#F5C842', category: 'slots',    provider: 'JH Gaming', imageSrc: '/hotgame_001.avif' },
+    { key: 'dragon-legend',   name: '神龍傳奇',     desc: '亞洲神話主題大獎機',            badge: '熱門',  rtp: '95.5%', color: '#A855F7', category: 'slots',    provider: 'JH Gaming', imageSrc: '/hotgame_002.avif' },
+    { key: 'lucky-cat-slots', name: '招財貓老虎機', desc: '招財主題，Free Spin 加倍',      badge: '新上線', rtp: '97.2%', color: '#60A5FA', category: 'slots',    provider: 'PG Soft',   imageSrc: '/hotgame_003.avif' },
+    { key: 'mahjong-wins',    name: '麻將胡了',     desc: '麻將主題老虎機',                badge: null,   rtp: '96.2%', color: '#F87171', category: 'slots',    provider: 'PG Soft',   imageSrc: '/hotgame_004.avif' },
+    { key: 'treasure-hunt',   name: '尋寶大冒險',   desc: '冒險主題，寶藏彩蛋多多',        badge: null,   rtp: '96.8%', color: '#4ade80', category: 'slots',    provider: 'JH Gaming', imageSrc: '/hotgame_005.avif' },
+    { key: 'golden-phoenix',  name: '金鳳凰',       desc: '東方神話，倍率驚人',            badge: '熱門',  rtp: '96.0%', color: '#FCD34D', category: 'slots',    provider: 'JH Gaming', imageSrc: '/hotgame_006.avif' },
+    { key: 'zeus-thunder',    name: '宙斯雷神',     desc: '西方神話主題，免費旋轉多',      badge: null,   rtp: '95.9%', color: '#93C5FD', category: 'slots',    provider: 'PG Soft',   imageSrc: '/hotgame_007.avif' },
+    { key: 'candy-blast',     name: '糖果爆爆樂',   desc: '甜蜜主題，Megaways 玩法',       badge: '新上線', rtp: '97.5%', color: '#FB7185', category: 'slots',    provider: 'PG Soft',   imageSrc: '/hotgame_008.avif' },
     // ── 百家樂 ──
-    { key: 'lucky-cat-baccarat', name: '招財貓百家樂', desc: '亞洲最受歡迎桌遊',          badge: '新上線', rtp: '98.9%', color: '#60A5FA', category: 'baccarat', provider: 'Evolution' },
+    { key: 'lucky-cat-baccarat', name: '招財貓百家樂', desc: '亞洲最受歡迎桌遊',          badge: '新上線', rtp: '98.9%', color: '#60A5FA', category: 'baccarat', provider: 'Evolution', imageSrc: '/hotgame_009.avif' },
     { key: 'classic-baccarat',   name: '經典百家樂',   desc: '正宗六副牌，極速開牌',      badge: '熱門',  rtp: '98.9%', color: '#818CF8', category: 'baccarat', provider: 'Evolution' },
     { key: 'speed-baccarat',     name: '極速百家樂',   desc: '快速開牌，30 秒一局',       badge: null,   rtp: '98.9%', color: '#C4B5FD', category: 'baccarat', provider: 'Evolution' },
     { key: 'dragon-tiger',       name: '龍虎鬥',       desc: '簡單刺激，一張定輸贏',      badge: '熱門',  rtp: '96.3%', color: '#FCA5A5', category: 'baccarat', provider: 'JH Gaming' },

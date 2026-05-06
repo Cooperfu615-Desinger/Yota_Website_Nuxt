@@ -698,6 +698,30 @@ body {
   color: var(--color-text-muted);
 }
 
+/* ── 熱門遊戲橫向滾動 ── */
+.games-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
+  /* 隱藏滾動條 */
+  scrollbar-width: none;
+}
+.games-scroll::-webkit-scrollbar {
+  display: none;
+}
+.games-scroll-card {
+  width: 152px;
+  scroll-snap-align: start;
+}
+@media (min-width: 1024px) {
+  .games-scroll-card {
+    width: 180px;
+  }
+}
+
 /* ── 標籤 ── */
 .tag-new {
   display: inline-block;

@@ -25,7 +25,7 @@ function setLeaderboardTab(tabKey: LeaderboardTabKey) {
 const quickLinks = siteContent.homepage.quickLinks
 const news = siteContent.homepage.news
 const featuredEvents = siteContent.homepage.featuredEvents
-const featuredGames = siteContent.games.slice(0, 3)
+const featuredGames = siteContent.games.slice(0, 9)
 </script>
 
 <template>
@@ -109,35 +109,43 @@ const featuredGames = siteContent.games.slice(0, 3)
       </section>
 
       <!-- 熱門遊戲 -->
-      <section class="px-4 pb-4" aria-labelledby="games-heading">
-        <div class="flex items-center justify-between mb-3">
+      <section class="pb-4" aria-labelledby="games-heading">
+        <div class="flex items-center justify-between mb-3 px-4">
           <h2 id="games-heading" class="section-title">熱門遊戲</h2>
           <NuxtLink to="/tutorial" class="text-xs no-underline" style="color:var(--color-purple-light);">探索更多 →</NuxtLink>
         </div>
-        <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
+        <div class="games-scroll px-4">
           <NuxtLink
             v-for="game in featuredGames"
             :key="game.name"
             to="/tutorial"
-            class="card-purple overflow-hidden no-underline block"
+            class="games-scroll-card card-purple overflow-hidden no-underline block flex-shrink-0"
             :aria-label="`${game.name}，RTP ${game.rtp}`"
           >
-            <!-- 遊戲封面（美術出圖替換） -->
-            <div
-              class="aspect-video flex items-center justify-center relative"
-              :style="{ background: `linear-gradient(135deg, var(--color-purple-dark), ${game.color}33)` }"
-            >
-              <span class="text-4xl" aria-hidden="true">🎮</span>
+            <!-- 遊戲封面 -->
+            <div class="relative" style="aspect-ratio:4/3;">
+              <img
+                v-if="game.imageSrc"
+                :src="baseURL.replace(/\/$/, '') + game.imageSrc"
+                :alt="game.name"
+                class="w-full h-full object-cover block"
+              />
+              <div
+                v-else
+                class="w-full h-full flex items-center justify-center"
+                :style="{ background: `linear-gradient(135deg, var(--color-purple-dark), ${game.color}33)` }"
+              >
+                <span class="text-4xl" aria-hidden="true">🎮</span>
+              </div>
               <span
                 v-if="game.badge"
                 class="absolute top-1.5 left-1.5 text-xs font-bold px-1.5 py-0.5 rounded"
                 :class="game.badge === '新上線' ? 'tag-hot' : 'tag-new'"
               >{{ game.badge }}</span>
             </div>
-            <div class="p-3">
-              <h3 class="font-bold text-sm mb-0.5">{{ game.name }}</h3>
-              <p class="text-xs" style="color:var(--color-text-muted);">{{ game.desc }}</p>
-              <div class="flex items-center justify-between mt-2">
+            <div class="p-2.5">
+              <h3 class="font-bold text-sm mb-0.5 truncate">{{ game.name }}</h3>
+              <div class="flex items-center justify-between mt-1">
                 <span class="text-xs" style="color:var(--color-purple-light);">RTP {{ game.rtp }}</span>
                 <span class="text-xs px-2 py-0.5 rounded-full font-bold" style="background:rgba(245,200,66,0.15); color:var(--color-gold); border:1px solid rgba(245,200,66,0.3);">試玩</span>
               </div>
