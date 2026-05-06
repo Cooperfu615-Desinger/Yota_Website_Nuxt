@@ -30,33 +30,27 @@ const featuredGames = siteContent.games.slice(0, 9)
 
 <template>
   <div>
-    <!-- 跑馬燈（全寬） -->
-    <AppMarquee />
-
     <!-- Banner 輪播（全寬） -->
     <BannerSlider />
 
-    <!-- CTA + 快速入口（全寬，卡片背景） -->
-    <div style="background:var(--color-bg-card); border-bottom:1px solid var(--color-border);">
-      <div class="content-narrow px-4 py-4">
-        <!-- 快速入口 -->
-        <div class="grid grid-cols-4 gap-2 lg:gap-3">
+    <!-- 四顆快速入口按鈕 -->
+    <div class="quick-links-bar">
+      <div class="content-narrow px-4 py-3">
+        <nav class="quick-links-row" aria-label="快速入口">
           <NuxtLink
             v-for="link in quickLinks"
             :key="link.key"
             :to="link.to"
-            class="flex flex-col items-center gap-1.5 py-2 lg:py-3 rounded-xl no-underline"
-            style="background:rgba(168,85,247,0.1); border:1px solid var(--color-border);"
+            class="quick-btn no-underline"
           >
-            <svg v-if="link.key === 'deposit'" class="w-6 h-6" style="color:var(--color-gold);" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-            <svg v-else-if="link.key === 'events'" class="w-6 h-6" style="color:#f87171;" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
-            <svg v-else-if="link.key === 'leaderboard'" class="w-6 h-6" style="color:#4ade80;" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 8v8m-4-5v5m-4-2v2M4 20h16"/></svg>
-            <svg v-else class="w-6 h-6" style="color:var(--color-purple-glow);" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-            <span class="text-xs" :style="{ color: link.color }">{{ link.label }}</span>
+            {{ link.label }}
           </NuxtLink>
-        </div>
+        </nav>
       </div>
     </div>
+
+    <!-- 跑馬燈 -->
+    <AppMarquee />
 
     <!-- 內容區（單欄，置中縮窄） -->
     <div class="content-narrow">
