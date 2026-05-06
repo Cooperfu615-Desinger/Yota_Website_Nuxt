@@ -2,6 +2,8 @@
 import { siteContent } from '~/data/siteContent'
 
 const slides = siteContent.bannerSlides
+const { app: { baseURL } } = useRuntimeConfig()
+const base = baseURL.replace(/\/$/, '')
 const { current, total, slideStyle, next, prev, goTo, onTouchStart, onTouchEnd } = useBannerSlider(slides.length, 4000)
 </script>
 
@@ -25,7 +27,7 @@ const { current, total, slideStyle, next, prev, goTo, onTouchStart, onTouchEnd }
           <img
             v-if="slide.imageSrc"
             class="banner-slide-image"
-            :src="slide.imageSrc"
+            :src="base + slide.imageSrc"
             :alt="slide.imageAlt"
           >
           <div v-else class="banner-slide-fallback" aria-hidden="true" />

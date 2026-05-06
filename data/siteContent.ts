@@ -165,21 +165,25 @@ export const siteContent = {
     {
       ariaLabel: '第1張，首頁主視覺 Banner',
       imageAlt: '巨亨 ONLINE 首頁主視覺 Banner',
+      imageSrc: '/banner_001.png',
       background: 'linear-gradient(135deg, #1a003a 0%, #3B0764 40%, #6B21A8 100%)',
     },
     {
       ariaLabel: '第2張，活動 Banner',
       imageAlt: '巨亨 ONLINE 活動宣傳 Banner',
+      imageSrc: '/banner_002.png',
       background: 'linear-gradient(135deg, #1a0a00 0%, #7C2D12 50%, #1a003a 100%)',
     },
     {
       ariaLabel: '第3張，排行榜 Banner',
       imageAlt: '巨亨 ONLINE 排行榜宣傳 Banner',
+      imageSrc: '/banner_003.png',
       background: 'linear-gradient(135deg, #0a1a00 0%, #166534 50%, #1a003a 100%)',
     },
     {
       ariaLabel: '第4張，APP Banner',
       imageAlt: '巨亨 ONLINE APP 下載 Banner',
+      imageSrc: '/banner_004.png',
       background: 'linear-gradient(135deg, #1a003a 0%, #0F0020 50%, #1C0A3A 100%)',
     },
   ] satisfies BannerSlide[],
