@@ -10,6 +10,7 @@ useSeoMeta({
 })
 
 const { lastUpdate } = useLeaderboardTimer()
+const { app: { baseURL } } = useRuntimeConfig()
 
 const leaderboardTabs = siteContent.leaderboard.tabs.filter(tab => tab.key !== 'event')
 const leaderboardTab = ref<LeaderboardTabKey>(leaderboardTabs[0].key)
@@ -91,7 +92,7 @@ const featuredGames = siteContent.games.slice(0, 3)
             <!-- 活動主視覺圖（有圖優先顯示圖） -->
             <img
               v-if="event.imageSrc"
-              :src="event.imageSrc"
+              :src="baseURL.replace(/\/$/, '') + event.imageSrc"
               :alt="event.title"
               class="w-full h-auto block"
             />
