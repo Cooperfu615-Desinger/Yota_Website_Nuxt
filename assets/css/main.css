@@ -1195,7 +1195,7 @@ body {
 /* ── 懸浮固定側邊面板 ── */
 .fp {
   position: fixed;
-  top: calc(var(--nav-h) + 48px);
+  top: calc(var(--nav-h) + 198px);
   z-index: 200;
   width: 150px;
   flex-direction: column;
@@ -1228,7 +1228,7 @@ body {
   position: fixed;
   top: calc(var(--nav-h) + 32px);
   z-index: 220;
-  width: 75px;
+  width: 90px;
   padding: 0;
   border: none;
   background: transparent;
@@ -1610,7 +1610,7 @@ body {
 @media (min-width: 1024px) {
   .fp {
     display: flex;
-    top: calc(var(--nav-h) + 56px);
+    top: calc(var(--nav-h) + 206px);
   }
 
   .fp-left {
