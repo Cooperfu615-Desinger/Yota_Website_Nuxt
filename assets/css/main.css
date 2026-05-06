@@ -109,10 +109,7 @@ body {
   justify-content: center;
   padding: 10px 4px;
   border-radius: 999px;
-  background: linear-gradient(180deg,
-    rgba(90, 65, 180, 0.75) 0%,
-    rgba(25, 12, 70, 0.92)  100%
-  );
+  background: linear-gradient(180deg, #1A1A3F 0%, #4352B0 100%);
   border: 1px solid rgba(255,255,255,0.22);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.15),
@@ -126,10 +123,7 @@ body {
   transition: background 0.18s, box-shadow 0.18s;
 }
 .quick-btn:hover {
-  background: linear-gradient(180deg,
-    rgba(120, 90, 220, 0.85) 0%,
-    rgba(45, 22, 110, 0.95)  100%
-  );
+  background: linear-gradient(180deg, #222260 0%, #5566cc 100%);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.22),
     0 6px 18px rgba(0,0,0,0.4);
