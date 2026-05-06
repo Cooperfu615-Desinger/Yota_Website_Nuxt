@@ -76,17 +76,17 @@ const featuredGames = siteContent.games.slice(0, 9)
       </section>
 
       <!-- 熱門活動 -->
-      <section class="px-4 pb-4" aria-labelledby="events-heading">
-        <div class="flex items-center justify-between mb-3">
+      <section class="pb-4" aria-labelledby="events-heading">
+        <div class="flex items-center justify-between mb-3 px-4">
           <h2 id="events-heading" class="section-title">熱門活動</h2>
           <NuxtLink to="/events" class="text-xs no-underline" style="color:var(--color-purple-light);">查看全部 →</NuxtLink>
         </div>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <div class="events-scroll px-4">
           <NuxtLink
             v-for="event in featuredEvents"
             :key="event.title"
             :to="event.to"
-            class="card-purple no-underline block overflow-hidden"
+            class="events-scroll-card card-purple no-underline block overflow-hidden flex-shrink-0"
             :aria-label="event.title"
           >
             <!-- 活動主視覺圖（有圖優先顯示圖） -->

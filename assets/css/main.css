@@ -698,6 +698,31 @@ body {
   color: var(--color-text-muted);
 }
 
+/* ── 熱門活動橫向滾動 ── */
+.events-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+.events-scroll::-webkit-scrollbar {
+  display: none;
+}
+/* 手機：一次顯示一張，寬度約為容器（扣掉兩側 px-4 各 16px + 右側下一張露出 12px） */
+.events-scroll-card {
+  width: calc(50vw - 22px);
+  scroll-snap-align: start;
+}
+@media (min-width: 1024px) {
+  .events-scroll-card {
+    width: calc(33.333% - 8px);
+    flex-shrink: 0;
+  }
+}
+
 /* ── 熱門遊戲橫向滾動 ── */
 .games-scroll {
   display: flex;
