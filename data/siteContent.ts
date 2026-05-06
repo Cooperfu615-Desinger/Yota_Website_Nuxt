@@ -67,10 +67,9 @@ export interface HistoryItem {
 
 export interface FeaturedEventCard {
   to: string
-  status: string
   title: string
-  subtitle: string
-  background: string
+  imageSrc?: string   // 活動主視覺圖（優先顯示）
+  background: string  // 無圖時的 fallback 漸層
 }
 
 export interface GameItem {
@@ -196,9 +195,9 @@ export const siteContent = {
       { type: 'activity', label: '活動', title: '新手首儲禮包升級！最高獲得 5,000 點額外贈點', time: '昨天' },
     ] satisfies NewsItem[],
     featuredEvents: [
-      { to: '/events', status: '進行中', title: '百萬大獎賽', subtitle: '獎金池 NT$1,280,000', background: 'linear-gradient(135deg,#1a003a,#7C3AED)' },
-      { to: '/events', status: '長期活動', title: '新手首儲 +100%', subtitle: '首次儲值即享雙倍點數', background: 'linear-gradient(135deg,#1a0a00,#D97706)' },
-      { to: '/tutorial', status: 'APP 限定', title: '新手下載禮', subtitle: '下載 APP 即送 $50 體驗金', background: 'linear-gradient(135deg,#042f4b,#0369a1)' },
+      { to: '/events',  title: '百萬大獎賽',   imageSrc: '/event_001.png', background: 'linear-gradient(135deg,#1a003a,#7C3AED)' },
+      { to: '/events',  title: '春節限定活動', imageSrc: '/event_002.png', background: 'linear-gradient(135deg,#2d0a0a,#991b1b)' },
+      { to: '/events',  title: '新手首儲禮',   imageSrc: '/event_003.png', background: 'linear-gradient(135deg,#1a0a00,#D97706)' },
     ] satisfies FeaturedEventCard[],
   },
   gameCategories: [

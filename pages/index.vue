@@ -85,12 +85,24 @@ const featuredGames = siteContent.games.slice(0, 3)
             v-for="event in featuredEvents"
             :key="event.title"
             :to="event.to"
-            class="card-purple p-4 no-underline block"
-            :style="{ background: event.background }"
+            class="card-purple no-underline block overflow-hidden"
+            :aria-label="event.title"
           >
-            <div class="text-xs font-bold mb-1" style="color:var(--color-gold);">{{ event.status }}</div>
-            <div class="font-black text-white">{{ event.title }}</div>
-            <div class="text-xs mt-1" style="color:rgba(255,255,255,0.6);">{{ event.subtitle }}</div>
+            <!-- 活動主視覺圖（有圖優先顯示圖） -->
+            <img
+              v-if="event.imageSrc"
+              :src="event.imageSrc"
+              :alt="event.title"
+              class="w-full h-auto block"
+            />
+            <!-- 無圖 fallback：漸層色塊 -->
+            <div
+              v-else
+              class="w-full aspect-video flex items-center justify-center"
+              :style="{ background: event.background }"
+            >
+              <span class="font-black text-white text-lg">{{ event.title }}</span>
+            </div>
           </NuxtLink>
         </div>
       </section>
