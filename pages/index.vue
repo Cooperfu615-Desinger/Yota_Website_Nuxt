@@ -123,16 +123,17 @@ const featuredGames = siteContent.games.slice(0, 9)
             :aria-label="`${game.name}，RTP ${game.rtp}`"
           >
             <!-- 遊戲封面 -->
-            <div class="relative" style="aspect-ratio:4/3;">
+            <div class="relative">
               <img
                 v-if="game.imageSrc"
                 :src="baseURL.replace(/\/$/, '') + game.imageSrc"
                 :alt="game.name"
-                class="w-full h-full object-cover block"
+                class="w-full h-auto block"
               />
               <div
                 v-else
-                class="w-full h-full flex items-center justify-center"
+                class="w-full flex items-center justify-center"
+                style="aspect-ratio:4/3;"
                 :style="{ background: `linear-gradient(135deg, var(--color-purple-dark), ${game.color}33)` }"
               >
                 <span class="text-4xl" aria-hidden="true">🎮</span>
@@ -146,7 +147,7 @@ const featuredGames = siteContent.games.slice(0, 9)
             <div class="p-2.5">
               <h3 class="font-bold text-sm mb-0.5 truncate">{{ game.name }}</h3>
               <div class="flex items-center justify-between mt-1">
-                <span class="text-xs" style="color:var(--color-purple-light);">RTP {{ game.rtp }}</span>
+                <span class="text-xs" style="color:#fff;">RTP {{ game.rtp }}</span>
                 <span class="text-xs px-2 py-0.5 rounded-full font-bold" style="background:rgba(245,200,66,0.15); color:var(--color-gold); border:1px solid rgba(245,200,66,0.3);">試玩</span>
               </div>
             </div>
