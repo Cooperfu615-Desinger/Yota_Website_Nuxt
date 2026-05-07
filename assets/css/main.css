@@ -359,16 +359,51 @@ body {
 }
 
 /* 圖片式區塊標題 */
-.section-title-img {
-  width: 100px;
-  height: auto;
-  display: block;
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-@media (min-width: 1024px) {
-  .section-title-img {
-    width: 162px;
-  }
+.section-title-line {
+  flex: 1;
+  height: 1px;
+}
+
+.section-title-line:first-child {
+  background: linear-gradient(to right, rgba(255, 213, 153, 0), #FFD599);
+}
+
+.section-title-line:last-child {
+  background: linear-gradient(to left, rgba(255, 213, 153, 0), #FFD599);
+}
+
+.section-title-img {
+  height: 60px;
+  width: auto;
+  display: block;
+  flex-shrink: 0;
+}
+
+/* 查看更多按鈕 */
+.section-more-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 32px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(147, 197, 253, 0.6);
+  color: #93c5fd;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  background: rgba(147, 197, 253, 0.08);
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.section-more-btn:hover {
+  background: rgba(147, 197, 253, 0.15);
+  border-color: rgba(147, 197, 253, 0.9);
 }
 
 /* ── 排行榜條目 ── */
