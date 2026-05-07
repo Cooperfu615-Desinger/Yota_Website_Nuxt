@@ -22,6 +22,7 @@ function handlePlay(mode: 'real' | 'demo') {
     <!-- 遊戲封面圖區域 -->
     <div
       class="game-card-cover"
+      :class="{ 'game-card-cover--fallback': !game.imageSrc }"
       :style="game.imageSrc ? undefined : { background: `linear-gradient(135deg, ${game.color}22 0%, ${game.color}55 100%)` }"
     >
       <!-- 有圖：顯示 AVIF -->
