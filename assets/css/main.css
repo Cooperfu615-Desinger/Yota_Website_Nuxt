@@ -783,6 +783,29 @@ body {
   border-color: rgba(255, 255, 255, 0.45);
 }
 
+/* 登入鈕：綠色漸層 */
+.modal-inner .btn-gold {
+  background: linear-gradient(180deg, #A3FFD1 0%, #1AB16D 100%);
+  color: #0a3d25;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  text-shadow: none;
+}
+
+.modal-inner .btn-gold:hover,
+.modal-inner .btn-gold:active {
+  background: linear-gradient(180deg, #b8ffe0 0%, #1fcc7e 100%);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* 社群帳號鈕：60×60px + 白色邊框 + 陰影 */
+.modal-inner .social-login-btn {
+  width: 60px;
+  height: 60px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
 /* ── H5 大廳 Modal ── */
 .lobby-modal-overlay {
   position: fixed;
