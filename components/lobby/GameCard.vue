@@ -5,6 +5,8 @@ const props = defineProps<{ game: GameItem }>()
 const emit = defineEmits<{ play: [key: string, mode: 'real' | 'demo'] }>()
 
 const { isLoggedIn, openLogin } = useAppState()
+const { app: { baseURL } } = useRuntimeConfig()
+const base = baseURL.replace(/\/$/, '')
 
 function handlePlay(mode: 'real' | 'demo') {
   if (mode === 'real' && !isLoggedIn.value) {
@@ -17,12 +19,20 @@ function handlePlay(mode: 'real' | 'demo') {
 
 <template>
   <div class="game-card">
-    <!-- 遊戲封面圖區域（美術可替換） -->
+    <!-- 遊戲封面圖區域 -->
     <div
       class="game-card-cover"
-      :style="{ background: `linear-gradient(135deg, ${game.color}22 0%, ${game.color}55 100%)` }"
+      :style="game.imageSrc ? undefined : { background: `linear-gradient(135deg, ${game.color}22 0%, ${game.color}55 100%)` }"
     >
-      <div class="game-card-cover-inner" :style="{ color: game.color }">
+      <!-- 有圖：顯示 AVIF -->
+      <img
+        v-if="game.imageSrc"
+        :src="base + game.imageSrc"
+        :alt="game.name"
+        class="game-card-img"
+      />
+      <!-- 無圖 fallback：色塊 + 首字 -->
+      <div v-else class="game-card-cover-inner" :style="{ color: game.color }">
         {{ game.name.charAt(0) }}
       </div>
       <div v-if="game.badge" class="game-card-badge">{{ game.badge }}</div>

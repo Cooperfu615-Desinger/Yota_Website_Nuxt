@@ -7,7 +7,7 @@ const emit = defineEmits<{ play: [key: string, mode: 'real' | 'demo'] }>()
 const activeCategory = ref(props.category ?? 'all')
 const searchQuery = ref('')
 
-const allGames: GameItem[] = [...siteContent.games] as GameItem[]
+const allGames: GameItem[] = [...siteContent.lobbyGames] as GameItem[]
 
 const filteredGames = computed((): GameItem[] => {
   let list = allGames

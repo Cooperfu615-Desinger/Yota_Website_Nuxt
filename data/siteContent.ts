@@ -253,6 +253,42 @@ export const siteContent = {
     { key: 'pai-gow',      name: '牌九',       desc: '傳統骨牌遊戲，策略深',             badge: null,   rtp: '97.2%', color: '#FCD34D', category: 'cards',    provider: 'JH Gaming' },
     { key: 'teen-patti',   name: 'Teen Patti', desc: '南亞最夯紙牌遊戲',                badge: '新上線', rtp: '96.9%', color: '#A78BFA', category: 'cards',    provider: 'Evolution' },
   ] satisfies GameItem[],
+  lobbyGames: [
+    // ── 活動遊戲 eventgame × 6（badge: 活動）──
+    { key: 'lobby-eventgame-001', name: '活動限定老虎機',   desc: '限時活動獨家遊戲',      badge: '活動',  rtp: '96.5%', color: '#F5C842', category: 'slots',    provider: 'JH Gaming', imageSrc: '/eventgame_001.avif' },
+    { key: 'lobby-eventgame-002', name: '活動黃金轉盤',     desc: '活動期間倍率加成',      badge: '活動',  rtp: '96.8%', color: '#A855F7', category: 'slots',    provider: 'JH Gaming', imageSrc: '/eventgame_002.avif' },
+    { key: 'lobby-eventgame-003', name: '節慶嘉年華',       desc: '節慶主題，好禮不斷',    badge: '活動',  rtp: '96.2%', color: '#F87171', category: 'slots',    provider: 'PG Soft',   imageSrc: '/eventgame_003.avif' },
+    { key: 'lobby-eventgame-004', name: '活動霸主爭霸',     desc: '活動專屬大獎機',        badge: '活動',  rtp: '95.9%', color: '#4ade80', category: 'slots',    provider: 'PG Soft',   imageSrc: '/eventgame_004.avif' },
+    { key: 'lobby-eventgame-005', name: '活動百家樂大賽',   desc: '活動限定百家樂賽事',    badge: '活動',  rtp: '98.9%', color: '#60A5FA', category: 'baccarat', provider: 'Evolution', imageSrc: '/eventgame_005.avif' },
+    { key: 'lobby-eventgame-006', name: '活動財神降臨',     desc: '財神主題，活動加碼',    badge: '活動',  rtp: '96.4%', color: '#FCD34D', category: 'slots',    provider: 'JH Gaming', imageSrc: '/eventgame_006.avif' },
+    // ── 新遊戲 newgame × 5（badge: 新上線）──
+    { key: 'lobby-newgame-001',   name: '新星老虎機',       desc: '全新上線，首玩必試',    badge: '新上線', rtp: '97.2%', color: '#60A5FA', category: 'slots',    provider: 'PG Soft',   imageSrc: '/newgame_001.avif' },
+    { key: 'lobby-newgame-002',   name: '新春大富翁',       desc: '新年主題，喜氣洋洋',    badge: '新上線', rtp: '96.8%', color: '#FB7185', category: 'slots',    provider: 'PG Soft',   imageSrc: '/newgame_002.avif' },
+    { key: 'lobby-newgame-003',   name: '新世界冒險',       desc: '探索新大陸，贏取寶藏',  badge: '新上線', rtp: '97.0%', color: '#4ade80', category: 'slots',    provider: 'JH Gaming', imageSrc: '/newgame_003.avif' },
+    { key: 'lobby-newgame-004',   name: '新星招財貓',       desc: '全新招財主題，好運不斷',badge: '新上線', rtp: '97.5%', color: '#FCD34D', category: 'slots',    provider: 'PG Soft',   imageSrc: '/newgame_004.avif' },
+    { key: 'lobby-newgame-005',   name: '新式骰寶',         desc: '全新玩法，骰子新體驗',  badge: '新上線', rtp: '97.1%', color: '#FBBF24', category: 'dice',     provider: 'JH Gaming', imageSrc: '/newgame_005.avif' },
+    // ── 熱門遊戲 hotgame × 9（badge: 熱門）──
+    { key: 'lobby-hotgame-001',   name: '水果老虎機',       desc: '經典水果符號，多線賠率',badge: '熱門',  rtp: '96.5%', color: '#F5C842', category: 'slots',    provider: 'JH Gaming', imageSrc: '/hotgame_001.avif' },
+    { key: 'lobby-hotgame-002',   name: '神龍傳奇',         desc: '亞洲神話主題大獎機',    badge: '熱門',  rtp: '95.5%', color: '#A855F7', category: 'slots',    provider: 'JH Gaming', imageSrc: '/hotgame_002.avif' },
+    { key: 'lobby-hotgame-003',   name: '招財貓老虎機',     desc: 'Free Spin 加倍',        badge: '熱門',  rtp: '97.2%', color: '#60A5FA', category: 'slots',    provider: 'PG Soft',   imageSrc: '/hotgame_003.avif' },
+    { key: 'lobby-hotgame-004',   name: '麻將胡了',         desc: '麻將主題老虎機',        badge: '熱門',  rtp: '96.2%', color: '#F87171', category: 'slots',    provider: 'PG Soft',   imageSrc: '/hotgame_004.avif' },
+    { key: 'lobby-hotgame-005',   name: '尋寶大冒險',       desc: '冒險主題，寶藏彩蛋多',  badge: '熱門',  rtp: '96.8%', color: '#4ade80', category: 'slots',    provider: 'JH Gaming', imageSrc: '/hotgame_005.avif' },
+    { key: 'lobby-hotgame-006',   name: '金鳳凰',           desc: '東方神話，倍率驚人',    badge: '熱門',  rtp: '96.0%', color: '#FCD34D', category: 'slots',    provider: 'JH Gaming', imageSrc: '/hotgame_006.avif' },
+    { key: 'lobby-hotgame-007',   name: '真人百家樂',       desc: '真人荷官，臨場感十足',  badge: '熱門',  rtp: '98.9%', color: '#818CF8', category: 'baccarat', provider: 'Evolution', imageSrc: '/hotgame_007.avif' },
+    { key: 'lobby-hotgame-008',   name: '極速百家樂',       desc: '快速開牌，30秒一局',    badge: '熱門',  rtp: '98.9%', color: '#C4B5FD', category: 'baccarat', provider: 'Evolution', imageSrc: '/hotgame_008.avif' },
+    { key: 'lobby-hotgame-009',   name: '龍虎鬥百家樂',     desc: '龍虎對決，一張定輸贏',  badge: '熱門',  rtp: '98.9%', color: '#60A5FA', category: 'baccarat', provider: 'Evolution', imageSrc: '/hotgame_009.avif' },
+    // ── 一般遊戲 game × 10（badge: null）──
+    { key: 'lobby-game-001',      name: '幸運轉輪',         desc: '簡單好玩，隨機大獎',    badge: null,   rtp: '96.3%', color: '#F472B6', category: 'slots',    provider: 'JH Gaming', imageSrc: '/game_001.avif' },
+    { key: 'lobby-game-002',      name: '海底世界',         desc: '海洋主題，多重加碼',    badge: null,   rtp: '96.1%', color: '#22D3EE', category: 'slots',    provider: 'JH Gaming', imageSrc: '/game_002.avif' },
+    { key: 'lobby-game-003',      name: '古埃及寶藏',       desc: '法老主題，神秘獎勵',    badge: null,   rtp: '96.7%', color: '#FCD34D', category: 'slots',    provider: 'PG Soft',   imageSrc: '/game_003.avif' },
+    { key: 'lobby-game-004',      name: '叢林探險',         desc: '熱帶叢林，野生符號',    badge: null,   rtp: '96.4%', color: '#86EFAC', category: 'slots',    provider: 'PG Soft',   imageSrc: '/game_004.avif' },
+    { key: 'lobby-game-005',      name: '星際爭霸',         desc: '太空主題，外星大獎',    badge: null,   rtp: '96.9%', color: '#93C5FD', category: 'slots',    provider: 'JH Gaming', imageSrc: '/game_005.avif' },
+    { key: 'lobby-game-006',      name: '武士傳說',         desc: '日本武士主題，多倍率',  badge: null,   rtp: '96.6%', color: '#FCA5A5', category: 'slots',    provider: 'JH Gaming', imageSrc: '/game_006.avif' },
+    { key: 'lobby-game-007',      name: '西部牛仔',         desc: '美西主題，槍林彈雨',    badge: null,   rtp: '96.2%', color: '#D97706', category: 'slots',    provider: 'PG Soft',   imageSrc: '/game_007.avif' },
+    { key: 'lobby-game-008',      name: '骰子大師',         desc: '多種骰子玩法，策略致勝',badge: null,   rtp: '97.1%', color: '#FBBF24', category: 'dice',     provider: 'JH Gaming', imageSrc: '/game_008.avif' },
+    { key: 'lobby-game-009',      name: '賽車大獎賽',       desc: '速度與激情，快速致富',  badge: null,   rtp: '96.8%', color: '#34D399', category: 'slots',    provider: 'JH Gaming', imageSrc: '/game_009.avif' },
+    { key: 'lobby-game-010',      name: '歐式輪盤',         desc: '歐洲經典，策略玩法',    badge: null,   rtp: '97.3%', color: '#6EE7B7', category: 'dice',     provider: 'Evolution', imageSrc: '/game_010.avif' },
+  ] satisfies GameItem[],
   leaderboard: {
     tabs: [
       {
