@@ -786,10 +786,10 @@ body {
 /* 登入鈕：綠色漸層 */
 .modal-inner .btn-gold {
   background: linear-gradient(180deg, #A3FFD1 0%, #1AB16D 100%);
-  color: #0a3d25;
+  color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.9);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-  text-shadow: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 .modal-inner .btn-gold:hover,
@@ -798,13 +798,19 @@ body {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* 社群帳號鈕：60×60px + 白色邊框 + 陰影 */
+/* 社群帳號鈕：60×60px 圓角正方形 + 品牌底色 + 白色邊框 + 陰影 */
 .modal-inner .social-login-btn {
   width: 60px;
   height: 60px;
+  border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.9);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
+
+.modal-inner .social-btn-line  { background: #06C755; }
+.modal-inner .social-btn-fb    { background: #1877F2; }
+.modal-inner .social-btn-apple { background: #1C1C1E; }
+.modal-inner .social-btn-google{ background: #EA4335; }
 
 /* ── H5 大廳 Modal ── */
 .lobby-modal-overlay {
