@@ -62,12 +62,13 @@ const tabs = [
           @click="selectedEvent = event"
         >
           <!-- 有圖：顯示裁切圖片 -->
-          <img
-            v-if="event.imageSrc"
-            :src="base + event.imageSrc"
-            :alt="event.title"
-            class="event-img-crop"
-          />
+          <div v-if="event.imageSrc" class="event-img-crop-wrap">
+            <img
+              :src="base + event.imageSrc"
+              :alt="event.title"
+              class="event-img-crop"
+            />
+          </div>
           <!-- 無圖 fallback：漸層色塊 + 文字 -->
           <div
             v-else
