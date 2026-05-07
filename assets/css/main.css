@@ -413,6 +413,7 @@ body {
   padding: 9px 12px;
   border-radius: 8px;
   background: linear-gradient(180deg, #DBF1FF 0%, #B3DDFF 50%, #9BD0FF 100%);
+  box-shadow: inset 0 0 0 2px rgba(100, 153, 196, 0.8);
   cursor: pointer;
   transition: filter 0.2s;
 }
@@ -430,32 +431,14 @@ body {
   white-space: nowrap;
 }
 
-/* 系統 — 綠色 */
-.news-badge.system {
-  background: #16a34a;
-  color: #fff;
-}
-
-/* 公告 — 粉紅 */
-.news-badge.announce {
-  background: rgba(236, 72, 153, 0.18);
-  color: #f472b6;
-  border: 1px solid rgba(236, 72, 153, 0.35);
-}
-
-/* 優惠 — 靛紫 */
-.news-badge.promo {
-  background: rgba(99, 102, 241, 0.22);
-  color: #a5b4fc;
-  border: 1px solid rgba(99, 102, 241, 0.4);
-}
-
-/* 通知 — 橘紅 */
-.news-badge.notice {
-  background: rgba(239, 68, 68, 0.2);
-  color: #fca5a5;
-  border: 1px solid rgba(239, 68, 68, 0.35);
-}
+/* 系統 — 綠 */
+.news-badge.system  { background: #289B43; color: #fff; }
+/* 公告 — 粉紫 */
+.news-badge.announce { background: #DB77E7; color: #fff; }
+/* 優惠 — 藍靛 */
+.news-badge.promo   { background: #5B71C9; color: #fff; }
+/* 通知 — 紅 */
+.news-badge.notice  { background: #CC5D5D; color: #fff; }
 
 .news-title {
   flex: 1;
