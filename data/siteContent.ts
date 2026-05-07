@@ -319,9 +319,9 @@ export const siteContent = {
     { id: 1, title: '百萬大獎賽', subtitle: '累積積分衝頂，贏取百萬獎金', status: 'active', endDate: '2026/12/31', prize: 'NT$1,280,000', gradient: 'linear-gradient(135deg,#1a003a,#7C3AED)', imageSrc: '/event_01.avif' },
     { id: 2, title: '新手首儲禮', subtitle: '首次儲值享最高 100% 加碼', status: 'active', endDate: '長期', prize: '+100%', gradient: 'linear-gradient(135deg,#1a0a00,#D97706)', imageSrc: '/event_02.avif' },
     { id: 3, title: '每日簽到獎', subtitle: '連續簽到 7 天，累積豐厚獎勵', status: 'active', endDate: '長期', prize: '每日點數', gradient: 'linear-gradient(135deg,#0a1a00,#166534)', imageSrc: '/event_03.avif' },
-    { id: 4, title: '春節限定活動', subtitle: '農曆新年特別回饋，限時限量', status: 'upcoming', endDate: '2026/02/10', prize: 'NT$500,000', gradient: 'linear-gradient(135deg,#2d0a0a,#991b1b)' },
-    { id: 5, title: '情人節特別賽', subtitle: '雙人對戰，贏取情侶大禮包', status: 'upcoming', endDate: '2026/02/14', prize: '神秘禮物', gradient: 'linear-gradient(135deg,#1a003a,#be185d)' },
-    { id: 6, title: '跨年倒數賽', subtitle: '2025 年倒數特別活動（已結束）', status: 'ended', endDate: '2025/01/01', prize: 'NT$800,000', gradient: 'linear-gradient(135deg,#1a1a1a,#374151)' },
+    { id: 4, title: '春節限定活動', subtitle: '農曆新年特別回饋，限時限量', status: 'upcoming', endDate: '2026/02/10', prize: 'NT$500,000', gradient: 'linear-gradient(135deg,#2d0a0a,#991b1b)', imageSrc: '/event_05.avif' },
+    { id: 5, title: '情人節特別賽', subtitle: '雙人對戰，贏取情侶大禮包', status: 'upcoming', endDate: '2026/02/14', prize: '神秘禮物', gradient: 'linear-gradient(135deg,#1a003a,#be185d)', imageSrc: '/event_06.avif' },
+    { id: 6, title: '跨年倒數賽', subtitle: '2025 年倒數特別活動（已結束）', status: 'ended', endDate: '2025/01/01', prize: 'NT$800,000', gradient: 'linear-gradient(135deg,#1a1a1a,#374151)', imageSrc: '/event_07.avif' },
   ] satisfies EventItem[],
   faq: {
     categories: [
