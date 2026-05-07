@@ -11,6 +11,7 @@ useSeoMeta({
 
 const { lastUpdate } = useLeaderboardTimer()
 const { app: { baseURL } } = useRuntimeConfig()
+const base = baseURL.replace(/\/$/, '')
 
 const leaderboardTabs = siteContent.leaderboard.tabs.filter(tab => tab.key !== 'event')
 const leaderboardTab = ref<LeaderboardTabKey>(leaderboardTabs[0].key)
@@ -57,7 +58,8 @@ const featuredGames = siteContent.games.slice(0, 9)
 
       <!-- 最新消息 -->
       <section class="px-4 pt-5 pb-4" aria-labelledby="news-heading">
-        <h2 id="news-heading" class="section-title mb-3">最新消息</h2>
+        <h2 id="news-heading" class="sr-only">最新消息</h2>
+        <img :src="`${base}/title_text_news.png`" alt="最新消息" class="section-title-img mb-3" />
         <div class="card-purple p-3 flex flex-col gap-2">
           <article v-for="(item, i) in news" :key="i" class="news-item">
             <span class="news-badge" :class="item.type">{{ item.label }}</span>
@@ -70,7 +72,8 @@ const featuredGames = siteContent.games.slice(0, 9)
       <!-- 熱門活動 -->
       <section class="pb-4" aria-labelledby="events-heading">
         <div class="flex items-center justify-between mb-3 px-4">
-          <h2 id="events-heading" class="section-title">熱門活動</h2>
+          <h2 id="events-heading" class="sr-only">熱門活動</h2>
+          <img :src="`${base}/title_text_event.png`" alt="熱門活動" class="section-title-img" />
           <NuxtLink to="/events" class="text-xs no-underline" style="color:var(--color-purple-light);">查看全部 →</NuxtLink>
         </div>
         <div class="events-scroll px-4">
@@ -103,7 +106,8 @@ const featuredGames = siteContent.games.slice(0, 9)
       <!-- 熱門遊戲 -->
       <section class="pb-4" aria-labelledby="games-heading">
         <div class="flex items-center justify-between mb-3 px-4">
-          <h2 id="games-heading" class="section-title">熱門遊戲</h2>
+          <h2 id="games-heading" class="sr-only">熱門遊戲</h2>
+          <img :src="`${base}/title_text_games.png`" alt="熱門遊戲" class="section-title-img" />
           <NuxtLink to="/tutorial" class="text-xs no-underline" style="color:var(--color-purple-light);">探索更多 →</NuxtLink>
         </div>
         <div class="games-scroll px-4">
@@ -150,7 +154,8 @@ const featuredGames = siteContent.games.slice(0, 9)
       <!-- 排行榜快報 -->
       <section class="px-4 pb-6" aria-labelledby="leaderboard-heading">
         <div class="flex items-center justify-between mb-3">
-          <h2 id="leaderboard-heading" class="section-title">排行榜快報</h2>
+          <h2 id="leaderboard-heading" class="sr-only">排行榜快報</h2>
+          <img :src="`${base}/title_text_ranking.png`" alt="排行榜快報" class="section-title-img" />
           <div class="flex items-center gap-1.5">
             <div class="w-1.5 h-1.5 rounded-full glow-pulse" style="background:#4ade80;" aria-hidden="true" />
             <span class="text-xs" style="color:var(--color-text-muted);">{{ lastUpdate }} 更新</span>

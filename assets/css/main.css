@@ -358,6 +358,19 @@ body {
   flex-shrink: 0;
 }
 
+/* 圖片式區塊標題 */
+.section-title-img {
+  width: 100px;
+  height: auto;
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .section-title-img {
+    width: 162px;
+  }
+}
+
 /* ── 排行榜條目 ── */
 .rank-item {
   display: flex;
