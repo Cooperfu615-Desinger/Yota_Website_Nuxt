@@ -362,7 +362,7 @@ body {
 .section-title-wrap {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 36px;
 }
 
 .section-title-line {
@@ -379,7 +379,7 @@ body {
 }
 
 .section-title-img {
-  height: 60px;
+  height: 50px;
   width: auto;
   display: block;
   flex-shrink: 0;

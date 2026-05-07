@@ -71,6 +71,9 @@ const featuredGames = siteContent.games.slice(0, 9)
             <time class="news-time">{{ item.time }}</time>
           </article>
         </div>
+        <div class="flex justify-center mt-3">
+          <NuxtLink to="/events" class="section-more-btn">查看更多</NuxtLink>
+        </div>
       </section>
 
       <!-- 熱門活動 -->
@@ -176,7 +179,6 @@ const featuredGames = siteContent.games.slice(0, 9)
         <div class="flex items-center justify-end mb-3 gap-1.5">
           <div class="w-1.5 h-1.5 rounded-full glow-pulse" style="background:#4ade80;" aria-hidden="true" />
           <span class="text-xs" style="color:var(--color-text-muted);">{{ lastUpdate }} 更新</span>
-          <NuxtLink to="/leaderboard" class="text-xs no-underline ml-2" style="color:var(--color-purple-light);">查看全榜 →</NuxtLink>
         </div>
         <div class="card-purple p-3">
           <div class="tab-bar mb-3" role="tablist">
@@ -208,6 +210,9 @@ const featuredGames = siteContent.games.slice(0, 9)
               </div>
             </div>
           </Transition>
+        </div>
+        <div class="flex justify-center mt-3">
+          <NuxtLink to="/leaderboard" class="section-more-btn">查看全榜</NuxtLink>
         </div>
       </section>
 
