@@ -412,14 +412,13 @@ body {
   gap: 10px;
   padding: 9px 12px;
   border-radius: 8px;
-  background: rgba(147, 197, 253, 0.1);
-  border: 1px solid rgba(147, 197, 253, 0.2);
+  background: linear-gradient(180deg, #DBF1FF 0%, #B3DDFF 50%, #9BD0FF 100%);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: filter 0.2s;
 }
 
 .news-item:hover {
-  background: rgba(147, 197, 253, 0.16);
+  filter: brightness(1.05);
 }
 
 .news-badge {
@@ -462,7 +461,7 @@ body {
   flex: 1;
   font-size: 13px;
   line-height: 1.4;
-  color: var(--color-text);
+  color: #1e3a5f;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -470,7 +469,7 @@ body {
 
 .news-time {
   font-size: 11px;
-  color: var(--color-text-muted);
+  color: #4a6fa5;
   flex-shrink: 0;
   white-space: nowrap;
 }
