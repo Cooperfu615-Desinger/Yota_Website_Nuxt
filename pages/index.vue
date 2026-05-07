@@ -58,13 +58,11 @@ const featuredGames = siteContent.games.slice(0, 9)
       <!-- 最新消息 -->
       <section class="px-4 pt-5 pb-4" aria-labelledby="news-heading">
         <h2 id="news-heading" class="section-title mb-3">最新消息</h2>
-        <div class="card-purple">
-          <article v-for="(item, i) in news" :key="i" class="news-item px-4">
+        <div class="card-purple p-3 flex flex-col gap-2">
+          <article v-for="(item, i) in news" :key="i" class="news-item">
             <span class="news-badge" :class="item.type">{{ item.label }}</span>
-            <div>
-              <p class="news-title">{{ item.title }}</p>
-              <time class="text-xs" style="color:rgba(196,181,213,0.5);">{{ item.time }}</time>
-            </div>
+            <p class="news-title">{{ item.title }}</p>
+            <time class="news-time">{{ item.time }}</time>
           </article>
         </div>
       </section>
