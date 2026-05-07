@@ -5,6 +5,9 @@ type EventStatus = 'active' | 'upcoming' | 'ended'
 const activeTab = ref<EventStatus>('active')
 const events = siteContent.events
 
+const { app: { baseURL } } = useRuntimeConfig()
+const base = baseURL.replace(/\/$/, '')
+
 const counts = computed(() => ({
   active:   events.filter(e => e.status === 'active').length,
   upcoming: events.filter(e => e.status === 'upcoming').length,
@@ -58,7 +61,19 @@ const tabs = [
           :aria-label="`活動：${event.title}`"
           @click="selectedEvent = event"
         >
-          <div class="flex items-center justify-between px-4 py-5" :style="{ background: event.gradient }">
+          <!-- 有圖：顯示裁切圖片 -->
+          <img
+            v-if="event.imageSrc"
+            :src="base + event.imageSrc"
+            :alt="event.title"
+            class="event-img-crop"
+          />
+          <!-- 無圖 fallback：漸層色塊 + 文字 -->
+          <div
+            v-else
+            class="flex items-center justify-between px-4 py-5"
+            :style="{ background: event.gradient }"
+          >
             <div>
               <div class="text-lg font-black text-white">{{ event.title }}</div>
               <div class="text-xs mt-1" style="color:rgba(255,255,255,0.7);">{{ event.subtitle }}</div>
@@ -77,9 +92,11 @@ const tabs = [
               </span>
             </div>
           </div>
+
+          <!-- 底部資訊列 -->
           <div class="px-4 py-3 flex items-center justify-between">
-            <span class="text-xs" style="color:var(--color-text-muted);">截止：{{ event.endDate }}</span>
-            <span class="text-xs" style="color:var(--color-purple-light);">查看詳情 →</span>
+            <span class="text-xs" style="color:#fff;">截止：{{ event.endDate }}</span>
+            <span class="text-xs font-semibold" style="color:#fff;">查看詳情 →</span>
           </div>
         </article>
 
@@ -111,19 +128,29 @@ const tabs = [
       <Transition name="modal-fade">
         <div v-if="selectedEvent" class="modal-overlay" role="dialog" :aria-label="selectedEvent.title" @click.self="selectedEvent = null">
           <div class="modal-box">
-            <div class="modal-handle" />
             <button class="modal-close" aria-label="關閉" @click="selectedEvent = null">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
               </svg>
             </button>
-            <div class="px-4 py-5 rounded-xl mb-4" :style="{ background: selectedEvent.gradient }">
+
+            <!-- 有圖：完整顯示 -->
+            <img
+              v-if="selectedEvent.imageSrc"
+              :src="base + selectedEvent.imageSrc"
+              :alt="selectedEvent.title"
+              class="event-img-full"
+            />
+            <!-- 無圖 fallback：漸層色塊 -->
+            <div v-else class="px-4 py-5 rounded-xl mb-4" :style="{ background: selectedEvent.gradient }">
               <h2 class="text-xl font-black text-white mb-1">{{ selectedEvent.title }}</h2>
               <p class="text-sm" style="color:rgba(255,255,255,0.7);">{{ selectedEvent.subtitle }}</p>
             </div>
+
+            <!-- 活動資訊 -->
             <div class="flex flex-col gap-3 text-sm">
               <div class="flex justify-between"><span style="color:var(--color-text-muted);">活動獎金</span><span class="font-bold" style="color:var(--color-gold);">{{ selectedEvent.prize }}</span></div>
-              <div class="flex justify-between"><span style="color:var(--color-text-muted);">截止日期</span><span>{{ selectedEvent.endDate }}</span></div>
+              <div class="flex justify-between"><span style="color:var(--color-text-muted);">截止日期</span><span style="color:#fff;">{{ selectedEvent.endDate }}</span></div>
               <div class="divider-purple" />
               <p style="color:var(--color-text-muted); line-height:1.8;">
                 活動詳細規則說明由後台系統填入。參與方式、計分標準、獎金發放時程等資訊將在活動正式開始後公告。
