@@ -72,7 +72,7 @@ const drawerLinks = [
 
     <!-- 右側：登入 / 用戶資訊 -->
     <template v-if="isLoggedIn">
-      <NuxtLink to="/member" class="flex items-center gap-2 no-underline lg:hidden" aria-label="會員專區">
+      <NuxtLink to="/lobby/member" class="flex items-center gap-2 no-underline lg:hidden" aria-label="會員專區">
         <div class="flex flex-col items-end min-w-0">
           <span class="text-xs font-bold truncate" style="color:var(--color-text); max-width:92px;">{{ userInfo.name }}</span>
           <div class="flex items-center gap-1">
