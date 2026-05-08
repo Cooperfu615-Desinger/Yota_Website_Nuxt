@@ -26,31 +26,32 @@ const filteredGames = computed((): GameItem[] => {
 
 <template>
   <div class="game-grid-wrap">
-    <!-- 分類 Tab -->
-    <div class="game-categories">
-      <button
-        v-for="cat in siteContent.gameCategories"
-        :key="cat.key"
-        class="game-cat-btn"
-        :class="{ 'game-cat-active': activeCategory === cat.key }"
-        @click="activeCategory = cat.key"
-      >
-        <span aria-hidden="true">{{ cat.icon }}</span>
-        {{ cat.label }}
-      </button>
-    </div>
-
-    <!-- 搜尋框 -->
-    <div class="game-search-wrap">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="game-search-icon" aria-hidden="true">
-        <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
-      </svg>
-      <input
-        v-model="searchQuery"
-        type="search"
-        placeholder="搜尋遊戲..."
-        class="game-search-input"
-      />
+    <!-- 分類 Tab + 搜尋框（同一排） -->
+    <div class="game-filter-bar">
+      <!-- 分類按鈕（左側，可橫向滾動） -->
+      <div class="game-categories">
+        <button
+          v-for="cat in siteContent.gameCategories"
+          :key="cat.key"
+          class="game-cat-btn"
+          :class="{ 'game-cat-active': activeCategory === cat.key }"
+          @click="activeCategory = cat.key"
+        >
+          {{ cat.label }}
+        </button>
+      </div>
+      <!-- 搜尋框（右側，固定） -->
+      <div class="game-search-wrap">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="game-search-icon" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+        </svg>
+        <input
+          v-model="searchQuery"
+          type="search"
+          placeholder="搜尋遊戲..."
+          class="game-search-input"
+        />
+      </div>
     </div>
 
     <!-- 遊戲數量 -->

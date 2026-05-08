@@ -2076,22 +2076,7 @@ body {
 }
 
 .lobby-page-title {
-  padding: 20px 20px 8px;
-}
-
-.lobby-page-title h1 {
-  font-size: 22px;
-  font-weight: 900;
-  background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 4px;
-}
-
-.lobby-page-title p {
-  font-size: 13px;
-  color: var(--color-text-muted);
+  padding: 20px 20px 12px;
 }
 
 /* ── Lobby Mini Footer ── */
@@ -2151,17 +2136,26 @@ body {
   }
 }
 
-/* ── Game Categories ── */
+/* ── Game Filter Bar（分類 + 搜尋同排） ── */
 .game-grid-wrap {
   padding: 16px 16px 24px;
+}
+
+.game-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  min-width: 0;
 }
 
 .game-categories {
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding-bottom: 4px;
-  margin-bottom: 14px;
+  padding-bottom: 2px;
+  flex: 1;
+  min-width: 0;
   scrollbar-width: none;
 }
 
@@ -2170,69 +2164,66 @@ body {
 }
 
 .game-cat-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
   flex-shrink: 0;
   padding: 7px 14px;
   border-radius: 20px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
-  border: 1px solid var(--color-border);
-  background: rgba(168, 85, 247, 0.08);
-  color: var(--color-text-muted);
+  border: 2px solid #475D9366;
+  background: transparent;
+  color: #475D93;
   transition: all 0.2s;
 }
 
 .game-cat-btn:hover {
-  background: rgba(168, 85, 247, 0.15);
-  color: var(--color-text);
+  color: #fff;
+  border-color: #5B71C966;
 }
 
 .game-cat-active {
-  background: linear-gradient(135deg, var(--color-purple-mid), var(--color-purple));
-  border-color: transparent;
+  background: #5B71C9;
+  border-color: #5B71C966;
   color: #fff;
-  box-shadow: 0 2px 12px rgba(124, 58, 237, 0.4);
+  box-shadow: 0 2px 10px rgba(91, 113, 201, 0.35);
 }
 
 /* ── Game Search ── */
 .game-search-wrap {
   position: relative;
-  margin-bottom: 14px;
+  flex-shrink: 0;
+  width: 180px;
 }
 
 .game-search-icon {
   position: absolute;
-  left: 12px;
+  left: 10px;
   top: 50%;
   transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   color: var(--color-text-muted);
   pointer-events: none;
 }
 
 .game-search-input {
   width: 100%;
-  max-width: 320px;
-  padding: 9px 12px 9px 36px;
-  border-radius: 10px;
-  font-size: 14px;
-  background: rgba(168, 85, 247, 0.08);
-  border: 1px solid var(--color-border);
+  padding: 8px 10px 8px 32px;
+  border-radius: 20px;
+  font-size: 13px;
+  background: transparent;
+  border: 2px solid #475D9366;
   color: var(--color-text);
   outline: none;
   transition: border-color 0.2s;
 }
 
 .game-search-input::placeholder {
-  color: var(--color-text-muted);
+  color: #475D93;
 }
 
 .game-search-input:focus {
-  border-color: var(--color-purple-light);
+  border-color: #5B71C966;
 }
 
 .game-count {

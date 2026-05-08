@@ -1,6 +1,9 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'lobby' })
 
+const { app: { baseURL } } = useRuntimeConfig()
+const base = baseURL.replace(/\/$/, '')
+
 const route = useRoute()
 const { isLoggedIn, openLogin } = useAppState()
 
@@ -59,8 +62,12 @@ function switchMode(mode: 'real' | 'demo') {
     <!-- 遊戲大廳 -->
     <template v-else>
       <div class="lobby-page-title">
-        <h1>遊戲大廳</h1>
-        <p>精選 24 款熱門遊戲，立即開玩</p>
+        <div class="section-title-wrap">
+          <span class="section-title-line" aria-hidden="true" />
+          <h1 class="sr-only">遊戲大廳</h1>
+          <img :src="`${base}/title_text_games.png`" alt="遊戲大廳" class="section-title-img" />
+          <span class="section-title-line" aria-hidden="true" />
+        </div>
       </div>
       <LobbyGameGrid @play="handlePlay" />
     </template>
