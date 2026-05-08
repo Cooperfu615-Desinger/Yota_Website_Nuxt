@@ -47,9 +47,9 @@ onUnmounted(() => { if (countdownTimer) clearInterval(countdownTimer) })
             <h2 class="modal-title">登入 | 註冊</h2>
 
             <!-- Tab 切換 -->
-            <div class="tab-bar mb-5">
-              <button class="tab-btn" :class="{ active: loginTab === 'account' }" @click="loginTab = 'account'">帳號密碼</button>
-              <button class="tab-btn" :class="{ active: loginTab === 'phone' }"   @click="loginTab = 'phone'">手機號碼</button>
+            <div class="login-tab-bar mb-5">
+              <button class="login-tab-btn" :class="{ active: loginTab === 'account' }" @click="loginTab = 'account'">帳號密碼</button>
+              <button class="login-tab-btn" :class="{ active: loginTab === 'phone' }"   @click="loginTab = 'phone'">手機號碼</button>
             </div>
 
             <!-- 帳號密碼表單 -->
