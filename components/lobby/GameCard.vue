@@ -19,13 +19,9 @@ function handlePlay(mode: 'real' | 'demo') {
 
 <template>
   <div class="game-card">
-    <!-- 遊戲封面圖區域 -->
-    <div
-      class="game-card-cover"
-      :class="{ 'game-card-cover--fallback': !game.imageSrc }"
-      :style="game.imageSrc ? undefined : { background: `linear-gradient(135deg, ${game.color}22 0%, ${game.color}55 100%)` }"
-    >
-      <!-- 有圖：顯示 AVIF -->
+    <!-- 圖示區（留白內層） -->
+    <div class="game-card-inner">
+      <!-- 有圖：完整顯示 AVIF -->
       <img
         v-if="game.imageSrc"
         :src="base + game.imageSrc"
@@ -33,18 +29,27 @@ function handlePlay(mode: 'real' | 'demo') {
         class="game-card-img"
       />
       <!-- 無圖 fallback：色塊 + 首字 -->
-      <div v-else class="game-card-cover-inner" :style="{ color: game.color }">
-        {{ game.name.charAt(0) }}
+      <div
+        v-else
+        class="game-card-cover--fallback"
+        :style="{ background: `linear-gradient(135deg, ${game.color}22 0%, ${game.color}55 100%)` }"
+      >
+        <span class="game-card-cover-inner" :style="{ color: game.color }">{{ game.name.charAt(0) }}</span>
       </div>
+      <!-- 徽章 -->
       <div v-if="game.badge" class="game-card-badge">{{ game.badge }}</div>
     </div>
 
-    <!-- 遊戲資訊 -->
+    <!-- 資訊區：名稱+簡述｜RTP -->
     <div class="game-card-body">
-      <div class="game-card-name">{{ game.name }}</div>
-      <div class="game-card-meta">
-        <span class="game-card-rtp">RTP {{ game.rtp }}</span>
-        <span class="game-card-provider">{{ game.provider }}</span>
+      <div class="game-card-info">
+        <div class="game-card-name">{{ game.name }}</div>
+        <div class="game-card-desc">{{ game.desc }}</div>
+      </div>
+      <div class="game-card-divider-v" aria-hidden="true" />
+      <div class="game-card-rtp-wrap">
+        <span class="game-card-rtp-label">RTP</span>
+        <span class="game-card-rtp-value">{{ game.rtp }}</span>
       </div>
     </div>
 

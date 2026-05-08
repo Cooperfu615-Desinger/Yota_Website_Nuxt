@@ -2267,18 +2267,20 @@ body {
 /* ── Game Card ── */
 .game-card {
   position: relative;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
+  background: linear-gradient(160deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.06) 100%);
+  border: 1px solid rgba(255,255,255,0.25);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
   cursor: pointer;
-  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .game-card:hover {
   transform: translateY(-3px);
-  border-color: var(--color-purple-light);
-  box-shadow: 0 8px 24px rgba(168, 85, 247, 0.2);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 .game-card:hover .game-card-overlay {
@@ -2286,7 +2288,9 @@ body {
   pointer-events: auto;
 }
 
-.game-card-cover {
+/* 圖片留白容器 */
+.game-card-inner {
+  padding: 8px 8px 0;
   position: relative;
 }
 
@@ -2296,12 +2300,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 8px;
 }
 
 .game-card-img {
   width: 100%;
   height: auto;
   display: block;
+  border-radius: 8px;
 }
 
 .game-card-cover-inner {
@@ -2312,8 +2318,8 @@ body {
 
 .game-card-badge {
   position: absolute;
-  top: 6px;
-  left: 6px;
+  top: 14px;
+  left: 14px;
   padding: 2px 8px;
   border-radius: 10px;
   font-size: 11px;
@@ -2322,33 +2328,60 @@ body {
   color: #1a0a00;
 }
 
+/* 資訊區：名稱+簡述（左）｜RTP（右） */
 .game-card-body {
-  padding: 10px 12px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px 12px;
+}
+
+.game-card-info {
+  flex: 1;
+  min-width: 0;
 }
 
 .game-card-name {
   font-size: 13px;
   font-weight: 700;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--color-text);
+}
+
+.game-card-desc {
+  font-size: 11px;
+  color: var(--color-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.game-card-meta {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.game-card-divider-v {
+  width: 1px;
+  height: 32px;
+  background: rgba(255,255,255,0.15);
+  flex-shrink: 0;
 }
 
-.game-card-rtp {
-  font-size: 11px;
-  color: var(--color-purple-light);
+.game-card-rtp-wrap {
+  flex-shrink: 0;
+  text-align: center;
 }
 
-.game-card-provider {
-  font-size: 11px;
+.game-card-rtp-label {
+  display: block;
+  font-size: 10px;
   color: var(--color-text-muted);
+  margin-bottom: 1px;
+}
+
+.game-card-rtp-value {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--color-gold);
 }
 
 /* Hover overlay with play/demo buttons */
