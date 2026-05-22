@@ -15,6 +15,7 @@ const section1 = [
   { to: '/lobby',             label: '遊戲大廳', icon: '🎮' },
 ]
 const section2 = [
+  { to: '/lobby/daily',       label: '每日任務', icon: '📅' },
   { to: '/lobby/events',      label: '活動',     icon: '🎉' },
   { to: '/lobby/leaderboard', label: '排行榜',   icon: '🏆' },
 ]

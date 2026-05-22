@@ -1,4 +1,15 @@
 export type LeaderboardTabKey = 'win' | 'multi' | 'event'
+
+export interface CheckinMilestone {
+  days: number
+  reward: string
+}
+
+export interface DailyCheckinConfig {
+  milestones: CheckinMilestone[]
+  dailyRewards: number[]   // NT$ 點數，index 0 = 第1天
+  makeupCostPerDay: number // 補簽每天花費（遊戲幣）
+}
 export type EventStatus = 'active' | 'upcoming' | 'ended'
 export type FaqCategory = 'account' | 'deposit' | 'game' | 'install'
 export type MemberTab = 'profile' | 'history' | 'vip' | 'redeem'
@@ -386,4 +397,26 @@ export const siteContent = {
       { key: 'redeem' as MemberTab, label: '兌換碼', icon: '🎁' },
     ],
   },
+  dailyCheckin: {
+    milestones: [
+      { days: 5,  reward: 'NT$100'   },
+      { days: 7,  reward: 'NT$200'   },
+      { days: 10, reward: 'NT$500'   },
+      { days: 15, reward: 'NT$1,000' },
+      { days: 20, reward: 'NT$2,000' },
+      { days: 25, reward: 'NT$3,500' },
+      { days: 30, reward: 'NT$8,888' },
+    ] satisfies CheckinMilestone[],
+    // 每天簽到可獲得的點數（NT$），共31天
+    dailyRewards: [
+      10, 15, 20, 15, 25,   //  1-5
+      30, 20, 25, 30, 35,   //  6-10
+      25, 40, 30, 35, 50,   // 11-15
+      45, 40, 50, 55, 60,   // 16-20
+      50, 55, 60, 65, 80,   // 21-25
+      70, 75, 80, 90, 100,  // 26-30
+      120,                   // 31
+    ],
+    makeupCostPerDay: 100,
+  } satisfies DailyCheckinConfig,
 } as const
