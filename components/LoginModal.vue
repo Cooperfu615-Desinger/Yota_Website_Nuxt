@@ -1,7 +1,14 @@
 <script setup lang="ts">
 const { showLoginModal, loginTab, closeLogin, login } = useAppState()
 
+// 'login' | 'register'
+const modalView = ref<'login' | 'register'>('login')
+
+// 關閉時重置視圖
+watch(showLoginModal, (v) => { if (!v) modalView.value = 'login' })
+
 const form = reactive({ account: '', password: '', phone: '', code: '' })
+const regForm = reactive({ account: '', password: '', confirmPassword: '' })
 const loading = ref(false)
 const countdown = ref(0)
 let countdownTimer: ReturnType<typeof setInterval> | null = null
@@ -26,6 +33,15 @@ async function handleSubmit() {
   loading.value = false
 }
 
+async function handleRegister() {
+  if (regForm.password !== regForm.confirmPassword) return
+  loading.value = true
+  // TODO: 串接註冊 API
+  await new Promise(r => setTimeout(r, 1200))
+  login()
+  loading.value = false
+}
+
 onUnmounted(() => { if (countdownTimer) clearInterval(countdownTimer) })
 </script>
 
@@ -44,7 +60,9 @@ onUnmounted(() => { if (countdownTimer) clearInterval(countdownTimer) })
               </svg>
             </button>
 
-            <h2 class="modal-title">登入 | 註冊</h2>
+            <!-- ══ 登入視圖 ══ -->
+            <template v-if="modalView === 'login'">
+            <h2 class="modal-title">會員登入</h2>
 
             <!-- Tab 切換 -->
             <div class="login-tab-bar mb-5">
@@ -133,6 +151,72 @@ onUnmounted(() => { if (countdownTimer) clearInterval(countdownTimer) })
               與
               <a href="#" style="color:rgba(255,255,255,0.85); text-decoration:underline;">隱私政策</a>
             </p>
+
+            <!-- 切換到註冊 -->
+            <p class="text-center mt-4" style="font-size:13px; color:rgba(255,255,255,0.55);">
+              還沒有帳號？
+              <button
+                type="button"
+                style="color:var(--color-purple-light); font-weight:700; text-decoration:underline; background:none; border:none; cursor:pointer; font-size:13px;"
+                @click="modalView = 'register'"
+              >立即註冊</button>
+            </p>
+            </template><!-- end 登入視圖 -->
+
+            <!-- ══ 註冊視圖 ══ -->
+            <template v-else>
+            <h2 class="modal-title">建立帳號</h2>
+
+            <form class="flex flex-col gap-4" @submit.prevent="handleRegister">
+              <div>
+                <label class="input-label" for="reg-account">帳號</label>
+                <input id="reg-account" v-model="regForm.account" type="text" class="input-field" placeholder="請設定帳號（4～20 字元）" autocomplete="username" required minlength="4" maxlength="20" />
+              </div>
+              <div>
+                <label class="input-label" for="reg-password">密碼</label>
+                <input id="reg-password" v-model="regForm.password" type="password" class="input-field" placeholder="請設定密碼（6 字元以上）" autocomplete="new-password" required minlength="6" />
+              </div>
+              <div>
+                <label class="input-label" for="reg-confirm">確認密碼</label>
+                <input
+                  id="reg-confirm"
+                  v-model="regForm.confirmPassword"
+                  type="password"
+                  class="input-field"
+                  placeholder="請再次輸入密碼"
+                  autocomplete="new-password"
+                  required
+                  :style="regForm.confirmPassword && regForm.confirmPassword !== regForm.password ? 'border-color:rgba(248,113,113,0.7);' : ''"
+                />
+                <p v-if="regForm.confirmPassword && regForm.confirmPassword !== regForm.password" style="font-size:11px; color:#f87171; margin-top:4px;">密碼不一致，請重新輸入</p>
+              </div>
+              <button
+                type="submit"
+                class="btn-gold w-full justify-center"
+                :disabled="loading || (!!regForm.confirmPassword && regForm.password !== regForm.confirmPassword)"
+              >
+                <span v-if="loading">註冊中...</span>
+                <span v-else>立即註冊</span>
+              </button>
+            </form>
+
+            <p class="text-center mt-5" style="font-size:11px; color:rgba(255,255,255,0.5);">
+              註冊即代表您同意我們的
+              <a href="#" style="color:rgba(255,255,255,0.85); text-decoration:underline;">服務條款</a>
+              與
+              <a href="#" style="color:rgba(255,255,255,0.85); text-decoration:underline;">隱私政策</a>
+            </p>
+
+            <!-- 切換回登入 -->
+            <p class="text-center mt-3" style="font-size:13px; color:rgba(255,255,255,0.55);">
+              已有帳號？
+              <button
+                type="button"
+                style="color:var(--color-purple-light); font-weight:700; text-decoration:underline; background:none; border:none; cursor:pointer; font-size:13px;"
+                @click="modalView = 'login'"
+              >立即登入</button>
+            </p>
+            </template><!-- end 註冊視圖 -->
           </div><!-- end modal-inner -->
         </div><!-- end modal-box -->
       </div>

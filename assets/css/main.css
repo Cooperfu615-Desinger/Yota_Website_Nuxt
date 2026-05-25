@@ -2731,13 +2731,13 @@ body {
 /* 規格表 */
 .gv-spec-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
 }
 
 @media (min-width: 640px) {
   .gv-spec-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(6, 1fr);
   }
 }
 
@@ -2757,4 +2757,80 @@ body {
 .gv-spec-value {
   font-size: 13px;
   font-weight: 700;
+}
+
+/* 波動性顏色 */
+.gv-vol-low  { color: #4ade80; }
+.gv-vol-mid  { color: #facc15; }
+.gv-vol-high { color: #fb923c; }
+.gv-vol-max  { color: #f87171; }
+
+/* 遊戲規則區塊 */
+.gv-rules-section {
+  margin-top: 20px;
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.gv-rules-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: rgba(168, 85, 247, 0.07);
+  border: none;
+  cursor: pointer;
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.gv-rules-toggle:hover {
+  background: rgba(168, 85, 247, 0.13);
+}
+
+.gv-rules-chevron {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.25s;
+  color: var(--color-purple-glow);
+  flex-shrink: 0;
+}
+
+.gv-rules-chevron-open {
+  transform: rotate(180deg);
+}
+
+.gv-rules-body {
+  padding: 16px 18px 18px;
+  background: rgba(15, 0, 32, 0.4);
+}
+
+.gv-rules-line {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.75;
+  margin-bottom: 4px;
+}
+
+.gv-rules-line:last-child {
+  margin-bottom: 0;
+}
+
+/* 規則展開動畫 */
+.rules-expand-enter-active,
+.rules-expand-leave-active {
+  transition: opacity 0.22s, max-height 0.28s ease;
+  max-height: 800px;
+  overflow: hidden;
+}
+
+.rules-expand-enter-from,
+.rules-expand-leave-to {
+  opacity: 0;
+  max-height: 0;
 }
