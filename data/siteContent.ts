@@ -14,6 +14,32 @@ export type EventStatus = 'active' | 'upcoming' | 'ended'
 export type FaqCategory = 'account' | 'deposit' | 'game' | 'install'
 export type MemberTab = 'profile' | 'history' | 'vip' | 'redeem'
 
+export type PlayerStatus = '在線' | '遊戲中' | '閒置'
+
+export interface ChatMessage {
+  id: number
+  user: string
+  avatar: string
+  text: string
+  time: string
+  self?: boolean
+}
+
+export interface OnlinePlayer {
+  id: number
+  name: string
+  avatar: string
+  vip: number          // 0 = 無 VIP，不顯示徽章
+  status: PlayerStatus
+}
+
+export interface PrivateConversation {
+  id: number
+  peer: { name: string; avatar: string; vip: number; status: PlayerStatus }
+  unread: number
+  messages: ChatMessage[]
+}
+
 export interface HomepageQuickLink {
   key: 'deposit' | 'events' | 'leaderboard' | 'tutorial'
   to: string
@@ -422,4 +448,49 @@ export const siteContent = {
     ],
     makeupCostPerDay: 100,
   } satisfies DailyCheckinConfig,
+
+  chat: {
+    onlinePlayers: [
+      { id: 1, name: 'Lucky888',   avatar: '🦁', vip: 5, status: '在線' },
+      { id: 2, name: 'DragonKing', avatar: '🐉', vip: 3, status: '遊戲中' },
+      { id: 3, name: 'StarPlayer', avatar: '⭐', vip: 0, status: '在線' },
+      { id: 4, name: 'JokerAce',   avatar: '🃏', vip: 2, status: '閒置' },
+      { id: 5, name: '金幣王',     avatar: '👑', vip: 4, status: '在線' },
+      { id: 6, name: '幸運貓',     avatar: '🐱', vip: 1, status: '遊戲中' },
+      { id: 7, name: '賭神再臨',   avatar: '🎲', vip: 0, status: '在線' },
+      { id: 8, name: '富貴吉祥',   avatar: '🧧', vip: 3, status: '在線' },
+    ] satisfies OnlinePlayer[],
+    worldMessages: [
+      { id: 1, user: 'Lucky888',   avatar: '🦁', text: '大家好！今天手氣超好 🎰', time: '14:02' },
+      { id: 2, user: 'DragonKing', avatar: '🐉', text: '百家樂剛剛連贏8把！', time: '14:03' },
+      { id: 3, user: '我',         avatar: '👤', text: '厲害！', time: '14:04', self: true },
+      { id: 4, user: 'StarPlayer', avatar: '⭐', text: '有人要一起衝排行榜嗎？', time: '14:05' },
+      { id: 5, user: 'JokerAce',   avatar: '🃏', text: '明天活動開始記得上線！', time: '14:08' },
+    ] satisfies ChatMessage[],
+    privateConversations: [
+      {
+        id: 1,
+        peer: { name: 'DragonKing', avatar: '🐉', vip: 3, status: '遊戲中' },
+        unread: 2,
+        messages: [
+          { id: 1, user: 'DragonKing', avatar: '🐉', text: '嘿，要來私訊我的策略嗎哈哈', time: '13:50' },
+          { id: 2, user: '我',         avatar: '👤', text: '當然！你怎麼連贏的？', time: '13:51', self: true },
+          { id: 3, user: 'DragonKing', avatar: '🐉', text: '等我整理一下筆記再說', time: '13:52' },
+        ],
+      },
+      {
+        id: 2,
+        peer: { name: 'Lucky888', avatar: '🦁', vip: 5, status: '在線' },
+        unread: 0,
+        messages: [
+          { id: 1, user: 'Lucky888', avatar: '🦁', text: '下次一起組隊衝榜！', time: '昨天' },
+        ],
+      },
+    ] satisfies PrivateConversation[],
+    supportMessages: [
+      { id: 1, user: '客服小幫手', avatar: '🎧', text: '您好！我是巨亨ONLINE客服，請問有什麼可以協助您的？', time: '14:00' },
+      { id: 2, user: '我',         avatar: '👤', text: '想詢問儲值優惠活動', time: '14:01', self: true },
+      { id: 3, user: '客服小幫手', avatar: '🎧', text: '目前新會員首儲享100%加碼，老會員每週儲值也有15%回饋！詳情請至活動頁查看 🎁', time: '14:01' },
+    ] satisfies ChatMessage[],
+  },
 } as const
