@@ -56,8 +56,24 @@ function openRoster()  { showRoster.value = true }
 function closeRoster() { showRoster.value = false }
 function selectPlayer(p: OnlinePlayer) { selectedPlayer.value = p }
 function closeCard()   { selectedPlayer.value = null }
-// 過渡：私訊行為在 Task 5 串接，先關閉卡片與抽屜
-function messagePlayer(_p: OnlinePlayer) { closeCard(); closeRoster() }
+function messagePlayer(p: OnlinePlayer) {
+  // 找既有對話，沒有就新建
+  let conv = conversations.value.find(c => c.peer.name === p.name)
+  if (!conv) {
+    conv = {
+      id: Date.now(),
+      peer: { name: p.name, avatar: p.avatar, vip: p.vip, status: p.status },
+      unread: 0,
+      messages: [],
+    }
+    conversations.value.unshift(conv)
+  }
+  closeCard()
+  closeRoster()
+  activeChannel.value = 'private'
+  activeConvId.value = conv.id
+  conv.unread = 0
+}
 </script>
 
 <template>
