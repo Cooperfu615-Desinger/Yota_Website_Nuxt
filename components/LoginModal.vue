@@ -8,7 +8,15 @@ const modalView = ref<'login' | 'register'>('login')
 watch(showLoginModal, (v) => { if (!v) modalView.value = 'login' })
 
 const form = reactive({ account: '', password: '', phone: '', code: '' })
-const regForm = reactive({ account: '', password: '', confirmPassword: '' })
+const regForm = reactive({ account: '', nickname: '', password: '', confirmPassword: '', referralCode: '' })
+
+// 推廣碼：選填，大寫英數，6 碼（代理）或 8 碼（玩家）
+function onReferralInput(e: Event) {
+  regForm.referralCode = (e.target as HTMLInputElement).value.toUpperCase().replace(/[^A-Z0-9]/g, '')
+}
+const referralValid = computed(() =>
+  regForm.referralCode === '' || /^[A-Z0-9]{6}$/.test(regForm.referralCode) || /^[A-Z0-9]{8}$/.test(regForm.referralCode)
+)
 const loading = ref(false)
 const countdown = ref(0)
 let countdownTimer: ReturnType<typeof setInterval> | null = null
@@ -35,10 +43,11 @@ async function handleSubmit() {
 
 async function handleRegister() {
   if (regForm.password !== regForm.confirmPassword) return
+  if (!referralValid.value) return
   loading.value = true
   // TODO: 串接註冊 API
   await new Promise(r => setTimeout(r, 1200))
-  login()
+  login(regForm.nickname.trim() || undefined)
   loading.value = false
 }
 
@@ -173,6 +182,10 @@ onUnmounted(() => { if (countdownTimer) clearInterval(countdownTimer) })
                 <input id="reg-account" v-model="regForm.account" type="text" class="input-field" placeholder="請設定帳號（4～20 字元）" autocomplete="username" required minlength="4" maxlength="20" />
               </div>
               <div>
+                <label class="input-label" for="reg-nickname">暱稱</label>
+                <input id="reg-nickname" v-model="regForm.nickname" type="text" class="input-field" placeholder="請設定暱稱（顯示給其他玩家）" autocomplete="nickname" required minlength="2" maxlength="12" />
+              </div>
+              <div>
                 <label class="input-label" for="reg-password">密碼</label>
                 <input id="reg-password" v-model="regForm.password" type="password" class="input-field" placeholder="請設定密碼（6 字元以上）" autocomplete="new-password" required minlength="6" />
               </div>
@@ -190,10 +203,37 @@ onUnmounted(() => { if (countdownTimer) clearInterval(countdownTimer) })
                 />
                 <p v-if="regForm.confirmPassword && regForm.confirmPassword !== regForm.password" style="font-size:11px; color:#f87171; margin-top:4px;">密碼不一致，請重新輸入</p>
               </div>
+
+              <!-- 分隔線：必填區 / 選填區 -->
+              <div class="flex items-center gap-3 my-1">
+                <div class="divider-purple flex-1" style="margin:0;" />
+                <span class="text-xs" style="color:rgba(255,255,255,0.55);">選填</span>
+                <div class="divider-purple flex-1" style="margin:0;" />
+              </div>
+
+              <div>
+                <label class="input-label" for="reg-referral">推廣碼</label>
+                <input
+                  id="reg-referral"
+                  :value="regForm.referralCode"
+                  type="text"
+                  class="input-field"
+                  placeholder="代理 6 碼 / 玩家 8 碼（可不填）"
+                  autocomplete="off"
+                  inputmode="latin"
+                  maxlength="8"
+                  style="text-transform:uppercase; letter-spacing:1px;"
+                  :style="!referralValid ? 'border-color:rgba(248,113,113,0.7); text-transform:uppercase; letter-spacing:1px;' : ''"
+                  @input="onReferralInput"
+                />
+                <p v-if="!referralValid" style="font-size:11px; color:#f87171; margin-top:4px;">推廣碼須為大寫英數 6 碼（代理）或 8 碼（玩家）</p>
+                <p v-else style="font-size:11px; color:rgba(255,255,255,0.45); margin-top:4px;">由代理或好友提供，無推廣碼可留空</p>
+              </div>
+
               <button
                 type="submit"
                 class="btn-gold w-full justify-center"
-                :disabled="loading || (!!regForm.confirmPassword && regForm.password !== regForm.confirmPassword)"
+                :disabled="loading || (!!regForm.confirmPassword && regForm.password !== regForm.confirmPassword) || !referralValid"
               >
                 <span v-if="loading">註冊中...</span>
                 <span v-else>立即註冊</span>
