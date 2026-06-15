@@ -23,3 +23,7 @@ node_modules
 # OS
 .DS_Store
 Thumbs.db
+
+# Brainstorming 暫存（visual companion mockups）
+.superpowers/
+.claude/launch.json
