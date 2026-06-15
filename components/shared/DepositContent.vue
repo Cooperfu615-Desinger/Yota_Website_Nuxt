@@ -1,6 +1,12 @@
 <script setup lang="ts">
-type PayMethod = 'card' | 'atm' | 'store' | 'point'
+import { siteContent } from '~/data/siteContent'
+
+type PayMethod = 'card' | 'atm' | 'store' | 'point' | 'activity'
 type PointBrand = 'mycard' | 'gash' | 'funpay' | 'iwin'
+
+const { app: { baseURL } } = useRuntimeConfig()
+const base = baseURL.replace(/\/$/, '')
+const depositEvents = siteContent.events.filter(e => e.deposit)
 
 const payMethod = ref<PayMethod>('card')
 const pointBrand = ref<PointBrand>('mycard')
@@ -20,6 +26,7 @@ const payMethods = [
   { key: 'atm'   as PayMethod, label: 'ATM',    icon: '🏧' },
   { key: 'store' as PayMethod, label: '超商',   icon: '🏪' },
   { key: 'point' as PayMethod, label: '點數卡', icon: '🎴' },
+  { key: 'activity' as PayMethod, label: '活動', icon: '🎉' },
 ]
 
 const pointBrands = [
@@ -56,7 +63,7 @@ const pointBrands = [
       </div>
 
       <!-- 方案選擇 -->
-      <section class="px-4 mb-5 lg:px-0" aria-labelledby="plan-heading">
+      <section v-if="payMethod !== 'activity'" class="px-4 mb-5 lg:px-0" aria-labelledby="plan-heading">
         <h2 id="plan-heading" class="text-sm font-bold mb-3" style="color:var(--color-text-muted);">選擇儲值方案</h2>
         <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
           <button
@@ -153,7 +160,7 @@ const pointBrands = [
       </Transition>
 
       <!-- 確認按鈕 -->
-      <div class="px-4 lg:px-0">
+      <div v-if="payMethod !== 'activity'" class="px-4 lg:px-0">
         <button
           class="btn-gold w-full justify-center text-lg py-4"
           style="border-radius:14px;"
@@ -167,6 +174,40 @@ const pointBrands = [
           🔒 所有交易均採用 SSL 加密保護
         </p>
       </div>
+
+      <!-- 活動 Tab -->
+      <Transition name="tab-fade">
+        <section v-if="payMethod === 'activity'" class="px-4 mb-5 lg:px-0">
+          <h2 class="text-sm font-bold mb-3" style="color:var(--color-text-muted);">儲值相關活動</h2>
+          <div v-if="depositEvents.length === 0" class="card-purple p-6 text-center text-sm" style="color:var(--color-text-muted);">
+            目前沒有儲值活動
+          </div>
+          <div v-else class="grid gap-4 lg:grid-cols-2">
+            <NuxtLink
+              v-for="event in depositEvents"
+              :key="event.id"
+              to="/lobby/events"
+              class="card-purple overflow-hidden cursor-pointer block"
+              :aria-label="`活動：${event.title}`"
+            >
+              <img v-if="event.imageSrc" :src="base + event.imageSrc" :alt="event.title" class="event-img-crop" />
+              <div v-else class="flex items-center justify-between px-4 py-5" :style="{ background: event.gradient }">
+                <div>
+                  <div class="text-lg font-black text-white">{{ event.title }}</div>
+                  <div class="text-xs mt-1" style="color:rgba(255,255,255,0.7);">{{ event.subtitle }}</div>
+                </div>
+                <div class="text-right">
+                  <div class="text-sm font-bold" style="color:var(--color-gold);">{{ event.prize }}</div>
+                </div>
+              </div>
+              <div class="px-4 py-3 flex items-center justify-between">
+                <span class="text-xs" style="color:#fff;">截止：{{ event.endDate }}</span>
+                <span class="text-xs font-semibold" style="color:#fff;">查看詳情 →</span>
+              </div>
+            </NuxtLink>
+          </div>
+        </section>
+      </Transition>
     </div>
 
     <!-- 右欄（桌面版） -->
