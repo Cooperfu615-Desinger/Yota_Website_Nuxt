@@ -92,16 +92,6 @@ function messagePlayer(p: OnlinePlayer) {
         <span>{{ ch.icon }}</span>
         <span>{{ ch.label }}</span>
       </button>
-
-      <button
-        v-if="activeChannel === 'world'"
-        class="ml-auto self-center flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold"
-        style="background:rgba(168,85,247,0.2); color:var(--color-purple-light); border:1px solid rgba(168,85,247,0.4);"
-        @click="openRoster"
-      >
-        <span class="w-1.5 h-1.5 rounded-full" style="background:#34d399;" />
-        在線 {{ onlinePlayers.length }}
-      </button>
     </div>
 
     <LobbyChatThread v-if="activeChannel === 'world'"   :messages="worldMessages"   @send="sendWorld" />
@@ -123,6 +113,9 @@ function messagePlayer(p: OnlinePlayer) {
         <LobbyChatThread :messages="activeConv.messages" @send="sendPrivate" />
       </template>
     </template>
+
+    <!-- 在線名單可拖曳浮動鈕（世界頻道） -->
+    <LobbyRosterFab v-if="activeChannel === 'world' && !showRoster" :count="onlinePlayers.length" @open="openRoster" />
 
     <!-- 在線名單抽屜（世界頻道） -->
     <div v-if="showRoster" class="roster-overlay" @click.self="closeRoster">
