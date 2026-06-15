@@ -46,13 +46,32 @@ export const useAppState = () => {
     localStorage.removeItem(LS_USER_KEY)
   }
 
+  function persistUser() {
+    localStorage.setItem(LS_USER_KEY, JSON.stringify(userInfo.value))
+  }
+  function depositToVault(amount: number) {
+    if (amount <= 0 || amount > userInfo.value.balance) return
+    userInfo.value.balance -= amount
+    userInfo.value.vaultBalance += amount
+    persistUser()
+  }
+  function withdrawFromVault(amount: number) {
+    if (amount <= 0 || amount > userInfo.value.vaultBalance) return
+    userInfo.value.vaultBalance -= amount
+    userInfo.value.balance += amount
+    persistUser()
+  }
+
   // 從 localStorage 還原登入狀態（僅在客戶端 onMounted 後呼叫）
   function initFromStorage() {
     if (localStorage.getItem(LS_LOGIN_KEY) === 'true') {
       isLoggedIn.value = true
       try {
         const saved = localStorage.getItem(LS_USER_KEY)
-        if (saved) userInfo.value = JSON.parse(saved)
+        if (saved) {
+          userInfo.value = JSON.parse(saved)
+          if (userInfo.value.vaultBalance == null) userInfo.value.vaultBalance = 0
+        }
       } catch {}
     }
   }
@@ -71,5 +90,7 @@ export const useAppState = () => {
     login,
     logout,
     initFromStorage,
+    depositToVault,
+    withdrawFromVault,
   }
 }
