@@ -22,6 +22,7 @@ const section2 = [
 const section3 = [
   { to: '/lobby/member',   label: '個人資訊', icon: '👤' },
   { to: '/lobby/bank',     label: '銀行',     icon: '🏦' },
+  { to: '/lobby/vault',    label: '保險箱',   icon: '🔐' },
   { to: '/lobby/inbox',    label: '信箱',     icon: '📬' },
   { to: '/lobby/chat',     label: '聊天',     icon: '💬' },
   { to: '/lobby/settings', label: '設置',     icon: '⚙️' },
