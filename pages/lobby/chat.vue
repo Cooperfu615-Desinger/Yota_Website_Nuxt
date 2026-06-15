@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { siteContent } from '~/data/siteContent'
-import type { ChatMessage } from '~/data/siteContent'
+import type { ChatMessage, OnlinePlayer } from '~/data/siteContent'
 
 definePageMeta({ layout: 'lobby' })
 
@@ -33,10 +33,22 @@ function makeMsg(text: string): ChatMessage {
 function sendWorld(text: string)   { worldMessages.value.push(makeMsg(text)) }
 function sendPrivate(text: string) { privateMessages.value.push(makeMsg(text)) }
 function sendSupport(text: string) { supportMessages.value.push(makeMsg(text)) }
+
+// 世界頻道在線名單抽屜 + 玩家小卡
+const onlinePlayers = siteContent.chat.onlinePlayers
+const showRoster = ref(false)
+const selectedPlayer = ref<OnlinePlayer | null>(null)
+
+function openRoster()  { showRoster.value = true }
+function closeRoster() { showRoster.value = false }
+function selectPlayer(p: OnlinePlayer) { selectedPlayer.value = p }
+function closeCard()   { selectedPlayer.value = null }
+// 過渡：私訊行為在 Task 5 串接，先關閉卡片與抽屜
+function messagePlayer(_p: OnlinePlayer) { closeCard(); closeRoster() }
 </script>
 
 <template>
-  <div class="lobby-page flex flex-col" style="height: calc(100dvh - 56px - 40px); padding: 0;">
+  <div class="lobby-page flex flex-col" style="height: calc(100dvh - 56px - 40px); padding: 0; position: relative; overflow: hidden;">
     <!-- 頻道 Tab -->
     <div class="flex border-b px-3 pt-3 gap-1 flex-shrink-0" style="border-color:rgba(168,85,247,0.15); background:var(--color-bg-card);">
       <button
@@ -51,12 +63,37 @@ function sendSupport(text: string) { supportMessages.value.push(makeMsg(text)) }
         <span>{{ ch.icon }}</span>
         <span>{{ ch.label }}</span>
       </button>
+
+      <button
+        v-if="activeChannel === 'world'"
+        class="ml-auto self-center flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold"
+        style="background:rgba(168,85,247,0.2); color:var(--color-purple-light); border:1px solid rgba(168,85,247,0.4);"
+        @click="openRoster"
+      >
+        <span class="w-1.5 h-1.5 rounded-full" style="background:#34d399;" />
+        在線 {{ onlinePlayers.length }}
+      </button>
     </div>
 
     <LobbyChatThread v-if="activeChannel === 'world'"   :messages="worldMessages"   @send="sendWorld" />
     <LobbyChatThread v-else-if="activeChannel === 'support'" :messages="supportMessages" @send="sendSupport" />
     <LobbyChatThread v-else :messages="privateMessages" @send="sendPrivate" />
+
+    <!-- 在線名單抽屜（世界頻道） -->
+    <div v-if="showRoster" class="roster-overlay" @click.self="closeRoster">
+      <LobbyOnlineRoster :players="onlinePlayers" @select="selectPlayer" @close="closeRoster" />
+    </div>
+
+    <!-- 玩家小卡 -->
+    <LobbyPlayerCard v-if="selectedPlayer" :player="selectedPlayer" @message="messagePlayer" @close="closeCard" />
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.roster-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 20;
+}
+</style>
