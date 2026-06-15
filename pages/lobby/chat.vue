@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { siteContent } from '~/data/siteContent'
-import type { ChatMessage, OnlinePlayer } from '~/data/siteContent'
+import type { ChatMessage, OnlinePlayer, PrivateConversation } from '~/data/siteContent'
 
 definePageMeta({ layout: 'lobby' })
 
@@ -16,8 +16,19 @@ const channels: { key: Channel; label: string; icon: string }[] = [
 // 執行期訊息存區域 ref（seed 自 siteContent，重整重置）
 const worldMessages = ref<ChatMessage[]>([...siteContent.chat.worldMessages])
 const supportMessages = ref<ChatMessage[]>([...siteContent.chat.supportMessages])
-// 過渡：私人頻道暫時只接第一個對話的訊息（Task 4 改為主從導覽）
-const privateMessages = ref<ChatMessage[]>([...siteContent.chat.privateConversations[0].messages])
+
+// 私人對話（深拷貝 seed，避免動到 as const 來源）+ 主從導覽狀態
+const conversations = ref<PrivateConversation[]>(
+  siteContent.chat.privateConversations.map(c => ({ ...c, peer: { ...c.peer }, messages: [...c.messages] }))
+)
+const activeConvId = ref<number | null>(null)   // null = 顯示清單
+const activeConv = computed(() => conversations.value.find(c => c.id === activeConvId.value) || null)
+
+function openConversation(conv: PrivateConversation) {
+  activeConvId.value = conv.id
+  conv.unread = 0
+}
+function backToList() { activeConvId.value = null }
 
 function makeMsg(text: string): ChatMessage {
   return {
@@ -31,8 +42,10 @@ function makeMsg(text: string): ChatMessage {
 }
 
 function sendWorld(text: string)   { worldMessages.value.push(makeMsg(text)) }
-function sendPrivate(text: string) { privateMessages.value.push(makeMsg(text)) }
 function sendSupport(text: string) { supportMessages.value.push(makeMsg(text)) }
+function sendPrivate(text: string) {
+  if (activeConv.value) activeConv.value.messages.push(makeMsg(text))
+}
 
 // 世界頻道在線名單抽屜 + 玩家小卡
 const onlinePlayers = siteContent.chat.onlinePlayers
@@ -77,7 +90,23 @@ function messagePlayer(_p: OnlinePlayer) { closeCard(); closeRoster() }
 
     <LobbyChatThread v-if="activeChannel === 'world'"   :messages="worldMessages"   @send="sendWorld" />
     <LobbyChatThread v-else-if="activeChannel === 'support'" :messages="supportMessages" @send="sendSupport" />
-    <LobbyChatThread v-else :messages="privateMessages" @send="sendPrivate" />
+
+    <!-- 私人頻道：主從導覽 -->
+    <template v-else>
+      <LobbyPrivateConvList v-if="activeConvId === null" :conversations="conversations" @open="openConversation" />
+      <template v-else-if="activeConv">
+        <div class="flex items-center gap-2 px-3 py-2.5 flex-shrink-0"
+             style="background:var(--color-bg-card); border-bottom:1px solid rgba(168,85,247,0.15);">
+          <button aria-label="返回" class="text-xl px-1" style="color:var(--color-purple-light);" @click="backToList">‹</button>
+          <span class="w-7 h-7 rounded-full flex items-center justify-center text-base flex-shrink-0"
+                style="background:rgba(168,85,247,0.2); border:1px solid rgba(168,85,247,0.3);">
+            {{ activeConv.peer.avatar }}
+          </span>
+          <span class="text-sm font-bold" style="color:var(--color-text);">{{ activeConv.peer.name }}</span>
+        </div>
+        <LobbyChatThread :messages="activeConv.messages" @send="sendPrivate" />
+      </template>
+    </template>
 
     <!-- 在線名單抽屜（世界頻道） -->
     <div v-if="showRoster" class="roster-overlay" @click.self="closeRoster">
