@@ -53,13 +53,13 @@ function handleLogout() {
       </div>
 
       <!-- VIP 進度卡 -->
-      <div class="rounded-2xl p-5 mb-4 relative overflow-hidden" style="background:linear-gradient(135deg,var(--color-gold),var(--color-gold-dark));">
+      <div class="card-purple p-5 mb-4">
         <div class="flex items-start justify-between">
           <div>
-            <div class="text-xs font-bold tracking-widest" style="color:rgba(0,0,0,0.55);">CURRENT LEVEL</div>
-            <div class="text-4xl font-black italic" style="color:#3a2400;">VIP {{ userInfo.vip }}</div>
+            <div class="text-xs font-bold tracking-widest" style="color:var(--color-text-muted);">CURRENT LEVEL</div>
+            <div class="text-4xl font-black italic" style="color:var(--color-gold);">VIP {{ userInfo.vip }}</div>
           </div>
-          <div v-if="!isMaxVip" class="text-sm font-bold px-3 py-1.5 rounded-lg" style="background:rgba(0,0,0,0.12); color:#3a2400;">
+          <div v-if="!isMaxVip" class="text-sm font-bold px-3 py-1.5 rounded-lg" style="background:rgba(168,85,247,0.2); color:var(--color-purple-light); border:1px solid var(--color-border);">
             目標 VIP {{ userInfo.vip + 1 }}
           </div>
         </div>
@@ -68,29 +68,29 @@ function handleLogout() {
           <!-- 累積儲值 -->
           <div class="mt-5">
             <div class="flex items-center justify-between mb-1.5">
-              <span class="flex items-center gap-2 font-bold" style="color:#3a2400;"><span aria-hidden="true">👛</span>累積儲值</span>
-              <span class="font-bold" style="color:#3a2400;">{{ vipUpgrade.deposit.current.toLocaleString() }} / {{ vipUpgrade.deposit.target.toLocaleString() }}</span>
+              <span class="flex items-center gap-2 font-bold" style="color:var(--color-text);"><span aria-hidden="true">👛</span>累積儲值</span>
+              <span class="font-bold" style="color:var(--color-gold);">{{ vipUpgrade.deposit.current.toLocaleString() }} / {{ vipUpgrade.deposit.target.toLocaleString() }}</span>
             </div>
-            <div class="h-2.5 rounded-full overflow-hidden" style="background:rgba(0,0,0,0.18);">
-              <div class="h-full rounded-full" :style="`width:${depositPct}%; background:#fff;`" />
+            <div class="h-2.5 rounded-full overflow-hidden" style="background:rgba(168,85,247,0.15);">
+              <div class="h-full rounded-full" :style="`width:${depositPct}%; background:linear-gradient(90deg,var(--color-purple-mid),var(--color-gold));`" />
             </div>
           </div>
 
           <!-- 累積投注 -->
           <div class="mt-4">
             <div class="flex items-center justify-between mb-1.5">
-              <span class="flex items-center gap-2 font-bold" style="color:#3a2400;"><span aria-hidden="true">📈</span>累積投注</span>
-              <span class="font-bold" style="color:#3a2400;">{{ vipUpgrade.wager.current.toLocaleString() }} / {{ vipUpgrade.wager.target.toLocaleString() }}</span>
+              <span class="flex items-center gap-2 font-bold" style="color:var(--color-text);"><span aria-hidden="true">📈</span>累積投注</span>
+              <span class="font-bold" style="color:var(--color-gold);">{{ vipUpgrade.wager.current.toLocaleString() }} / {{ vipUpgrade.wager.target.toLocaleString() }}</span>
             </div>
-            <div class="h-2.5 rounded-full overflow-hidden" style="background:rgba(0,0,0,0.18);">
-              <div class="h-full rounded-full" :style="`width:${wagerPct}%; background:#fff;`" />
+            <div class="h-2.5 rounded-full overflow-hidden" style="background:rgba(168,85,247,0.15);">
+              <div class="h-full rounded-full" :style="`width:${wagerPct}%; background:linear-gradient(90deg,var(--color-purple-mid),var(--color-gold));`" />
             </div>
           </div>
 
-          <p class="text-xs mt-4" style="color:rgba(0,0,0,0.6);">需同時達成累積儲值與累積投注條件，即可升級至 VIP {{ userInfo.vip + 1 }}。</p>
+          <p class="text-xs mt-4" style="color:var(--color-text-muted);">需同時達成累積儲值與累積投注條件，即可升級至 VIP {{ userInfo.vip + 1 }}。</p>
         </template>
         <template v-else>
-          <p class="text-sm font-bold mt-5" style="color:#3a2400;">已達最高等級</p>
+          <p class="text-sm font-bold mt-5" style="color:var(--color-text);">已達最高等級</p>
         </template>
       </div>
 

@@ -132,8 +132,8 @@ function goPage(p: number) {
           <table class="w-full text-xs" style="border-collapse:collapse;">
             <thead>
               <tr style="color:var(--color-text-muted);">
-                <th class="text-right py-2 pr-3 whitespace-nowrap">編號</th>
-                <th class="text-left py-2 pr-3 whitespace-nowrap">遊戲名稱</th>
+                <th class="text-center py-2 pr-3 whitespace-nowrap">編號</th>
+                <th class="text-right py-2 pr-3 whitespace-nowrap">遊戲名稱</th>
                 <th class="text-right py-2 pr-3 whitespace-nowrap">投注額</th>
                 <th class="text-right py-2 pr-3 whitespace-nowrap">贏分</th>
                 <th class="text-right py-2 whitespace-nowrap">錢包餘額</th>
@@ -141,8 +141,8 @@ function goPage(p: number) {
             </thead>
             <tbody>
               <tr v-for="r in pagedResults" :key="r.id" class="border-t" style="border-color:rgba(168,85,247,0.08);">
-                <td class="text-right py-2 pr-3" style="color:var(--color-text-muted);">{{ r.seq }}</td>
-                <td class="text-left py-2 pr-3 whitespace-nowrap" style="color:var(--color-text);">{{ r.game }}</td>
+                <td class="text-center py-2 pr-3" style="color:var(--color-text-muted);">{{ r.seq }}</td>
+                <td class="text-right py-2 pr-3 whitespace-nowrap" style="color:var(--color-text);">{{ r.game }}</td>
                 <td class="text-right py-2 pr-3" style="color:var(--color-text);">{{ r.bet.toLocaleString() }}</td>
                 <td class="text-right py-2 pr-3 font-bold" :style="r.win > 0 ? 'color:#4ade80;' : r.win < 0 ? 'color:#f87171;' : 'color:var(--color-text-muted);'">
                   {{ r.win > 0 ? '+' : '' }}{{ r.win.toLocaleString() }}
@@ -189,4 +189,10 @@ function goPage(p: number) {
   cursor: not-allowed;
 }
 .rec-pager { scrollbar-width: thin; }
+
+/* 日期輸入框的日曆 icon 改白色 */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.8);
+  cursor: pointer;
+}
 </style>
