@@ -6,15 +6,12 @@ const { isLoggedIn, userInfo, openLogin, logout } = useAppState()
 const router = useRouter()
 
 const historyItems = siteContent.member.historyItems
-const vipLevels    = siteContent.member.vipLevels
-const vipProgress  = computed(() => {
-  const targets  = siteContent.member.vipTargets
-  const current  = 68500
-  const vipLevel = userInfo.value.vip
-  const next  = targets[vipLevel] ?? targets[targets.length - 1]
-  const prev  = targets[vipLevel - 1] ?? 0
-  return Math.min(100, Math.round(((current - prev) / (next - prev)) * 100))
-})
+const vipUpgrade = siteContent.member.vipUpgrade
+
+const MAX_VIP = 7
+const isMaxVip = computed(() => userInfo.value.vip >= MAX_VIP)
+const depositPct = computed(() => Math.min(100, Math.round(vipUpgrade.deposit.current / vipUpgrade.deposit.target * 100)))
+const wagerPct   = computed(() => Math.min(100, Math.round(vipUpgrade.wager.current / vipUpgrade.wager.target * 100)))
 
 function handleLogout() {
   logout()
@@ -53,15 +50,6 @@ function handleLogout() {
               ${{ userInfo.balance.toLocaleString() }}
             </span>
           </div>
-          <!-- VIP 進度條 -->
-          <div class="mt-2">
-            <div class="flex justify-between text-xs mb-1" style="color:var(--color-text-muted);">
-              <span>升級進度</span><span>{{ vipProgress }}%</span>
-            </div>
-            <div class="h-1.5 rounded-full overflow-hidden" style="background:rgba(168,85,247,0.15);">
-              <div class="h-full rounded-full" :style="`width:${vipProgress}%; background:linear-gradient(90deg,var(--color-purple-mid),var(--color-gold))`" />
-            </div>
-          </div>
         </div>
       </div>
 
@@ -93,22 +81,46 @@ function handleLogout() {
         </div>
       </div>
 
-      <!-- VIP 等級一覽 -->
-      <div class="card-purple mb-4">
-        <div class="px-4 pt-4 pb-2 font-bold" style="color:var(--color-gold);">VIP 等級</div>
-        <div class="overflow-x-auto">
-          <div class="flex gap-3 px-4 pb-4" style="min-width:max-content;">
-            <div
-              v-for="lv in vipLevels"
-              :key="lv.level"
-              class="p-3 rounded-xl flex-shrink-0 w-32"
-              :style="`background:rgba(28,10,58,0.8); border:1px solid ${lv.level === userInfo.vip ? lv.color : 'rgba(168,85,247,0.15)'};`"
-            >
-              <div class="text-sm font-black" :style="`color:${lv.color}`">{{ lv.name }}</div>
-              <div class="text-xs mt-1" style="color:var(--color-text-muted);">{{ lv.limit }}</div>
-            </div>
+      <!-- VIP 進度卡 -->
+      <div class="rounded-2xl p-5 mb-4 relative overflow-hidden" style="background:linear-gradient(135deg,var(--color-gold),var(--color-gold-dark));">
+        <div class="flex items-start justify-between">
+          <div>
+            <div class="text-xs font-bold tracking-widest" style="color:rgba(0,0,0,0.55);">CURRENT LEVEL</div>
+            <div class="text-4xl font-black italic" style="color:#3a2400;">VIP {{ userInfo.vip }}</div>
+          </div>
+          <div v-if="!isMaxVip" class="text-sm font-bold px-3 py-1.5 rounded-lg" style="background:rgba(0,0,0,0.12); color:#3a2400;">
+            目標 VIP {{ userInfo.vip + 1 }}
           </div>
         </div>
+
+        <template v-if="!isMaxVip">
+          <!-- 累積儲值 -->
+          <div class="mt-5">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="flex items-center gap-2 font-bold" style="color:#3a2400;"><span aria-hidden="true">👛</span>累積儲值</span>
+              <span class="font-bold" style="color:#3a2400;">{{ vipUpgrade.deposit.current.toLocaleString() }} / {{ vipUpgrade.deposit.target.toLocaleString() }}</span>
+            </div>
+            <div class="h-2.5 rounded-full overflow-hidden" style="background:rgba(0,0,0,0.18);">
+              <div class="h-full rounded-full" :style="`width:${depositPct}%; background:#fff;`" />
+            </div>
+          </div>
+
+          <!-- 累積投注 -->
+          <div class="mt-4">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="flex items-center gap-2 font-bold" style="color:#3a2400;"><span aria-hidden="true">📈</span>累積投注</span>
+              <span class="font-bold" style="color:#3a2400;">{{ vipUpgrade.wager.current.toLocaleString() }} / {{ vipUpgrade.wager.target.toLocaleString() }}</span>
+            </div>
+            <div class="h-2.5 rounded-full overflow-hidden" style="background:rgba(0,0,0,0.18);">
+              <div class="h-full rounded-full" :style="`width:${wagerPct}%; background:#fff;`" />
+            </div>
+          </div>
+
+          <p class="text-xs mt-4" style="color:rgba(0,0,0,0.6);">需同時達成累積儲值與累積投注條件，即可升級至 VIP {{ userInfo.vip + 1 }}。</p>
+        </template>
+        <template v-else>
+          <p class="text-sm font-bold mt-5" style="color:#3a2400;">已達最高等級</p>
+        </template>
       </div>
 
       <!-- 登出 -->
