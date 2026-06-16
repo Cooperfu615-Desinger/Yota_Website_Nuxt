@@ -5,7 +5,6 @@ import { siteContent } from '~/data/siteContent'
 const { isLoggedIn, userInfo, openLogin, logout } = useAppState()
 const router = useRouter()
 
-const historyItems = siteContent.member.historyItems
 const vipUpgrade = siteContent.member.vipUpgrade
 
 const MAX_VIP = 7
@@ -96,20 +95,7 @@ function handleLogout() {
       </div>
 
       <!-- 遊戲紀錄 -->
-      <div class="card-purple mb-4">
-        <div class="px-4 pt-4 pb-2 font-bold" style="color:var(--color-gold);">最近遊戲紀錄</div>
-        <div v-for="item in historyItems" :key="item.date" class="px-4 py-3 border-t" style="border-color:rgba(168,85,247,0.1);">
-          <div class="flex justify-between items-start">
-            <div>
-              <div class="text-sm font-bold">{{ item.game }}</div>
-              <div class="text-xs mt-0.5" style="color:var(--color-text-muted);">{{ item.date }}</div>
-            </div>
-            <span class="text-sm font-black" :style="item.positive ? 'color:#4ade80;' : 'color:#f87171;'">
-              {{ item.result }}
-            </span>
-          </div>
-        </div>
-      </div>
+      <LobbyGameRecords />
 
       <!-- 登出 -->
       <button
