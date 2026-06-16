@@ -53,34 +53,6 @@ function handleLogout() {
         </div>
       </div>
 
-      <!-- 快捷操作 -->
-      <div class="grid grid-cols-2 gap-3 mb-4">
-        <button class="card-purple p-4 text-center" @click="$router.push('/lobby/bank')">
-          <div class="text-2xl mb-1" aria-hidden="true">🏦</div>
-          <div class="text-sm font-bold" style="color:var(--color-gold);">前往儲值</div>
-        </button>
-        <button class="card-purple p-4 text-center" @click="$router.push('/lobby/inbox')">
-          <div class="text-2xl mb-1" aria-hidden="true">📬</div>
-          <div class="text-sm font-bold" style="color:var(--color-purple-light);">查看信箱</div>
-        </button>
-      </div>
-
-      <!-- 遊戲紀錄 -->
-      <div class="card-purple mb-4">
-        <div class="px-4 pt-4 pb-2 font-bold" style="color:var(--color-gold);">最近遊戲紀錄</div>
-        <div v-for="item in historyItems" :key="item.date" class="px-4 py-3 border-t" style="border-color:rgba(168,85,247,0.1);">
-          <div class="flex justify-between items-start">
-            <div>
-              <div class="text-sm font-bold">{{ item.game }}</div>
-              <div class="text-xs mt-0.5" style="color:var(--color-text-muted);">{{ item.date }}</div>
-            </div>
-            <span class="text-sm font-black" :style="item.positive ? 'color:#4ade80;' : 'color:#f87171;'">
-              {{ item.result }}
-            </span>
-          </div>
-        </div>
-      </div>
-
       <!-- VIP 進度卡 -->
       <div class="rounded-2xl p-5 mb-4 relative overflow-hidden" style="background:linear-gradient(135deg,var(--color-gold),var(--color-gold-dark));">
         <div class="flex items-start justify-between">
@@ -121,6 +93,22 @@ function handleLogout() {
         <template v-else>
           <p class="text-sm font-bold mt-5" style="color:#3a2400;">已達最高等級</p>
         </template>
+      </div>
+
+      <!-- 遊戲紀錄 -->
+      <div class="card-purple mb-4">
+        <div class="px-4 pt-4 pb-2 font-bold" style="color:var(--color-gold);">最近遊戲紀錄</div>
+        <div v-for="item in historyItems" :key="item.date" class="px-4 py-3 border-t" style="border-color:rgba(168,85,247,0.1);">
+          <div class="flex justify-between items-start">
+            <div>
+              <div class="text-sm font-bold">{{ item.game }}</div>
+              <div class="text-xs mt-0.5" style="color:var(--color-text-muted);">{{ item.date }}</div>
+            </div>
+            <span class="text-sm font-black" :style="item.positive ? 'color:#4ade80;' : 'color:#f87171;'">
+              {{ item.result }}
+            </span>
+          </div>
+        </div>
       </div>
 
       <!-- 登出 -->
