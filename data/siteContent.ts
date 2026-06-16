@@ -407,6 +407,10 @@ export const siteContent = {
       balance: 12580,
       vaultBalance: 0,
     },
+    vipUpgrade: {
+      deposit: { current: 128000, target: 150000 },
+      wager:   { current: 3560000, target: 4200000 },
+    },
     vipTargets: [0, 10000, 50000, 200000, 500000, 2000000],
     vipLevels: [
       { level: 1, name: 'VIP 1', color: '#CD7F32', limit: 'NT$50,000/日', benefits: ['每日簽到獎 ×1.2', '優先客服'] },
