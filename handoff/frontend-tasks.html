@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>巨亨ONLINE — 前端開發工作清單</title>
+  <style>
+    :root {
+      --gold:         #F5C842;
+      --purple:       #7C3AED;
+      --purple-light: #A855F7;
+      --bg:           #0F0020;
+      --bg-card:      #1A0A2E;
+      --text:         #F3E8FF;
+      --muted:        rgba(196,181,213,0.65);
+      --border:       rgba(168,85,247,0.22);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      background: var(--bg); color: var(--text);
+      line-height: 1.6; font-size: 14px;
+    }
+    .page-wrap { max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* ── Header ── */
+    .doc-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 28px; margin-bottom: 32px;
+    }
+    .doc-logo { display: flex; align-items: center; gap: 12px; }
+    .doc-logo-icon {
+      width: 48px; height: 48px; border-radius: 14px;
+      background: linear-gradient(135deg, #6B21A8, #F5C842);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 900; color: #fff;
+    }
+    .doc-logo-text { font-size: 22px; font-weight: 900; color: var(--gold); }
+    .doc-logo-sub  { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .doc-meta { text-align: right; }
+    .doc-meta-title { font-size: 18px; font-weight: 800; }
+    .doc-meta-date  { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    /* ── Ref Banner ── */
+    .ref-banner {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      background: rgba(245,200,66,0.08); border: 1px solid rgba(245,200,66,0.25);
+      border-radius: 12px; padding: 14px 18px; margin-bottom: 28px;
+      font-size: 13px;
+    }
+    .ref-banner strong { color: var(--gold); }
+    .ref-banner a { color: var(--purple-light); text-decoration: underline; word-break: break-all; }
+
+    /* ── Summary ── */
+    .summary-row {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 14px;
+      margin-bottom: 28px;
+    }
+    .summary-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px; text-align: center;
+    }
+    .summary-num { font-size: 26px; font-weight: 900; color: var(--gold); }
+    .summary-lbl { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+    /* ── Badge ── */
+    .badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 2px 9px; border-radius: 20px;
+      font-size: 11px; font-weight: 700; white-space: nowrap;
+    }
+    .badge-p1    { background: rgba(239,68,68,0.18);   color: #f87171; border: 1px solid rgba(239,68,68,0.35); }
+    .badge-p2    { background: rgba(251,146,60,0.18);  color: #fb923c; border: 1px solid rgba(251,146,60,0.35); }
+    .badge-p3    { background: rgba(96,165,250,0.18);  color: #60a5fa; border: 1px solid rgba(96,165,250,0.35); }
+    .badge-build { background: rgba(52,211,153,0.15);  color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+    .badge-page  { background: rgba(245,200,66,0.15);  color: var(--gold); border: 1px solid rgba(245,200,66,0.3); }
+    .badge-feat  { background: rgba(168,85,247,0.18);  color: #c084fc; border: 1px solid rgba(168,85,247,0.35); }
+    .badge-api   { background: rgba(96,165,250,0.15);  color: #60a5fa; border: 1px solid rgba(96,165,250,0.3); }
+    .badge-test  { background: rgba(74,222,128,0.15);  color: #4ade80; border: 1px solid rgba(74,222,128,0.3); }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+      margin-bottom: 16px;
+    }
+    .toolbar-label { font-size: 12px; color: var(--muted); font-weight: 600; flex-shrink: 0; }
+    .filter-group  { display: flex; gap: 6px; flex-wrap: wrap; }
+    .filter-btn {
+      padding: 5px 13px; border-radius: 20px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border: 1px solid var(--border);
+      background: transparent; color: var(--muted); transition: all 0.18s;
+    }
+    .filter-btn:hover { color: var(--text); border-color: var(--purple-light); }
+    .filter-btn.active { background: rgba(168,85,247,0.2); border-color: var(--purple-light); color: var(--text); }
+    .toolbar-sep { width: 1px; height: 24px; background: var(--border); margin: 0 4px; }
+
+    .search-wrap { position: relative; margin-left: auto; }
+    .search-input {
+      padding: 7px 12px 7px 32px; border-radius: 20px; font-size: 13px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      color: var(--text); outline: none; width: 200px; transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: var(--purple-light); }
+    .search-input::placeholder { color: var(--muted); }
+    .search-icon {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      width: 14px; height: 14px; color: var(--muted); pointer-events: none;
+    }
+
+    /* ── Table ── */
+    .table-wrap {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      padding: 11px 14px; background: rgba(168,85,247,0.1);
+      border-bottom: 1px solid var(--border);
+      font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+      color: var(--muted); text-transform: uppercase;
+      white-space: nowrap; user-select: none;
+    }
+    th.sortable { cursor: pointer; }
+    th.sortable:hover { color: var(--text); }
+    th.sort-asc  .sort-icon::after { content: ' ↑'; color: var(--purple-light); }
+    th.sort-desc .sort-icon::after { content: ' ↓'; color: var(--purple-light); }
+    th:not(.sort-asc):not(.sort-desc) .sort-icon::after { content: ' ↕'; opacity: 0.35; }
+
+    tbody tr { border-bottom: 1px solid rgba(168,85,247,0.08); transition: background 0.15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(168,85,247,0.06); }
+    tbody tr.hidden { display: none; }
+    td { padding: 12px 14px; vertical-align: middle; }
+
+    .col-check { width: 40px; text-align: center; }
+    .col-phase { width: 120px; }
+    .col-task  { min-width: 200px; }
+    .col-type  { width: 85px; }
+    .col-pri   { width: 90px; }
+    .col-note  { min-width: 160px; font-size: 12px; color: var(--muted); }
+
+    input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--purple-light); cursor: pointer; }
+    .task-name { font-weight: 600; color: var(--text); font-size: 13px; }
+    .task-sub  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .phase-chip {
+      display: inline-block; padding: 3px 8px; border-radius: 8px;
+      font-size: 11px; font-weight: 700;
+      background: rgba(124,58,237,0.15); color: var(--purple-light);
+      border: 1px solid rgba(168,85,247,0.25); white-space: nowrap;
+    }
+
+    .empty-row td { text-align: center; padding: 40px; color: var(--muted); font-size: 13px; }
+
+    /* ── Legend ── */
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      padding: 14px 18px; margin-bottom: 16px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); }
+    .legend-sep  { width: 1px; height: 16px; background: var(--border); }
+
+    /* ── Notes ── */
+    .notes-box {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 24px; margin-top: 36px;
+    }
+    .notes-box h2 { font-size: 15px; font-weight: 800; color: var(--gold); margin-bottom: 16px; }
+    .notes-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .notes-list li { display: flex; gap: 10px; font-size: 13px; color: var(--muted); }
+    .notes-list li::before { content: '📌'; flex-shrink: 0; }
+
+    @media print {
+      body { background: #fff; color: #111; }
+      .toolbar, .ref-banner { display: none; }
+      .table-wrap { border-color: #ccc; }
+      thead th { background: #f5f5f5; color: #555; }
+      tbody tr.hidden { display: table-row !important; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <div class="doc-logo">
+      <div class="doc-logo-icon">巨</div>
+      <div>
+        <div class="doc-logo-text">巨亨 ONLINE</div>
+        <div class="doc-logo-sub">前端開發工作清單 v2.0</div>
+      </div>
+    </div>
+    <div class="doc-meta">
+      <div class="doc-meta-title">前端開發工作清單</div>
+      <div class="doc-meta-date">建立日期：2026/05/25　版本：v2.0</div>
+    </div>
+  </div>
+
+  <!-- Reference Banner -->
+  <div class="ref-banner">
+    <span>📐</span>
+    <div>
+      <strong>開發方向：</strong>前端以現有設計原型為視覺與功能參考，自行選擇技術架構，從零建立正式版本。<br>
+      <strong>原型參考網址：</strong><a href="https://cooperfu615-desinger.github.io/Yota_Website_Nuxt/" target="_blank">https://cooperfu615-desinger.github.io/Yota_Website_Nuxt/</a>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-row">
+    <div class="summary-card">
+      <div class="summary-num">49</div>
+      <div class="summary-lbl">工作項目</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-num" style="color:#c084fc;" id="visible-count">49</div>
+      <div class="summary-lbl">目前顯示</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-num" style="color:#60a5fa;">17</div>
+      <div class="summary-lbl">待後端就緒（P3）</div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <span style="font-size:12px; font-weight:700; color:var(--text); margin-right:4px;">類型：</span>
+    <div class="legend-item"><span class="badge badge-build">建置</span> 專案架構 / 環境設定</div>
+    <div class="legend-item"><span class="badge badge-page">頁面</span> 頁面 UI 開發</div>
+    <div class="legend-item"><span class="badge badge-feat">功能</span> 互動功能實作</div>
+    <div class="legend-item"><span class="badge badge-api">API</span> 後端串接（後端就緒後處理）</div>
+    <div class="legend-item"><span class="badge badge-test">測試</span> QA / 上線驗證</div>
+    <div class="legend-sep"></div>
+    <span style="font-size:12px; font-weight:700; color:var(--text); margin-right:4px;">優先度：</span>
+    <div class="legend-item"><span class="badge badge-p1">P1 高</span> 優先完成</div>
+    <div class="legend-item"><span class="badge badge-p2">P2 中</span> 次要完成</div>
+    <div class="legend-item"><span class="badge badge-p3">P3 低</span> 後端就緒後處理</div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <span class="toolbar-label">階段</span>
+    <div class="filter-group">
+      <button class="filter-btn active" data-filter="phase" data-value="">全部</button>
+      <button class="filter-btn" data-filter="phase" data-value="專案建置">專案建置</button>
+      <button class="filter-btn" data-filter="phase" data-value="設計系統">設計系統</button>
+      <button class="filter-btn" data-filter="phase" data-value="官網頁面">官網頁面</button>
+      <button class="filter-btn" data-filter="phase" data-value="大廳頁面">大廳頁面</button>
+      <button class="filter-btn" data-filter="phase" data-value="功能互動">功能互動</button>
+      <button class="filter-btn" data-filter="phase" data-value="後端串接">後端串接</button>
+      <button class="filter-btn" data-filter="phase" data-value="品質上線">品質上線</button>
+    </div>
+    <div class="toolbar-sep"></div>
+    <span class="toolbar-label">類型</span>
+    <div class="filter-group">
+      <button class="filter-btn active" data-filter="type" data-value="">全部</button>
+      <button class="filter-btn" data-filter="type" data-value="建置">建置</button>
+      <button class="filter-btn" data-filter="type" data-value="頁面">頁面</button>
+      <button class="filter-btn" data-filter="type" data-value="功能">功能</button>
+      <button class="filter-btn" data-filter="type" data-value="API">API</button>
+      <button class="filter-btn" data-filter="type" data-value="測試">測試</button>
+    </div>
+    <div class="toolbar-sep"></div>
+    <span class="toolbar-label">優先度</span>
+    <div class="filter-group">
+      <button class="filter-btn active" data-filter="pri" data-value="">全部</button>
+      <button class="filter-btn" data-filter="pri" data-value="P1">P1 高</button>
+      <button class="filter-btn" data-filter="pri" data-value="P2">P2 中</button>
+      <button class="filter-btn" data-filter="pri" data-value="P3">P3 低</button>
+    </div>
+    <div class="search-wrap">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd"/>
+      </svg>
+      <input class="search-input" type="search" id="search-input" placeholder="搜尋工作項目…" />
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table id="task-table">
+      <thead>
+        <tr>
+          <th class="col-check"></th>
+          <th class="col-phase sortable" data-col="phase">階段 <span class="sort-icon"></span></th>
+          <th class="col-task">工作項目</th>
+          <th class="col-type sortable" data-col="type">類型 <span class="sort-icon"></span></th>
+          <th class="col-pri sortable" data-col="pri">優先度 <span class="sort-icon"></span></th>
+          <th class="col-note">說明 / 原型參考</th>
+        </tr>
+      </thead>
+      <tbody id="task-body">
+
+        <!-- ══ 專案建置 ══ -->
+        <tr data-phase="專案建置" data-type="建置" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">專案建置</span></td>
+          <td><div class="task-name">技術選型與專案初始化</div><div class="task-sub">框架、打包工具、語言（TS/JS）、版本管理</div></td>
+          <td><span class="badge badge-build">建置</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>原型使用 Nuxt 3 SSG，正式版技術架構由前端自行決定</td>
+        </tr>
+        <tr data-phase="專案建置" data-type="建置" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">專案建置</span></td>
+          <td><div class="task-name">路由架構規劃</div><div class="task-sub">官網與遊戲大廳兩套 Layout，子路由結構</div></td>
+          <td><span class="badge badge-build">建置</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>原型分為 / 官網路由 與 /lobby/ 大廳路由兩個獨立 layout</td>
+        </tr>
+        <tr data-phase="專案建置" data-type="建置" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">專案建置</span></td>
+          <td><div class="task-name">環境變數與 API Base URL 設定</div><div class="task-sub">開發 / 測試 / 正式三環境設定</div></td>
+          <td><span class="badge badge-build">建置</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>與後端確認 API endpoint 格式</td>
+        </tr>
+        <tr data-phase="專案建置" data-type="建置" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">專案建置</span></td>
+          <td><div class="task-name">全域狀態管理架構</div><div class="task-sub">登入狀態、使用者資訊、跨頁共用狀態</div></td>
+          <td><span class="badge badge-build">建置</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>Pinia / Vuex / Zustand 等，依框架選擇</td>
+        </tr>
+        <tr data-phase="專案建置" data-type="建置" data-pri="P2">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">專案建置</span></td>
+          <td><div class="task-name">CI/CD 部署流程建立</div><div class="task-sub">自動化建置、部署至正式主機</div></td>
+          <td><span class="badge badge-build">建置</span></td>
+          <td><span class="badge badge-p2">P2 中</span></td>
+          <td>正式域名 / 主機環境由產品方確認</td>
+        </tr>
+
+        <!-- ══ 設計系統 ══ -->
+        <tr data-phase="設計系統" data-type="建置" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">設計系統</span></td>
+          <td><div class="task-name">色彩系統 / Design Token 實作</div><div class="task-sub">主背景、卡片色、金色強調、紫色品牌色等</div></td>
+          <td><span class="badge badge-build">建置</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>原型色彩：背景 #0F0020、金色 #F5C842、品牌紫 #A855F7。Figma 設計稿為主要依據</td>
+        </tr>
+        <tr data-phase="設計系統" data-type="建置" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">設計系統</span></td>
+          <td><div class="task-name">字體系統</div><div class="task-sub">字型載入、字重、行高規範</div></td>
+          <td><span class="badge badge-build">建置</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>原型使用 Noto Sans TC，以 Figma 設計稿為準</td>
+        </tr>
+        <tr data-phase="設計系統" data-type="建置" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">設計系統</span></td>
+          <td><div class="task-name">基礎元件庫建立</div><div class="task-sub">按鈕、輸入框、徽章、卡片、分隔線等</div></td>
+          <td><span class="badge badge-build">建置</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>參考原型 Figma 元件庫頁面（🧩 元件庫）</td>
+        </tr>
+        <tr data-phase="設計系統" data-type="建置" data-pri="P2">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">設計系統</span></td>
+          <td><div class="task-name">響應式斷點規範</div><div class="task-sub">手機 / 平板 / 桌機尺寸定義</div></td>
+          <td><span class="badge badge-build">建置</span></td>
+          <td><span class="badge badge-p2">P2 中</span></td>
+          <td>遊戲格子：手機 3 欄 → 平板 4 欄 → 桌機 5 欄 → 大桌機 8 欄</td>
+        </tr>
+
+        <!-- ══ 官網頁面 ══ -->
+        <tr data-phase="官網頁面" data-type="頁面" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">官網頁面</span></td>
+          <td><div class="task-name">官網共用 Header</div><div class="task-sub">Logo、桌機導覽列、手機漢堡選單、登入狀態顯示</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>含登入前後兩種狀態切換；手機版點玩家頭像導向個人資訊頁</td>
+        </tr>
+        <tr data-phase="官網頁面" data-type="頁面" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">官網頁面</span></td>
+          <td><div class="task-name">官網共用底部導覽（手機）</div><div class="task-sub">首頁、遊戲大廳、活動、排行榜、會員</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>固定於手機底部，active 狀態標示</td>
+        </tr>
+        <tr data-phase="官網頁面" data-type="頁面" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">官網頁面</span></td>
+          <td><div class="task-name">首頁</div><div class="task-sub">Banner 輪播、跑馬燈、快速入口、熱門遊戲、最新消息</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>Banner 圖由美術提供；熱門遊戲卡片含真錢 / 試玩按鈕</td>
+        </tr>
+        <tr data-phase="官網頁面" data-type="頁面" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">官網頁面</span></td>
+          <td><div class="task-name">活動頁</div><div class="task-sub">進行中 / 即將開始 / 已結束 Tab，活動卡片，詳情 Modal</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>活動圖片由美術提供（AVIF 格式）；詳情彈窗含立即參與按鈕</td>
+        </tr>
+        <tr data-phase="官網頁面" data-type="頁面" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">官網頁面</span></td>
+          <td><div class="task-name">排行榜頁</div><div class="task-sub">總贏分 / 倍率 / 活動三榜，前三名大卡，其餘列表</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>Tab 切換動畫；桌機雙欄佈局</td>
+        </tr>
+        <tr data-phase="官網頁面" data-type="頁面" data-pri="P2">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">官網頁面</span></td>
+          <td><div class="task-name">新手教學 / APP 下載頁</div><div class="task-sub">遊戲介紹、APP 特色、iOS / Android / APK 安裝教學</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p2">P2 中</span></td>
+          <td>iOS 安裝步驟含截圖說明；含跳轉大廳的 CTA 按鈕</td>
+        </tr>
+        <tr data-phase="官網頁面" data-type="頁面" data-pri="P2">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">官網頁面</span></td>
+          <td><div class="task-name">儲值頁</div><div class="task-sub">儲值方式選擇、金額輸入、未登入提示</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p2">P2 中</span></td>
+          <td>UI 先完成，金流串接待後端</td>
+        </tr>
+        <tr data-phase="官網頁面" data-type="頁面" data-pri="P2">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">官網頁面</span></td>
+          <td><div class="task-name">客服中心頁</div><div class="task-sub">FAQ 分類、常見問題展開、聯絡方式</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p2">P2 中</span></td>
+          <td>FAQ 資料由後台管理，先以靜態資料呈現</td>
+        </tr>
+        <tr data-phase="官網頁面" data-type="頁面" data-pri="P2">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">官網頁面</span></td>
+          <td><div class="task-name">會員中心頁（官網版）</div><div class="task-sub">個人資料、遊戲紀錄、VIP 等級、兌換碼</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p2">P2 中</span></td>
+          <td>未登入顯示提示；桌機雙欄佈局</td>
+        </tr>
+
+        <!-- ══ 大廳頁面 ══ -->
+        <tr data-phase="大廳頁面" data-type="頁面" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">大廳頁面</span></td>
+          <td><div class="task-name">大廳 Header</div><div class="task-sub">Logo、漢堡選單、VIP 徽章、玩家餘額、頭像</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>點擊玩家資訊導向 /lobby/member</td>
+        </tr>
+        <tr data-phase="大廳頁面" data-type="頁面" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">大廳頁面</span></td>
+          <td><div class="task-name">大廳側邊欄</div><div class="task-sub">手機抽屜 / 桌機固定欄，各功能導覽連結</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>項目：遊戲大廳、每日任務、活動、排行榜、個人資訊、銀行、信箱、聊天、設置</td>
+        </tr>
+        <tr data-phase="大廳頁面" data-type="頁面" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">大廳頁面</span></td>
+          <td><div class="task-name">遊戲大廳主頁</div><div class="task-sub">分類 Tab、搜尋框、遊戲格子（響應式）</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>遊戲卡片含圖片、名稱、RTP、Hover 操作層（真錢玩 / 試玩）</td>
+        </tr>
+        <tr data-phase="大廳頁面" data-type="頁面" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">大廳頁面</span></td>
+          <td><div class="task-name">每日任務頁</div><div class="task-sub">累積簽到里程碑進度條、本月日曆格子、補簽到</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>里程碑：5/7/10/15/20/25/30 天；格子狀態：已簽、今日、可補簽、未來</td>
+        </tr>
+        <tr data-phase="大廳頁面" data-type="頁面" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">大廳頁面</span></td>
+          <td><div class="task-name">個人資訊頁（大廳版）</div><div class="task-sub">玩家卡、VIP 進度條、快捷操作、遊戲紀錄、VIP 等級、登出</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>此頁含登出按鈕，為主要會員管理入口</td>
+        </tr>
+        <tr data-phase="大廳頁面" data-type="頁面" data-pri="P2">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">大廳頁面</span></td>
+          <td><div class="task-name">大廳活動頁</div><div class="task-sub">與官網活動頁相同內容，嵌入大廳 Layout</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p2">P2 中</span></td>
+          <td>可共用活動列表元件</td>
+        </tr>
+        <tr data-phase="大廳頁面" data-type="頁面" data-pri="P2">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">大廳頁面</span></td>
+          <td><div class="task-name">大廳排行榜頁</div><div class="task-sub">與官網排行榜相同內容，嵌入大廳 Layout</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p2">P2 中</span></td>
+          <td>可共用排行榜元件</td>
+        </tr>
+        <tr data-phase="大廳頁面" data-type="頁面" data-pri="P2">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">大廳頁面</span></td>
+          <td><div class="task-name">銀行 / 儲值頁（大廳版）</div><div class="task-sub">儲值方式、金額輸入</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p2">P2 中</span></td>
+          <td>UI 先完成，金流串接待後端</td>
+        </tr>
+        <tr data-phase="大廳頁面" data-type="頁面" data-pri="P2">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">大廳頁面</span></td>
+          <td><div class="task-name">信箱頁</div><div class="task-sub">系統公告、活動通知、個人訊息列表</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p2">P2 中</span></td>
+          <td>已讀 / 未讀狀態，點擊查看詳情</td>
+        </tr>
+        <tr data-phase="大廳頁面" data-type="頁面" data-pri="P2">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">大廳頁面</span></td>
+          <td><div class="task-name">儲值結果頁</div><div class="task-sub">儲值成功 / 失敗結果顯示</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p2">P2 中</span></td>
+          <td>金流 callback 後跳轉，顯示到帳金額與狀態</td>
+        </tr>
+
+        <!-- ══ 功能互動 ══ -->
+        <tr data-phase="功能互動" data-type="功能" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">功能互動</span></td>
+          <td><div class="task-name">登入 / 註冊彈窗</div><div class="task-sub">帳號密碼 Tab、手機 OTP Tab、社群登入按鈕</div></td>
+          <td><span class="badge badge-feat">功能</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>彈窗為置中玻璃樣式；Tab 切換器依 Figma 設計稿參數實作</td>
+        </tr>
+        <tr data-phase="功能互動" data-type="功能" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">功能互動</span></td>
+          <td><div class="task-name">遊戲啟動流程</div><div class="task-sub">點擊遊戲卡片 → 確認模式 → 開啟遊戲視窗</div></td>
+          <td><span class="badge badge-feat">功能</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>真錢模式需登入才可進入；試玩可匿名；遊戲以 iframe 嵌入</td>
+        </tr>
+        <tr data-phase="功能互動" data-type="功能" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">功能互動</span></td>
+          <td><div class="task-name">每日簽到互動</div><div class="task-sub">今日簽到按鈕、里程碑領取、補簽確認彈窗</div></td>
+          <td><span class="badge badge-feat">功能</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>里程碑節點可點擊領獎（達成後脈動動畫）；補簽彈窗顯示費用</td>
+        </tr>
+        <tr data-phase="功能互動" data-type="功能" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">功能互動</span></td>
+          <td><div class="task-name">跑馬燈公告</div><div class="task-sub">頂部滾動公告，多則輪播</div></td>
+          <td><span class="badge badge-feat">功能</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>純 CSS / JS 實作，文字資料接 API</td>
+        </tr>
+        <tr data-phase="功能互動" data-type="功能" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">功能互動</span></td>
+          <td><div class="task-name">Banner 輪播</div><div class="task-sub">首頁自動輪播 Banner，含指示點</div></td>
+          <td><span class="badge badge-feat">功能</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>Banner 圖片由美術提供（桌機 / 手機各一組）</td>
+        </tr>
+        <tr data-phase="功能互動" data-type="功能" data-pri="P2">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">功能互動</span></td>
+          <td><div class="task-name">遊戲搜尋與分類篩選</div><div class="task-sub">即時關鍵字搜尋、分類 Tab 切換</div></td>
+          <td><span class="badge badge-feat">功能</span></td>
+          <td><span class="badge badge-p2">P2 中</span></td>
+          <td>前端 filter 邏輯，分類 key 需與後端對齊</td>
+        </tr>
+        <tr data-phase="功能互動" data-type="功能" data-pri="P2">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">功能互動</span></td>
+          <td><div class="task-name">全站 Toast / 通知元件</div><div class="task-sub">成功、錯誤、警告訊息統一顯示</div></td>
+          <td><span class="badge badge-feat">功能</span></td>
+          <td><span class="badge badge-p2">P2 中</span></td>
+          <td>API 回應、操作結果的統一反饋機制</td>
+        </tr>
+        <tr data-phase="功能互動" data-type="功能" data-pri="P2">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">功能互動</span></td>
+          <td><div class="task-name">忘記密碼 / 重設密碼流程</div><div class="task-sub">手機 OTP 驗證、輸入新密碼</div></td>
+          <td><span class="badge badge-feat">功能</span></td>
+          <td><span class="badge badge-p2">P2 中</span></td>
+          <td>從登入彈窗進入，獨立流程頁面或 Modal</td>
+        </tr>
+
+        <!-- ══ 後端串接 ══ -->
+        <tr data-phase="後端串接" data-type="API" data-pri="P3">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">後端串接</span></td>
+          <td><div class="task-name">帳號登入 / 註冊 API</div><div class="task-sub">帳密登入、手機 OTP、JWT Token 取得</div></td>
+          <td><span class="badge badge-api">API</span></td>
+          <td><span class="badge badge-p3">P3 低</span></td>
+          <td>待後端提供 endpoint 規格</td>
+        </tr>
+        <tr data-phase="後端串接" data-type="API" data-pri="P3">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">後端串接</span></td>
+          <td><div class="task-name">社群帳號 OAuth 串接</div><div class="task-sub">LINE、Facebook、Apple、Google</div></td>
+          <td><span class="badge badge-api">API</span></td>
+          <td><span class="badge badge-p3">P3 低</span></td>
+          <td>需後端提供 OAuth callback URL</td>
+        </tr>
+        <tr data-phase="後端串接" data-type="API" data-pri="P3">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">後端串接</span></td>
+          <td><div class="task-name">會員資訊 / 餘額 API</div><div class="task-sub">取得 VIP 等級、帳戶餘額、個人資料</div></td>
+          <td><span class="badge badge-api">API</span></td>
+          <td><span class="badge badge-p3">P3 低</span></td>
+          <td></td>
+        </tr>
+        <tr data-phase="後端串接" data-type="API" data-pri="P3">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">後端串接</span></td>
+          <td><div class="task-name">遊戲列表 API</div><div class="task-sub">遊戲清單、分類、RTP、封面圖片 URL</div></td>
+          <td><span class="badge badge-api">API</span></td>
+          <td><span class="badge badge-p3">P3 低</span></td>
+          <td></td>
+        </tr>
+        <tr data-phase="後端串接" data-type="API" data-pri="P3">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">後端串接</span></td>
+          <td><div class="task-name">遊戲啟動 API</div><div class="task-sub">取得 launch token / URL，真錢 / 試玩模式</div></td>
+          <td><span class="badge badge-api">API</span></td>
+          <td><span class="badge badge-p3">P3 低</span></td>
+          <td></td>
+        </tr>
+        <tr data-phase="後端串接" data-type="API" data-pri="P3">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">後端串接</span></td>
+          <td><div class="task-name">金流 API 串接</div><div class="task-sub">建立儲值訂單、跳轉支付、到帳通知</div></td>
+          <td><span class="badge badge-api">API</span></td>
+          <td><span class="badge badge-p3">P3 低</span></td>
+          <td>依後端支援的金流商確認整合方式</td>
+        </tr>
+        <tr data-phase="後端串接" data-type="API" data-pri="P3">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">後端串接</span></td>
+          <td><div class="task-name">每日簽到 / 補簽 / 里程碑 API</div><div class="task-sub">取得本月狀態、執行簽到、領獎、補簽扣幣</div></td>
+          <td><span class="badge badge-api">API</span></td>
+          <td><span class="badge badge-p3">P3 低</span></td>
+          <td></td>
+        </tr>
+        <tr data-phase="後端串接" data-type="API" data-pri="P3">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">後端串接</span></td>
+          <td><div class="task-name">活動 / 排行榜 / 遊戲紀錄 API</div><div class="task-sub">動態資料取代靜態 mock</div></td>
+          <td><span class="badge badge-api">API</span></td>
+          <td><span class="badge badge-p3">P3 低</span></td>
+          <td></td>
+        </tr>
+        <tr data-phase="後端串接" data-type="API" data-pri="P3">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">後端串接</span></td>
+          <td><div class="task-name">提款申請 API</div><div class="task-sub">銀行帳號綁定、申請提款、審核狀態查詢</div></td>
+          <td><span class="badge badge-api">API</span></td>
+          <td><span class="badge badge-p3">P3 低</span></td>
+          <td></td>
+        </tr>
+
+        <!-- ══ 品質上線 ══ -->
+        <tr data-phase="品質上線" data-type="測試" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">品質上線</span></td>
+          <td><div class="task-name">手機裝置全面測試</div><div class="task-sub">iOS Safari、Android Chrome、各螢幕尺寸</div></td>
+          <td><span class="badge badge-test">測試</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>重點：登入彈窗、遊戲大廳格子、每日任務日曆、Banner 輪播</td>
+        </tr>
+        <tr data-phase="品質上線" data-type="測試" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">品質上線</span></td>
+          <td><div class="task-name">正式環境部署驗證</div><div class="task-sub">正式域名、HTTPS、CDN 快取設定</div></td>
+          <td><span class="badge badge-test">測試</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>正式域名由產品方提供</td>
+        </tr>
+        <tr data-phase="品質上線" data-type="測試" data-pri="P1">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">品質上線</span></td>
+          <td><div class="task-name">資安檢查</div><div class="task-sub">XSS 防護、CORS 設定、Token 存儲安全性</div></td>
+          <td><span class="badge badge-test">測試</span></td>
+          <td><span class="badge badge-p1">P1 高</span></td>
+          <td>特別確認金流 callback 與 token 存放方式</td>
+        </tr>
+        <tr data-phase="品質上線" data-type="頁面" data-pri="P2">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">品質上線</span></td>
+          <td><div class="task-name">SEO Meta 標籤</div><div class="task-sub">各頁面 title、description、og:image</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p2">P2 中</span></td>
+          <td></td>
+        </tr>
+        <tr data-phase="品質上線" data-type="頁面" data-pri="P2">
+          <td class="col-check"><input type="checkbox" /></td>
+          <td><span class="phase-chip">品質上線</span></td>
+          <td><div class="task-name">圖片效能優化</div><div class="task-sub">lazy loading、WebP / AVIF 格式、適當壓縮</div></td>
+          <td><span class="badge badge-page">頁面</span></td>
+          <td><span class="badge badge-p2">P2 中</span></td>
+          <td>遊戲封面、Banner、活動圖片皆需處理</td>
+        </tr>
+
+        <!-- Empty state -->
+        <tr class="empty-row hidden" id="empty-row">
+          <td colspan="6">找不到符合條件的工作項目</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Notes -->
+  <div class="notes-box">
+    <h2>📐 原型參考說明</h2>
+    <ul class="notes-list">
+      <li><strong style="color:var(--text);">原型網址：</strong><a href="https://cooperfu615-desinger.github.io/Yota_Website_Nuxt/" target="_blank" style="color:var(--purple-light);">https://cooperfu615-desinger.github.io/Yota_Website_Nuxt/</a>　可直接在瀏覽器開啟瀏覽所有頁面與互動效果。</li>
+      <li><strong style="color:var(--text);">原型用途：</strong>僅作為視覺設計與功能邏輯的參考依據，前端不需沿用原型的程式碼或技術架構，以正式 Figma 設計稿為開發準則。</li>
+      <li><strong style="color:var(--text);">Figma 設計稿：</strong>色彩系統、元件規格、各頁面 Layout 皆以 Figma 為主要交付標準，原型僅作為互動邏輯輔助參考。</li>
+      <li><strong style="color:var(--text);">美術資源：</strong>Banner 圖、活動圖、遊戲封面（AVIF 格式）由美術團隊提供，原型中已使用的圖檔可供參考尺寸與裁切方式。</li>
+      <li><strong style="color:var(--text);">兩套 Layout：</strong>官網（含 Header + 底部導覽）與遊戲大廳（含 Header + 側邊欄）為獨立 Layout，切換點為進入 /lobby/ 路由後。</li>
+      <li><strong style="color:var(--text);">後端 API：</strong>後端仍在開發中，P3 項目暫不實作，先以靜態 mock 資料完成頁面功能，待後端就緒再行串接。</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+  const rows = Array.from(document.querySelectorAll('#task-body tr:not(#empty-row)'))
+  const emptyRow = document.getElementById('empty-row')
+  const visibleCount = document.getElementById('visible-count')
+
+  const filters = { phase: '', type: '', pri: '' }
+  let searchQ = ''
+  let sortCol = null, sortDir = 1
+  const priRank = { P1: 1, P2: 2, P3: 3 }
+
+  function applyAll() {
+    let visible = 0
+    rows.forEach(row => {
+      const show =
+        (!filters.phase || row.dataset.phase === filters.phase) &&
+        (!filters.type  || row.dataset.type  === filters.type)  &&
+        (!filters.pri   || row.dataset.pri   === filters.pri)   &&
+        (!searchQ       || row.textContent.toLowerCase().includes(searchQ))
+      row.classList.toggle('hidden', !show)
+      if (show) visible++
+    })
+    visibleCount.textContent = visible
+    emptyRow.classList.toggle('hidden', visible > 0)
+  }
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const g = btn.dataset.filter
+      document.querySelectorAll(`.filter-btn[data-filter="${g}"]`).forEach(b => b.classList.remove('active'))
+      btn.classList.add('active')
+      filters[g] = btn.dataset.value
+      applyAll()
+    })
+  })
+
+  document.getElementById('search-input').addEventListener('input', e => {
+    searchQ = e.target.value.trim().toLowerCase()
+    applyAll()
+  })
+
+  document.querySelectorAll('th.sortable').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col
+      sortDir = (sortCol === col) ? sortDir * -1 : 1
+      sortCol = col
+      document.querySelectorAll('th.sortable').forEach(h => h.classList.remove('sort-asc','sort-desc'))
+      th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc')
+      const tbody = document.getElementById('task-body')
+      ;[...rows].sort((a, b) => {
+        const va = col === 'pri' ? priRank[a.dataset[col]] ?? 99 : a.dataset[col]
+        const vb = col === 'pri' ? priRank[b.dataset[col]] ?? 99 : b.dataset[col]
+        return typeof va === 'number' ? (va - vb) * sortDir : va.localeCompare(vb,'zh-TW') * sortDir
+      }).forEach(r => tbody.insertBefore(r, emptyRow))
+      applyAll()
+    })
+  })
+
+  applyAll()
+</script>
+</body>
+</html>
