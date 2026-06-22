@@ -25,17 +25,31 @@ export interface ChatMessage {
   self?: boolean
 }
 
-export interface OnlinePlayer {
+export interface RecentGame {
   id: number
+  name: string
+  color: string
+}
+
+export interface ChatPlayerProfile {
+  playerId: string
   name: string
   avatar: string
   vip: number          // 0 = 無 VIP，不顯示徽章
+  level: number
   status: PlayerStatus
+  bio: string
+  recentGames: RecentGame[]
+  isFriend?: boolean
+}
+
+export interface OnlinePlayer extends ChatPlayerProfile {
+  id: number
 }
 
 export interface PrivateConversation {
   id: number
-  peer: { name: string; avatar: string; vip: number; status: PlayerStatus }
+  peer: ChatPlayerProfile
   unread: number
   messages: ChatMessage[]
 }
@@ -459,14 +473,128 @@ export const siteContent = {
 
   chat: {
     onlinePlayers: [
-      { id: 1, name: 'Lucky888',   avatar: '🦁', vip: 5, status: '在線' },
-      { id: 2, name: 'DragonKing', avatar: '🐉', vip: 3, status: '遊戲中' },
-      { id: 3, name: 'StarPlayer', avatar: '⭐', vip: 0, status: '在線' },
-      { id: 4, name: 'JokerAce',   avatar: '🃏', vip: 2, status: '閒置' },
-      { id: 5, name: '金幣王',     avatar: '👑', vip: 4, status: '在線' },
-      { id: 6, name: '幸運貓',     avatar: '🐱', vip: 1, status: '遊戲中' },
-      { id: 7, name: '賭神再臨',   avatar: '🎲', vip: 0, status: '在線' },
-      { id: 8, name: '富貴吉祥',   avatar: '🧧', vip: 3, status: '在線' },
+      {
+        id: 1,
+        playerId: 'P10001',
+        name: 'Lucky888',
+        avatar: '🦁',
+        vip: 5,
+        level: 26,
+        status: '在線',
+        bio: '喜歡挑戰高倍數老虎機，看到活動榜就忍不住想衝一波。',
+        recentGames: [
+          { id: 1, name: 'Ace Blackjack', color: '#7f1d1d' },
+          { id: 2, name: 'Gates of Olympus', color: '#581c87' },
+          { id: 3, name: 'Shark Hunter', color: '#155e75' },
+        ],
+        isFriend: true,
+      },
+      {
+        id: 2,
+        playerId: 'P10002',
+        name: 'DragonKing',
+        avatar: '🐉',
+        vip: 3,
+        level: 18,
+        status: '遊戲中',
+        bio: '百家樂連勝愛好者，最近正在研究短局節奏與下注控管。',
+        recentGames: [
+          { id: 1, name: '招財貓百家樂', color: '#1d4ed8' },
+          { id: 2, name: 'Classic Baccarat', color: '#0f766e' },
+          { id: 3, name: 'Speed Baccarat', color: '#7c2d12' },
+        ],
+      },
+      {
+        id: 3,
+        playerId: 'P10003',
+        name: 'StarPlayer',
+        avatar: '⭐',
+        vip: 0,
+        level: 9,
+        status: '在線',
+        bio: '新手玩家，正在探索不同遊戲玩法，也歡迎一起交流。',
+        recentGames: [
+          { id: 1, name: '水果老虎機', color: '#b45309' },
+          { id: 2, name: '麻將胡了', color: '#be123c' },
+          { id: 3, name: '魚蝦蟹', color: '#4d7c0f' },
+        ],
+      },
+      {
+        id: 4,
+        playerId: 'P10004',
+        name: 'JokerAce',
+        avatar: '🃏',
+        vip: 2,
+        level: 14,
+        status: '閒置',
+        bio: '偏愛撲克與桌遊，也常在世界頻道分享活動情報。',
+        recentGames: [
+          { id: 1, name: '德州撲克', color: '#374151' },
+          { id: 2, name: 'Ace Blackjack', color: '#7f1d1d' },
+          { id: 3, name: 'Teen Patti', color: '#6b21a8' },
+        ],
+      },
+      {
+        id: 5,
+        playerId: 'P10005',
+        name: '金幣王',
+        avatar: '👑',
+        vip: 4,
+        level: 31,
+        status: '在線',
+        bio: '熱衷排行榜與儲值活動，最愛研究獎金池累積節奏。',
+        recentGames: [
+          { id: 1, name: '神龍傳奇', color: '#581c87' },
+          { id: 2, name: '百萬大獎賽', color: '#92400e' },
+          { id: 3, name: '海洋捕魚機', color: '#155e75' },
+        ],
+      },
+      {
+        id: 6,
+        playerId: 'P10006',
+        name: '幸運貓',
+        avatar: '🐱',
+        vip: 1,
+        level: 12,
+        status: '遊戲中',
+        bio: '喜歡輕鬆聊天與捕魚遊戲，常常分享小額連勝心得。',
+        recentGames: [
+          { id: 1, name: '海洋捕魚機', color: '#155e75' },
+          { id: 2, name: '魚蝦蟹', color: '#4d7c0f' },
+          { id: 3, name: '水果老虎機', color: '#b45309' },
+        ],
+      },
+      {
+        id: 7,
+        playerId: 'P10007',
+        name: '賭神再臨',
+        avatar: '🎲',
+        vip: 0,
+        level: 7,
+        status: '在線',
+        bio: '剛加入不久，正在熟悉活動規則與遊戲大廳。',
+        recentGames: [
+          { id: 1, name: 'Classic Baccarat', color: '#0f766e' },
+          { id: 2, name: '麻將胡了', color: '#be123c' },
+          { id: 3, name: '魚蝦蟹', color: '#4d7c0f' },
+        ],
+      },
+      {
+        id: 8,
+        playerId: 'P10008',
+        name: '富貴吉祥',
+        avatar: '🧧',
+        vip: 3,
+        level: 22,
+        status: '在線',
+        bio: '活動型玩家，喜歡揪團挑戰排行榜與每日任務。',
+        recentGames: [
+          { id: 1, name: '百萬大獎賽', color: '#92400e' },
+          { id: 2, name: 'Gates of Olympus', color: '#581c87' },
+          { id: 3, name: 'Speed Baccarat', color: '#7c2d12' },
+        ],
+        isFriend: true,
+      },
     ] satisfies OnlinePlayer[],
     worldMessages: [
       { id: 1, user: 'Lucky888',   avatar: '🦁', text: '大家好！今天手氣超好 🎰', time: '14:02' },
@@ -478,7 +606,20 @@ export const siteContent = {
     privateConversations: [
       {
         id: 1,
-        peer: { name: 'DragonKing', avatar: '🐉', vip: 3, status: '遊戲中' },
+        peer: {
+          playerId: 'P10002',
+          name: 'DragonKing',
+          avatar: '🐉',
+          vip: 3,
+          level: 18,
+          status: '遊戲中',
+          bio: '百家樂連勝愛好者，最近正在研究短局節奏與下注控管。',
+          recentGames: [
+            { id: 1, name: '招財貓百家樂', color: '#1d4ed8' },
+            { id: 2, name: 'Classic Baccarat', color: '#0f766e' },
+            { id: 3, name: 'Speed Baccarat', color: '#7c2d12' },
+          ],
+        },
         unread: 2,
         messages: [
           { id: 1, user: 'DragonKing', avatar: '🐉', text: '嘿，要來私訊我的策略嗎哈哈', time: '13:50' },
@@ -488,7 +629,21 @@ export const siteContent = {
       },
       {
         id: 2,
-        peer: { name: 'Lucky888', avatar: '🦁', vip: 5, status: '在線' },
+        peer: {
+          playerId: 'P10001',
+          name: 'Lucky888',
+          avatar: '🦁',
+          vip: 5,
+          level: 26,
+          status: '在線',
+          bio: '喜歡挑戰高倍數老虎機，看到活動榜就忍不住想衝一波。',
+          recentGames: [
+            { id: 1, name: 'Ace Blackjack', color: '#7f1d1d' },
+            { id: 2, name: 'Gates of Olympus', color: '#581c87' },
+            { id: 3, name: 'Shark Hunter', color: '#155e75' },
+          ],
+          isFriend: true,
+        },
         unread: 0,
         messages: [
           { id: 1, user: 'Lucky888', avatar: '🦁', text: '下次一起組隊衝榜！', time: '昨天' },

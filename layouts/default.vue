@@ -1,6 +1,10 @@
 <script setup lang="ts">
 const { initFromStorage } = useAppState()
-onMounted(() => { initFromStorage() })
+const { initSocialFromStorage } = useSocialState()
+onMounted(() => {
+  initFromStorage()
+  initSocialFromStorage()
+})
 </script>
 
 <template>
