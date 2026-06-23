@@ -6,6 +6,7 @@ export interface BlockedPlayer {
   playerId: string
   name: string
   avatar: string
+  blockedAt: number
 }
 
 export const useSocialState = () => {
@@ -15,7 +16,17 @@ export const useSocialState = () => {
     if (!import.meta.client) return
     try {
       const saved = localStorage.getItem(LS_BLOCKED_PLAYERS_KEY)
-      if (saved) blockedPlayers.value = JSON.parse(saved)
+      if (saved) {
+        const parsed = JSON.parse(saved) as Partial<BlockedPlayer>[]
+        blockedPlayers.value = parsed
+          .map(player => ({
+            playerId: String(player.playerId || ''),
+            name: player.name || '未知玩家',
+            avatar: player.avatar || '',
+            blockedAt: typeof player.blockedAt === 'number' ? player.blockedAt : Date.now(),
+          }))
+          .filter(player => player.playerId)
+      }
     } catch {}
   }
 
@@ -32,6 +43,7 @@ export const useSocialState = () => {
         playerId: player.playerId,
         name: player.name,
         avatar: player.avatar,
+        blockedAt: Date.now(),
       },
     ]
     persist()

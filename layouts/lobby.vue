@@ -1,6 +1,10 @@
 <script setup lang="ts">
 const { initFromStorage } = useAppState()
-onMounted(() => { initFromStorage() })
+const { initSocialFromStorage } = useSocialState()
+onMounted(() => {
+  initFromStorage()
+  initSocialFromStorage()
+})
 
 // Web館：另開 /h5 頁面（App 風格遊戲大廳）
 const router = useRouter()
