@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const { isLoggedIn, userInfo } = useAppState()
 const route = useRoute()
+const { drawerOpen, closeDrawer } = useMobileMenuState()
 
 const navLinks = [
   { to: '/',           label: '首頁' },
@@ -11,11 +12,6 @@ const navLinks = [
   { to: '/support',    label: '客服中心' },
 ]
 
-// 手機漢堡抽屜
-const drawerOpen = ref(false)
-function openDrawer()  { drawerOpen.value = true }
-function closeDrawer() { drawerOpen.value = false }
-
 // 抽屜導覽（手機版，順序依需求）
 const drawerLinks = [
   { to: '/deposit',    label: '儲值',    icon: '💰' },
@@ -25,25 +21,15 @@ const drawerLinks = [
   { to: '/support',    label: '客服中心',icon: '🎧' },
   { to: '/',           label: '回首頁',  icon: '🏠' },
 ]
+
+watch(() => route.path, () => closeDrawer())
 </script>
 
 <template>
   <header id="top-nav" class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 lg:px-6">
 
-    <!-- 左側群組：漢堡 + Logo（確保永遠靠左貼齊） -->
+    <!-- 左側群組：Logo（手機選單入口已移到底部導覽列） -->
     <div class="flex items-center gap-2 flex-shrink-0">
-      <!-- 漢堡按鈕（手機限定） -->
-      <button
-        class="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl transition-all flex-shrink-0"
-        style="background:rgba(168,85,247,0.12); border:1px solid rgba(168,85,247,0.25);"
-        aria-label="開啟選單"
-        @click="openDrawer"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
-      </button>
-
       <!-- Logo -->
       <NuxtLink to="/" class="flex items-center gap-2 no-underline flex-shrink-0" aria-label="巨亨ONLINE 首頁">
         <div class="w-9 h-9 rounded-xl flex items-center justify-center"
@@ -101,7 +87,7 @@ const drawerLinks = [
         <div
           v-if="drawerOpen"
           class="fixed inset-0 z-[300]"
-          style="background:rgba(0,0,0,0.55);"
+          style="bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom)); background:rgba(0,0,0,0.55);"
           aria-hidden="true"
           @click="closeDrawer"
         />
@@ -111,7 +97,7 @@ const drawerLinks = [
         <nav
           v-if="drawerOpen"
           class="fixed top-0 left-0 bottom-0 z-[301] flex flex-col"
-          style="width:260px; background:linear-gradient(180deg,#1a003e 0%,#0f0020 100%); border-right:1px solid rgba(168,85,247,0.2); box-shadow:4px 0 32px rgba(0,0,0,0.5);"
+          style="width:260px; bottom:calc(var(--bottom-nav-h) + env(safe-area-inset-bottom)); background:linear-gradient(180deg,#1a003e 0%,#0f0020 100%); border-right:1px solid rgba(168,85,247,0.2); box-shadow:4px 0 32px rgba(0,0,0,0.5);"
           aria-label="手機導覽選單"
         >
           <!-- 抽屜頂部 Logo -->

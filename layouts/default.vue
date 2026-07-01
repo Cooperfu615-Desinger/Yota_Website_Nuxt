@@ -16,6 +16,7 @@ onMounted(() => {
       </div>
     </main>
     <AppFooter />
+    <AppBottomNav />
     <ClientOnly>
       <FloatingPanels />
       <LoginModal />
