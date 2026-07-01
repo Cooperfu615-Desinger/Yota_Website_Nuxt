@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const { initFromStorage } = useAppState()
 const { initSocialFromStorage } = useSocialState()
+const { openAgeGate } = useAgeGateState()
 onMounted(() => {
   initFromStorage()
   initSocialFromStorage()
@@ -63,7 +64,7 @@ function onUp(e: PointerEvent) {
 function onClick() {
   // 拖曳後抑制這次 click，避免拖完誤觸開啟
   if (moved) { moved = false; return }
-  openWebVersion()
+  openAgeGate(openWebVersion)
 }
 </script>
 
@@ -100,6 +101,7 @@ function onClick() {
     </button>
 
     <ClientOnly>
+      <AgeGateModal />
       <LoginModal />
       <LobbyModal />
     </ClientOnly>

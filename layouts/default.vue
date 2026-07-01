@@ -19,6 +19,7 @@ onMounted(() => {
     <AppBottomNav />
     <ClientOnly>
       <FloatingPanels />
+      <AgeGateModal />
       <LoginModal />
       <LobbyModal />
     </ClientOnly>

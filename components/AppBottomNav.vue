@@ -3,13 +3,14 @@ const { isLoggedIn, openLogin } = useAppState()
 const router = useRouter()
 const route = useRoute()
 const { openDrawer } = useMobileMenuState()
+const { openAgeGate } = useAgeGateState()
 
 const isActive = (path: string) => route.path === path
 const isLobbyActive = computed(() => route.path === '/lobby')
 
 function handleLobby() {
   if (isLoggedIn.value) {
-    router.push('/lobby')
+    openAgeGate(() => router.push('/lobby'))
   } else {
     openLogin()
   }
