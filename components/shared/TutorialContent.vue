@@ -9,6 +9,11 @@ const { isLoggedIn, openLogin } = useAppState()
 const router = useRouter()
 
 const games: GameItem[] = [...siteContent.games] as GameItem[]
+const {
+  activeCategory: gameCategory,
+  searchQuery: gameSearch,
+  filteredGames,
+} = useGameFilter(games)
 const shortcutGuides: ShortcutGuide[] = [...siteContent.shortcutGuides] as ShortcutGuide[]
 const currentShortcutGuide = computed(
   () => shortcutGuides.find((guide) => guide.key === activeShortcutGuide.value) ?? shortcutGuides[0]
@@ -64,9 +69,15 @@ function handlePlay(gameKey: string, mode: 'real' | 'demo') {
     <Transition name="tab-fade" mode="out-in">
       <!-- 遊戲介紹 -->
       <div v-if="activeTab === 'games'" key="games" class="px-4">
-        <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
+        <SharedGameFilterBar
+          v-model:category="gameCategory"
+          v-model:search="gameSearch"
+        />
+        <div class="game-count">共 {{ filteredGames.length }} 款遊戲</div>
+
+        <div v-if="filteredGames.length" class="grid grid-cols-2 lg:grid-cols-3 gap-3">
           <article
-            v-for="game in games"
+            v-for="game in filteredGames"
             :key="game.key"
             class="card-purple overflow-hidden group"
             :aria-label="`${game.name}，RTP ${game.rtp}`"
@@ -101,6 +112,9 @@ function handlePlay(gameKey: string, mode: 'real' | 'demo') {
               </div>
             </div>
           </article>
+        </div>
+        <div v-else class="game-grid-empty">
+          <p>找不到相符的遊戲</p>
         </div>
       </div>
 
