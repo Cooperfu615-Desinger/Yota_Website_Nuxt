@@ -140,6 +140,15 @@ export interface GameItem {
   maxMultiplier?: string   // '5,000x' 等
 }
 
+export interface ShortcutGuide {
+  key: 'ios' | 'android' | 'chrome' | 'safari'
+  label: string
+  platform: string
+  browser: string
+  note: string
+  steps: string[]
+}
+
 export interface GameCategory {
   key: string
   label: string
@@ -309,6 +318,66 @@ export const siteContent = {
     { key: 'pai-gow',      name: '牌九',       desc: '傳統骨牌遊戲，策略深',             badge: null,   rtp: '97.2%', color: '#FCD34D', category: 'cards',    provider: 'JH Gaming', volatility: '低', paylines: 'N/A', maxMultiplier: '2x'    },
     { key: 'teen-patti',   name: 'Teen Patti', desc: '南亞最夯紙牌遊戲',                badge: '新上線', rtp: '96.9%', color: '#A78BFA', category: 'cards',    provider: 'Evolution', volatility: '中', paylines: 'N/A', maxMultiplier: '40x'   },
   ] satisfies GameItem[],
+  shortcutGuides: [
+    {
+      key: 'ios',
+      label: 'iOS',
+      platform: 'iPhone / iPad',
+      browser: 'Safari',
+      note: 'iOS 16.4 之後部分第三方瀏覽器也可支援加入主畫面，但 Safari 是最穩定的教學路徑。',
+      steps: [
+        '使用 Safari 開啟巨亨ONLINE 官網。',
+        '點擊 Safari 下方或上方的「分享」按鈕。',
+        '在分享選單中找到「加入主畫面」。',
+        '確認名稱為「巨亨ONLINE」。',
+        '點擊「新增」，桌面就會出現捷徑圖示。',
+      ],
+    },
+    {
+      key: 'android',
+      label: 'Android',
+      platform: 'Android 手機 / 平板',
+      browser: 'Chrome',
+      note: '不同 Android 品牌與 Chrome 版本可能顯示「加到主畫面」或「安裝應用程式」。',
+      steps: [
+        '使用 Chrome 開啟巨亨ONLINE 官網。',
+        '點擊右上角「更多」選單。',
+        '點擊「加到主畫面」或「安裝應用程式」。',
+        '確認名稱為「巨亨ONLINE」。',
+        '點擊「新增」或「安裝」，主畫面就會出現捷徑。',
+      ],
+    },
+    {
+      key: 'chrome',
+      label: 'Chrome',
+      platform: 'Windows / Mac 電腦',
+      browser: 'Chrome',
+      note: '完成後可從桌面、Dock、開始選單或 Chrome 應用程式列表快速開啟。',
+      steps: [
+        '使用 Chrome 開啟巨亨ONLINE 官網。',
+        '點擊右上角「更多」選單。',
+        '選擇「投放、儲存與分享」。',
+        '點擊「將頁面安裝為應用程式」或「建立捷徑」。',
+        '確認名稱後點擊「安裝」或「建立」。',
+        '完成後即可從系統捷徑快速進入網站。',
+      ],
+    },
+    {
+      key: 'safari',
+      label: 'Safari',
+      platform: 'Mac',
+      browser: 'Safari',
+      note: '此方式適用支援 Safari Web App 的 macOS 版本，舊版 Safari 可改用書籤或釘選分頁。',
+      steps: [
+        '使用 Safari 開啟巨亨ONLINE 官網。',
+        '點擊工具列的「分享」按鈕。',
+        '選擇「加入 Dock」。',
+        '確認名稱為「巨亨ONLINE」。',
+        '點擊「加入」，Dock 會出現網站捷徑。',
+        '之後可像開啟 App 一樣從 Dock 快速進入網站。',
+      ],
+    },
+  ] satisfies ShortcutGuide[],
   lobbyGames: [
     // ── 活動遊戲 eventgame × 6（badge: 活動）──
     { key: 'lobby-eventgame-001', name: '活動限定老虎機',   desc: '限時活動獨家遊戲',      badge: '活動',  rtp: '96.5%', color: '#F5C842', category: 'slots',    provider: 'JH Gaming', imageSrc: '/eventgame_001.avif' },
