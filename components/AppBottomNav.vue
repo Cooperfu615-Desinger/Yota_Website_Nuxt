@@ -4,9 +4,21 @@ const router = useRouter()
 const route = useRoute()
 const { openDrawer } = useMobileMenuState()
 const { openAgeGate } = useAgeGateState()
+const lobbySidebarMobileOpen = useState('lobby-sidebar-mobile-open', () => false)
 
 const isActive = (path: string) => route.path === path
+const inLobby = computed(() => route.path === '/lobby' || route.path.startsWith('/lobby/'))
 const isLobbyActive = computed(() => route.path === '/lobby')
+const shopPath = computed(() => inLobby.value ? '/lobby/bank' : '/deposit')
+const shopActive = computed(() => inLobby.value ? route.path === '/lobby/bank' : route.path === '/deposit')
+
+function handleMenu() {
+  if (inLobby.value) {
+    lobbySidebarMobileOpen.value = true
+    return
+  }
+  openDrawer()
+}
 
 function handleLobby() {
   if (isLoggedIn.value) {
@@ -28,7 +40,7 @@ function pushProtected(path: string) {
 <template>
   <nav id="bottom-nav" class="lg:hidden fixed bottom-0 left-0 right-0 z-50 flex items-end justify-around px-2" aria-label="主要導覽">
     <!-- 選單 -->
-    <button class="bottom-nav-item" type="button" aria-label="開啟選單" @click="openDrawer">
+    <button class="bottom-nav-item" type="button" aria-label="開啟選單" @click="handleMenu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h12M4 12h16M4 17h8"/>
       </svg>
@@ -36,7 +48,7 @@ function pushProtected(path: string) {
     </button>
 
     <!-- 商城 -->
-    <NuxtLink to="/deposit" class="bottom-nav-item" :class="{ active: isActive('/deposit') }" aria-label="商城">
+    <NuxtLink :to="shopPath" class="bottom-nav-item" :class="{ active: shopActive }" aria-label="商城">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16l-2 12H6L4 7Zm0 0 1-3h3m3 8h2m-1-1v2"/>
       </svg>

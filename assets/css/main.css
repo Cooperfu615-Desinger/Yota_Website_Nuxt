@@ -1998,6 +1998,12 @@ body {
   transition: transform 0.28s ease, width 0.28s ease;
 }
 
+@media (max-width: 1023px) {
+  .lobby-sidebar {
+    bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom));
+  }
+}
+
 /* Mobile open */
 .lobby-sidebar.sidebar-mobile-open {
   transform: translateX(0);
@@ -2026,6 +2032,12 @@ body {
   z-index: 89;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
+}
+
+@media (max-width: 1023px) {
+  .lobby-sidebar-overlay {
+    bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom));
+  }
 }
 
 /* Nav container */
@@ -2136,6 +2148,12 @@ body {
   overflow-y: auto;
 }
 
+@media (max-width: 1023px) {
+  .lobby-main {
+    padding-bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 12px);
+  }
+}
+
 /* ── Lobby Page Content ── */
 .lobby-page {
   min-height: calc(100vh - var(--lobby-header-h));
@@ -2154,6 +2172,12 @@ body {
   border-top: 1px solid var(--color-border);
   background: rgba(28, 10, 58, 0.6);
   flex-shrink: 0;
+}
+
+@media (max-width: 1023px) {
+  .lobby-footer {
+    padding-bottom: calc(var(--bottom-nav-h) + env(safe-area-inset-bottom) + 12px);
+  }
 }
 
 /* ── Web館 浮動按鈕 ── */

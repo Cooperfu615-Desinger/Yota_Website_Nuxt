@@ -83,6 +83,8 @@ function onClick() {
       <p>© 2024 巨亨ONLINE 版權所有｜本平台僅供娛樂，請理性遊戲</p>
     </footer>
 
+    <AppBottomNav />
+
     <!-- Web館浮動按鈕（可拖曳） -->
     <button
       ref="webBtn"
