@@ -2,7 +2,7 @@
 const { isLoggedIn, openLogin } = useAppState()
 const router = useRouter()
 const route = useRoute()
-const { openDrawer } = useMobileMenuState()
+const { toggleDrawer } = useMobileMenuState()
 const { openAgeGate } = useAgeGateState()
 const lobbySidebarMobileOpen = useState('lobby-sidebar-mobile-open', () => false)
 
@@ -17,7 +17,7 @@ function handleMenu() {
     lobbySidebarMobileOpen.value = !lobbySidebarMobileOpen.value
     return
   }
-  openDrawer()
+  toggleDrawer()
 }
 
 function handleLobby() {

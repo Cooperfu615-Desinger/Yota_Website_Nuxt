@@ -101,7 +101,7 @@ watch(() => route.path, () => closeDrawer())
           aria-label="手機導覽選單"
         >
           <!-- 抽屜頂部 Logo -->
-          <div class="flex items-center justify-between px-5 py-4" style="border-bottom:1px solid rgba(168,85,247,0.15);">
+          <div class="flex items-center px-5 py-4" style="border-bottom:1px solid rgba(168,85,247,0.15);">
             <div class="flex items-center gap-2">
               <div class="w-8 h-8 rounded-lg flex items-center justify-center"
                    style="background:linear-gradient(135deg,#6B21A8,#F5C842);">
@@ -109,16 +109,6 @@ watch(() => route.path, () => closeDrawer())
               </div>
               <span class="font-black text-base" style="color:var(--color-text);">巨亨ONLINE</span>
             </div>
-            <button
-              class="w-8 h-8 flex items-center justify-center rounded-lg"
-              style="background:rgba(168,85,247,0.1); color:var(--color-text-muted);"
-              aria-label="關閉選單"
-              @click="closeDrawer"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-            </button>
           </div>
 
           <!-- 導覽項目 -->
