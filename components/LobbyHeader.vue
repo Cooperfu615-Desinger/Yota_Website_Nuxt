@@ -1,29 +1,10 @@
 <script setup lang="ts">
 const { isLoggedIn, userInfo, openLogin } = useAppState()
 const router = useRouter()
-
-const sidebarMobileOpen      = useState('lobby-sidebar-mobile-open',      () => false)
-const sidebarDesktopCollapsed = useState('lobby-sidebar-desktop-collapsed', () => false)
-
-function toggleSidebar() {
-  if (!process.client) return
-  if (window.matchMedia('(min-width: 1024px)').matches) {
-    sidebarDesktopCollapsed.value = !sidebarDesktopCollapsed.value
-  } else {
-    sidebarMobileOpen.value = !sidebarMobileOpen.value
-  }
-}
 </script>
 
 <template>
   <header class="lobby-header">
-    <!-- 漢堡選單 -->
-    <button class="lobby-header-burger" aria-label="開啟 / 收合選單" @click="toggleSidebar">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5" aria-hidden="true">
-        <path fill-rule="evenodd" d="M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
-      </svg>
-    </button>
-
     <!-- Logo -->
     <NuxtLink to="/lobby" class="lobby-header-logo">
       <span class="lobby-logo-text">巨亨</span>

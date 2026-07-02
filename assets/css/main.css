@@ -1835,25 +1835,6 @@ body {
   padding: 0 16px;
 }
 
-.lobby-header-burger {
-  flex-shrink: 0;
-  color: var(--color-text-muted);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  transition: background 0.2s, color 0.2s;
-}
-
-.lobby-header-burger:hover {
-  background: rgba(168, 85, 247, 0.15);
-  color: var(--color-text);
-}
-
 .lobby-header-logo {
   display: flex;
   align-items: baseline;

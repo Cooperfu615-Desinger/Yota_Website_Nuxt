@@ -14,7 +14,7 @@ const shopActive = computed(() => inLobby.value ? route.path === '/lobby/bank' :
 
 function handleMenu() {
   if (inLobby.value) {
-    lobbySidebarMobileOpen.value = true
+    lobbySidebarMobileOpen.value = !lobbySidebarMobileOpen.value
     return
   }
   openDrawer()
