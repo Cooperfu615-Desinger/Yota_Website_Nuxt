@@ -1,11 +1,9 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'lobby' })
 
-const { app: { baseURL } } = useRuntimeConfig()
-const base = baseURL.replace(/\/$/, '')
-
 const route = useRoute()
 const { isLoggedIn, openLogin } = useAppState()
+const { resolvePublicAsset } = usePublicAssetPath()
 
 // 目前遊玩的遊戲狀態
 const currentGameKey = ref<string | null>(null)
@@ -64,7 +62,7 @@ function switchMode(mode: 'real' | 'demo') {
       <div class="lobby-page-title">
         <div class="section-title-wrap" style="justify-content:flex-start;">
           <h1 class="sr-only">遊戲大廳</h1>
-          <img :src="`${base}/title_text_games.png`" alt="遊戲大廳" class="section-title-img" />
+          <img :src="resolvePublicAsset('/title_text_games.png')" alt="遊戲大廳" class="section-title-img" />
           <span class="section-title-line" aria-hidden="true" />
         </div>
       </div>

@@ -155,6 +155,12 @@ export interface GameCategory {
   icon: string
 }
 
+export interface LobbyGameCategory {
+  key: 'lobby' | 'all' | 'hot' | 'slots' | 'live' | 'fish' | 'cards' | 'latest'
+  label: string
+  icon: string
+}
+
 export interface LeaderboardTab {
   key: LeaderboardTabKey
   label: string
@@ -287,6 +293,16 @@ export const siteContent = {
     { key: 'dice',     label: '骰子',   icon: '🎲' },
     { key: 'cards',    label: '棋牌',   icon: '♠️' },
   ] satisfies GameCategory[],
+  lobbyGameCategories: [
+    { key: 'lobby',  label: '大廳',   icon: '⌂' },
+    { key: 'all',    label: '全部',   icon: '▦' },
+    { key: 'hot',    label: '熱門',   icon: '●' },
+    { key: 'slots',  label: '老虎機', icon: '◆' },
+    { key: 'live',   label: '真人',   icon: '♛' },
+    { key: 'fish',   label: '捕魚機', icon: '◌' },
+    { key: 'cards',  label: '棋牌',   icon: '♠' },
+    { key: 'latest', label: '最新',   icon: '★' },
+  ] satisfies LobbyGameCategory[],
   games: [
     // ── 老虎機 ──
     { key: 'fruit-slots',     name: '水果老虎機',   desc: '經典水果符號，多線賠率',        badge: '熱門',  rtp: '96.5%', color: '#F5C842', category: 'slots',    provider: 'JH Gaming', imageSrc: '/hotgame_001.avif', volatility: '中',  paylines: '20 線',     maxMultiplier: '5,000x'  },

@@ -1,25 +1,30 @@
 <script setup lang="ts">
-import { siteContent } from '~/data/siteContent'
+import { siteContent, type GameCategory, type LobbyGameCategory } from '~/data/siteContent'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   category: string
   search: string
+  categories?: Array<GameCategory | LobbyGameCategory>
   placeholder?: string
+  searchFirst?: boolean
 }>(), {
   placeholder: '搜尋遊戲...',
+  searchFirst: false,
 })
 
 const emit = defineEmits<{
   'update:category': [value: string]
   'update:search': [value: string]
 }>()
+
+const filterCategories = computed(() => props.categories ?? siteContent.gameCategories)
 </script>
 
 <template>
-  <div class="game-filter-bar">
+  <div class="game-filter-bar" :class="{ 'game-filter-bar-search-first': searchFirst }">
     <div class="game-categories" role="tablist" aria-label="遊戲分類">
       <button
-        v-for="cat in siteContent.gameCategories"
+        v-for="cat in filterCategories"
         :key="cat.key"
         class="game-cat-btn"
         :class="{ 'game-cat-active': category === cat.key }"

@@ -5,8 +5,7 @@ const props = defineProps<{ game: GameItem }>()
 const emit = defineEmits<{ play: [key: string, mode: 'real' | 'demo'] }>()
 
 const { isLoggedIn, openLogin } = useAppState()
-const { app: { baseURL } } = useRuntimeConfig()
-const base = baseURL.replace(/\/$/, '')
+const { resolvePublicAsset } = usePublicAssetPath()
 
 function handlePlay(mode: 'real' | 'demo') {
   if (mode === 'real' && !isLoggedIn.value) {
@@ -24,7 +23,7 @@ function handlePlay(mode: 'real' | 'demo') {
       <!-- 有圖：完整顯示 AVIF -->
       <img
         v-if="game.imageSrc"
-        :src="base + game.imageSrc"
+        :src="resolvePublicAsset(game.imageSrc)"
         :alt="game.name"
         class="game-card-img"
       />
