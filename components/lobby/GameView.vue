@@ -4,7 +4,7 @@ import { siteContent, type GameItem } from '~/data/siteContent'
 const props = defineProps<{ gameKey: string; mode: 'real' | 'demo' }>()
 const emit  = defineEmits<{ close: []; switchMode: ['real' | 'demo'] }>()
 
-const allGames: GameItem[] = [...siteContent.games] as GameItem[]
+const allGames: GameItem[] = [...siteContent.games, ...siteContent.lobbyGames] as GameItem[]
 const game = computed(() => allGames.find(g => g.key === props.gameKey))
 
 // 實際整合時換成真實遊戲 URL

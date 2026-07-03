@@ -8,7 +8,7 @@ const activeShortcutGuide = ref<ShortcutGuideKey>('ios')
 const { isLoggedIn, openLogin } = useAppState()
 const router = useRouter()
 
-const games: GameItem[] = [...siteContent.games] as GameItem[]
+const games: GameItem[] = [...siteContent.lobbyGames] as GameItem[]
 const {
   activeCategory: gameCategory,
   searchQuery: gameSearch,
@@ -75,43 +75,13 @@ function handlePlay(gameKey: string, mode: 'real' | 'demo') {
         />
         <div class="game-count">共 {{ filteredGames.length }} 款遊戲</div>
 
-        <div v-if="filteredGames.length" class="grid grid-cols-2 lg:grid-cols-3 gap-3">
-          <article
+        <div v-if="filteredGames.length" class="game-grid tutorial-game-grid">
+          <LobbyGameCard
             v-for="game in filteredGames"
             :key="game.key"
-            class="card-purple overflow-hidden group"
-            :aria-label="`${game.name}，RTP ${game.rtp}`"
-          >
-            <!-- 遊戲封面佔位（美術出圖替換） -->
-            <div class="aspect-video flex items-center justify-center relative" :style="{ background: `linear-gradient(135deg, var(--color-purple-dark), ${game.color}22)` }">
-              <span class="text-4xl" aria-hidden="true">🎮</span>
-              <span v-if="game.badge" class="absolute top-1.5 left-1.5 tag-new" :class="game.badge === '新上線' ? 'tag-hot' : ''">{{ game.badge }}</span>
-            </div>
-            <div class="p-3">
-              <h2 class="font-bold text-sm mb-0.5">{{ game.name }}</h2>
-              <p class="text-xs" style="color:var(--color-text-muted);">{{ game.desc }}</p>
-              <div class="flex items-center justify-between mt-2">
-                <span class="text-xs" style="color:var(--color-purple-light);">RTP {{ game.rtp }}</span>
-              </div>
-              <!-- 真錢 / 試玩 按鈕組 -->
-              <div class="flex gap-2 mt-3">
-                <button
-                  class="flex-1 text-xs py-1.5 rounded-full font-bold"
-                  style="background:var(--color-gold); color:#1a0a00;"
-                  @click="handlePlay(game.key, 'real')"
-                >
-                  真錢玩
-                </button>
-                <button
-                  class="flex-1 text-xs py-1.5 rounded-full font-bold"
-                  style="background:rgba(168,85,247,0.2); border:1px solid var(--color-border); color:var(--color-purple-light);"
-                  @click="handlePlay(game.key, 'demo')"
-                >
-                  試玩
-                </button>
-              </div>
-            </div>
-          </article>
+            :game="game"
+            @play="handlePlay"
+          />
         </div>
         <div v-else class="game-grid-empty">
           <p>找不到相符的遊戲</p>
