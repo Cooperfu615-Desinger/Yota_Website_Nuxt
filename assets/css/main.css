@@ -2441,8 +2441,8 @@ body {
 
 .lobby-list-tools {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
 }
 
 .lobby-filter-select,
@@ -2452,18 +2452,19 @@ body {
 
 .lobby-filter-select,
 .lobby-filter-select-btn {
-  min-height: 48px;
+  min-height: 42px;
   border: 2px solid #475D9366;
-  border-radius: 14px;
+  border-radius: 12px;
   color: var(--color-text);
   background: rgba(255, 255, 255, 0.03);
+  font-size: 12px;
 }
 
 .lobby-filter-select {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 12px;
+  gap: 5px;
+  padding: 0 10px;
 }
 
 .lobby-filter-select span {
@@ -2480,6 +2481,7 @@ body {
   font: inherit;
   font-weight: 800;
   outline: none;
+  text-overflow: ellipsis;
 }
 
 .lobby-filter-select-btn {
@@ -2487,11 +2489,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 0 12px;
+  gap: 6px;
+  padding: 0 10px;
   font: inherit;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
+}
+
+.lobby-filter-select-btn span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .provider-filter-overlay {
@@ -2634,8 +2644,11 @@ body {
     min-height: 190px;
   }
 
-  .lobby-list-tools {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  .lobby-filter-select,
+  .lobby-filter-select-btn {
+    min-height: 48px;
+    border-radius: 14px;
+    font-size: 13px;
   }
 }
 
