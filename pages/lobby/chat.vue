@@ -7,6 +7,7 @@ definePageMeta({ layout: 'lobby' })
 type Channel = 'world' | 'private' | 'support'
 const activeChannel = ref<Channel>('world')
 const { blockPlayer, isBlockedPlayer } = useSocialState()
+const router = useRouter()
 
 const channels: { key: Channel; label: string; icon: string }[] = [
   { key: 'world',   label: '世界頻道', icon: '🌐' },
@@ -155,7 +156,15 @@ function giftPlayer(p: ChatPlayerProfile) {
   showNotice(`已選擇贈禮給 ${p.name}，後續可串接禮物流程。`)
 }
 function transferPlayer(p: ChatPlayerProfile) {
-  showNotice(`已選擇轉點給 ${p.name}，後續可串接轉點流程。`)
+  closeCard()
+  closeRoster()
+  router.push({
+    path: '/lobby/vault',
+    query: {
+      tab: 'transfer',
+      receiverId: p.playerId,
+    },
+  })
 }
 </script>
 

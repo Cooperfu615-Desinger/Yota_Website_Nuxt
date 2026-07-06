@@ -1,4 +1,5 @@
 import { siteContent } from '~/data/siteContent'
+import { calculateVaultTransfer, canSubmitVaultTransfer } from '~/utils/vaultTransfer'
 
 // 全站共用狀態：登入、大廳 Modal、使用者資訊
 // 使用 Nuxt useState 確保 SSR/SSG 時 hydration 正確
@@ -61,6 +62,18 @@ export const useAppState = () => {
     userInfo.value.balance += amount
     persistUser()
   }
+  function transferFromVault(receiverId: string, amount: number) {
+    if (!canSubmitVaultTransfer(receiverId, amount, userInfo.value.vaultBalance)) return null
+
+    const transfer = calculateVaultTransfer(amount)
+    userInfo.value.vaultBalance -= transfer.amount
+    persistUser()
+
+    return {
+      receiverId: receiverId.trim(),
+      ...transfer,
+    }
+  }
 
   // 從 localStorage 還原登入狀態（僅在客戶端 onMounted 後呼叫）
   function initFromStorage() {
@@ -92,5 +105,6 @@ export const useAppState = () => {
     initFromStorage,
     depositToVault,
     withdrawFromVault,
+    transferFromVault,
   }
 }

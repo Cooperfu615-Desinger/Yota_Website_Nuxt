@@ -1,14 +1,59 @@
 <script setup lang="ts">
-const { isLoggedIn, userInfo, openLogin, depositToVault, withdrawFromVault } = useAppState()
+import { calculateVaultTransfer, canSubmitVaultTransfer } from '~/utils/vaultTransfer'
 
+type VaultTab = 'vault' | 'transfer'
+type NoticeType = 'success' | 'error'
+
+const route = useRoute()
+const {
+  isLoggedIn,
+  userInfo,
+  openLogin,
+  depositToVault,
+  withdrawFromVault,
+  transferFromVault,
+} = useAppState()
+
+const activeTab = ref<VaultTab>('vault')
 const mode = ref<'deposit' | 'withdraw'>('deposit')
 const amount = ref(0)
+const transferReceiverId = ref('')
+const transferAmount = ref(0)
+const transferNotice = ref<{ type: NoticeType; text: string } | null>(null)
+let transferNoticeTimer: ReturnType<typeof setTimeout> | null = null
 
 const maxAmount = computed(() => mode.value === 'deposit' ? userInfo.value.balance : userInfo.value.vaultBalance)
+const transferSummary = computed(() => calculateVaultTransfer(transferAmount.value))
+const canConfirmTransfer = computed(() =>
+  canSubmitVaultTransfer(transferReceiverId.value, transferAmount.value, userInfo.value.vaultBalance)
+)
 
 watch([mode, maxAmount], () => {
   if (amount.value > maxAmount.value) amount.value = maxAmount.value
 })
+
+watch(() => userInfo.value.vaultBalance, (vaultBalance) => {
+  if (transferAmount.value > vaultBalance) transferAmount.value = vaultBalance
+})
+
+onMounted(() => {
+  applyRouteQuery()
+})
+
+watch(() => route.query, () => {
+  applyRouteQuery()
+})
+
+onUnmounted(() => {
+  if (transferNoticeTimer) clearTimeout(transferNoticeTimer)
+})
+
+function applyRouteQuery() {
+  if (route.query.tab === 'transfer') activeTab.value = 'transfer'
+  if (typeof route.query.receiverId === 'string') {
+    transferReceiverId.value = route.query.receiverId
+  }
+}
 
 function onAmountInput(e: Event) {
   let v = parseInt((e.target as HTMLInputElement).value.replace(/[^0-9]/g, ''), 10)
@@ -26,6 +71,50 @@ function confirm() {
   else withdrawFromVault(amount.value)
   amount.value = 0
 }
+
+function onTransferAmountInput(e: Event) {
+  let v = parseInt((e.target as HTMLInputElement).value.replace(/[^0-9]/g, ''), 10)
+  if (isNaN(v) || v < 0) v = 0
+  if (v > userInfo.value.vaultBalance) v = userInfo.value.vaultBalance
+  transferAmount.value = v
+}
+
+function setTransferPercent(percent: number) {
+  transferAmount.value = Math.floor(userInfo.value.vaultBalance * percent)
+}
+
+function showTransferNotice(type: NoticeType, text: string) {
+  transferNotice.value = { type, text }
+  if (transferNoticeTimer) clearTimeout(transferNoticeTimer)
+  transferNoticeTimer = setTimeout(() => {
+    transferNotice.value = null
+  }, 3200)
+}
+
+function confirmTransfer() {
+  const receiverId = transferReceiverId.value.trim()
+  if (!receiverId) {
+    showTransferNotice('error', '請先輸入接收者 ID。')
+    return
+  }
+  if (transferAmount.value <= 0) {
+    showTransferNotice('error', '請輸入轉點金額。')
+    return
+  }
+
+  const result = transferFromVault(receiverId, transferAmount.value)
+  if (!result) {
+    showTransferNotice('error', '保險箱餘額不足，請先存入金幣。')
+    return
+  }
+
+  showTransferNotice(
+    'success',
+    `已轉出 ${result.amount.toLocaleString()} 點給 ${result.receiverId}，對方實收 ${result.actualReceived.toLocaleString()} 點。`
+  )
+  transferReceiverId.value = ''
+  transferAmount.value = 0
+}
 </script>
 
 <template>
@@ -34,70 +123,206 @@ function confirm() {
     <template v-if="!isLoggedIn">
       <div class="card-purple p-8 text-center max-w-sm mx-auto mt-8">
         <div class="text-5xl mb-4" aria-hidden="true">🔐</div>
-        <h1 class="text-xl font-black mb-2">保險箱</h1>
-        <p class="text-sm mb-5" style="color:var(--color-text-muted);">登入後即可使用保險箱存放金幣</p>
+        <h1 class="text-xl font-black mb-2">保險箱 / 轉點</h1>
+        <p class="text-sm mb-5" style="color:var(--color-text-muted);">登入後即可使用保險箱存放金幣，並轉點給其他會員</p>
         <button class="btn-gold w-full justify-center" @click="openLogin">立即登入 / 註冊</button>
       </div>
     </template>
 
     <!-- 已登入 -->
     <template v-else>
-      <h1 class="section-title mb-4">保險箱</h1>
-      <div class="lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start flex flex-col gap-4">
-        <!-- 左欄：餘額 -->
-        <div class="card-purple p-5">
-          <div class="rounded-xl p-4 mb-1" style="background:rgba(0,0,0,0.25);">
-            <div class="text-sm mb-1" style="color:var(--color-text-muted);">錢包金幣 (可用)</div>
-            <div class="text-3xl font-black" style="color:var(--color-gold);">{{ userInfo.balance.toLocaleString() }}</div>
-          </div>
-          <div class="text-center text-2xl my-1" style="color:var(--color-text-muted);">↓</div>
-          <div class="rounded-xl p-4" style="background:rgba(0,0,0,0.25);">
-            <div class="text-sm mb-1" style="color:var(--color-text-muted);">保險箱金幣 (凍結)</div>
-            <div class="text-3xl font-black" style="color:var(--color-text);">{{ userInfo.vaultBalance.toLocaleString() }}</div>
-          </div>
-          <ul class="mt-4 text-xs space-y-1" style="color:var(--color-text-muted);">
-            <li>・存入保險箱的金幣可用於贈禮。</li>
-            <li>・存入可避免誤觸遊玩時消耗。</li>
-          </ul>
-        </div>
+      <h1 class="section-title mb-4">保險箱 / 轉點</h1>
 
-        <!-- 右欄：操作 -->
-        <div class="card-purple p-5">
-          <!-- 模式切換 -->
-          <div class="tab-bar mb-4" role="tablist" aria-label="保險箱操作">
-            <button class="tab-btn" :class="{ active: mode === 'deposit' }" role="tab" :aria-selected="mode === 'deposit'" @click="mode = 'deposit'">存入</button>
-            <button class="tab-btn" :class="{ active: mode === 'withdraw' }" role="tab" :aria-selected="mode === 'withdraw'" @click="mode = 'withdraw'">取出</button>
-          </div>
-
-          <h2 class="text-lg font-black text-center mb-1">{{ mode === 'deposit' ? '存入保險箱' : '取出至錢包' }}</h2>
-          <p class="text-sm text-center mb-4" style="color:var(--color-text-muted);">
-            {{ mode === 'deposit' ? '請輸入欲從錢包轉入保險箱的金額' : '請輸入欲從保險箱轉回錢包的金額' }}
-          </p>
-
-          <div class="flex items-center gap-2 rounded-xl px-4 py-3 mb-4" style="background:rgba(0,0,0,0.3); border:1px solid var(--color-border);">
-            <input
-              :value="amount"
-              type="text"
-              inputmode="numeric"
-              class="flex-1 bg-transparent outline-none text-2xl font-black text-center"
-              style="color:var(--color-text);"
-              aria-label="金額"
-              @input="onAmountInput"
-            />
-            <button class="text-xs font-bold px-3 py-1.5 rounded-lg flex-shrink-0" style="background:rgba(168,85,247,0.2); color:var(--color-text-muted); border:1px solid var(--color-border);" @click="setMax">MAX</button>
-          </div>
-
-          <button
-            class="btn-gold w-full justify-center text-lg py-3"
-            style="border-radius:14px;"
-            :disabled="!canConfirm"
-            :style="!canConfirm ? 'opacity:0.5;cursor:not-allowed;' : ''"
-            @click="confirm"
-          >
-            🛡️ {{ mode === 'deposit' ? '確認存入' : '確認取出' }}
-          </button>
-        </div>
+      <div class="tab-bar mb-4 max-w-md" role="tablist" aria-label="保險箱與轉點">
+        <button class="tab-btn" :class="{ active: activeTab === 'vault' }" role="tab" :aria-selected="activeTab === 'vault'" @click="activeTab = 'vault'">保險箱</button>
+        <button class="tab-btn" :class="{ active: activeTab === 'transfer' }" role="tab" :aria-selected="activeTab === 'transfer'" @click="activeTab = 'transfer'">轉點</button>
       </div>
+
+      <Transition name="tab-fade" mode="out-in">
+        <div v-if="activeTab === 'vault'" key="vault" class="lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start flex flex-col gap-4">
+          <!-- 左欄：餘額 -->
+          <div class="card-purple p-5">
+            <div class="rounded-xl p-4 mb-1" style="background:rgba(0,0,0,0.25);">
+              <div class="text-sm mb-1" style="color:var(--color-text-muted);">錢包金幣 (可用)</div>
+              <div class="text-3xl font-black" style="color:var(--color-gold);">{{ userInfo.balance.toLocaleString() }}</div>
+            </div>
+            <div class="text-center text-2xl my-1" style="color:var(--color-text-muted);">↓</div>
+            <div class="rounded-xl p-4" style="background:rgba(0,0,0,0.25);">
+              <div class="text-sm mb-1" style="color:var(--color-text-muted);">保險箱金幣 (凍結)</div>
+              <div class="text-3xl font-black" style="color:var(--color-text);">{{ userInfo.vaultBalance.toLocaleString() }}</div>
+            </div>
+            <ul class="mt-4 text-xs space-y-1" style="color:var(--color-text-muted);">
+              <li>・存入保險箱的金幣可用於轉點。</li>
+              <li>・存入可避免誤觸遊玩時消耗。</li>
+            </ul>
+          </div>
+
+          <!-- 右欄：操作 -->
+          <div class="card-purple p-5">
+            <!-- 模式切換 -->
+            <div class="tab-bar mb-4" role="tablist" aria-label="保險箱操作">
+              <button class="tab-btn" :class="{ active: mode === 'deposit' }" role="tab" :aria-selected="mode === 'deposit'" @click="mode = 'deposit'">存入</button>
+              <button class="tab-btn" :class="{ active: mode === 'withdraw' }" role="tab" :aria-selected="mode === 'withdraw'" @click="mode = 'withdraw'">取出</button>
+            </div>
+
+            <h2 class="text-lg font-black text-center mb-1">{{ mode === 'deposit' ? '存入保險箱' : '取出至錢包' }}</h2>
+            <p class="text-sm text-center mb-4" style="color:var(--color-text-muted);">
+              {{ mode === 'deposit' ? '請輸入欲從錢包轉入保險箱的金額' : '請輸入欲從保險箱轉回錢包的金額' }}
+            </p>
+
+            <div class="flex items-center gap-2 rounded-xl px-4 py-3 mb-4" style="background:rgba(0,0,0,0.3); border:1px solid var(--color-border);">
+              <input
+                :value="amount"
+                type="text"
+                inputmode="numeric"
+                class="flex-1 bg-transparent outline-none text-2xl font-black text-center"
+                style="color:var(--color-text);"
+                aria-label="金額"
+                @input="onAmountInput"
+              />
+              <button class="text-xs font-bold px-3 py-1.5 rounded-lg flex-shrink-0" style="background:rgba(168,85,247,0.2); color:var(--color-text-muted); border:1px solid var(--color-border);" @click="setMax">MAX</button>
+            </div>
+
+            <button
+              class="btn-gold w-full justify-center text-lg py-3"
+              style="border-radius:14px;"
+              :disabled="!canConfirm"
+              :style="!canConfirm ? 'opacity:0.5;cursor:not-allowed;' : ''"
+              @click="confirm"
+            >
+              🛡️ {{ mode === 'deposit' ? '確認存入' : '確認取出' }}
+            </button>
+          </div>
+        </div>
+
+        <div v-else key="transfer" class="lg:grid lg:grid-cols-[300px_1fr] lg:gap-6 flex flex-col gap-4">
+          <!-- 左欄：規則與餘額 -->
+          <aside class="card-purple p-5 flex flex-col gap-4">
+            <div class="flex items-center gap-3 pb-4" style="border-bottom:1px solid rgba(255,255,255,0.12);">
+              <div class="w-11 h-11 rounded-full flex items-center justify-center text-lg font-black" style="background:linear-gradient(135deg,var(--color-purple-mid),var(--color-gold)); color:#fff;">
+                VIP
+              </div>
+              <div>
+                <div class="font-black" style="color:var(--color-gold);">VIP {{ userInfo.vip }}</div>
+                <div class="text-xs" style="color:var(--color-text-muted);">保險箱轉點權限</div>
+              </div>
+            </div>
+
+            <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.25);">
+              <div class="text-xs mb-1" style="color:var(--color-text-muted);">每日轉點次數</div>
+              <div class="font-black">剩餘 5 <span class="text-xs font-normal" style="color:var(--color-text-muted);">/ 10 次</span></div>
+            </div>
+            <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.25);">
+              <div class="text-xs mb-1" style="color:var(--color-text-muted);">單次最高轉點</div>
+              <div class="font-black" style="color:var(--color-gold);">1,000,000 點</div>
+            </div>
+            <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.25);">
+              <div class="text-xs mb-1" style="color:var(--color-text-muted);">目前手續費率</div>
+              <div class="font-black" style="color:#f87171;">5% <span class="text-xs font-normal" style="color:var(--color-text-muted);">VIP 6 可降至 3%</span></div>
+            </div>
+
+            <div class="mt-auto pt-4" style="border-top:1px solid rgba(255,255,255,0.12);">
+              <div class="text-xs mb-1" style="color:var(--color-text-muted);">保險箱餘額</div>
+              <div class="text-2xl font-black" style="color:var(--color-gold);">{{ userInfo.vaultBalance.toLocaleString() }}</div>
+            </div>
+          </aside>
+
+          <!-- 右欄：轉點表單 -->
+          <section class="card-purple p-5">
+            <h2 class="text-lg font-black mb-1">會員轉點</h2>
+            <p class="text-sm mb-4" style="color:var(--color-text-muted);">轉點金額會從保險箱扣除，系統會自動計算手續費與對方實收點數。</p>
+
+            <div
+              v-if="transferNotice"
+              class="mb-4 rounded-xl px-4 py-3 text-sm font-bold"
+              :style="transferNotice.type === 'success'
+                ? 'background:rgba(74,222,128,0.14); color:#86efac; border:1px solid rgba(74,222,128,0.3);'
+                : 'background:rgba(248,113,113,0.14); color:#fca5a5; border:1px solid rgba(248,113,113,0.3);'"
+            >
+              {{ transferNotice.text }}
+            </div>
+
+            <div class="grid gap-4">
+              <div>
+                <label class="input-label" for="transfer-receiver">接收者 ID</label>
+                <input
+                  id="transfer-receiver"
+                  v-model="transferReceiverId"
+                  type="text"
+                  class="input-field"
+                  placeholder="請輸入玩家 ID，例如 P10002"
+                  autocomplete="off"
+                />
+              </div>
+
+              <div>
+                <label class="input-label" for="transfer-amount">轉點金額</label>
+                <div class="rounded-xl p-4" style="background:rgba(0,0,0,0.3); border:1px solid var(--color-border);">
+                  <input
+                    id="transfer-amount"
+                    :value="transferAmount"
+                    type="text"
+                    inputmode="numeric"
+                    class="w-full bg-transparent outline-none text-3xl font-black text-center mb-3"
+                    style="color:var(--color-gold);"
+                    placeholder="0"
+                    @input="onTransferAmountInput"
+                  />
+                  <input
+                    :value="transferAmount"
+                    type="range"
+                    min="0"
+                    :max="userInfo.vaultBalance"
+                    step="1000"
+                    class="w-full accent-[#F5C842]"
+                    aria-label="轉點金額拉桿"
+                    @input="onTransferAmountInput"
+                  />
+                  <div class="grid grid-cols-5 gap-2 mt-3">
+                    <button type="button" class="text-xs font-bold rounded-lg py-2" style="background:rgba(255,255,255,0.07); color:var(--color-text-muted);" @click="setTransferPercent(0)">0%</button>
+                    <button type="button" class="text-xs font-bold rounded-lg py-2" style="background:rgba(255,255,255,0.07); color:var(--color-text-muted);" @click="setTransferPercent(0.25)">25%</button>
+                    <button type="button" class="text-xs font-bold rounded-lg py-2" style="background:rgba(255,255,255,0.07); color:var(--color-text-muted);" @click="setTransferPercent(0.5)">50%</button>
+                    <button type="button" class="text-xs font-bold rounded-lg py-2" style="background:rgba(255,255,255,0.07); color:var(--color-text-muted);" @click="setTransferPercent(0.75)">75%</button>
+                    <button type="button" class="text-xs font-bold rounded-lg py-2" style="background:rgba(168,85,247,0.18); color:var(--color-gold); border:1px solid rgba(245,200,66,0.25);" @click="setTransferPercent(1)">MAX</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid sm:grid-cols-3 gap-3">
+                <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.22);">
+                  <div class="text-xs mb-1" style="color:var(--color-text-muted);">預計扣款</div>
+                  <div class="font-black">{{ transferSummary.amount.toLocaleString() }}</div>
+                </div>
+                <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.22);">
+                  <div class="text-xs mb-1" style="color:var(--color-text-muted);">手續費 5%</div>
+                  <div class="font-black" style="color:#f87171;">-{{ transferSummary.fee.toLocaleString() }}</div>
+                </div>
+                <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.22);">
+                  <div class="text-xs mb-1" style="color:var(--color-text-muted);">對方實收</div>
+                  <div class="font-black" style="color:var(--color-gold);">{{ transferSummary.actualReceived.toLocaleString() }}</div>
+                </div>
+              </div>
+
+              <button
+                class="btn-gold w-full justify-center text-lg py-3"
+                style="border-radius:14px;"
+                :disabled="!canConfirmTransfer"
+                :style="!canConfirmTransfer ? 'opacity:0.5;cursor:not-allowed;' : ''"
+                @click="confirmTransfer"
+              >
+                確認轉點
+              </button>
+            </div>
+          </section>
+        </div>
+      </Transition>
     </template>
   </div>
 </template>
+
+<style scoped>
+.tab-fade-enter-active,
+.tab-fade-leave-active { transition: opacity 0.18s; }
+.tab-fade-enter-from,
+.tab-fade-leave-to { opacity: 0; }
+</style>
