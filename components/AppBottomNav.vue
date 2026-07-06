@@ -47,12 +47,12 @@ function pushProtected(path: string) {
       <span>選單</span>
     </button>
 
-    <!-- 商城 -->
-    <NuxtLink :to="shopPath" class="bottom-nav-item" :class="{ active: shopActive }" aria-label="商城">
+    <!-- 儲值 -->
+    <NuxtLink :to="shopPath" class="bottom-nav-item" :class="{ active: shopActive }" aria-label="儲值">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16l-2 12H6L4 7Zm0 0 1-3h3m3 8h2m-1-1v2"/>
       </svg>
-      <span>商城</span>
+      <span>儲值</span>
     </NuxtLink>
 
     <!-- 中央遊戲按鈕 -->
