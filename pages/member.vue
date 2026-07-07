@@ -49,7 +49,7 @@ const memberTabs = siteContent.member.tabs
           </div>
           <div class="card-purple p-4 text-center" style="filter:blur(2px); pointer-events:none;" aria-hidden="true">
             <div class="text-2xl font-black" style="color:var(--color-gold);">$10,000,000</div>
-            <div class="text-xs mt-1" style="color:var(--color-text-muted);">金錢包</div>
+            <div class="text-xs mt-1" style="color:var(--color-text-muted);">金幣</div>
           </div>
         </div>
       </div>
