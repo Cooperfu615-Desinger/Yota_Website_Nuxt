@@ -109,6 +109,10 @@ export interface VipLevel {
   color: string
   limit: string
   benefits: string[]
+  rebate: string
+  feeDiscount: string
+  upgradeRequirement: string
+  maintainRequirement: string
 }
 
 export interface HistoryItem {
@@ -503,7 +507,9 @@ export const siteContent = {
     defaultUser: {
       name: '玩家888',
       vip: 3,
-      balance: 12580,
+      balance: 10000000,
+      silverBalance: 10000000,
+      bronzeBalance: 10000000,
       vaultBalance: 0,
     },
     vipUpgrade: {
@@ -512,12 +518,72 @@ export const siteContent = {
     },
     vipTargets: [0, 10000, 50000, 200000, 500000, 2000000],
     vipLevels: [
-      { level: 1, name: 'VIP 1', color: '#CD7F32', limit: 'NT$50,000/日', benefits: ['每日簽到獎 ×1.2', '優先客服'] },
-      { level: 2, name: 'VIP 2', color: '#C0C0C0', limit: 'NT$100,000/日', benefits: ['每日簽到獎 ×1.5', '專屬活動'] },
-      { level: 3, name: 'VIP 3', color: '#F5C842', limit: 'NT$200,000/日', benefits: ['每日簽到獎 ×2.0', '生日禮金'] },
-      { level: 4, name: 'VIP 4', color: '#60A5FA', limit: 'NT$500,000/日', benefits: ['每日簽到獎 ×3.0', '專屬包廂'] },
-      { level: 5, name: 'VIP 5', color: '#A855F7', limit: '無上限', benefits: ['每日簽到獎 ×5.0', '專屬秘書'] },
-      { level: 6, name: 'VIP 6', color: '#EC4899', limit: '無上限', benefits: ['無限簽到獎', '頂級禮遇'] },
+      {
+        level: 1,
+        name: 'VIP 1',
+        color: '#CD7F32',
+        limit: 'NT$50,000/日',
+        benefits: ['每日簽到獎 ×1.2', '優先客服'],
+        rebate: '0.3%',
+        feeDiscount: '手續費 5%',
+        upgradeRequirement: '累積儲值 NT$10,000，累積投注 NT$300,000',
+        maintainRequirement: '每月有效投注 NT$80,000',
+      },
+      {
+        level: 2,
+        name: 'VIP 2',
+        color: '#C0C0C0',
+        limit: 'NT$100,000/日',
+        benefits: ['每日簽到獎 ×1.5', '專屬活動'],
+        rebate: '0.5%',
+        feeDiscount: '手續費 4.5%',
+        upgradeRequirement: '累積儲值 NT$50,000，累積投注 NT$1,200,000',
+        maintainRequirement: '每月有效投注 NT$260,000',
+      },
+      {
+        level: 3,
+        name: 'VIP 3',
+        color: '#F5C842',
+        limit: 'NT$200,000/日',
+        benefits: ['每日簽到獎 ×2.0', '生日禮金'],
+        rebate: '0.8%',
+        feeDiscount: '手續費 4%',
+        upgradeRequirement: '累積儲值 NT$100,000，累積投注 NT$2,400,000',
+        maintainRequirement: '每月有效投注 NT$520,000',
+      },
+      {
+        level: 4,
+        name: 'VIP 4',
+        color: '#60A5FA',
+        limit: 'NT$500,000/日',
+        benefits: ['每日簽到獎 ×3.0', '專屬包廂'],
+        rebate: '1.2%',
+        feeDiscount: '手續費 3.5%',
+        upgradeRequirement: '累積儲值 NT$150,000，累積投注 NT$4,200,000',
+        maintainRequirement: '每月有效投注 NT$900,000，或月儲值 NT$60,000',
+      },
+      {
+        level: 5,
+        name: 'VIP 5',
+        color: '#A855F7',
+        limit: '無上限',
+        benefits: ['每日簽到獎 ×5.0', '專屬秘書'],
+        rebate: '1.6%',
+        feeDiscount: '手續費 3%',
+        upgradeRequirement: '累積儲值 NT$500,000，累積投注 NT$10,000,000',
+        maintainRequirement: '每月有效投注 NT$2,200,000，或月儲值 NT$150,000',
+      },
+      {
+        level: 6,
+        name: 'VIP 6',
+        color: '#EC4899',
+        limit: '無上限',
+        benefits: ['無限簽到獎', '頂級禮遇'],
+        rebate: '2%',
+        feeDiscount: '手續費 3%',
+        upgradeRequirement: '累積儲值 NT$2,000,000，累積投注 NT$30,000,000',
+        maintainRequirement: '每月有效投注 NT$5,000,000，或月儲值 NT$300,000',
+      },
     ] satisfies VipLevel[],
     historyItems: [
       { date: '2024/01/15 14:32', game: '老虎機 — 水果大豐收', result: '+NT$2,580', positive: true },

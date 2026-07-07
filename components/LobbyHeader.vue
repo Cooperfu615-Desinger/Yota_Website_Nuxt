@@ -14,12 +14,12 @@ const router = useRouter()
     <!-- 右側使用者區 -->
     <div class="lobby-header-right">
       <template v-if="isLoggedIn">
-        <!-- 統一樣式：VIP 徽章 + 姓名/餘額 + 頭像 -->
+        <!-- 統一樣式：VIP 徽章 + 姓名/錢包 + 頭像 -->
         <button class="lobby-user-card" aria-label="個人資訊" @click="router.push('/lobby/member')">
           <span class="lobby-user-vip">VIP {{ userInfo.vip }}</span>
           <div class="lobby-user-info">
             <span class="lobby-user-name">{{ userInfo.name }}</span>
-            <span class="lobby-user-balance">${{ userInfo.balance.toLocaleString() }}</span>
+            <WalletBalances :user="userInfo" variant="compact" />
           </div>
           <div class="lobby-user-avatar">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5" aria-hidden="true">

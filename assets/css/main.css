@@ -1724,6 +1724,11 @@ body {
   color: #4ade80;
 }
 
+.fp-wallet-list {
+  padding: 5px 10px 7px;
+  border-top: 1px solid rgba(168, 85, 247, 0.1);
+}
+
 /* 分隔線帶文字 */
 .fp-divider {
   display: flex;
@@ -1903,9 +1908,10 @@ body {
 }
 
 .lobby-user-name {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--color-text);
+  line-height: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

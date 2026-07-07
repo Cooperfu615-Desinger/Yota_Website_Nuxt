@@ -48,8 +48,8 @@ const memberTabs = siteContent.member.tabs
             <div class="text-xs mt-1" style="color:var(--color-text-muted);">我的等級</div>
           </div>
           <div class="card-purple p-4 text-center" style="filter:blur(2px); pointer-events:none;" aria-hidden="true">
-            <div class="text-2xl font-black" style="color:var(--color-gold);">$12,580</div>
-            <div class="text-xs mt-1" style="color:var(--color-text-muted);">帳戶餘額</div>
+            <div class="text-2xl font-black" style="color:var(--color-gold);">$10,000,000</div>
+            <div class="text-xs mt-1" style="color:var(--color-text-muted);">金錢包</div>
           </div>
         </div>
       </div>
@@ -71,10 +71,11 @@ const memberTabs = siteContent.member.tabs
           </div>
           <div class="flex-1">
             <div class="font-black text-lg">{{ userInfo.name }}</div>
-            <div class="text-sm mt-0.5" style="color:var(--color-text-muted);">帳戶餘額</div>
-            <div class="text-2xl font-black" style="color:var(--color-gold);">${{ userInfo.balance.toLocaleString() }}</div>
+            <div class="text-sm mt-0.5" style="color:var(--color-text-muted);">帳戶錢包</div>
           </div>
         </div>
+
+        <WalletBalances :user="userInfo" variant="cards" class="mb-4" />
 
         <!-- VIP 升級進度 -->
         <div>

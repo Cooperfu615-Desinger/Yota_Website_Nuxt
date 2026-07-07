@@ -104,10 +104,7 @@ function handleDeposit() {
             <span class="fp-info-label">VIP</span>
             <span class="fp-info-val fp-info-vip">LV {{ userInfo.vip }}</span>
           </div>
-          <div class="fp-info-row">
-            <span class="fp-info-label">餘額</span>
-            <span class="fp-info-val fp-info-balance">${{ userInfo.balance.toLocaleString() }}</span>
-          </div>
+          <WalletBalances :user="userInfo" variant="compact" class="fp-wallet-list" />
         </div>
         <button class="fp-btn-primary fp-btn-play" @click="handlePlay">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true">

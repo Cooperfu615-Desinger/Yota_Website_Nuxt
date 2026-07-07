@@ -142,11 +142,11 @@ function confirmTransfer() {
         <div v-if="activeTab === 'vault'" key="vault" class="lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start flex flex-col gap-4">
           <!-- 左欄：餘額 -->
           <div class="card-purple p-5">
-            <div class="rounded-xl p-4 mb-1" style="background:rgba(0,0,0,0.25);">
-              <div class="text-sm mb-1" style="color:var(--color-text-muted);">錢包金幣 (可用)</div>
-              <div class="text-3xl font-black" style="color:var(--color-gold);">{{ userInfo.balance.toLocaleString() }}</div>
+            <div class="mb-3">
+              <div class="text-sm font-bold mb-2" style="color:var(--color-text-muted);">錢包餘額</div>
+              <WalletBalances :user="userInfo" variant="cards" />
             </div>
-            <div class="text-center text-2xl my-1" style="color:var(--color-text-muted);">↓</div>
+            <div class="text-center text-2xl my-2" style="color:var(--color-text-muted);">↓</div>
             <div class="rounded-xl p-4" style="background:rgba(0,0,0,0.25);">
               <div class="text-sm mb-1" style="color:var(--color-text-muted);">保險箱金幣 (凍結)</div>
               <div class="text-3xl font-black" style="color:var(--color-text);">{{ userInfo.vaultBalance.toLocaleString() }}</div>
@@ -165,9 +165,9 @@ function confirmTransfer() {
               <button class="tab-btn" :class="{ active: mode === 'withdraw' }" role="tab" :aria-selected="mode === 'withdraw'" @click="mode = 'withdraw'">取出</button>
             </div>
 
-            <h2 class="text-lg font-black text-center mb-1">{{ mode === 'deposit' ? '存入保險箱' : '取出至錢包' }}</h2>
+            <h2 class="text-lg font-black text-center mb-1">{{ mode === 'deposit' ? '存入保險箱' : '取出至金錢包' }}</h2>
             <p class="text-sm text-center mb-4" style="color:var(--color-text-muted);">
-              {{ mode === 'deposit' ? '請輸入欲從錢包轉入保險箱的金額' : '請輸入欲從保險箱轉回錢包的金額' }}
+              {{ mode === 'deposit' ? '請輸入欲從金錢包轉入保險箱的金額' : '請輸入欲從保險箱轉回金錢包的金額' }}
             </p>
 
             <div class="flex items-center gap-2 rounded-xl px-4 py-3 mb-4" style="background:rgba(0,0,0,0.3); border:1px solid var(--color-border);">

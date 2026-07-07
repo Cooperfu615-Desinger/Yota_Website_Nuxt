@@ -6,9 +6,11 @@ const { isLoggedIn, userInfo, openLogin, logout } = useAppState()
 const router = useRouter()
 
 const vipUpgrade = siteContent.member.vipUpgrade
+const vipLevels = siteContent.member.vipLevels
 
-const MAX_VIP = 7
-const isMaxVip = computed(() => userInfo.value.vip >= MAX_VIP)
+const showVipTargetModal = ref(false)
+const nextVipLevel = computed(() => vipLevels.find(vip => vip.level === userInfo.value.vip + 1) ?? null)
+const isMaxVip = computed(() => !nextVipLevel.value)
 const depositPct = computed(() => Math.min(100, Math.round(vipUpgrade.deposit.current / vipUpgrade.deposit.target * 100)))
 const wagerPct   = computed(() => Math.min(100, Math.round(vipUpgrade.wager.current / vipUpgrade.wager.target * 100)))
 
@@ -33,23 +35,23 @@ function handleLogout() {
     <!-- 已登入 -->
     <template v-else>
       <!-- 玩家資訊卡 -->
-      <div class="card-purple p-5 mb-4 flex items-center gap-4">
-        <div class="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0"
-             style="background:linear-gradient(135deg,var(--color-purple-mid),var(--color-purple)); font-size:28px;">
-          👤
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="text-lg font-black">{{ userInfo.name }}</div>
-          <div class="flex items-center gap-2 mt-1">
-            <span class="text-xs px-2 py-0.5 rounded-full font-bold"
-                  style="background:rgba(245,200,66,0.2); color:var(--color-gold); border:1px solid rgba(245,200,66,0.4);">
-              VIP {{ userInfo.vip }}
-            </span>
-            <span class="text-sm font-bold" style="color:var(--color-gold);">
-              ${{ userInfo.balance.toLocaleString() }}
-            </span>
+      <div class="card-purple p-5 mb-4">
+        <div class="flex items-center gap-4 mb-4">
+          <div class="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0"
+               style="background:linear-gradient(135deg,var(--color-purple-mid),var(--color-purple)); font-size:28px;">
+            👤
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-lg font-black">{{ userInfo.name }}</div>
+            <div class="flex items-center gap-2 mt-1">
+              <span class="text-xs px-2 py-0.5 rounded-full font-bold"
+                    style="background:rgba(245,200,66,0.2); color:var(--color-gold); border:1px solid rgba(245,200,66,0.4);">
+                VIP {{ userInfo.vip }}
+              </span>
+            </div>
           </div>
         </div>
+        <WalletBalances :user="userInfo" variant="cards" />
       </div>
 
       <!-- VIP 進度卡 -->
@@ -59,9 +61,16 @@ function handleLogout() {
             <div class="text-xs font-bold tracking-widest" style="color:var(--color-text-muted);">CURRENT LEVEL</div>
             <div class="text-4xl font-black italic" style="color:var(--color-gold);">VIP {{ userInfo.vip }}</div>
           </div>
-          <div v-if="!isMaxVip" class="text-sm font-bold px-3 py-1.5 rounded-lg" style="background:rgba(168,85,247,0.2); color:var(--color-purple-light); border:1px solid var(--color-border);">
-            目標 VIP {{ userInfo.vip + 1 }}
-          </div>
+          <button
+            v-if="!isMaxVip && nextVipLevel"
+            type="button"
+            class="text-sm font-bold px-3 py-1.5 rounded-lg transition-all"
+            style="background:rgba(168,85,247,0.2); color:var(--color-purple-light); border:1px solid var(--color-border);"
+            :aria-label="`查看 ${nextVipLevel.name} 優惠與條件`"
+            @click="showVipTargetModal = true"
+          >
+            目標 {{ nextVipLevel.name }}
+          </button>
         </div>
 
         <template v-if="!isMaxVip">
@@ -87,7 +96,7 @@ function handleLogout() {
             </div>
           </div>
 
-          <p class="text-xs mt-4" style="color:var(--color-text-muted);">需同時達成累積儲值與累積投注條件，即可升級至 VIP {{ userInfo.vip + 1 }}。</p>
+          <p class="text-xs mt-4" style="color:var(--color-text-muted);">需同時達成累積儲值與累積投注條件，即可升級至 {{ nextVipLevel?.name }}。</p>
         </template>
         <template v-else>
           <p class="text-sm font-bold mt-5" style="color:var(--color-text);">已達最高等級</p>
@@ -105,6 +114,79 @@ function handleLogout() {
       >
         登出
       </button>
+
+      <ClientOnly>
+        <Teleport to="body">
+          <Transition name="modal-fade">
+            <div
+              v-if="showVipTargetModal && nextVipLevel"
+              class="modal-overlay"
+              role="dialog"
+              aria-modal="true"
+              :aria-label="`${nextVipLevel.name} 優惠與條件`"
+              @click.self="showVipTargetModal = false"
+            >
+              <div class="modal-box" style="max-width:420px;">
+                <div class="modal-inner">
+                  <button class="modal-close" aria-label="關閉" @click="showVipTargetModal = false">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+
+                  <h2 class="modal-title">{{ nextVipLevel.name }} 優惠與條件</h2>
+
+                  <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.1);">
+                      <div class="text-xs mb-1" style="color:var(--color-text-muted);">返水</div>
+                      <div class="text-lg font-black" style="color:var(--color-gold);">{{ nextVipLevel.rebate }}</div>
+                    </div>
+                    <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.1);">
+                      <div class="text-xs mb-1" style="color:var(--color-text-muted);">手續費減免</div>
+                      <div class="text-lg font-black" style="color:var(--color-gold);">{{ nextVipLevel.feeDiscount }}</div>
+                    </div>
+                  </div>
+
+                  <div class="grid gap-3">
+                    <section class="rounded-xl p-3" style="background:rgba(168,85,247,0.12); border:1px solid var(--color-border);">
+                      <h3 class="text-sm font-black mb-1">升級條件</h3>
+                      <p class="text-xs leading-relaxed" style="color:var(--color-text-muted);">{{ nextVipLevel.upgradeRequirement }}</p>
+                    </section>
+                    <section class="rounded-xl p-3" style="background:rgba(168,85,247,0.12); border:1px solid var(--color-border);">
+                      <h3 class="text-sm font-black mb-1">保級條件</h3>
+                      <p class="text-xs leading-relaxed" style="color:var(--color-text-muted);">{{ nextVipLevel.maintainRequirement }}</p>
+                    </section>
+                    <section class="rounded-xl p-3" style="background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.1);">
+                      <div class="flex items-center justify-between text-xs mb-1.5">
+                        <span style="color:var(--color-text-muted);">累積儲值</span>
+                        <span class="font-bold" style="color:var(--color-gold);">{{ vipUpgrade.deposit.current.toLocaleString() }} / {{ vipUpgrade.deposit.target.toLocaleString() }}</span>
+                      </div>
+                      <div class="h-2 rounded-full overflow-hidden" style="background:rgba(168,85,247,0.18);">
+                        <div class="h-full rounded-full" :style="`width:${depositPct}%; background:linear-gradient(90deg,var(--color-purple-mid),var(--color-gold));`" />
+                      </div>
+
+                      <div class="flex items-center justify-between text-xs mt-3 mb-1.5">
+                        <span style="color:var(--color-text-muted);">累積投注</span>
+                        <span class="font-bold" style="color:var(--color-gold);">{{ vipUpgrade.wager.current.toLocaleString() }} / {{ vipUpgrade.wager.target.toLocaleString() }}</span>
+                      </div>
+                      <div class="h-2 rounded-full overflow-hidden" style="background:rgba(168,85,247,0.18);">
+                        <div class="h-full rounded-full" :style="`width:${wagerPct}%; background:linear-gradient(90deg,var(--color-purple-mid),var(--color-gold));`" />
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Transition>
+        </Teleport>
+      </ClientOnly>
     </template>
   </div>
 </template>
+
+<style scoped>
+.modal-fade-enter-active,
+.modal-fade-leave-active { transition: opacity 0.25s; }
+.modal-fade-enter-from,
+.modal-fade-leave-to { opacity: 0; }
+</style>

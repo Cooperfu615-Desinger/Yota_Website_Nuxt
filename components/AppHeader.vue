@@ -59,14 +59,12 @@ watch(() => route.path, () => closeDrawer())
     <!-- 右側：登入 / 用戶資訊 -->
     <template v-if="isLoggedIn">
       <NuxtLink to="/lobby/member" class="flex items-center gap-2 no-underline lg:hidden" aria-label="會員專區">
-        <div class="flex flex-col items-end min-w-0">
-          <span class="text-xs font-bold truncate" style="color:var(--color-text); max-width:92px;">{{ userInfo.name }}</span>
-          <div class="flex items-center gap-1">
+        <div class="flex flex-col items-end min-w-[112px]">
+          <span class="text-xs font-bold truncate" style="color:var(--color-text); max-width:92px; line-height:1;">{{ userInfo.name }}</span>
+          <div class="flex items-center gap-1 self-end">
             <span class="vip-badge text-xs">VIP {{ userInfo.vip }}</span>
-            <span class="text-xs font-bold" style="color:#4ade80;">
-              ${{ userInfo.balance.toLocaleString() }}
-            </span>
           </div>
+          <WalletBalances :user="userInfo" variant="compact" />
         </div>
         <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
              style="background:linear-gradient(135deg,#6B21A8,#A855F7); border:2px solid var(--color-gold);">

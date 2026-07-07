@@ -1,5 +1,6 @@
 import { siteContent } from '~/data/siteContent'
 import { calculateVaultTransfer, canSubmitVaultTransfer } from '~/utils/vaultTransfer'
+import { DEFAULT_WALLET_BALANCE } from '~/utils/wallets'
 
 // 全站共用狀態：登入、大廳 Modal、使用者資訊
 // 使用 Nuxt useState 確保 SSR/SSG 時 hydration 正確
@@ -7,9 +8,27 @@ import { calculateVaultTransfer, canSubmitVaultTransfer } from '~/utils/vaultTra
 const LS_LOGIN_KEY = 'jh_isLoggedIn'
 const LS_USER_KEY  = 'jh_userInfo'
 
+function normalizeUserInfo(saved?: Partial<typeof siteContent.member.defaultUser>) {
+  const hasThreeWallets = Boolean(
+    saved &&
+    Number.isFinite(saved.balance) &&
+    Number.isFinite(saved.silverBalance) &&
+    Number.isFinite(saved.bronzeBalance)
+  )
+
+  return {
+    ...siteContent.member.defaultUser,
+    ...(saved ?? {}),
+    balance: hasThreeWallets ? Number(saved?.balance) : DEFAULT_WALLET_BALANCE,
+    silverBalance: hasThreeWallets ? Number(saved?.silverBalance) : DEFAULT_WALLET_BALANCE,
+    bronzeBalance: hasThreeWallets ? Number(saved?.bronzeBalance) : DEFAULT_WALLET_BALANCE,
+    vaultBalance: Number.isFinite(saved?.vaultBalance) ? Number(saved?.vaultBalance) : 0,
+  }
+}
+
 export const useAppState = () => {
   const isLoggedIn = useState('isLoggedIn', () => false)
-  const userInfo = useState('userInfo', () => ({ ...siteContent.member.defaultUser }))
+  const userInfo = useState('userInfo', () => normalizeUserInfo())
 
   // 登入 Modal
   const showLoginModal = useState('showLoginModal', () => false)
@@ -42,7 +61,7 @@ export const useAppState = () => {
   }
   function logout() {
     isLoggedIn.value = false
-    userInfo.value = { ...siteContent.member.defaultUser }
+    userInfo.value = normalizeUserInfo()
     localStorage.removeItem(LS_LOGIN_KEY)
     localStorage.removeItem(LS_USER_KEY)
   }
@@ -82,8 +101,8 @@ export const useAppState = () => {
       try {
         const saved = localStorage.getItem(LS_USER_KEY)
         if (saved) {
-          userInfo.value = JSON.parse(saved)
-          if (userInfo.value.vaultBalance == null) userInfo.value.vaultBalance = 0
+          userInfo.value = normalizeUserInfo(JSON.parse(saved))
+          persistUser()
         }
       } catch {}
     }
