@@ -98,7 +98,7 @@ function confirmTransfer() {
     return
   }
   if (transferAmount.value <= 0) {
-    showTransferNotice('error', '請輸入轉點金額。')
+    showTransferNotice('error', '請輸入贈禮金額。')
     return
   }
 
@@ -110,7 +110,7 @@ function confirmTransfer() {
 
   showTransferNotice(
     'success',
-    `已轉出 ${result.amount.toLocaleString()} 點給 ${result.receiverId}，對方實收 ${result.actualReceived.toLocaleString()} 點。`
+    `已贈禮 ${result.amount.toLocaleString()} 點給 ${result.receiverId}，對方實收 ${result.actualReceived.toLocaleString()} 點。`
   )
   transferReceiverId.value = ''
   transferAmount.value = 0
@@ -123,19 +123,19 @@ function confirmTransfer() {
     <template v-if="!isLoggedIn">
       <div class="card-purple p-8 text-center max-w-sm mx-auto mt-8">
         <div class="text-5xl mb-4" aria-hidden="true">🔐</div>
-        <h1 class="text-xl font-black mb-2">保險箱 / 轉點</h1>
-        <p class="text-sm mb-5" style="color:var(--color-text-muted);">登入後即可使用保險箱存放金幣，並轉點給其他會員</p>
+        <h1 class="text-xl font-black mb-2">保險箱 / 贈禮</h1>
+        <p class="text-sm mb-5" style="color:var(--color-text-muted);">登入後即可使用保險箱存放金幣，並將點數贈禮給其他會員</p>
         <button class="btn-gold w-full justify-center" @click="openLogin">立即登入 / 註冊</button>
       </div>
     </template>
 
     <!-- 已登入 -->
     <template v-else>
-      <h1 class="section-title mb-4">保險箱 / 轉點</h1>
+      <h1 class="section-title mb-4">保險箱 / 贈禮</h1>
 
-      <div class="tab-bar mb-4 max-w-md" role="tablist" aria-label="保險箱與轉點">
+      <div class="tab-bar mb-4 max-w-md" role="tablist" aria-label="保險箱與贈禮">
         <button class="tab-btn" :class="{ active: activeTab === 'vault' }" role="tab" :aria-selected="activeTab === 'vault'" @click="activeTab = 'vault'">保險箱</button>
-        <button class="tab-btn" :class="{ active: activeTab === 'transfer' }" role="tab" :aria-selected="activeTab === 'transfer'" @click="activeTab = 'transfer'">轉點</button>
+        <button class="tab-btn" :class="{ active: activeTab === 'transfer' }" role="tab" :aria-selected="activeTab === 'transfer'" @click="activeTab = 'transfer'">贈禮</button>
       </div>
 
       <Transition name="tab-fade" mode="out-in">
@@ -152,7 +152,7 @@ function confirmTransfer() {
               <div class="text-3xl font-black" style="color:var(--color-text);">{{ userInfo.vaultBalance.toLocaleString() }}</div>
             </div>
             <ul class="mt-4 text-xs space-y-1" style="color:var(--color-text-muted);">
-              <li>・存入保險箱的金幣可用於轉點。</li>
+              <li>・存入保險箱的金幣可用於贈禮。</li>
               <li>・存入可避免誤觸遊玩時消耗。</li>
             </ul>
           </div>
@@ -204,16 +204,16 @@ function confirmTransfer() {
               </div>
               <div>
                 <div class="font-black" style="color:var(--color-gold);">VIP {{ userInfo.vip }}</div>
-                <div class="text-xs" style="color:var(--color-text-muted);">保險箱轉點權限</div>
+                <div class="text-xs" style="color:var(--color-text-muted);">保險箱贈禮權限</div>
               </div>
             </div>
 
             <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.25);">
-              <div class="text-xs mb-1" style="color:var(--color-text-muted);">每日轉點次數</div>
+              <div class="text-xs mb-1" style="color:var(--color-text-muted);">每日贈禮次數</div>
               <div class="font-black">剩餘 5 <span class="text-xs font-normal" style="color:var(--color-text-muted);">/ 10 次</span></div>
             </div>
             <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.25);">
-              <div class="text-xs mb-1" style="color:var(--color-text-muted);">單次最高轉點</div>
+              <div class="text-xs mb-1" style="color:var(--color-text-muted);">單次最高贈禮</div>
               <div class="font-black" style="color:var(--color-gold);">1,000,000 點</div>
             </div>
             <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.25);">
@@ -227,10 +227,10 @@ function confirmTransfer() {
             </div>
           </aside>
 
-          <!-- 右欄：轉點表單 -->
+          <!-- 右欄：贈禮表單 -->
           <section class="card-purple p-5">
-            <h2 class="text-lg font-black mb-1">會員轉點</h2>
-            <p class="text-sm mb-4" style="color:var(--color-text-muted);">轉點金額會從保險箱扣除，系統會自動計算手續費與對方實收點數。</p>
+            <h2 class="text-lg font-black mb-1">會員贈禮</h2>
+            <p class="text-sm mb-4" style="color:var(--color-text-muted);">贈禮金額會從保險箱扣除，系統會自動計算手續費與對方實收點數。</p>
 
             <div
               v-if="transferNotice"
@@ -256,7 +256,7 @@ function confirmTransfer() {
               </div>
 
               <div>
-                <label class="input-label" for="transfer-amount">轉點金額</label>
+                <label class="input-label" for="transfer-amount">贈禮金額</label>
                 <div class="rounded-xl p-4" style="background:rgba(0,0,0,0.3); border:1px solid var(--color-border);">
                   <input
                     id="transfer-amount"
@@ -275,7 +275,7 @@ function confirmTransfer() {
                     :max="userInfo.vaultBalance"
                     step="1000"
                     class="w-full accent-[#F5C842]"
-                    aria-label="轉點金額拉桿"
+                    aria-label="贈禮金額拉桿"
                     @input="onTransferAmountInput"
                   />
                   <div class="grid grid-cols-5 gap-2 mt-3">
@@ -310,7 +310,7 @@ function confirmTransfer() {
                 :style="!canConfirmTransfer ? 'opacity:0.5;cursor:not-allowed;' : ''"
                 @click="confirmTransfer"
               >
-                確認轉點
+                確認贈禮
               </button>
             </div>
           </section>
