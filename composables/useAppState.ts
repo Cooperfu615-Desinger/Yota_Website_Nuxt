@@ -1,5 +1,10 @@
 import { siteContent } from '~/data/siteContent'
 import { calculateVaultTransfer, canSubmitVaultTransfer } from '~/utils/vaultTransfer'
+import {
+  calculateWalletExchange,
+  canSubmitWalletExchange,
+  type WalletExchangeDirection,
+} from '~/utils/walletExchange'
 import { DEFAULT_WALLET_BALANCE } from '~/utils/wallets'
 
 // 全站共用狀態：登入、大廳 Modal、使用者資訊
@@ -93,6 +98,25 @@ export const useAppState = () => {
       ...transfer,
     }
   }
+  function exchangeWalletCurrency(direction: WalletExchangeDirection, amount: number) {
+    const sourceBalance = direction === 'gold-to-silver'
+      ? userInfo.value.balance
+      : userInfo.value.silverBalance
+
+    if (!canSubmitWalletExchange(direction, amount, sourceBalance)) return null
+
+    const exchange = calculateWalletExchange(direction, amount)
+    if (direction === 'gold-to-silver') {
+      userInfo.value.balance -= exchange.fromAmount
+      userInfo.value.silverBalance += exchange.toAmount
+    } else {
+      userInfo.value.silverBalance -= exchange.fromAmount
+      userInfo.value.balance += exchange.toAmount
+    }
+    persistUser()
+
+    return exchange
+  }
 
   // 從 localStorage 還原登入狀態（僅在客戶端 onMounted 後呼叫）
   function initFromStorage() {
@@ -125,5 +149,6 @@ export const useAppState = () => {
     depositToVault,
     withdrawFromVault,
     transferFromVault,
+    exchangeWalletCurrency,
   }
 }
