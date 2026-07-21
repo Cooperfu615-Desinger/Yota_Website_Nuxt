@@ -1,10 +1,12 @@
 <script setup lang="ts">
 const { initFromStorage } = useAppState()
 const { initSocialFromStorage } = useSocialState()
+const { initPreferences } = usePreferencesState()
 const { openAgeGate } = useAgeGateState()
 onMounted(() => {
   initFromStorage()
   initSocialFromStorage()
+  initPreferences()
 })
 
 // Web館：另開 /h5 頁面（App 風格遊戲大廳）
@@ -105,6 +107,7 @@ function onClick() {
     <ClientOnly>
       <AgeGateModal />
       <LoginModal />
+      <LegalModal />
       <LobbyModal />
     </ClientOnly>
   </div>

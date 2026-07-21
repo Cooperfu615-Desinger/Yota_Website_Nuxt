@@ -15,6 +15,17 @@ const counts = computed(() => ({
 }))
 const filteredEvents = computed(() => events.filter(e => e.status === activeTab.value))
 const selectedEvent = ref<(typeof siteContent.events)[number] | null>(null)
+const participationNotice = ref('')
+const { isLoggedIn, openLogin } = useAppState()
+
+function participate() {
+  if (!selectedEvent.value || selectedEvent.value.status !== 'active') return
+  if (!isLoggedIn.value) {
+    openLogin('/lobby/events')
+    return
+  }
+  participationNotice.value = `已完成「${selectedEvent.value.title}」Mock 報名`
+}
 
 const tabs = [
   { key: 'active'   as EventStatus, label: '進行中' },
@@ -124,6 +135,7 @@ const tabs = [
     </Transition>
 
     <!-- 活動詳情 Modal -->
+    <ClientOnly>
     <Teleport to="body">
       <Transition name="modal-fade">
         <div v-if="selectedEvent" class="modal-overlay" role="dialog" :aria-label="selectedEvent.title" @click.self="selectedEvent = null">
@@ -156,11 +168,15 @@ const tabs = [
                 活動詳細規則說明由後台系統填入。參與方式、計分標準、獎金發放時程等資訊將在活動正式開始後公告。
               </p>
             </div>
-            <button class="btn-gold w-full justify-center mt-5">立即參與</button>
+            <p v-if="participationNotice" class="text-xs text-center mt-4" style="color:#86efac;">{{ participationNotice }}</p>
+            <button class="btn-gold w-full justify-center mt-5" :disabled="selectedEvent.status !== 'active'" @click="participate">
+              {{ selectedEvent.status === 'active' ? '立即參與' : selectedEvent.status === 'upcoming' ? '尚未開始' : '活動已結束' }}
+            </button>
           </div>
         </div>
       </Transition>
     </Teleport>
+    </ClientOnly>
   </div>
 </template>
 

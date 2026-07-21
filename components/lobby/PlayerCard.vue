@@ -11,11 +11,12 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const { isBlockedPlayer } = useSocialState()
+const { isBlockedPlayer, isFriendPlayer, addFriend, removeFriend } = useSocialState()
 const showBlockConfirm = ref(false)
-const isFriend = ref(Boolean(props.player.isFriend))
+const friendNotice = ref('')
 
 const isBlocked = computed(() => isBlockedPlayer(props.player.playerId))
+const isFriend = computed(() => isFriendPlayer(props.player.playerId))
 
 function requestMessage() {
   if (isBlocked.value) return
@@ -25,6 +26,16 @@ function requestMessage() {
 function confirmBlock() {
   emit('block', props.player)
   showBlockConfirm.value = false
+}
+
+function toggleFriend() {
+  if (isFriend.value) {
+    removeFriend(props.player.playerId)
+    friendNotice.value = '已從好友名單移除'
+  } else {
+    addFriend(props.player)
+    friendNotice.value = '已加入好友名單'
+  }
 }
 </script>
 
@@ -103,12 +114,12 @@ function confirmBlock() {
               type="button"
               class="action-btn muted"
               :class="{ active: isFriend }"
-              @click="isFriend = true"
+              @click="toggleFriend"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM3 21a6 6 0 0 1 12 0"/>
               </svg>
-              <span>{{ isFriend ? '已是好友' : '加好友' }}</span>
+              <span>{{ isFriend ? '刪除好友' : '加好友' }}</span>
             </button>
             <button type="button" class="action-btn gift" @click="emit('gift', props.player)">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -123,6 +134,7 @@ function confirmBlock() {
               <span>轉點</span>
             </button>
           </div>
+          <p v-if="friendNotice" class="friend-notice" aria-live="polite">{{ friendNotice }}</p>
         </div>
 
         <div class="security-box">
@@ -506,6 +518,13 @@ function confirmBlock() {
   color: #fff;
   background: linear-gradient(135deg, #be123c, #7f1d1d);
   border: 1px solid rgba(244,63,94,0.42);
+}
+.friend-notice {
+  margin: 10px 0 0;
+  color: #86efac;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
 }
 @keyframes card-pop {
   from { transform: scale(0.92); opacity: 0; }

@@ -9,7 +9,7 @@ const { resolvePublicAsset } = usePublicAssetPath()
 
 function handlePlay(mode: 'real' | 'demo') {
   if (mode === 'real' && !isLoggedIn.value) {
-    openLogin()
+    openLogin(`/lobby?game=${encodeURIComponent(props.game.key)}&mode=real`)
     return
   }
   emit('play', props.game.key, mode)

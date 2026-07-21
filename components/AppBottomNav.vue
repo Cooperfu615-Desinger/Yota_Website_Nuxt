@@ -24,7 +24,7 @@ function handleLobby() {
   if (isLoggedIn.value) {
     openAgeGate(() => router.push('/lobby'))
   } else {
-    openLogin()
+    openLogin('/lobby')
   }
 }
 
@@ -32,8 +32,14 @@ function pushProtected(path: string) {
   if (isLoggedIn.value) {
     router.push(path)
   } else {
-    openLogin()
+    openLogin(path)
   }
+}
+
+function handleShop(event: MouseEvent) {
+  if (!inLobby.value || isLoggedIn.value) return
+  event.preventDefault()
+  openLogin(shopPath.value)
 }
 </script>
 
@@ -48,7 +54,7 @@ function pushProtected(path: string) {
     </button>
 
     <!-- 儲值 -->
-    <NuxtLink :to="shopPath" class="bottom-nav-item" :class="{ active: shopActive }" aria-label="儲值">
+    <NuxtLink :to="shopPath" class="bottom-nav-item" :class="{ active: shopActive }" aria-label="儲值" @click="handleShop">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16l-2 12H6L4 7Zm0 0 1-3h3m3 8h2m-1-1v2"/>
       </svg>
@@ -72,7 +78,7 @@ function pushProtected(path: string) {
     <button
       class="bottom-nav-item"
       type="button"
-      :class="{ active: isActive('/lobby/inbox') }"
+      :class="{ active: isActive('/lobby/inbox') || isActive('/lobby/gifts') }"
       aria-label="信箱"
       @click="pushProtected('/lobby/inbox')"
     >

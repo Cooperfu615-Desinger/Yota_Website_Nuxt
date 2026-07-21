@@ -1,9 +1,11 @@
 <script setup lang="ts">
 const { initFromStorage } = useAppState()
 const { initSocialFromStorage } = useSocialState()
+const { initPreferences } = usePreferencesState()
 onMounted(() => {
   initFromStorage()
   initSocialFromStorage()
+  initPreferences()
 })
 </script>
 
@@ -21,6 +23,7 @@ onMounted(() => {
       <FloatingPanels />
       <AgeGateModal />
       <LoginModal />
+      <LegalModal />
       <LobbyModal />
     </ClientOnly>
   </div>

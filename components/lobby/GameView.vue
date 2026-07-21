@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { siteContent, type GameItem } from '~/data/siteContent'
 
-const props = defineProps<{ gameKey: string; mode: 'real' | 'demo' }>()
+const props = defineProps<{ gameKey: string; mode: 'real' | 'demo'; machineId?: string }>()
 const emit  = defineEmits<{ close: []; switchMode: ['real' | 'demo'] }>()
 
 const allGames: GameItem[] = [...siteContent.games, ...siteContent.lobbyGames] as GameItem[]
@@ -128,6 +128,13 @@ const gameRules = computed(() => {
   if (!game.value) return ''
   return rulesMap[game.value.key] ?? `${game.value.name} 的詳細遊戲規則請在遊戲內查閱說明頁面，或聯繫客服了解更多。`
 })
+
+const frameOuter = ref<HTMLElement | null>(null)
+async function toggleFullscreen() {
+  if (!import.meta.client || !frameOuter.value) return
+  if (document.fullscreenElement) await document.exitFullscreen()
+  else await frameOuter.value.requestFullscreen()
+}
 </script>
 
 <template>
@@ -143,7 +150,7 @@ const gameRules = computed(() => {
     </div>
 
     <!-- 遊戲 iframe 容器 (16:9) -->
-    <div class="gv-frame-outer">
+    <div ref="frameOuter" class="gv-frame-outer">
       <ClientOnly>
         <iframe
           :src="gameUrl"
@@ -166,7 +173,7 @@ const gameRules = computed(() => {
       <!-- 左側工具 -->
       <div class="flex items-center gap-2">
         <!-- 全螢幕 icon（示意） -->
-        <button class="gv-ctrl-icon" aria-label="全螢幕">
+        <button class="gv-ctrl-icon" aria-label="全螢幕" @click="toggleFullscreen">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
@@ -175,7 +182,7 @@ const gameRules = computed(() => {
       </div>
 
       <!-- 中間：品牌名稱 -->
-      <span class="gv-brand">巨亨 ONLINE</span>
+      <span class="gv-brand">巨亨 ONLINE<span v-if="machineId">・{{ machineId.split('-').pop() }}</span></span>
 
       <!-- 右側：模式切換 -->
       <div class="gv-mode-tabs">

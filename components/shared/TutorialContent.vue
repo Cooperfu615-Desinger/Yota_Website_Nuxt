@@ -7,6 +7,7 @@ const activeTab = ref<TutorialTab>('games')
 const activeShortcutGuide = ref<ShortcutGuideKey>('ios')
 const { isLoggedIn, openLogin } = useAppState()
 const router = useRouter()
+const downloadNotice = ref('')
 
 const games: GameItem[] = [...siteContent.lobbyGames] as GameItem[]
 const {
@@ -48,12 +49,17 @@ function handlePlay(gameKey: string, mode: 'real' | 'demo') {
   }
   router.push(`/lobby?game=${gameKey}&mode=${mode}`)
 }
+
+function mockDownload(platform: string) {
+  downloadNotice.value = `${platform} 下載流程已啟動（原型不會下載真實安裝檔）`
+}
 </script>
 
 <template>
   <div class="pb-4">
     <div class="px-4 pt-4 pb-2">
       <h1 class="section-title">新手教學</h1>
+      <p v-if="downloadNotice" class="text-xs mt-2" style="color:#86efac;">{{ downloadNotice }}</p>
     </div>
 
     <!-- Tab -->
@@ -116,7 +122,7 @@ function handlePlay(gameKey: string, mode: 'real' | 'demo') {
           <div class="flex gap-2 mt-3 overflow-x-auto">
             <div v-for="n in 4" :key="n" class="w-32 h-56 flex-shrink-0 rounded-xl flex items-center justify-center text-xs" style="background:rgba(168,85,247,0.1); border:1px solid var(--color-border); color:var(--color-text-muted);">截圖 {{ n }}</div>
           </div>
-          <button class="btn-gold w-full justify-center mt-4">
+          <button class="btn-gold w-full justify-center mt-4" @click="mockDownload('iOS')">
             <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
             iOS 下載
           </button>
@@ -134,7 +140,7 @@ function handlePlay(gameKey: string, mode: 'real' | 'demo') {
               <p class="text-sm pt-0.5" style="color:var(--color-text-muted);">{{ step }}</p>
             </div>
           </div>
-          <button class="btn-gold w-full justify-center mt-4">
+          <button class="btn-gold w-full justify-center mt-4" @click="mockDownload('Android')">
             <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor" aria-hidden="true"><path d="M17.523 15.341a4.58 4.58 0 0 0 2.492-4.004 4.594 4.594 0 0 0-2.492-4.004l1.005-1.742a.25.25 0 0 0-.096-.341.251.251 0 0 0-.341.096l-1.02 1.764A9.427 9.427 0 0 0 12.5 6.25a9.43 9.43 0 0 0-4.571 1.856L6.908 4.342a.25.25 0 0 0-.341-.096.25.25 0 0 0-.096.341l1.005 1.742A4.594 4.594 0 0 0 4.985 10.337a4.579 4.579 0 0 0 2.491 4.004L6.47 16.083a.25.25 0 1 0 .438.245l1.01-1.755a9.44 9.44 0 0 0 4.582 1.177 9.44 9.44 0 0 0 4.582-1.177l1.01 1.755a.251.251 0 0 0 .438-.245l-1.007-1.742zM9.5 12.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm5 0a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>
             Android 下載
           </button>

@@ -7,8 +7,17 @@ const categories = siteContent.faq.categories
 const faqs = siteContent.faq.items
 
 const openFaqs = ref<Record<number, boolean>>({})
+const { isLoggedIn, openLogin } = useAppState()
+const router = useRouter()
+const supportNotice = ref('')
 function toggleFaq(index: number) {
   openFaqs.value[index] = !openFaqs.value[index]
+}
+
+function contactLineSupport() {
+  supportNotice.value = '正在開啟客服頻道…'
+  if (isLoggedIn.value) router.push('/lobby/chat')
+  else openLogin('/lobby/chat')
 }
 
 const lineSvgPath = 'M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314'
@@ -18,6 +27,7 @@ const lineSvgPath = 'M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H1
   <div class="pb-4">
     <div class="px-4 pt-4 pb-2">
       <h1 class="section-title">客服中心</h1>
+      <p v-if="supportNotice" class="text-xs mt-2" style="color:#86efac;">{{ supportNotice }}</p>
     </div>
 
     <div class="lg:grid lg:grid-cols-[1fr_360px] lg:gap-6 lg:items-start">
@@ -34,7 +44,7 @@ const lineSvgPath = 'M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H1
               <div class="text-sm mt-1" style="color:rgba(255,255,255,0.85);">24 小時即時線上服務<br>快速處理您的問題</div>
             </div>
           </div>
-          <button class="w-full mt-4 py-3 rounded-xl font-bold text-sm" style="background:rgba(255,255,255,0.2); color:white; border:1.5px solid rgba(255,255,255,0.4);" aria-label="開啟LINE客服">
+          <button class="w-full mt-4 py-3 rounded-xl font-bold text-sm" style="background:rgba(255,255,255,0.2); color:white; border:1.5px solid rgba(255,255,255,0.4);" aria-label="開啟LINE客服" @click="contactLineSupport">
             📱 立即聯繫客服
           </button>
           <div class="absolute top-3 right-3 w-12 h-12 rounded-lg flex items-center justify-center text-xs" style="background:rgba(255,255,255,0.15); color:rgba(255,255,255,0.6);">QR</div>
@@ -109,7 +119,7 @@ const lineSvgPath = 'M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H1
               <div class="text-sm mt-1" style="color:rgba(255,255,255,0.85);">24 小時即時線上服務</div>
             </div>
           </div>
-          <button class="w-full mt-4 py-3 rounded-xl font-bold text-sm" style="background:rgba(255,255,255,0.2); color:white; border:1.5px solid rgba(255,255,255,0.4);" aria-label="開啟LINE客服">
+          <button class="w-full mt-4 py-3 rounded-xl font-bold text-sm" style="background:rgba(255,255,255,0.2); color:white; border:1.5px solid rgba(255,255,255,0.4);" aria-label="開啟LINE客服" @click="contactLineSupport">
             📱 立即聯繫客服
           </button>
           <div class="absolute top-3 right-3 w-12 h-12 rounded-lg flex items-center justify-center text-xs" style="background:rgba(255,255,255,0.15); color:rgba(255,255,255,0.6);">QR</div>

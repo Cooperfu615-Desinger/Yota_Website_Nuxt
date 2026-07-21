@@ -1,31 +1,112 @@
 <script setup lang="ts">
-const { showLoginModal, loginTab, closeLogin, login } = useAppState()
+type Provider = 'facebook' | 'line' | 'apple' | 'google'
+type ModalView = 'login' | 'register' | 'social'
+type AuthStage = 'idle' | 'connecting' | 'confirm' | 'logging-in' | 'success'
 
-// 'login' | 'register'
-const modalView = ref<'login' | 'register'>('login')
+const {
+  showLoginModal,
+  loginTab,
+  closeLogin,
+  login,
+  consumeProtectedDestination,
+} = useAppState()
+const { openLegal, lastReviewedDocument } = useLegalState()
+const router = useRouter()
 
-// 關閉時重置視圖
-watch(showLoginModal, (v) => { if (!v) modalView.value = 'login' })
+const modalView = ref<ModalView>('login')
+const authStage = ref<AuthStage>('idle')
+const activeProvider = ref<Provider | null>(null)
+const phoneStep = ref<'phone' | 'code'>('phone')
+const termsReviewed = ref(false)
+const errorMessage = ref('')
+const loading = ref(false)
 
 const form = reactive({ account: '', password: '', phone: '', code: '' })
 const regForm = reactive({ account: '', nickname: '', password: '', confirmPassword: '', referralCode: '' })
 
-// 推廣碼：選填，大寫英數，6 碼（代理）或 8 碼（玩家）
-function onReferralInput(e: Event) {
-  regForm.referralCode = (e.target as HTMLInputElement).value.toUpperCase().replace(/[^A-Z0-9]/g, '')
+const providerInfo: Record<Provider, { label: string; short: string; className: string }> = {
+  line: { label: 'LINE', short: 'L', className: 'social-line' },
+  facebook: { label: 'Facebook', short: 'f', className: 'social-facebook' },
+  apple: { label: 'Apple', short: '●', className: 'social-apple' },
+  google: { label: 'Google', short: 'G', className: 'social-google' },
 }
+
 const referralValid = computed(() =>
   regForm.referralCode === '' || /^[A-Z0-9]{6}$/.test(regForm.referralCode) || /^[A-Z0-9]{8}$/.test(regForm.referralCode)
 )
-const loading = ref(false)
+
+const canRegister = computed(() =>
+  regForm.account.length >= 4 &&
+  regForm.nickname.length >= 2 &&
+  regForm.password.length >= 6 &&
+  regForm.password === regForm.confirmPassword &&
+  referralValid.value &&
+  termsReviewed.value
+)
+
 const countdown = ref(0)
 let countdownTimer: ReturnType<typeof setInterval> | null = null
 
+watch(lastReviewedDocument, document => {
+  if (document === 'terms') termsReviewed.value = true
+})
+
+watch(showLoginModal, visible => {
+  if (visible) return
+  modalView.value = 'login'
+  authStage.value = 'idle'
+  activeProvider.value = null
+  phoneStep.value = 'phone'
+  loading.value = false
+  errorMessage.value = ''
+})
+
+function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+function onReferralInput(event: Event) {
+  regForm.referralCode = (event.target as HTMLInputElement).value.toUpperCase().replace(/[^A-Z0-9]/g, '')
+}
+
+function finishLogin(name: string | undefined, provider: Parameters<typeof login>[1]) {
+  login(name, provider, false)
+  authStage.value = 'success'
+  window.setTimeout(() => {
+    closeLogin()
+    const destination = consumeProtectedDestination()
+    if (destination) router.push(destination)
+  }, 650)
+}
+
+async function handleAccountLogin() {
+  errorMessage.value = ''
+  loading.value = true
+  authStage.value = 'logging-in'
+  await delay(900)
+  finishLogin(form.account.trim() || undefined, 'account')
+  loading.value = false
+}
+
+async function handleGuestLogin() {
+  loading.value = true
+  authStage.value = 'logging-in'
+  await delay(650)
+  finishLogin(`訪客${Math.floor(1000 + Math.random() * 9000)}`, 'guest')
+  loading.value = false
+}
+
 function sendCode() {
-  if (!form.phone || countdown.value > 0) return
+  errorMessage.value = ''
+  if (!/^09\d{8}$/.test(form.phone)) {
+    errorMessage.value = '請輸入正確的 10 碼手機號碼'
+    return
+  }
+  phoneStep.value = 'code'
   countdown.value = 60
+  if (countdownTimer) clearInterval(countdownTimer)
   countdownTimer = setInterval(() => {
-    countdown.value--
+    countdown.value -= 1
     if (countdown.value <= 0 && countdownTimer) {
       clearInterval(countdownTimer)
       countdownTimer = null
@@ -33,240 +114,196 @@ function sendCode() {
   }, 1000)
 }
 
-async function handleSubmit() {
+async function verifyPhone() {
+  errorMessage.value = ''
+  if (form.code !== '123456') {
+    errorMessage.value = 'Mock 驗證碼為 123456'
+    return
+  }
   loading.value = true
-  // TODO: 串接登入 API
-  await new Promise(r => setTimeout(r, 1200))
-  login()
+  authStage.value = 'logging-in'
+  await delay(850)
+  finishLogin(`手機玩家${form.phone.slice(-4)}`, 'phone')
   loading.value = false
+}
+
+async function startSocialLogin(provider: Provider) {
+  activeProvider.value = provider
+  modalView.value = 'social'
+  authStage.value = 'connecting'
+  await delay(700)
+  authStage.value = 'confirm'
+}
+
+async function confirmSocialLogin() {
+  if (!activeProvider.value) return
+  authStage.value = 'logging-in'
+  await delay(900)
+  const provider = activeProvider.value
+  finishLogin(`${providerInfo[provider].label}玩家`, provider)
+}
+
+function cancelSocialLogin() {
+  modalView.value = 'login'
+  authStage.value = 'idle'
+  activeProvider.value = null
 }
 
 async function handleRegister() {
-  if (regForm.password !== regForm.confirmPassword) return
-  if (!referralValid.value) return
+  errorMessage.value = ''
+  if (!canRegister.value) {
+    errorMessage.value = termsReviewed.value ? '請確認所有必填資料' : '請先完成會員條款審閱'
+    return
+  }
   loading.value = true
-  // TODO: 串接註冊 API
-  await new Promise(r => setTimeout(r, 1200))
-  login(regForm.nickname.trim() || undefined)
+  authStage.value = 'logging-in'
+  await delay(1000)
+  finishLogin(regForm.nickname.trim(), 'account')
   loading.value = false
 }
 
-onUnmounted(() => { if (countdownTimer) clearInterval(countdownTimer) })
+onUnmounted(() => {
+  if (countdownTimer) clearInterval(countdownTimer)
+})
 </script>
 
 <template>
   <Teleport to="body">
     <Transition name="modal-fade">
-      <div v-if="showLoginModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="登入" @click.self="closeLogin">
-        <!-- 外層：白色半透明玻璃底框 -->
-        <div class="modal-box">
-          <!-- 內層：淡紫色漸層卡片 -->
-          <div class="modal-inner">
-            <!-- 關閉按鈕 -->
-            <button class="modal-close" aria-label="關閉" @click="closeLogin">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-            </button>
+      <div v-if="showLoginModal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="會員登入" @click.self="closeLogin">
+        <div class="modal-box auth-modal-box">
+          <div class="modal-inner auth-modal-inner">
+            <button class="modal-close" aria-label="關閉" @click="closeLogin">×</button>
 
-            <!-- ══ 登入視圖 ══ -->
-            <template v-if="modalView === 'login'">
-            <h2 class="modal-title">會員登入</h2>
-
-            <!-- Tab 切換 -->
-            <div class="login-tab-bar mb-5">
-              <button class="login-tab-btn" :class="{ active: loginTab === 'account' }" @click="loginTab = 'account'">帳號密碼</button>
-              <button class="login-tab-btn" :class="{ active: loginTab === 'phone' }"   @click="loginTab = 'phone'">手機號碼</button>
+            <div v-if="authStage === 'logging-in' || authStage === 'success'" class="auth-state-card" aria-live="polite">
+              <div v-if="authStage === 'logging-in'" class="auth-spinner" />
+              <div v-else class="auth-success">✓</div>
+              <strong>{{ authStage === 'success' ? '登入成功' : '正在建立安全連線' }}</strong>
+              <span>{{ authStage === 'success' ? '即將返回原本的操作' : '這是前端 Mock，不會傳送真實帳密' }}</span>
             </div>
 
-            <!-- 帳號密碼表單 -->
-            <form v-if="loginTab === 'account'" class="flex flex-col gap-4" @submit.prevent="handleSubmit">
-              <div>
+            <template v-else-if="modalView === 'social' && activeProvider">
+              <p class="auth-eyebrow">SOCIAL SIGN IN</p>
+              <h2 class="modal-title">{{ providerInfo[activeProvider].label }} 登入</h2>
+              <div class="social-confirm-card" :class="providerInfo[activeProvider].className">
+                <div class="social-confirm-logo">{{ providerInfo[activeProvider].short }}</div>
+                <template v-if="authStage === 'connecting'">
+                  <div class="auth-spinner" />
+                  <strong>正在連線至 {{ providerInfo[activeProvider].label }}</strong>
+                  <span>請稍候片刻</span>
+                </template>
+                <template v-else>
+                  <strong>允許巨亨 ONLINE 使用此帳號登入？</strong>
+                  <span>將建立示範帳號，不會取得真實社群資料。</span>
+                </template>
+              </div>
+              <div v-if="authStage === 'confirm'" class="auth-actions">
+                <button type="button" class="btn-outline-purple" @click="cancelSocialLogin">取消</button>
+                <button type="button" class="btn-gold" @click="confirmSocialLogin">允許並繼續</button>
+              </div>
+            </template>
+
+            <template v-else-if="modalView === 'login'">
+              <p class="auth-eyebrow">WELCOME BACK</p>
+              <h2 class="modal-title">會員登入</h2>
+
+              <div class="login-tab-bar mb-5">
+                <button class="login-tab-btn" :class="{ active: loginTab === 'account' }" @click="loginTab = 'account'; errorMessage = ''">帳號密碼</button>
+                <button class="login-tab-btn" :class="{ active: loginTab === 'phone' }" @click="loginTab = 'phone'; errorMessage = ''">手機驗證碼</button>
+              </div>
+
+              <form v-if="loginTab === 'account'" class="auth-form" @submit.prevent="handleAccountLogin">
                 <label class="input-label" for="login-account">帳號</label>
-                <input id="login-account" v-model="form.account" type="text" class="input-field" placeholder="請輸入帳號" autocomplete="username" required />
-              </div>
-              <div>
+                <input id="login-account" v-model="form.account" class="input-field" autocomplete="username" placeholder="請輸入帳號" required />
                 <label class="input-label" for="login-password">密碼</label>
-                <input id="login-password" v-model="form.password" type="password" class="input-field" placeholder="請輸入密碼" autocomplete="current-password" required />
-              </div>
-              <button type="submit" class="btn-gold w-full justify-center" :disabled="loading">
-                <span v-if="loading">登入中...</span>
-                <span v-else>登入</span>
-              </button>
-            </form>
+                <input id="login-password" v-model="form.password" type="password" class="input-field" autocomplete="current-password" placeholder="請輸入密碼" required />
+                <button type="submit" class="btn-gold auth-submit" :disabled="loading">登入</button>
+              </form>
 
-            <!-- 手機號碼表單 -->
-            <form v-else class="flex flex-col gap-4" @submit.prevent="handleSubmit">
-              <div>
+              <form v-else class="auth-form" @submit.prevent="phoneStep === 'phone' ? sendCode() : verifyPhone()">
                 <label class="input-label" for="login-phone">手機號碼</label>
-                <input id="login-phone" v-model="form.phone" type="tel" class="input-field" placeholder="09xxxxxxxx" autocomplete="tel" required />
+                <input id="login-phone" v-model="form.phone" type="tel" class="input-field" autocomplete="tel" placeholder="09xxxxxxxx" :disabled="phoneStep === 'code'" required />
+                <template v-if="phoneStep === 'code'">
+                  <div class="auth-code-heading">
+                    <label class="input-label" for="login-code">驗證碼</label>
+                    <button type="button" :disabled="countdown > 0" @click="sendCode">{{ countdown > 0 ? `${countdown}s 後重發` : '重新發送' }}</button>
+                  </div>
+                  <input id="login-code" v-model="form.code" inputmode="numeric" maxlength="6" class="input-field auth-code-input" placeholder="000000" required />
+                  <p class="auth-helper">原型測試驗證碼：123456</p>
+                </template>
+                <button type="submit" class="btn-gold auth-submit">{{ phoneStep === 'phone' ? '發送驗證碼' : '驗證並登入' }}</button>
+              </form>
+
+              <p v-if="errorMessage" class="auth-error" role="alert">{{ errorMessage }}</p>
+
+              <div class="auth-divider"><span>或使用其他方式</span></div>
+              <button type="button" class="guest-login" @click="handleGuestLogin">以訪客身份快速進入</button>
+
+              <div class="social-grid" aria-label="社群登入">
+                <button v-for="provider in (Object.keys(providerInfo) as Provider[])" :key="provider" type="button" class="social-pill" :class="providerInfo[provider].className" @click="startSocialLogin(provider)">
+                  <span>{{ providerInfo[provider].short }}</span>{{ providerInfo[provider].label }}
+                </button>
               </div>
-              <div>
-                <label class="input-label" for="login-code">驗證碼</label>
-                <div class="flex gap-2">
-                  <input id="login-code" v-model="form.code" type="text" class="input-field" placeholder="請輸入驗證碼" inputmode="numeric" required style="flex:1;" />
-                  <button type="button" class="btn-outline-purple text-sm flex-shrink-0 px-3" style="border-radius:10px;" :disabled="countdown > 0" @click="sendCode">
-                    {{ countdown > 0 ? `${countdown}s` : '發送驗證碼' }}
-                  </button>
-                </div>
-              </div>
-              <button type="submit" class="btn-gold w-full justify-center" :disabled="loading">
-                <span v-if="loading">驗證中...</span>
-                <span v-else>驗證登入</span>
-              </button>
-            </form>
 
-            <!-- 分隔線 -->
-            <div class="flex items-center gap-3 my-5">
-              <div class="divider-purple flex-1" style="margin:0;" />
-              <span class="text-xs" style="color:rgba(255,255,255,0.55);">或使用社群帳號</span>
-              <div class="divider-purple flex-1" style="margin:0;" />
-            </div>
+              <p class="auth-legal-line">登入即代表同意
+                <button type="button" @click="openLegal('terms')">會員條款</button>、
+                <button type="button" @click="openLegal('privacy')">隱私政策</button>
+              </p>
+              <p class="auth-switch">還沒有帳號？<button type="button" @click="modalView = 'register'">立即註冊</button></p>
+            </template>
 
-            <!-- 社群登入 -->
-            <div class="flex justify-center gap-4">
-              <!-- LINE -->
-              <button class="social-login-btn social-btn-line" title="LINE 登入" aria-label="LINE 登入">
-                <svg viewBox="0 0 24 24" class="w-7 h-7" fill="#fff" aria-hidden="true">
-                  <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.630 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.630 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
-                </svg>
-              </button>
-              <!-- Facebook -->
-              <button class="social-login-btn social-btn-fb" title="Facebook 登入" aria-label="Facebook 登入">
-                <svg viewBox="0 0 24 24" class="w-7 h-7" fill="#fff" aria-hidden="true">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </svg>
-              </button>
-              <!-- Apple -->
-              <button class="social-login-btn social-btn-apple" title="Apple 登入" aria-label="Apple 登入">
-                <svg viewBox="0 0 24 24" class="w-7 h-7" fill="#fff" aria-hidden="true">
-                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                </svg>
-              </button>
-              <!-- Google -->
-              <button class="social-login-btn social-btn-google" title="Google 登入" aria-label="Google 登入">
-                <svg viewBox="0 0 24 24" class="w-7 h-7" fill="#fff" aria-hidden="true">
-                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                </svg>
-              </button>
-            </div>
-
-            <p class="text-center mt-4" style="font-size:11px; color:rgba(255,255,255,0.5);">
-              登入即代表您同意我們的
-              <a href="#" style="color:rgba(255,255,255,0.85); text-decoration:underline;">服務條款</a>
-              與
-              <a href="#" style="color:rgba(255,255,255,0.85); text-decoration:underline;">隱私政策</a>
-            </p>
-
-            <!-- 切換到註冊 -->
-            <p class="text-center mt-4" style="font-size:13px; color:rgba(255,255,255,0.55);">
-              還沒有帳號？
-              <button
-                type="button"
-                style="color:var(--color-purple-light); font-weight:700; text-decoration:underline; background:none; border:none; cursor:pointer; font-size:13px;"
-                @click="modalView = 'register'"
-              >立即註冊</button>
-            </p>
-            </template><!-- end 登入視圖 -->
-
-            <!-- ══ 註冊視圖 ══ -->
             <template v-else>
-            <h2 class="modal-title">建立帳號</h2>
-
-            <form class="flex flex-col gap-4" @submit.prevent="handleRegister">
-              <div>
+              <p class="auth-eyebrow">CREATE ACCOUNT</p>
+              <h2 class="modal-title">建立帳號</h2>
+              <form class="auth-form auth-register-form" @submit.prevent="handleRegister">
                 <label class="input-label" for="reg-account">帳號</label>
-                <input id="reg-account" v-model="regForm.account" type="text" class="input-field" placeholder="請設定帳號（4～20 字元）" autocomplete="username" required minlength="4" maxlength="20" />
-              </div>
-              <div>
+                <input id="reg-account" v-model="regForm.account" class="input-field" minlength="4" maxlength="20" placeholder="4～20 字元" required />
                 <label class="input-label" for="reg-nickname">暱稱</label>
-                <input id="reg-nickname" v-model="regForm.nickname" type="text" class="input-field" placeholder="請設定暱稱（顯示給其他玩家）" autocomplete="nickname" required minlength="2" maxlength="12" />
-              </div>
-              <div>
-                <label class="input-label" for="reg-password">密碼</label>
-                <input id="reg-password" v-model="regForm.password" type="password" class="input-field" placeholder="請設定密碼（6 字元以上）" autocomplete="new-password" required minlength="6" />
-              </div>
-              <div>
-                <label class="input-label" for="reg-confirm">確認密碼</label>
-                <input
-                  id="reg-confirm"
-                  v-model="regForm.confirmPassword"
-                  type="password"
-                  class="input-field"
-                  placeholder="請再次輸入密碼"
-                  autocomplete="new-password"
-                  required
-                  :style="regForm.confirmPassword && regForm.confirmPassword !== regForm.password ? 'border-color:rgba(248,113,113,0.7);' : ''"
-                />
-                <p v-if="regForm.confirmPassword && regForm.confirmPassword !== regForm.password" style="font-size:11px; color:#f87171; margin-top:4px;">密碼不一致，請重新輸入</p>
-              </div>
+                <input id="reg-nickname" v-model="regForm.nickname" class="input-field" minlength="2" maxlength="12" placeholder="顯示給其他玩家" required />
+                <div class="auth-two-column">
+                  <div>
+                    <label class="input-label" for="reg-password">密碼</label>
+                    <input id="reg-password" v-model="regForm.password" type="password" class="input-field" minlength="6" placeholder="至少 6 字元" required />
+                  </div>
+                  <div>
+                    <label class="input-label" for="reg-confirm">確認密碼</label>
+                    <input id="reg-confirm" v-model="regForm.confirmPassword" type="password" class="input-field" placeholder="再次輸入" required />
+                  </div>
+                </div>
+                <label class="input-label" for="reg-referral">推廣碼（選填）</label>
+                <input id="reg-referral" :value="regForm.referralCode" class="input-field" maxlength="8" placeholder="代理 6 碼／玩家 8 碼" @input="onReferralInput" />
 
-              <!-- 分隔線：必填區 / 選填區 -->
-              <div class="flex items-center gap-3 my-1">
-                <div class="divider-purple flex-1" style="margin:0;" />
-                <span class="text-xs" style="color:rgba(255,255,255,0.55);">選填</span>
-                <div class="divider-purple flex-1" style="margin:0;" />
-              </div>
+                <button type="button" class="terms-review-card" :class="{ reviewed: termsReviewed }" @click="openLegal('terms')">
+                  <span>{{ termsReviewed ? '✓' : '01' }}</span>
+                  <div><strong>{{ termsReviewed ? '會員條款已完成審閱' : '請先審閱會員條款' }}</strong><small>{{ termsReviewed ? '可繼續完成註冊' : '點擊開啟完整條款內容' }}</small></div>
+                  <b>›</b>
+                </button>
 
-              <div>
-                <label class="input-label" for="reg-referral">推廣碼</label>
-                <input
-                  id="reg-referral"
-                  :value="regForm.referralCode"
-                  type="text"
-                  class="input-field"
-                  placeholder="代理 6 碼 / 玩家 8 碼（可不填）"
-                  autocomplete="off"
-                  inputmode="latin"
-                  maxlength="8"
-                  style="text-transform:uppercase; letter-spacing:1px;"
-                  :style="!referralValid ? 'border-color:rgba(248,113,113,0.7); text-transform:uppercase; letter-spacing:1px;' : ''"
-                  @input="onReferralInput"
-                />
-                <p v-if="!referralValid" style="font-size:11px; color:#f87171; margin-top:4px;">推廣碼須為大寫英數 6 碼（代理）或 8 碼（玩家）</p>
-                <p v-else style="font-size:11px; color:rgba(255,255,255,0.45); margin-top:4px;">由代理或好友提供，無推廣碼可留空</p>
-              </div>
+                <p v-if="regForm.confirmPassword && regForm.password !== regForm.confirmPassword" class="auth-error">兩次密碼不一致</p>
+                <p v-else-if="!referralValid" class="auth-error">推廣碼須為大寫英數 6 碼或 8 碼</p>
+                <p v-else-if="errorMessage" class="auth-error">{{ errorMessage }}</p>
 
-              <button
-                type="submit"
-                class="btn-gold w-full justify-center"
-                :disabled="loading || (!!regForm.confirmPassword && regForm.password !== regForm.confirmPassword) || !referralValid"
-              >
-                <span v-if="loading">註冊中...</span>
-                <span v-else>立即註冊</span>
-              </button>
-            </form>
-
-            <p class="text-center mt-5" style="font-size:11px; color:rgba(255,255,255,0.5);">
-              註冊即代表您同意我們的
-              <a href="#" style="color:rgba(255,255,255,0.85); text-decoration:underline;">服務條款</a>
-              與
-              <a href="#" style="color:rgba(255,255,255,0.85); text-decoration:underline;">隱私政策</a>
-            </p>
-
-            <!-- 切換回登入 -->
-            <p class="text-center mt-3" style="font-size:13px; color:rgba(255,255,255,0.55);">
-              已有帳號？
-              <button
-                type="button"
-                style="color:var(--color-purple-light); font-weight:700; text-decoration:underline; background:none; border:none; cursor:pointer; font-size:13px;"
-                @click="modalView = 'login'"
-              >立即登入</button>
-            </p>
-            </template><!-- end 註冊視圖 -->
-          </div><!-- end modal-inner -->
-        </div><!-- end modal-box -->
+                <button type="submit" class="btn-gold auth-submit" :disabled="!canRegister || loading">完成註冊</button>
+              </form>
+              <p class="auth-switch">已有帳號？<button type="button" @click="modalView = 'login'; errorMessage = ''">返回登入</button></p>
+            </template>
+          </div>
+        </div>
       </div>
     </Transition>
   </Teleport>
 </template>
 
 <style scoped>
-.modal-fade-enter-active,
-.modal-fade-leave-active { transition: opacity 0.25s; }
-.modal-fade-enter-from,
-.modal-fade-leave-to { opacity: 0; }
+.modal-fade-enter-active,.modal-fade-leave-active{transition:opacity .25s}.modal-fade-enter-from,.modal-fade-leave-to{opacity:0}
+.auth-modal-box{width:min(560px,calc(100vw - 28px))}.auth-modal-inner{max-height:min(780px,92dvh);overflow:auto;padding:32px}.auth-eyebrow{margin:0 0 4px;text-align:center;color:var(--color-gold);font-size:10px;font-weight:900;letter-spacing:.22em}
+.auth-form{display:flex;flex-direction:column;gap:9px}.auth-form .input-label{margin-top:4px}.auth-submit{width:100%;justify-content:center;margin-top:7px}.auth-two-column{display:grid;grid-template-columns:1fr 1fr;gap:10px}.auth-error{margin:5px 0 0;color:#fca5a5;font-size:12px;text-align:center}.auth-helper{margin:-4px 0 2px;color:rgba(255,255,255,.45);font-size:11px}.auth-code-heading{display:flex;align-items:center;justify-content:space-between;margin-top:4px}.auth-code-heading button{border:0;color:var(--color-purple-light);background:none;font-size:11px}.auth-code-input{font-size:21px;letter-spacing:.35em;text-align:center}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:18px 0 12px;color:rgba(255,255,255,.45);font-size:11px}.auth-divider::before,.auth-divider::after{content:"";height:1px;flex:1;background:rgba(168,85,247,.22)}.guest-login{width:100%;padding:11px;border:1px solid rgba(245,200,66,.35);border-radius:12px;color:var(--color-gold);background:rgba(245,200,66,.08);font-size:13px;font-weight:800}
+.social-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.social-pill{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;background:rgba(255,255,255,.06);font-size:12px;font-weight:800}.social-pill span{display:grid;width:24px;height:24px;place-items:center;border-radius:7px;background:rgba(255,255,255,.14);font-weight:900}.social-pill:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.3)}.social-line{--social:#06c755}.social-facebook{--social:#1877f2}.social-apple{--social:#777}.social-google{--social:#ea4335}.social-pill[class*="social-"] span{background:var(--social)}
+.auth-legal-line,.auth-switch{margin:14px 0 0;text-align:center;color:rgba(255,255,255,.48);font-size:11px}.auth-legal-line button,.auth-switch button{border:0;color:var(--color-purple-light);background:none;text-decoration:underline}.auth-switch{font-size:13px}
+.social-confirm-card{display:flex;min-height:250px;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:28px;margin-top:18px;border:1px solid color-mix(in srgb,var(--social) 45%,transparent);border-radius:22px;background:linear-gradient(145deg,color-mix(in srgb,var(--social) 16%,transparent),rgba(255,255,255,.025));text-align:center}.social-confirm-logo{display:grid;width:64px;height:64px;place-items:center;border-radius:18px;color:#fff;background:var(--social);font-size:28px;font-weight:900}.social-confirm-card strong{color:#fff;font-size:16px}.social-confirm-card span{max-width:300px;color:rgba(255,255,255,.56);font-size:12px;line-height:1.6}.auth-actions{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;margin-top:16px}.auth-actions>*{justify-content:center}
+.auth-state-card{display:flex;min-height:360px;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center}.auth-state-card strong{color:#fff;font-size:21px}.auth-state-card span{color:rgba(255,255,255,.55);font-size:12px}.auth-spinner{width:42px;height:42px;border:3px solid rgba(168,85,247,.18);border-top-color:var(--color-gold);border-radius:50%;animation:auth-spin .8s linear infinite}.auth-success{display:grid;width:64px;height:64px;place-items:center;border-radius:50%;color:#052e16;background:#4ade80;font-size:30px;font-weight:900;box-shadow:0 0 40px rgba(74,222,128,.28)}
+.terms-review-card{display:grid;grid-template-columns:38px 1fr 20px;align-items:center;gap:10px;padding:12px;margin-top:6px;border:1px solid rgba(245,200,66,.22);border-radius:14px;color:var(--color-text);background:rgba(245,200,66,.055);text-align:left}.terms-review-card>span{display:grid;width:34px;height:34px;place-items:center;border-radius:50%;color:var(--color-gold);background:rgba(245,200,66,.13);font-size:11px;font-weight:900}.terms-review-card div{display:flex;flex-direction:column;gap:2px}.terms-review-card strong{font-size:12px}.terms-review-card small{color:var(--color-text-muted);font-size:10px}.terms-review-card>b{color:var(--color-gold);font-size:24px}.terms-review-card.reviewed{border-color:rgba(74,222,128,.34);background:rgba(74,222,128,.07)}.terms-review-card.reviewed>span{color:#052e16;background:#4ade80}
+@keyframes auth-spin{to{transform:rotate(360deg)}}
+@media(max-width:560px){.auth-modal-inner{max-height:94dvh;padding:27px 20px}.auth-two-column{grid-template-columns:1fr}.social-grid{grid-template-columns:1fr 1fr}}
 </style>

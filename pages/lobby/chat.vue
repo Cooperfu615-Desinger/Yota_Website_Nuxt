@@ -77,6 +77,7 @@ const onlinePlayers = siteContent.chat.onlinePlayers.map(player => clonePlayer(p
 const showRoster = ref(false)
 const selectedPlayer = ref<ChatPlayerProfile | null>(null)
 const supportDraft = ref<{ title: string; player: ChatPlayerProfile } | null>(null)
+const reportTarget = ref<ChatPlayerProfile | null>(null)
 const pageNotice = ref('')
 let noticeTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -137,14 +138,23 @@ function messagePlayer(p: ChatPlayerProfile) {
   conv.unread = 0
 }
 function reportPlayer(p: ChatPlayerProfile) {
-  supportDraft.value = {
-    title: `檢舉：${p.name} #${p.playerId}`,
-    player: p,
-  }
   closeCard()
   closeRoster()
+  reportTarget.value = p
+}
+function submitPlayerReport(reason: string, detail: string) {
+  const player = reportTarget.value
+  if (!player) return
+  supportMessages.value.push({
+    id: Date.now(),
+    user: '系統',
+    avatar: '🛡️',
+    text: `已收到對 ${player.name} 的檢舉：${reason}${detail ? `｜${detail}` : ''}`,
+    time: new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false }),
+  })
+  reportTarget.value = null
   activeChannel.value = 'support'
-  showNotice('已切換到客服頻道，請輸入檢舉內容後送出。')
+  showNotice('檢舉已送出，客服將依 Mock 流程進行確認。')
 }
 function addPlayerToBlacklist(p: ChatPlayerProfile) {
   blockPlayer(p)
@@ -153,13 +163,15 @@ function addPlayerToBlacklist(p: ChatPlayerProfile) {
   showNotice(`${p.name} 已加入黑名單。`)
 }
 function giftPlayer(p: ChatPlayerProfile) {
-  showNotice(`已選擇贈禮給 ${p.name}，後續可串接禮物流程。`)
+  closeCard()
+  closeRoster()
+  router.push({ path: '/lobby/bank', query: { tab: 'transfer', receiverId: p.playerId } })
 }
 function transferPlayer(p: ChatPlayerProfile) {
   closeCard()
   closeRoster()
   router.push({
-    path: '/lobby/vault',
+    path: '/lobby/bank',
     query: {
       tab: 'transfer',
       receiverId: p.playerId,
@@ -263,6 +275,9 @@ function transferPlayer(p: ChatPlayerProfile) {
       @transfer="transferPlayer"
       @close="closeCard"
     />
+    <ClientOnly>
+      <LobbyReportPlayerModal v-if="reportTarget" :player="reportTarget" @close="reportTarget = null" @submit="submitPlayerReport" />
+    </ClientOnly>
   </div>
 </template>
 

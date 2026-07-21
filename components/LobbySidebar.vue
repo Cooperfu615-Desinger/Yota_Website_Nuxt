@@ -2,12 +2,18 @@
 const sidebarMobileOpen      = useState('lobby-sidebar-mobile-open',      () => false)
 const sidebarDesktopCollapsed = useState('lobby-sidebar-desktop-collapsed', () => false)
 const route = useRoute()
+const { isLoggedIn, openLogin } = useAppState()
 
 function closeMobile() { sidebarMobileOpen.value = false }
 
 function isActive(to: string) {
   if (to === '/lobby') return route.path === '/lobby'
-  return route.path.startsWith(to)
+  const [path, queryString] = to.split('?')
+  if (path === '/lobby/bank' && queryString) {
+    const targetTab = new URLSearchParams(queryString).get('tab')
+    return route.path === path && (route.query.tab || 'deposit') === targetTab
+  }
+  return route.path.startsWith(path || to)
 }
 
 // 各分區導覽項目
@@ -21,12 +27,22 @@ const section2 = [
 ]
 const section3 = [
   { to: '/lobby/member',   label: '個人資訊', icon: '👤' },
-  { to: '/lobby/bank',     label: '銀行',     icon: '🏦' },
-  { to: '/lobby/vault',    label: '保險箱/贈禮', icon: '🔐' },
+  { to: '/lobby/bank?tab=deposit', label: '銀行', icon: '🏦' },
+  { to: '/lobby/bank?tab=vault', label: '保險箱/贈禮', icon: '🔐' },
   { to: '/lobby/inbox',    label: '信箱',     icon: '📬' },
+  { to: '/lobby/gifts',    label: '禮物中心', icon: '🎁' },
   { to: '/lobby/chat',     label: '聊天',     icon: '💬' },
   { to: '/lobby/settings', label: '設置',     icon: '⚙️' },
 ]
+
+const protectedPaths = new Set(['/lobby/daily', ...section3.map(item => item.to)])
+
+function handleNavigation(event: MouseEvent, to: string) {
+  closeMobile()
+  if (!protectedPaths.has(to) || isLoggedIn.value) return
+  event.preventDefault()
+  openLogin(to)
+}
 </script>
 
 <template>
@@ -56,7 +72,7 @@ const section3 = [
         class="lobby-nav-item"
         :class="{ 'lobby-nav-active': isActive(item.to) }"
         :title="sidebarDesktopCollapsed ? item.label : undefined"
-        @click="closeMobile"
+        @click="handleNavigation($event, item.to)"
       >
         <span class="lobby-nav-icon" aria-hidden="true">{{ item.icon }}</span>
         <span class="lobby-nav-label">{{ item.label }}</span>
@@ -73,7 +89,7 @@ const section3 = [
         class="lobby-nav-item"
         :class="{ 'lobby-nav-active': isActive(item.to) }"
         :title="sidebarDesktopCollapsed ? item.label : undefined"
-        @click="closeMobile"
+        @click="handleNavigation($event, item.to)"
       >
         <span class="lobby-nav-icon" aria-hidden="true">{{ item.icon }}</span>
         <span class="lobby-nav-label">{{ item.label }}</span>
@@ -90,7 +106,7 @@ const section3 = [
         class="lobby-nav-item"
         :class="{ 'lobby-nav-active': isActive(item.to) }"
         :title="sidebarDesktopCollapsed ? item.label : undefined"
-        @click="closeMobile"
+        @click="handleNavigation($event, item.to)"
       >
         <span class="lobby-nav-icon" aria-hidden="true">{{ item.icon }}</span>
         <span class="lobby-nav-label">{{ item.label }}</span>

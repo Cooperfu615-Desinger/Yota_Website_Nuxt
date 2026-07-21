@@ -10,6 +10,11 @@ import {
 type VaultTab = 'vault' | 'transfer' | 'exchange'
 type NoticeType = 'success' | 'error'
 
+const props = withDefaults(defineProps<{ embedded?: boolean; initialTab?: VaultTab }>(), {
+  embedded: false,
+  initialTab: 'vault',
+})
+
 const route = useRoute()
 const {
   isLoggedIn,
@@ -21,7 +26,7 @@ const {
   exchangeWalletCurrency,
 } = useAppState()
 
-const activeTab = ref<VaultTab>('vault')
+const activeTab = ref<VaultTab>(props.initialTab)
 const mode = ref<'deposit' | 'withdraw'>('deposit')
 const amount = ref(0)
 const transferReceiverId = ref('')
@@ -73,6 +78,11 @@ onUnmounted(() => {
 })
 
 function applyRouteQuery() {
+  if (props.embedded) {
+    activeTab.value = props.initialTab
+    if (typeof route.query.receiverId === 'string') transferReceiverId.value = route.query.receiverId
+    return
+  }
   if (route.query.tab === 'transfer') activeTab.value = 'transfer'
   if (route.query.tab === 'exchange') activeTab.value = 'exchange'
   if (typeof route.query.receiverId === 'string') {
@@ -197,22 +207,22 @@ function confirmExchange() {
 </script>
 
 <template>
-  <div class="lobby-page px-4 py-5">
+  <div :class="props.embedded ? 'py-1' : 'lobby-page px-4 py-5'">
     <!-- 未登入 -->
     <template v-if="!isLoggedIn">
       <div class="card-purple p-8 text-center max-w-sm mx-auto mt-8">
         <div class="text-5xl mb-4" aria-hidden="true">🔐</div>
         <h1 class="text-xl font-black mb-2">保險箱 / 贈禮</h1>
         <p class="text-sm mb-5" style="color:var(--color-text-muted);">登入後即可使用保險箱存放金幣，並將點數贈禮給其他會員</p>
-        <button class="btn-gold w-full justify-center" @click="openLogin">立即登入 / 註冊</button>
+        <button class="btn-gold w-full justify-center" @click="openLogin('/lobby/bank?tab=vault')">立即登入 / 註冊</button>
       </div>
     </template>
 
     <!-- 已登入 -->
     <template v-else>
-      <h1 class="section-title mb-4">保險箱 / 贈禮</h1>
+      <h1 v-if="!props.embedded" class="section-title mb-4">保險箱 / 贈禮</h1>
 
-      <div class="tab-bar mb-4 max-w-lg" role="tablist" aria-label="保險箱、贈禮與兌換">
+      <div v-if="!props.embedded" class="tab-bar mb-4 max-w-lg" role="tablist" aria-label="保險箱、贈禮與兌換">
         <button class="tab-btn" :class="{ active: activeTab === 'vault' }" role="tab" :aria-selected="activeTab === 'vault'" @click="activeTab = 'vault'">保險箱</button>
         <button class="tab-btn" :class="{ active: activeTab === 'transfer' }" role="tab" :aria-selected="activeTab === 'transfer'" @click="activeTab = 'transfer'">贈禮</button>
         <button class="tab-btn" :class="{ active: activeTab === 'exchange' }" role="tab" :aria-selected="activeTab === 'exchange'" @click="activeTab = 'exchange'">兌換</button>

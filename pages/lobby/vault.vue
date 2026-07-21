@@ -1,7 +1,6 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'lobby' })
+await navigateTo('/lobby/bank?tab=vault', { replace: true })
 </script>
 
-<template>
-  <LobbyVaultContent />
-</template>
+<template><div /></template>

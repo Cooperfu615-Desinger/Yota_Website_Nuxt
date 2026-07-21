@@ -2,64 +2,88 @@
 definePageMeta({ layout: 'lobby' })
 
 const route = useRoute()
-const { isLoggedIn, openLogin } = useAppState()
+const router = useRouter()
+const { isLoggedIn, openLogin, closeLogin } = useAppState()
 
-// 目前遊玩的遊戲狀態
 const currentGameKey = ref<string | null>(null)
 const currentGameMode = ref<'real' | 'demo'>('real')
+const currentMachineId = ref<string | null>(null)
+const launchGameKey = ref<string | null>(null)
+const launchMode = ref<'real' | 'demo'>('real')
+const showSeatSelection = ref(false)
 
-// 從 URL query 帶入遊戲（教學頁跳轉用）
-onMounted(() => {
-  const gameParam = route.query.game as string | undefined
-  const modeParam = route.query.mode as 'real' | 'demo' | undefined
-  if (gameParam) {
-    if (modeParam === 'demo') {
-      currentGameKey.value = gameParam
-      currentGameMode.value = 'demo'
-    } else {
-      if (isLoggedIn.value) {
-        currentGameKey.value = gameParam
-        currentGameMode.value = 'real'
-      } else {
-        openLogin()
-      }
-    }
+function clearLaunch() {
+  launchGameKey.value = null
+  showSeatSelection.value = false
+}
+
+function requestLaunch(key: string, mode: 'real' | 'demo') {
+  if (mode === 'real' && !isLoggedIn.value) {
+    openLogin(`/lobby?game=${encodeURIComponent(key)}&mode=real`)
+    return
   }
-})
+  launchGameKey.value = key
+  launchMode.value = mode
+  showSeatSelection.value = false
+}
 
-function handlePlay(key: string, mode: 'real' | 'demo') {
-  currentGameKey.value = key
-  currentGameMode.value = mode
+function startGame(machineId?: string) {
+  if (!launchGameKey.value) return
+  currentGameKey.value = launchGameKey.value
+  currentGameMode.value = launchMode.value
+  currentMachineId.value = machineId || null
+  clearLaunch()
+}
+
+function openSeats() {
+  showSeatSelection.value = true
+}
+
+function backToLaunch() {
+  showSeatSelection.value = false
 }
 
 function closeGame() {
   currentGameKey.value = null
+  currentMachineId.value = null
 }
 
 function switchMode(mode: 'real' | 'demo') {
   if (mode === 'real' && !isLoggedIn.value) {
-    openLogin()
+    openLogin(currentGameKey.value ? `/lobby?game=${encodeURIComponent(currentGameKey.value)}&mode=real` : '/lobby')
     return
   }
   currentGameMode.value = mode
 }
+
+function applyRouteLaunch() {
+  const key = typeof route.query.game === 'string' ? route.query.game : ''
+  if (!key) return
+  const mode = route.query.mode === 'demo' ? 'demo' : 'real'
+  if (mode === 'real' && !isLoggedIn.value) {
+    openLogin(route.fullPath)
+    return
+  }
+  closeLogin()
+  requestLaunch(key, mode)
+  const nextQuery = { ...route.query }
+  delete nextQuery.game
+  delete nextQuery.mode
+  router.replace({ query: nextQuery })
+}
+
+onMounted(applyRouteLaunch)
+watch([() => route.query.game, isLoggedIn], applyRouteLaunch)
 </script>
 
 <template>
   <div class="lobby-page">
-    <!-- 遊戲視圖 -->
-    <LobbyGameView
-      v-if="currentGameKey"
-      :game-key="currentGameKey"
-      :mode="currentGameMode"
-      @close="closeGame"
-      @switch-mode="switchMode"
-    />
+    <LobbyGameView v-if="currentGameKey" :game-key="currentGameKey" :mode="currentGameMode" :machine-id="currentMachineId || undefined" @close="closeGame" @switch-mode="switchMode" />
+    <template v-else><h1 class="sr-only">遊戲大廳</h1><LobbyGameGrid @play="requestLaunch" /></template>
 
-    <!-- 遊戲大廳 -->
-    <template v-else>
-      <h1 class="sr-only">遊戲大廳</h1>
-      <LobbyGameGrid @play="handlePlay" />
-    </template>
+    <ClientOnly>
+      <LobbyGameLaunchModal v-if="launchGameKey && !showSeatSelection" :game-key="launchGameKey" :mode="launchMode" @close="clearLaunch" @quick="startGame()" @seats="openSeats" />
+      <LobbySeatSelectionModal v-if="launchGameKey && showSeatSelection" :game-key="launchGameKey" :mode="launchMode" @close="clearLaunch" @back="backToLaunch" @enter="startGame" />
+    </ClientOnly>
   </div>
 </template>

@@ -2,7 +2,7 @@
 import { siteContent } from '~/data/siteContent'
 
 const { lastUpdate } = useLeaderboardTimer()
-const activeTab = ref<(typeof siteContent.leaderboard.tabs)[number]['key']>('win')
+const activeTab = ref<(typeof siteContent.leaderboard.tabs)[number]['key']>('multi')
 
 const tabData = computed(() =>
   siteContent.leaderboard.tabs.find(tab => tab.key === activeTab.value) ?? siteContent.leaderboard.tabs[0],

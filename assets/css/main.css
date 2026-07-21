@@ -24,6 +24,40 @@
   --bottom-nav-h: 76px;
 }
 
+/* 設定頁的「晨光金」主題。只改變介面色彩，不切換文案或路由。 */
+:root[data-theme='light'] {
+  --color-bg: #F2EAF9;
+  --color-bg-card: #FFF9F0;
+  --color-bg-card2: #F7EDFF;
+  --color-purple-dark: #4C1D75;
+  --color-purple: #6D28D9;
+  --color-purple-mid: #7C3AED;
+  --color-purple-light: #7E22CE;
+  --color-purple-glow: #9333EA;
+  --color-text: #241232;
+  --color-text-muted: #695A76;
+  --color-border: rgba(109, 40, 217, 0.2);
+}
+
+:root[data-theme='light'] body,
+:root[data-theme='light'] .lobby-root {
+  background: linear-gradient(150deg, #F6EFFB, #EFE5F7 58%, #F8F0E0);
+}
+
+:root[data-theme='light'] #top-nav,
+:root[data-theme='light'] .lobby-header,
+:root[data-theme='light'] .lobby-sidebar,
+:root[data-theme='light'] #bottom-nav {
+  background: rgba(255, 250, 242, 0.94);
+  color: var(--color-text);
+}
+
+:root[data-theme='light'] .card-purple,
+:root[data-theme='light'] .settings-card,
+:root[data-theme='light'] .member-content {
+  background: rgba(255, 250, 242, 0.88);
+}
+
 /* ── Reset & Base ── */
 *,
 *::before,

@@ -1,499 +1,56 @@
 <script setup lang="ts">
 import type { BlockedPlayer } from '~/composables/useSocialState'
+import type { AppLanguage, AppTheme } from '~/composables/usePreferencesState'
 
 definePageMeta({ layout: 'lobby' })
-
-const soundEnabled  = ref(true)
-const musicEnabled  = ref(true)
-const notifyEnabled = ref(true)
-const lang = ref<'zh-TW' | 'en'>('zh-TW')
+const { preferences, updatePreference } = usePreferencesState()
+const { setMusicEnabled, setSoundEnabled, playUiSound } = useAudioState()
 const { blockedPlayers, unblockPlayer } = useSocialState()
-const noticeText = ref('')
-let noticeTimer: ReturnType<typeof setTimeout> | null = null
+const { logout } = useAppState()
+const { openLegal } = useLegalState()
+const router = useRouter()
+const notice = ref('')
+const showLogoutConfirm = ref(false)
 
-const sections = [
-  {
-    title: '音效設定',
-    items: [
-      { label: '遊戲音效', desc: '啟用遊戲中的音效回饋', model: soundEnabled },
-      { label: '背景音樂', desc: '啟用大廳背景音樂',     model: musicEnabled },
-    ],
-  },
-  {
-    title: '通知設定',
-    items: [
-      { label: '站內通知', desc: '接收系統公告與活動通知', model: notifyEnabled },
-    ],
-  },
+const languages: { key: AppLanguage; label: string; native: string }[] = [
+  { key: 'zh-TW', label: '繁體中文', native: '繁中' }, { key: 'en', label: 'English', native: 'EN' }, { key: 'ja', label: '日本語', native: '日' },
+]
+const themeOptions: { key: AppTheme; label: string; description: string }[] = [
+  { key: 'dark', label: '深夜紫', description: 'Lobby 預設的沉浸式暗色主題' }, { key: 'light', label: '晨光金', description: '提高白天環境下的文字對比' },
 ]
 
-function formatBlockedAt(blockedAt: number) {
-  return new Intl.DateTimeFormat('zh-TW', {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(blockedAt)
-}
-
-function showNotice(text: string) {
-  noticeText.value = text
-  if (noticeTimer) clearTimeout(noticeTimer)
-  noticeTimer = setTimeout(() => {
-    noticeText.value = ''
-  }, 2400)
-}
-
-function handleUnblock(player: BlockedPlayer) {
-  unblockPlayer(player.playerId)
-  showNotice(`已將 ${player.name} 移出黑名單`)
-}
+function showNotice(text: string) { notice.value = text }
+function changeTheme(theme: AppTheme) { updatePreference('theme', theme); showNotice(`已切換為${theme === 'dark' ? '深夜紫' : '晨光金'}主題`) }
+function changeLanguage(language: AppLanguage) { updatePreference('language', language); showNotice('語言選擇已儲存；原型文案維持繁體中文') }
+function togglePush() { updatePreference('pushEnabled', !preferences.value.pushEnabled); showNotice(preferences.value.pushEnabled ? '已開啟推播通知' : '已關閉推播通知') }
+function handleUnblock(player: BlockedPlayer) { unblockPlayer(player.playerId); showNotice(`已解除封鎖 ${player.name}`) }
+function confirmLogout() { logout(); showLogoutConfirm.value = false; router.push('/lobby') }
 </script>
 
 <template>
-  <div class="lobby-page px-4 py-5">
-    <div class="settings-header mb-4">
-      <div>
-        <h1 class="section-title">設置</h1>
-        <p class="settings-subtitle">管理音效、通知與社交安全偏好</p>
-      </div>
-      <div class="security-count">
-        <span>{{ blockedPlayers.length }}</span>
-        <small>黑名單</small>
-      </div>
+  <div class="lobby-page settings-page px-4 py-5">
+    <header class="settings-hero"><div><p>PERSONAL PREFERENCES</p><h1>設定</h1><span>偏好設定會同步套用至 Lobby；金融與社交資料仍於重新整理後重置</span></div><div class="settings-status"><span>{{ preferences.theme === 'dark' ? '夜' : '晨' }}</span><div><strong>{{ preferences.language }}</strong><small>{{ preferences.soundEnabled ? '音效開啟' : '音效關閉' }}</small></div></div></header>
+    <p v-if="notice" class="settings-notice" aria-live="polite">{{ notice }}</p>
+
+    <div class="settings-grid">
+      <section class="settings-card"><header><span>01</span><div><p>AUDIO</p><h2>音樂與音效</h2></div></header><div class="setting-row"><div><strong>大廳背景音樂</strong><small>使用前端合成的輕量 Mock 音樂</small></div><button class="setting-switch" :class="{ active: preferences.musicEnabled }" role="switch" :aria-checked="preferences.musicEnabled" @click="setMusicEnabled(!preferences.musicEnabled); showNotice(preferences.musicEnabled ? '背景音樂已開啟' : '背景音樂已關閉')"><i /></button></div><div class="setting-row"><div><strong>操作音效</strong><small>按鈕操作與狀態完成提示音</small></div><div class="setting-action"><button class="preview-sound" @click="playUiSound">試聽</button><button class="setting-switch" :class="{ active: preferences.soundEnabled }" role="switch" :aria-checked="preferences.soundEnabled" @click="setSoundEnabled(!preferences.soundEnabled); showNotice(preferences.soundEnabled ? '操作音效已開啟' : '操作音效已關閉')"><i /></button></div></div></section>
+
+      <section class="settings-card"><header><span>02</span><div><p>NOTIFICATIONS</p><h2>推播通知</h2></div></header><div class="setting-row"><div><strong>活動與系統推播</strong><small>呈現 APP 相同的開關操作，不連接系統權限</small></div><button class="setting-switch" :class="{ active: preferences.pushEnabled }" role="switch" :aria-checked="preferences.pushEnabled" @click="togglePush"><i /></button></div><div class="push-note">Mock 模式不會向瀏覽器申請真實通知權限。</div></section>
     </div>
 
-    <Transition name="notice">
-      <div v-if="noticeText" class="settings-notice">
-        {{ noticeText }}
-      </div>
-    </Transition>
+    <section class="settings-card wide"><header><span>03</span><div><p>APPEARANCE</p><h2>主題</h2></div></header><div class="theme-grid"><button v-for="theme in themeOptions" :key="theme.key" :class="[`theme-${theme.key}`, { active: preferences.theme === theme.key }]" @click="changeTheme(theme.key)"><i><b /><b /><b /></i><div><strong>{{ theme.label }}</strong><small>{{ theme.description }}</small></div><span>{{ preferences.theme === theme.key ? '使用中' : '套用' }}</span></button></div></section>
 
-    <!-- 設定區塊 -->
-    <div v-for="sec in sections" :key="sec.title" class="card-purple mb-4">
-      <div class="px-4 pt-4 pb-2 text-xs font-bold uppercase tracking-wider"
-           style="color:var(--color-text-muted);">
-        {{ sec.title }}
-      </div>
-      <div
-        v-for="item in sec.items"
-        :key="item.label"
-        class="px-4 py-3 border-t flex items-center justify-between gap-3"
-        style="border-color:rgba(168,85,247,0.1);"
-      >
-        <div>
-          <div class="text-sm font-bold">{{ item.label }}</div>
-          <div class="text-xs mt-0.5" style="color:var(--color-text-muted);">{{ item.desc }}</div>
-        </div>
-        <!-- Toggle switch -->
-        <button
-          class="relative w-12 h-6 rounded-full flex-shrink-0 transition-all duration-200"
-          :style="item.model.value
-            ? 'background:linear-gradient(135deg,var(--color-purple-mid),var(--color-purple));'
-            : 'background:rgba(168,85,247,0.15); border:1px solid rgba(168,85,247,0.25);'"
-          :aria-checked="item.model.value"
-          role="switch"
-          :aria-label="item.label"
-          @click="item.model.value = !item.model.value"
-        >
-          <span
-            class="absolute top-0.5 w-5 h-5 rounded-full transition-all duration-200"
-            :style="item.model.value
-              ? 'left: calc(100% - 22px); background:#fff;'
-              : 'left: 2px; background:rgba(196,181,213,0.5);'"
-          />
-        </button>
-      </div>
-    </div>
+    <section class="settings-card wide"><header><span>04</span><div><p>LANGUAGE FLOW</p><h2>語言</h2></div></header><p class="language-note">本階段只對齊選擇流程，不進行原型多語翻譯。</p><div class="language-grid"><button v-for="language in languages" :key="language.key" :class="{ active: preferences.language === language.key }" @click="changeLanguage(language.key)"><span>{{ language.native }}</span><strong>{{ language.label }}</strong><small>{{ preferences.language === language.key ? '已選擇' : '選擇語言' }}</small></button></div></section>
 
-    <!-- 語言選擇 -->
-    <div class="card-purple mb-4">
-      <div class="px-4 pt-4 pb-2 text-xs font-bold uppercase tracking-wider"
-           style="color:var(--color-text-muted);">
-        語言 / Language
-      </div>
-      <div class="px-4 py-3 border-t flex gap-3" style="border-color:rgba(168,85,247,0.1);">
-        <button
-          v-for="opt in [{ v: 'zh-TW', label: '繁體中文' }, { v: 'en', label: 'English' }]"
-          :key="opt.v"
-          class="flex-1 py-2 rounded-xl text-sm font-bold transition-all"
-          :style="lang === opt.v
-            ? 'background:linear-gradient(135deg,var(--color-purple-mid),var(--color-purple)); color:#fff;'
-            : 'background:rgba(168,85,247,0.1); color:var(--color-text-muted); border:1px solid var(--color-border);'"
-          @click="lang = opt.v as 'zh-TW' | 'en'"
-        >
-          {{ opt.label }}
-        </button>
-      </div>
-    </div>
+    <section class="settings-card wide"><header><span>05</span><div><p>SAFETY</p><h2>黑名單管理</h2></div><b>{{ blockedPlayers.length }} 位</b></header><div v-if="blockedPlayers.length" class="blocked-list"><article v-for="player in blockedPlayers" :key="player.playerId"><span>{{ player.avatar }}</span><div><strong>{{ player.name }}</strong><small>#{{ player.playerId }}</small></div><button @click="handleUnblock(player)">解除封鎖</button></article></div><div v-else class="settings-empty">目前沒有黑名單玩家；可從聊天室玩家卡加入。</div></section>
 
-    <!-- 黑名單管理 -->
-    <section class="blacklist-card mb-4">
-      <div class="blacklist-aurora" aria-hidden="true" />
-      <header class="blacklist-header">
-        <div class="blacklist-title-wrap">
-          <div class="blacklist-icon">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/>
-            </svg>
-          </div>
-          <div>
-            <h2>黑名單管理</h2>
-            <p>已封鎖玩家無法私訊，也無法查看個人資料。</p>
-          </div>
-        </div>
-        <span class="blacklist-pill">{{ blockedPlayers.length }} 位玩家</span>
-      </header>
+    <section class="settings-card wide"><header><span>06</span><div><p>LEGAL & SESSION</p><h2>條款與帳號</h2></div></header><div class="legal-list"><button @click="openLegal('terms')"><div><strong>會員條款</strong><small>查看會員資格與點數規範</small></div><span>查看 →</span></button><button @click="openLegal('privacy')"><div><strong>隱私政策</strong><small>查看本機資料與 Mock 保存方式</small></div><span>查看 →</span></button><button @click="openLegal('service')"><div><strong>平台服務規範</strong><small>查看社群與公平使用規則</small></div><span>查看 →</span></button></div><button class="logout-button" @click="showLogoutConfirm = true">登出目前帳號</button></section>
 
-      <div class="blacklist-body">
-        <div v-if="blockedPlayers.length === 0" class="blacklist-empty">
-          <div class="empty-icon">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-            </svg>
-          </div>
-          <h3>目前沒有黑名單玩家</h3>
-          <p>從聊天玩家資訊彈窗加入黑名單後，玩家會顯示在這裡，並可隨時解除封鎖。</p>
-        </div>
-
-        <div v-else class="blacklist-list">
-          <article
-            v-for="player in blockedPlayers"
-            :key="player.playerId"
-            class="blocked-row"
-          >
-            <div class="blocked-avatar">
-              <span>{{ player.avatar || player.name.charAt(0).toUpperCase() }}</span>
-            </div>
-            <div class="blocked-info">
-              <div class="blocked-main">
-                <h3>{{ player.name }}</h3>
-                <span>已封鎖</span>
-              </div>
-              <div class="blocked-meta">
-                <span>
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5v14"/>
-                  </svg>
-                  {{ player.playerId }}
-                </span>
-                <span>
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2m6-2a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z"/>
-                  </svg>
-                  {{ formatBlockedAt(player.blockedAt) }}
-                </span>
-                <span class="blocked-effect">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728L5.636 5.636"/>
-                  </svg>
-                  私訊與資料查看已停用
-                </span>
-              </div>
-            </div>
-            <button class="unblock-btn" type="button" @click="handleUnblock(player)">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 10.5V6.75a3.75 3.75 0 1 1 7.5 0v3.75M3.75 10.5h10.5A2.25 2.25 0 0 1 16.5 12.75v5.25A2.25 2.25 0 0 1 14.25 20.25H3.75A2.25 2.25 0 0 1 1.5 18v-5.25A2.25 2.25 0 0 1 3.75 10.5Z"/>
-              </svg>
-              解除封鎖
-            </button>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- 版本資訊 -->
-    <div class="card-purple px-4 py-4">
-      <div class="flex justify-between items-center text-sm">
-        <span style="color:var(--color-text-muted);">版本</span>
-        <span class="font-bold" style="color:var(--color-purple-light);">v1.0.0</span>
-      </div>
-      <div class="flex justify-between items-center text-sm mt-3">
-        <span style="color:var(--color-text-muted);">服務條款</span>
-        <span class="font-bold" style="color:var(--color-purple-light);">查看 →</span>
-      </div>
-      <div class="flex justify-between items-center text-sm mt-3">
-        <span style="color:var(--color-text-muted);">隱私政策</span>
-        <span class="font-bold" style="color:var(--color-purple-light);">查看 →</span>
-      </div>
-    </div>
+    <ClientOnly><Teleport to="body"><Transition name="logout-fade"><div v-if="showLogoutConfirm" class="logout-overlay" role="dialog" aria-modal="true" @click.self="showLogoutConfirm = false"><div class="logout-panel"><span>⇥</span><h2>確定要登出？</h2><p>登入與個人資料會從此瀏覽器移除，金融及社交 Mock 也會重置。</p><div><button class="btn-outline-purple" @click="showLogoutConfirm = false">取消</button><button class="logout-confirm" @click="confirmLogout">確認登出</button></div></div></div></Transition></Teleport></ClientOnly>
   </div>
 </template>
 
 <style scoped>
-.settings-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-}
-.settings-subtitle {
-  margin-top: 4px;
-  color: var(--color-text-muted);
-  font-size: 13px;
-}
-.security-count {
-  min-width: 74px;
-  padding: 10px 12px;
-  border: 1px solid rgba(244,63,94,0.28);
-  border-radius: 16px;
-  background: rgba(190,18,60,0.12);
-  text-align: center;
-}
-.security-count span {
-  display: block;
-  color: #fecdd3;
-  font-size: 22px;
-  font-weight: 950;
-  line-height: 1;
-}
-.security-count small {
-  color: rgba(254,205,211,0.72);
-  font-size: 11px;
-  font-weight: 800;
-}
-.settings-notice {
-  position: sticky;
-  top: 10px;
-  z-index: 10;
-  margin-bottom: 12px;
-  padding: 10px 14px;
-  color: #d1fae5;
-  background: rgba(6,78,59,0.88);
-  border: 1px solid rgba(52,211,153,0.34);
-  border-radius: 999px;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 900;
-  box-shadow: 0 14px 34px rgba(0,0,0,0.28);
-}
-.notice-enter-active,
-.notice-leave-active {
-  transition: opacity 0.18s ease, transform 0.18s ease;
-}
-.notice-enter-from,
-.notice-leave-to {
-  opacity: 0;
-  transform: translateY(-8px);
-}
-.blacklist-card {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(180deg, rgba(26,10,46,0.98), rgba(16,5,31,0.98));
-  border: 1px solid rgba(168,85,247,0.22);
-  border-radius: 22px;
-  box-shadow: 0 18px 50px rgba(0,0,0,0.26);
-}
-.blacklist-aurora {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 4% 0%, rgba(244,63,94,0.24), transparent 30%),
-    radial-gradient(circle at 96% 0%, rgba(245,200,66,0.12), transparent 32%);
-}
-.blacklist-header {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 18px 18px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-.blacklist-title-wrap {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.blacklist-icon {
-  width: 48px;
-  height: 48px;
-  display: grid;
-  place-items: center;
-  color: #fecdd3;
-  background: rgba(244,63,94,0.14);
-  border: 1px solid rgba(252,165,165,0.25);
-  border-radius: 16px;
-}
-.blacklist-header h2,
-.blacklist-empty h3,
-.blocked-main h3 {
-  margin: 0;
-  color: #fff;
-  font-weight: 950;
-}
-.blacklist-header h2 {
-  font-size: 20px;
-}
-.blacklist-header p {
-  margin: 4px 0 0;
-  color: var(--color-text-muted);
-  font-size: 12px;
-  line-height: 1.5;
-}
-.blacklist-pill {
-  flex-shrink: 0;
-  padding: 6px 12px;
-  color: rgba(243,232,255,0.88);
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 950;
-}
-.blacklist-body {
-  position: relative;
-  padding: 16px;
-}
-.blacklist-empty {
-  min-height: 220px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.09);
-  border-radius: 18px;
-  text-align: center;
-}
-.empty-icon {
-  width: 64px;
-  height: 64px;
-  display: grid;
-  place-items: center;
-  margin-bottom: 14px;
-  color: #a7f3d0;
-  background: rgba(52,211,153,0.1);
-  border: 1px solid rgba(110,231,183,0.25);
-  border-radius: 999px;
-}
-.blacklist-empty p {
-  max-width: 420px;
-  margin: 8px 0 0;
-  color: var(--color-text-muted);
-  font-size: 13px;
-  line-height: 1.7;
-}
-.blacklist-list {
-  display: grid;
-  gap: 12px;
-}
-.blocked-row {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 14px;
-  padding: 14px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 18px;
-  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
-}
-.blocked-row:hover {
-  transform: translateY(-1px);
-  background: rgba(255,255,255,0.07);
-  border-color: rgba(252,165,165,0.32);
-}
-.blocked-avatar {
-  width: 54px;
-  height: 54px;
-  display: grid;
-  place-items: center;
-  background: linear-gradient(135deg, rgba(168,85,247,0.22), rgba(244,63,94,0.16));
-  border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 18px;
-  box-shadow: 0 12px 24px rgba(0,0,0,0.22);
-}
-.blocked-avatar span {
-  font-size: 22px;
-  font-weight: 950;
-}
-.blocked-info {
-  min-width: 0;
-}
-.blocked-main {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.blocked-main h3 {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 16px;
-}
-.blocked-main span {
-  padding: 3px 8px;
-  color: #fecdd3;
-  background: rgba(244,63,94,0.12);
-  border: 1px solid rgba(244,63,94,0.26);
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 950;
-}
-.blocked-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 14px;
-  margin-top: 8px;
-  color: var(--color-text-muted);
-  font-size: 12px;
-  font-weight: 800;
-}
-.blocked-meta span {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
-.blocked-meta svg {
-  color: var(--color-gold);
-}
-.blocked-meta .blocked-effect {
-  color: rgba(254,205,211,0.82);
-}
-.blocked-meta .blocked-effect svg {
-  color: #fb7185;
-}
-.unblock-btn {
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 0 14px;
-  color: #d1fae5;
-  background: rgba(16,185,129,0.11);
-  border: 1px solid rgba(110,231,183,0.28);
-  border-radius: 14px;
-  font-size: 12px;
-  font-weight: 950;
-  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
-}
-.unblock-btn:hover {
-  transform: translateY(-1px);
-  background: rgba(16,185,129,0.18);
-  border-color: rgba(167,243,208,0.46);
-}
-@media (max-width: 680px) {
-  .settings-header,
-  .blacklist-header {
-    align-items: stretch;
-    flex-direction: column;
-  }
-  .security-count {
-    align-self: flex-start;
-  }
-  .blacklist-pill {
-    align-self: flex-start;
-  }
-  .blocked-row {
-    grid-template-columns: auto 1fr;
-  }
-  .unblock-btn {
-    grid-column: 1 / -1;
-    width: 100%;
-  }
-}
+.settings-page{max-width:1040px;margin:0 auto}.settings-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:16px}.settings-hero p,.settings-card header p{margin:0;color:var(--color-gold);font-size:8px;font-weight:900;letter-spacing:.18em}.settings-hero h1{margin:3px 0;font-size:29px}.settings-hero>div>span{color:var(--color-text-muted);font-size:10px}.settings-status{display:flex;align-items:center;gap:10px;padding:10px 13px;border:1px solid var(--color-border);border-radius:13px;background:rgba(168,85,247,.07)}.settings-status>span{display:grid;width:32px;height:32px;place-items:center;border-radius:9px;color:#1b0a25;background:var(--color-gold);font-size:10px;font-weight:900}.settings-status div{display:flex;flex-direction:column}.settings-status strong{font-size:10px}.settings-status small{color:var(--color-text-muted);font-size:8px}.settings-notice{padding:9px 12px;border:1px solid rgba(74,222,128,.25);border-radius:9px;color:#86efac;background:rgba(74,222,128,.08);font-size:10px}.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.settings-card{padding:18px;margin-bottom:12px;border:1px solid var(--color-border);border-radius:17px;background:rgba(26,10,46,.68)}.settings-card header{display:flex;align-items:center;gap:10px;margin-bottom:12px}.settings-card header>span{display:grid;width:29px;height:29px;place-items:center;border-radius:9px;color:var(--color-purple-light);background:rgba(168,85,247,.1);font-size:8px;font-weight:900}.settings-card header h2{margin:2px 0;font-size:16px}.settings-card header>b{margin-left:auto;padding:4px 8px;border-radius:99px;color:#fca5a5;background:rgba(248,113,113,.08);font-size:8px}.setting-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-top:1px solid rgba(255,255,255,.06)}.setting-row>div:first-child{display:flex;flex-direction:column}.setting-row strong{font-size:10px}.setting-row small,.push-note,.language-note{color:var(--color-text-muted);font-size:8px}.setting-action{display:flex;align-items:center;gap:8px}.preview-sound{color:var(--color-purple-light);font-size:8px}.setting-switch{position:relative;width:43px;height:23px;border-radius:99px;background:rgba(148,163,184,.18)}.setting-switch i{position:absolute;left:3px;top:3px;width:17px;height:17px;border-radius:50%;background:#94a3b8;transition:.2s}.setting-switch.active{background:linear-gradient(90deg,#7c3aed,#a855f7)}.setting-switch.active i{left:23px;background:#fff}.push-note{padding:10px;border-radius:9px;background:rgba(168,85,247,.06)}.wide{width:100%}.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.theme-grid>button{display:grid;grid-template-columns:75px 1fr auto;align-items:center;gap:12px;padding:12px;border:1px solid var(--color-border);border-radius:13px;color:var(--color-text);background:rgba(0,0,0,.12);text-align:left}.theme-grid>button.active{border-color:var(--color-gold)}.theme-grid i{display:flex;height:48px;align-items:flex-end;gap:4px;padding:8px;border-radius:8px;background:#120423}.theme-light i{background:#f4e9ff}.theme-grid i b{width:18px;height:16px;border-radius:3px;background:#7c3aed}.theme-grid i b:nth-child(2){height:28px;background:#f5c842}.theme-grid i b:nth-child(3){height:22px;background:#a855f7}.theme-grid>button>div{display:flex;flex-direction:column}.theme-grid strong{font-size:11px}.theme-grid small{color:var(--color-text-muted);font-size:8px}.theme-grid>button>span{color:var(--color-gold);font-size:8px}.language-note{margin:-5px 0 12px}.language-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.language-grid button{display:grid;grid-template-columns:36px 1fr;gap:0 9px;padding:12px;border:1px solid var(--color-border);border-radius:12px;color:var(--color-text);background:rgba(0,0,0,.1);text-align:left}.language-grid button>span{grid-row:1/3;display:grid;width:34px;height:34px;place-items:center;border-radius:9px;color:var(--color-purple-light);background:rgba(168,85,247,.1);font-size:9px;font-weight:900}.language-grid strong{font-size:10px}.language-grid small{color:var(--color-text-muted);font-size:8px}.language-grid button.active{border-color:var(--color-gold);background:rgba(245,200,66,.06)}.language-grid button.active>span{color:#1b0a25;background:var(--color-gold)}.blocked-list{display:grid;gap:7px}.blocked-list article{display:grid;grid-template-columns:36px 1fr auto;align-items:center;gap:9px;padding:9px;border:1px solid rgba(255,255,255,.06);border-radius:10px}.blocked-list article>span{display:grid;width:34px;height:34px;place-items:center;border-radius:50%;background:rgba(168,85,247,.1)}.blocked-list article>div{display:flex;flex-direction:column}.blocked-list strong{font-size:10px}.blocked-list small{color:var(--color-text-muted);font-size:8px}.blocked-list button{color:#fca5a5;font-size:8px;font-weight:800}.settings-empty{padding:28px;border:1px dashed var(--color-border);border-radius:11px;color:var(--color-text-muted);text-align:center;font-size:9px}.legal-list{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.legal-list button{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px;border:1px solid rgba(255,255,255,.06);border-radius:11px;color:var(--color-text);background:rgba(0,0,0,.1);text-align:left}.legal-list button div{display:flex;flex-direction:column}.legal-list strong{font-size:10px}.legal-list small{color:var(--color-text-muted);font-size:8px}.legal-list button>span{color:var(--color-purple-light);font-size:8px}.logout-button{width:100%;padding:10px;margin-top:10px;border:1px solid rgba(248,113,113,.22);border-radius:10px;color:#fca5a5;background:rgba(248,113,113,.06);font-size:9px;font-weight:900}.logout-fade-enter-active,.logout-fade-leave-active{transition:opacity .2s}.logout-fade-enter-from,.logout-fade-leave-to{opacity:0}.logout-overlay{position:fixed;inset:0;z-index:1090;display:grid;place-items:center;padding:18px;background:rgba(5,0,15,.86);backdrop-filter:blur(10px)}.logout-panel{width:min(390px,100%);padding:26px;border:1px solid rgba(248,113,113,.25);border-radius:20px;background:linear-gradient(155deg,#21103a,#10051f);text-align:center}.logout-panel>span{font-size:35px}.logout-panel h2{margin:8px 0;font-size:21px}.logout-panel p{color:var(--color-text-muted);font-size:10px;line-height:1.7}.logout-panel>div{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:17px}.logout-panel>div>*{justify-content:center}.logout-confirm{border-radius:10px;color:#fff;background:#be123c;font-size:10px;font-weight:900}
+@media(max-width:700px){.settings-grid,.theme-grid{grid-template-columns:1fr}.language-grid{grid-template-columns:1fr}.legal-list{grid-template-columns:1fr}.settings-hero{align-items:flex-start;flex-direction:column}.settings-status{align-self:stretch}.settings-card{padding:15px}}
 </style>

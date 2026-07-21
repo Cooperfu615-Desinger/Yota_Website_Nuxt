@@ -236,6 +236,7 @@ function getDayState(day: number): DayState {
     </template>
 
     <!-- ── 補簽確認 Modal ── -->
+    <ClientOnly>
     <Teleport to="body">
       <Transition name="modal-fade">
         <div
@@ -272,6 +273,7 @@ function getDayState(day: number): DayState {
         </div>
       </Transition>
     </Teleport>
+    </ClientOnly>
 
   </div>
 </template>
