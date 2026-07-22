@@ -96,7 +96,7 @@ function getDayState(day: number): DayState {
       <!-- ── 標題列 ── -->
       <div class="flex items-center justify-between mb-5">
         <div>
-          <h1 class="text-xl font-black" style="color:var(--color-gold);">每日任務</h1>
+          <h1 class="section-title">每日任務</h1>
           <p class="text-xs mt-0.5" style="color:var(--color-text-muted);">{{ monthLabel }} · 已簽 {{ totalCheckins }} 天</p>
         </div>
         <!-- 今日簽到按鈕 -->
