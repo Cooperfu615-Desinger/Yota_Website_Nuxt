@@ -1,2 +1,2 @@
 <script setup lang="ts">definePageMeta({ layout: 'lobby' })</script>
-<template><LobbyMailboxContent mode="gifts" /></template>
+<template><LobbyRewardCardContent /></template>

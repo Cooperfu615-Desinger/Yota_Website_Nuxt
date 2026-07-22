@@ -5,9 +5,6 @@ export interface InboxMessage {
   id: number; title: string; preview: string; body: string; time: string; read: boolean
   type: 'system' | 'event' | 'deposit'; reward?: MailReward
 }
-export interface GiftCenterItem {
-  id: number; title: string; description: string; sender: string; expiresAt: string; claimed: boolean; rewards: MailReward[]
-}
 
 function initialMessages(): InboxMessage[] {
   return [
@@ -18,17 +15,8 @@ function initialMessages(): InboxMessage[] {
   ]
 }
 
-function initialGifts(): GiftCenterItem[] {
-  return [
-    { id: 1, title: '新會員迎賓禮', description: '完成首次登入即可領取三幣迎賓獎勵。', sender: '巨亨 ONLINE', expiresAt: '2026/08/31', claimed: false, rewards: [{ wallet: 'gold', amount: 30000, label: '金幣 30,000', claimed: false }, { wallet: 'silver', amount: 10000, label: '銀幣 10,000', claimed: false }, { wallet: 'bronze', amount: 10000, label: '銅幣 10,000', claimed: false }] },
-    { id: 2, title: '好友同樂禮', description: '社群功能開放紀念禮物。', sender: '社群小幫手', expiresAt: '2026/09/15', claimed: false, rewards: [{ wallet: 'gold', amount: 50000, label: '金幣 50,000', claimed: false }] },
-    { id: 3, title: '週末彩金補給', description: '週末限定補給已領取。', sender: '活動中心', expiresAt: '2026/07/20', claimed: true, rewards: [{ wallet: 'gold', amount: 20000, label: '金幣 20,000', claimed: true }] },
-  ]
-}
-
 export const useMailboxState = () => {
   const messages = useState<InboxMessage[]>('mailboxMessages', initialMessages)
-  const gifts = useState<GiftCenterItem[]>('giftCenterItems', initialGifts)
   const { addWalletReward } = useFinancialState()
 
   function markRead(id: number) { const item = messages.value.find(message => message.id === id); if (item) item.read = true }
@@ -44,28 +32,5 @@ export const useMailboxState = () => {
     return true
   }
 
-  function claimAllMailRewards() {
-    let count = 0
-    messages.value.forEach(message => { if (claimMailReward(message.id)) count += 1 })
-    return count
-  }
-
-  function claimGift(id: number) {
-    const gift = gifts.value.find(item => item.id === id)
-    if (!gift || gift.claimed) return false
-    gift.rewards.forEach(reward => {
-      if (!reward.claimed) addWalletReward(reward.wallet, reward.amount, '獎勵卡領取', gift.title)
-      reward.claimed = true
-    })
-    gift.claimed = true
-    return true
-  }
-
-  function claimAllGifts() {
-    let count = 0
-    gifts.value.forEach(gift => { if (claimGift(gift.id)) count += 1 })
-    return count
-  }
-
-  return { messages, gifts, markRead, markAllRead, deleteMessage, deleteReadMessages, claimMailReward, claimAllMailRewards, claimGift, claimAllGifts }
+  return { messages, markRead, markAllRead, deleteMessage, deleteReadMessages, claimMailReward }
 }

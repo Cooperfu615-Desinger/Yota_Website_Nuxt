@@ -1,19 +1,14 @@
 <script setup lang="ts">
 import type { InboxMessage } from '~/composables/useMailboxState'
 
-const props = withDefaults(defineProps<{ mode?: 'inbox' | 'gifts' }>(), { mode: 'inbox' })
 const route = useRoute()
 const { isLoggedIn, openLogin } = useAppState()
-const { messages, gifts, markRead, markAllRead, deleteMessage, deleteReadMessages, claimMailReward, claimGift, claimAllGifts } = useMailboxState()
-const isInbox = computed(() => props.mode === 'inbox')
-const pageTitle = computed(() => isInbox.value ? '信箱' : '獎勵卡')
-const pageDescription = computed(() => isInbox.value ? '查看系統訊息與領取信件附件' : '查看並領取目前可用的獎勵卡')
+const { messages, markRead, markAllRead, deleteMessage, deleteReadMessages, claimMailReward } = useMailboxState()
 const selectedMessage = ref<InboxMessage | null>(null)
 const filter = ref<'all' | 'system' | 'event'>('all')
 const loadingKey = ref('')
 const notice = ref('')
 const filteredMessages = computed(() => filter.value === 'all' ? messages.value : messages.value.filter(message => message.type === filter.value))
-const unclaimedGiftCount = computed(() => gifts.value.filter(gift => !gift.claimed).length)
 const typeLabel = { system: '系統通知', event: '營運公告', deposit: '帳務' }
 const walletSymbol = { gold: '金', silver: '銀', bronze: '銅' }
 
@@ -30,22 +25,15 @@ async function runMock(key: string, action: () => number | boolean, successText:
 
 <template>
   <div class="lobby-page mailbox-page px-4 py-5">
-    <template v-if="!isLoggedIn"><div class="card-purple p-8 text-center max-w-sm mx-auto mt-8"><div class="text-5xl mb-4">{{ isInbox ? '📬' : '🎁' }}</div><h1 class="text-xl font-black mb-2">{{ pageTitle }}</h1><p class="text-sm mb-5" style="color:var(--color-text-muted);">登入後即可{{ pageDescription }}</p><button class="btn-gold w-full justify-center" @click="openLogin(route.fullPath)">立即登入 / 註冊</button></div></template>
+    <template v-if="!isLoggedIn"><div class="card-purple p-8 text-center max-w-sm mx-auto mt-8"><div class="text-5xl mb-4">📬</div><h1 class="text-xl font-black mb-2">信箱</h1><p class="text-sm mb-5" style="color:var(--color-text-muted);">登入後即可查看系統訊息與領取信件附件</p><button class="btn-gold w-full justify-center" @click="openLogin(route.fullPath)">立即登入 / 註冊</button></div></template>
     <template v-else>
-      <h1 class="section-title mb-4">{{ pageTitle }}</h1>
+      <h1 class="section-title mb-4">信箱</h1>
       <p v-if="notice" class="mail-notice" aria-live="polite">{{ notice }}</p>
 
-      <template v-if="isInbox">
-        <div class="mail-toolbar"><div><button v-for="item in ([['all','全部'],['event','營運公告'],['system','系統通知']] as const)" :key="item[0]" :class="{ active: filter === item[0] }" @click="filter = item[0]">{{ item[1] }}</button></div><div><button @click="markAllRead(); notice = '全部信件已標示為已讀'">全部已讀</button><button @click="deleteReadMessages(); selectedMessage = null; notice = '已讀信件已刪除'">刪除已讀</button></div></div>
-        <div class="mail-layout"><section class="mail-list"><button v-for="message in filteredMessages" :key="message.id" class="mail-row" :class="{ read: message.read, active: selectedMessage?.id === message.id }" @click="openMessage(message)"><i /><div><div><span>{{ typeLabel[message.type] }}</span><time>{{ message.time }}</time></div><strong>{{ message.title }}</strong><p>{{ message.preview }}</p><small v-if="message.reward" :class="{ claimed: message.reward.claimed }">{{ message.reward.claimed ? '附件已領取' : `附件：${message.reward.label}` }}</small></div></button><div v-if="!filteredMessages.length" class="mail-empty">目前沒有信件</div></section>
-          <aside class="mail-detail" :class="{ open: selectedMessage }"><template v-if="selectedMessage"><button class="detail-close" @click="selectedMessage = null">×</button><p>{{ typeLabel[selectedMessage.type] }}・{{ selectedMessage.time }}</p><h2>{{ selectedMessage.title }}</h2><div class="detail-body">{{ selectedMessage.body }}</div><div v-if="selectedMessage.reward" class="mail-attachment"><span>{{ walletSymbol[selectedMessage.reward.wallet] }}</span><div><strong>{{ selectedMessage.reward.label }}</strong><small>{{ selectedMessage.reward.claimed ? '已完成領取' : '領取後立即加入錢包' }}</small></div><button :disabled="selectedMessage.reward.claimed || loadingKey === `mail-${selectedMessage.id}`" @click="runMock(`mail-${selectedMessage.id}`, () => claimMailReward(selectedMessage.id), '附件已領取並更新餘額')">{{ loadingKey === `mail-${selectedMessage.id}` ? '領取中…' : selectedMessage.reward.claimed ? '已領取' : '領取' }}</button></div><button class="delete-mail" @click="removeSelectedMessage">刪除此信件</button></template><div v-else class="detail-empty"><span>✉</span><strong>選擇一封信件</strong><small>內容與附件會顯示在這裡</small></div></aside>
-        </div>
-      </template>
-
-      <template v-else>
-        <div class="gift-toolbar"><div><p>AVAILABLE REWARD CARDS</p><h2>待領獎勵</h2></div><button class="btn-gold" :disabled="!unclaimedGiftCount || loadingKey === 'gift-all'" @click="runMock('gift-all', claimAllGifts, '全部獎勵已領取並更新餘額')">{{ loadingKey === 'gift-all' ? '領取中…' : `全部領取 (${unclaimedGiftCount})` }}</button></div>
-        <div class="gift-grid"><article v-for="gift in gifts" :key="gift.id" class="gift-card" :class="{ claimed: gift.claimed }"><div class="gift-mark">獎</div><div class="gift-copy"><small>FROM {{ gift.sender }}</small><h3>{{ gift.title }}</h3><p>{{ gift.description }}</p><div class="gift-rewards"><span v-for="reward in gift.rewards" :key="reward.label">{{ reward.label }}</span></div><time>有效期限 {{ gift.expiresAt }}</time></div><button :disabled="gift.claimed || loadingKey === `gift-${gift.id}`" @click="runMock(`gift-${gift.id}`, () => claimGift(gift.id), `${gift.title}已領取並更新餘額`)">{{ loadingKey === `gift-${gift.id}` ? '領取中…' : gift.claimed ? '已領取' : '領取獎勵' }}</button></article></div>
-      </template>
+      <div class="mail-toolbar"><div><button v-for="item in ([['all','全部'],['event','營運公告'],['system','系統通知']] as const)" :key="item[0]" :class="{ active: filter === item[0] }" @click="filter = item[0]">{{ item[1] }}</button></div><div><button @click="markAllRead(); notice = '全部信件已標示為已讀'">全部已讀</button><button @click="deleteReadMessages(); selectedMessage = null; notice = '已讀信件已刪除'">刪除已讀</button></div></div>
+      <div class="mail-layout"><section class="mail-list"><button v-for="message in filteredMessages" :key="message.id" class="mail-row" :class="{ read: message.read, active: selectedMessage?.id === message.id }" @click="openMessage(message)"><i /><div><div><span>{{ typeLabel[message.type] }}</span><time>{{ message.time }}</time></div><strong>{{ message.title }}</strong><p>{{ message.preview }}</p><small v-if="message.reward" :class="{ claimed: message.reward.claimed }">{{ message.reward.claimed ? '附件已領取' : `附件：${message.reward.label}` }}</small></div></button><div v-if="!filteredMessages.length" class="mail-empty">目前沒有信件</div></section>
+        <aside class="mail-detail" :class="{ open: selectedMessage }"><template v-if="selectedMessage"><button class="detail-close" @click="selectedMessage = null">×</button><p>{{ typeLabel[selectedMessage.type] }}・{{ selectedMessage.time }}</p><h2>{{ selectedMessage.title }}</h2><div class="detail-body">{{ selectedMessage.body }}</div><div v-if="selectedMessage.reward" class="mail-attachment"><span>{{ walletSymbol[selectedMessage.reward.wallet] }}</span><div><strong>{{ selectedMessage.reward.label }}</strong><small>{{ selectedMessage.reward.claimed ? '已完成領取' : '領取後立即加入錢包' }}</small></div><button :disabled="selectedMessage.reward.claimed || loadingKey === `mail-${selectedMessage.id}`" @click="runMock(`mail-${selectedMessage.id}`, () => claimMailReward(selectedMessage.id), '附件已領取並更新餘額')">{{ loadingKey === `mail-${selectedMessage.id}` ? '領取中…' : selectedMessage.reward.claimed ? '已領取' : '領取' }}</button></div><button class="delete-mail" @click="removeSelectedMessage">刪除此信件</button></template><div v-else class="detail-empty"><span>✉</span><strong>選擇一封信件</strong><small>內容與附件會顯示在這裡</small></div></aside>
+      </div>
     </template>
   </div>
 </template>

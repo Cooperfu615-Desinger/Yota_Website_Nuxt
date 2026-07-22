@@ -1,8 +1,10 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'lobby' })
 import { siteContent } from '~/data/siteContent'
+import type { RewardCardDefinition } from '~/composables/useRewardCardState'
 
-const { isLoggedIn, openLogin, userInfo } = useAppState()
+const { isLoggedIn, openLogin } = useAppState()
+const { getDefinitionByMilestone, claimRewardCard } = useRewardCardState()
 
 // ── 日期計算 ──────────────────────────────────────────
 const now         = new Date()
@@ -15,7 +17,7 @@ const monthLabel  = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(
 const checkedDays    = useState<number[]>('daily-checked', () =>
   [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19,20,21,22])
 // 已領取的里程碑（天數）
-const claimedMilestones = useState<number[]>('daily-claimed', () => [5, 7, 10, 15, 20])
+const claimedMilestones = useState<number[]>('daily-claimed', () => [5, 7, 10])
 
 // ── 計算屬性 ───────────────────────────────────────────
 const todayChecked   = computed(() => checkedDays.value.includes(today))
@@ -27,7 +29,9 @@ const missedDays = computed(() =>
     .filter(d => !checkedDays.value.includes(d))
 )
 
-const { milestones, dailyRewards, makeupCostPerDay } = siteContent.dailyCheckin
+const { milestones, makeupCostPerDay } = siteContent.dailyCheckin
+const pendingReward = ref<RewardCardDefinition | null>(null)
+const rewardClaimed = ref(false)
 
 function milestoneLeft(days: number) {
   return `calc(${(days / 30) * 100}% - 20px)`
@@ -35,6 +39,14 @@ function milestoneLeft(days: number) {
 
 function isMilestoneReached(days: number)  { return totalCheckins.value >= days }
 function isMilestoneClaimed(days: number)  { return claimedMilestones.value.includes(days) }
+function rewardCardForMilestone(days: number) { return getDefinitionByMilestone(days) }
+
+function milestoneAccessibleLabel(days: number) {
+  const reward = rewardCardForMilestone(days)
+  const rewardText = reward ? `${reward.title} ${reward.amount.toLocaleString()}` : `${days}天里程碑`
+  const status = isMilestoneClaimed(days) ? '（已領取）' : isMilestoneReached(days) ? '（可領取）' : ''
+  return `${days}天里程碑：${rewardText}${status}`
+}
 
 // ── 行為 ───────────────────────────────────────────────
 function handleCheckin() {
@@ -46,8 +58,27 @@ function handleCheckin() {
 
 function claimMilestone(days: number) {
   if (!isMilestoneReached(days) || isMilestoneClaimed(days)) return
+  const reward = rewardCardForMilestone(days)
+  if (reward) {
+    pendingReward.value = reward
+    rewardClaimed.value = false
+    return
+  }
   claimedMilestones.value = [...claimedMilestones.value, days]
   // TODO: 串接後端領獎 API
+}
+
+function confirmRewardClaim() {
+  if (!pendingReward.value) return
+  const card = claimRewardCard(pendingReward.value.milestoneDay)
+  if (!card) return
+  claimedMilestones.value = [...claimedMilestones.value, pendingReward.value.milestoneDay]
+  rewardClaimed.value = true
+}
+
+function closeRewardClaim() {
+  pendingReward.value = null
+  rewardClaimed.value = false
 }
 
 // 補簽確認
@@ -138,7 +169,7 @@ function getDayState(day: number): DayState {
               'node-claimable': isMilestoneReached(m.days) && !isMilestoneClaimed(m.days),
             }"
             :style="{ left: milestoneLeft(m.days) }"
-            :aria-label="`${m.days}天里程碑：${m.reward}${isMilestoneClaimed(m.days) ? '（已領取）' : isMilestoneReached(m.days) ? '（可領取）' : ''}`"
+            :aria-label="milestoneAccessibleLabel(m.days)"
             :disabled="!isMilestoneReached(m.days) || isMilestoneClaimed(m.days)"
             @click="claimMilestone(m.days)"
           >
@@ -155,7 +186,10 @@ function getDayState(day: number): DayState {
               :class="{ 'label-reached': isMilestoneReached(m.days) }"
             >
               <div>{{ m.days }}天</div>
-              <div class="milestone-reward">{{ m.reward }}</div>
+              <template v-if="rewardCardForMilestone(m.days)">
+                <div class="milestone-reward">{{ rewardCardForMilestone(m.days)?.title }}</div>
+                <div class="milestone-amount">{{ rewardCardForMilestone(m.days)?.amount.toLocaleString() }}</div>
+              </template>
             </div>
           </div>
         </div>
@@ -197,9 +231,7 @@ function getDayState(day: number): DayState {
               <template v-else-if="getDayState(day) === 'today-done'">✅</template>
               <template v-else-if="getDayState(day) === 'today-pending'">📅</template>
               <template v-else-if="getDayState(day) === 'missed'">補</template>
-              <template v-else>
-                <span style="font-size:9px; color:var(--color-text-muted);">NT${{ dailyRewards[day - 1] }}</span>
-              </template>
+              <template v-else>·</template>
             </span>
           </button>
         </div>
@@ -273,6 +305,50 @@ function getDayState(day: number): DayState {
         </div>
       </Transition>
     </Teleport>
+    </ClientOnly>
+
+    <!-- ── 獎勵卡領取 Modal ── -->
+    <ClientOnly>
+      <Teleport to="body">
+        <Transition name="modal-fade">
+          <div
+            v-if="pendingReward"
+            class="modal-overlay"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="daily-reward-title"
+            @click.self="closeRewardClaim"
+          >
+            <div class="modal-box reward-claim-modal">
+              <div class="modal-inner text-center">
+                <template v-if="!rewardClaimed">
+                  <div class="reward-claim-mark" :class="pendingReward.currency === 'activity-gold' ? 'mark-gold' : 'mark-silver'" aria-hidden="true">
+                    {{ pendingReward.currency === 'activity-gold' ? '金' : '銀' }}
+                  </div>
+                  <p class="reward-claim-kicker">DAY {{ pendingReward.milestoneDay }} REWARD CARD</p>
+                  <h2 id="daily-reward-title">{{ pendingReward.title }} {{ pendingReward.amount.toLocaleString() }}</h2>
+                  <div class="reward-claim-rate">獎勵卡專屬返水 <strong>{{ pendingReward.rebateRate }}%</strong></div>
+                  <p class="reward-claim-copy">領取後可前往獎勵卡頁面啟用；啟用前不會加入活動錢包。</p>
+                  <div class="reward-claim-actions">
+                    <button class="btn-outline-purple" @click="closeRewardClaim">取消</button>
+                    <button class="btn-gold" @click="confirmRewardClaim">領取</button>
+                  </div>
+                </template>
+                <template v-else>
+                  <div class="reward-success-mark" aria-hidden="true">✓</div>
+                  <p class="reward-claim-kicker">REWARD RECEIVED</p>
+                  <h2 id="daily-reward-title">已領取獎勵卡</h2>
+                  <p class="reward-claim-copy">{{ pendingReward.title }} {{ pendingReward.amount.toLocaleString() }} 已加入獎勵卡。</p>
+                  <div class="reward-claim-actions">
+                    <button class="btn-outline-purple" @click="closeRewardClaim">完成</button>
+                    <NuxtLink to="/lobby/gifts" class="btn-gold" @click="closeRewardClaim">前往獎勵卡</NuxtLink>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+        </Transition>
+      </Teleport>
     </ClientOnly>
 
   </div>
@@ -374,10 +450,12 @@ function getDayState(day: number): DayState {
 }
 .label-reached { color: var(--color-gold); }
 .milestone-reward {
-  font-size: 10px;
-  color: var(--color-text-muted);
   margin-top: 1px;
+  color: var(--color-purple-light);
+  font-size: 8px;
+  font-weight: 800;
 }
+.milestone-amount { color: var(--color-text); font-size: 9px; font-weight: 900; }
 
 /* ── 圖例 ── */
 .legend-dot {
@@ -449,6 +527,31 @@ function getDayState(day: number): DayState {
 }
 
 .cell-future { opacity: 0.35; }
+
+/* ── 獎勵卡領取 ── */
+.reward-claim-modal { max-width: 390px; }
+.reward-claim-mark {
+  display: grid;
+  width: 64px;
+  height: 64px;
+  place-items: center;
+  margin: 0 auto 14px;
+  border-radius: 19px;
+  color: #211026;
+  font-size: 18px;
+  font-weight: 1000;
+  box-shadow: 0 10px 30px rgba(0,0,0,.24);
+}
+.mark-gold { border: 1px solid rgba(245,200,66,.6); background: linear-gradient(145deg,#fde68a,#f5c842); }
+.mark-silver { border: 1px solid rgba(215,226,240,.65); background: linear-gradient(145deg,#f8fbff,#b8cce4); }
+.reward-claim-kicker { margin: 0 0 5px; color: var(--color-gold); font-size: 9px; font-weight: 900; letter-spacing: .15em; }
+.reward-claim-modal h2 { margin: 0 0 13px; font-size: 21px; }
+.reward-claim-rate { padding: 11px; border: 1px solid rgba(168,85,247,.22); border-radius: 12px; color: var(--color-text-muted); background: rgba(168,85,247,.08); font-size: 11px; }
+.reward-claim-rate strong { margin-left: 5px; color: var(--color-gold); font-size: 17px; }
+.reward-claim-copy { margin: 13px 0 18px; color: var(--color-text-muted); font-size: 10px; line-height: 1.7; }
+.reward-claim-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.reward-claim-actions .btn-gold,.reward-claim-actions .btn-outline-purple { justify-content: center; }
+.reward-success-mark { display:grid; width:64px; height:64px; place-items:center; margin:0 auto 14px; border-radius:50%; color:#092014; background:#4ade80; font-size:28px; font-weight:900; box-shadow:0 0 24px rgba(74,222,128,.28); }
 
 /* ── 補簽日期 chip ── */
 .makeup-day-chip {
