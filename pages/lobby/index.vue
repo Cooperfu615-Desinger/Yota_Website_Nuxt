@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { GameWalletKey } from '~/utils/gameWallets'
+
 definePageMeta({ layout: 'lobby' })
 
 const route = useRoute()
@@ -7,53 +9,55 @@ const { isLoggedIn, openLogin, closeLogin } = useAppState()
 
 const currentGameKey = ref<string | null>(null)
 const currentGameMode = ref<'real' | 'demo'>('real')
-const currentMachineId = ref<string | null>(null)
+const currentGameWallet = ref<GameWalletKey | null>(null)
 const launchGameKey = ref<string | null>(null)
-const launchMode = ref<'real' | 'demo'>('real')
-const showSeatSelection = ref(false)
 
 function clearLaunch() {
   launchGameKey.value = null
-  showSeatSelection.value = false
 }
 
 function requestLaunch(key: string, mode: 'real' | 'demo') {
+  if (mode === 'demo') {
+    currentGameKey.value = key
+    currentGameMode.value = 'demo'
+    currentGameWallet.value = null
+    clearLaunch()
+    return
+  }
   if (mode === 'real' && !isLoggedIn.value) {
     openLogin(`/lobby?game=${encodeURIComponent(key)}&mode=real`)
     return
   }
   launchGameKey.value = key
-  launchMode.value = mode
-  showSeatSelection.value = false
 }
 
-function startGame(machineId?: string) {
+function startRealGame(wallet: GameWalletKey) {
   if (!launchGameKey.value) return
   currentGameKey.value = launchGameKey.value
-  currentGameMode.value = launchMode.value
-  currentMachineId.value = machineId || null
+  currentGameMode.value = 'real'
+  currentGameWallet.value = wallet
   clearLaunch()
-}
-
-function openSeats() {
-  showSeatSelection.value = true
-}
-
-function backToLaunch() {
-  showSeatSelection.value = false
 }
 
 function closeGame() {
   currentGameKey.value = null
-  currentMachineId.value = null
+  currentGameWallet.value = null
+  clearLaunch()
 }
 
 function switchMode(mode: 'real' | 'demo') {
-  if (mode === 'real' && !isLoggedIn.value) {
+  if (mode === 'demo') {
+    currentGameMode.value = 'demo'
+    currentGameWallet.value = null
+    clearLaunch()
+    return
+  }
+  if (currentGameMode.value === 'real') return
+  if (!isLoggedIn.value) {
     openLogin(currentGameKey.value ? `/lobby?game=${encodeURIComponent(currentGameKey.value)}&mode=real` : '/lobby')
     return
   }
-  currentGameMode.value = mode
+  if (currentGameKey.value) launchGameKey.value = currentGameKey.value
 }
 
 function applyRouteLaunch() {
@@ -78,12 +82,11 @@ watch([() => route.query.game, isLoggedIn], applyRouteLaunch)
 
 <template>
   <div class="lobby-page">
-    <LobbyGameView v-if="currentGameKey" :game-key="currentGameKey" :mode="currentGameMode" :machine-id="currentMachineId || undefined" @close="closeGame" @switch-mode="switchMode" />
+    <LobbyGameView v-if="currentGameKey" :game-key="currentGameKey" :mode="currentGameMode" :wallet="currentGameWallet" @close="closeGame" @switch-mode="switchMode" />
     <template v-else><h1 class="sr-only">遊戲大廳</h1><LobbyGameGrid @play="requestLaunch" /></template>
 
     <ClientOnly>
-      <LobbyGameLaunchModal v-if="launchGameKey && !showSeatSelection" :game-key="launchGameKey" :mode="launchMode" @close="clearLaunch" @quick="startGame()" @seats="openSeats" />
-      <LobbySeatSelectionModal v-if="launchGameKey && showSeatSelection" :game-key="launchGameKey" :mode="launchMode" @close="clearLaunch" @back="backToLaunch" @enter="startGame" />
+      <LobbyGameLaunchModal v-if="launchGameKey" :game-key="launchGameKey" @close="clearLaunch" @enter="startRealGame" />
     </ClientOnly>
   </div>
 </template>

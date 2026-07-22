@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { siteContent, type GameItem } from '~/data/siteContent'
+import { getGameWalletLabel, type GameWalletKey } from '~/utils/gameWallets'
 
-const props = defineProps<{ gameKey: string; mode: 'real' | 'demo'; machineId?: string }>()
+const props = defineProps<{
+  gameKey: string
+  mode: 'real' | 'demo'
+  wallet?: GameWalletKey | null
+  machineId?: string
+}>()
 const emit  = defineEmits<{ close: []; switchMode: ['real' | 'demo'] }>()
 
 const allGames: GameItem[] = [...siteContent.games, ...siteContent.lobbyGames] as GameItem[]
 const game = computed(() => allGames.find(g => g.key === props.gameKey))
+const currentWalletLabel = computed(() => getGameWalletLabel(props.wallet))
 
 // 實際整合時換成真實遊戲 URL
 const gameUrl = computed(() =>
@@ -184,22 +191,28 @@ async function toggleFullscreen() {
       <!-- 中間：品牌名稱 -->
       <span class="gv-brand">巨亨 ONLINE<span v-if="machineId">・{{ machineId.split('-').pop() }}</span></span>
 
-      <!-- 右側：模式切換 -->
-      <div class="gv-mode-tabs">
-        <button
-          class="gv-mode-btn"
-          :class="{ 'gv-mode-active': mode === 'demo' }"
-          @click="emit('switchMode', 'demo')"
-        >
-          試玩模式
-        </button>
-        <button
-          class="gv-mode-btn"
-          :class="{ 'gv-mode-active': mode === 'real' }"
-          @click="emit('switchMode', 'real')"
-        >
-          真錢模式
-        </button>
+      <!-- 右側：目前幣別與模式切換 -->
+      <div class="gv-session-controls">
+        <div v-if="mode === 'real' && currentWalletLabel" class="gv-wallet-indicator" aria-label="目前遊戲幣別">
+          <span>目前幣別</span>
+          <strong>{{ currentWalletLabel }}</strong>
+        </div>
+        <div class="gv-mode-tabs">
+          <button
+            class="gv-mode-btn"
+            :class="{ 'gv-mode-active': mode === 'demo' }"
+            @click="emit('switchMode', 'demo')"
+          >
+            試玩模式
+          </button>
+          <button
+            class="gv-mode-btn"
+            :class="{ 'gv-mode-active': mode === 'real' }"
+            @click="emit('switchMode', 'real')"
+          >
+            真錢模式
+          </button>
+        </div>
       </div>
     </div>
 
@@ -293,3 +306,55 @@ async function toggleFullscreen() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.gv-session-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.gv-wallet-indicator {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 1px solid rgba(245, 200, 66, .28);
+  border-radius: 10px;
+  background: rgba(245, 200, 66, .06);
+}
+
+.gv-wallet-indicator span {
+  color: var(--color-text-muted);
+  font-size: 8px;
+}
+
+.gv-wallet-indicator strong {
+  color: var(--color-gold);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .gv-controls {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 7px 10px;
+  }
+
+  .gv-brand {
+    justify-self: end;
+    font-size: 11px;
+  }
+
+  .gv-session-controls {
+    grid-column: 1 / -1;
+    justify-content: space-between;
+  }
+
+  .gv-wallet-indicator { flex: 1; }
+  .gv-mode-btn { padding-right: 10px; padding-left: 10px; font-size: 10px; }
+}
+</style>
