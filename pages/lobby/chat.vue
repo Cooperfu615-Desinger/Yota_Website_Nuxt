@@ -165,13 +165,13 @@ function addPlayerToBlacklist(p: ChatPlayerProfile) {
 function giftPlayer(p: ChatPlayerProfile) {
   closeCard()
   closeRoster()
-  router.push({ path: '/lobby/bank', query: { tab: 'transfer', receiverId: p.playerId } })
+  router.push({ path: '/lobby/vault', query: { tab: 'transfer', receiverId: p.playerId } })
 }
 function transferPlayer(p: ChatPlayerProfile) {
   closeCard()
   closeRoster()
   router.push({
-    path: '/lobby/bank',
+    path: '/lobby/vault',
     query: {
       tab: 'transfer',
       receiverId: p.playerId,

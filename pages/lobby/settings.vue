@@ -6,11 +6,9 @@ definePageMeta({ layout: 'lobby' })
 const { preferences, updatePreference } = usePreferencesState()
 const { setMusicEnabled, setSoundEnabled, playUiSound } = useAudioState()
 const { blockedPlayers, unblockPlayer } = useSocialState()
-const { logout } = useAppState()
 const { openLegal } = useLegalState()
-const router = useRouter()
+const { openLogoutConfirm } = useLogoutState()
 const notice = ref('')
-const showLogoutConfirm = ref(false)
 
 const languages: { key: AppLanguage; label: string; native: string }[] = [
   { key: 'zh-TW', label: '繁體中文', native: '繁中' }, { key: 'en', label: 'English', native: 'EN' }, { key: 'ja', label: '日本語', native: '日' },
@@ -24,7 +22,6 @@ function changeTheme(theme: AppTheme) { updatePreference('theme', theme); showNo
 function changeLanguage(language: AppLanguage) { updatePreference('language', language); showNotice('語言選擇已儲存；原型文案維持繁體中文') }
 function togglePush() { updatePreference('pushEnabled', !preferences.value.pushEnabled); showNotice(preferences.value.pushEnabled ? '已開啟推播通知' : '已關閉推播通知') }
 function handleUnblock(player: BlockedPlayer) { unblockPlayer(player.playerId); showNotice(`已解除封鎖 ${player.name}`) }
-function confirmLogout() { logout(); showLogoutConfirm.value = false; router.push('/lobby') }
 </script>
 
 <template>
@@ -44,9 +41,7 @@ function confirmLogout() { logout(); showLogoutConfirm.value = false; router.pus
 
     <section class="settings-card wide"><header><span>05</span><div><p>SAFETY</p><h2>黑名單管理</h2></div><b>{{ blockedPlayers.length }} 位</b></header><div v-if="blockedPlayers.length" class="blocked-list"><article v-for="player in blockedPlayers" :key="player.playerId"><span>{{ player.avatar }}</span><div><strong>{{ player.name }}</strong><small>#{{ player.playerId }}</small></div><button @click="handleUnblock(player)">解除封鎖</button></article></div><div v-else class="settings-empty">目前沒有黑名單玩家；可從聊天室玩家卡加入。</div></section>
 
-    <section class="settings-card wide"><header><span>06</span><div><p>LEGAL & SESSION</p><h2>條款與帳號</h2></div></header><div class="legal-list"><button @click="openLegal('terms')"><div><strong>會員條款</strong><small>查看會員資格與點數規範</small></div><span>查看 →</span></button><button @click="openLegal('privacy')"><div><strong>隱私政策</strong><small>查看本機資料與 Mock 保存方式</small></div><span>查看 →</span></button><button @click="openLegal('service')"><div><strong>平台服務規範</strong><small>查看社群與公平使用規則</small></div><span>查看 →</span></button></div><button class="logout-button" @click="showLogoutConfirm = true">登出目前帳號</button></section>
-
-    <ClientOnly><Teleport to="body"><Transition name="logout-fade"><div v-if="showLogoutConfirm" class="logout-overlay" role="dialog" aria-modal="true" @click.self="showLogoutConfirm = false"><div class="logout-panel"><span>⇥</span><h2>確定要登出？</h2><p>登入與個人資料會從此瀏覽器移除，金融及社交 Mock 也會重置。</p><div><button class="btn-outline-purple" @click="showLogoutConfirm = false">取消</button><button class="logout-confirm" @click="confirmLogout">確認登出</button></div></div></div></Transition></Teleport></ClientOnly>
+    <section class="settings-card wide"><header><span>06</span><div><p>LEGAL & SESSION</p><h2>條款與帳號</h2></div></header><div class="legal-list"><button @click="openLegal('terms')"><div><strong>會員條款</strong><small>查看會員資格與點數規範</small></div><span>查看 →</span></button><button @click="openLegal('privacy')"><div><strong>隱私政策</strong><small>查看本機資料與 Mock 保存方式</small></div><span>查看 →</span></button><button @click="openLegal('service')"><div><strong>平台服務規範</strong><small>查看社群與公平使用規則</small></div><span>查看 →</span></button></div><button class="logout-button" @click="openLogoutConfirm">登出目前帳號</button></section>
   </div>
 </template>
 

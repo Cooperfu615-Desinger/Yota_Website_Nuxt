@@ -2136,8 +2136,14 @@ body {
   flex-shrink: 0;
 }
 
-.lobby-nav-site {
+.lobby-nav-logout {
+  color: #fca5a5;
   font-size: 13px;
+}
+
+.lobby-nav-logout:hover {
+  color: #fecdd3;
+  background: rgba(248, 113, 113, 0.1);
 }
 
 /* Collapsed: icon-only (desktop) */

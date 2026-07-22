@@ -5,8 +5,8 @@ definePageMeta({ layout: 'lobby' })
 type MemberSection = 'profile' | 'bindings' | 'vip' | 'history'
 type BindingProvider = 'phone' | 'facebook' | 'line' | 'apple' | 'google'
 
-const { isLoggedIn, userInfo, openLogin, logout, updateProfile, setAccountBinding } = useAppState()
-const router = useRouter()
+const { isLoggedIn, userInfo, openLogin, updateProfile, setAccountBinding } = useAppState()
+const { openLogoutConfirm } = useLogoutState()
 const activeSection = ref<MemberSection>('profile')
 const showVipTargetModal = ref(false)
 const showAvatarPicker = ref(false)
@@ -61,7 +61,6 @@ async function toggleBinding(provider: BindingProvider) {
   bindingLoading.value = null
   profileNotice.value = `${bindingOptions.find(item => item.key === provider)?.label}${nextValue ? '綁定成功' : '已解除綁定'}`
 }
-function handleLogout() { logout(); router.push('/lobby') }
 </script>
 
 <template>
@@ -89,7 +88,7 @@ function handleLogout() { logout(); router.push('/lobby') }
       <section v-else-if="activeSection === 'vip'" class="member-content vip-content"><header><div><p>VIP JOURNEY</p><h2>VIP {{ userInfo.vip }} 升級進度</h2></div><button v-if="nextVipLevel" class="btn-outline-purple" @click="showVipTargetModal = true">查看 {{ nextVipLevel.name }} 條件</button></header><div v-if="!isMaxVip" class="vip-progress-grid"><article><div><span>累積儲值</span><strong>{{ vipUpgrade.deposit.current.toLocaleString() }} / {{ vipUpgrade.deposit.target.toLocaleString() }}</strong></div><i><b :style="{ width: `${depositPct}%` }" /></i><small>升級必須同時達成</small></article><article><div><span>累積投注</span><strong>{{ vipUpgrade.wager.current.toLocaleString() }} / {{ vipUpgrade.wager.target.toLocaleString() }}</strong></div><i><b :style="{ width: `${wagerPct}%` }" /></i><small>升級必須同時達成</small></article></div><div class="vip-level-grid"><article v-for="vip in vipLevels" :key="vip.level" :class="{ current: vip.level === userInfo.vip }"><span :style="{ color: vip.color }">VIP {{ vip.level }}</span><strong>返水 {{ vip.rebate }}</strong><small>{{ vip.feeDiscount }}</small></article></div></section>
 
       <section v-else class="member-content"><header><div><p>GAME HISTORY</p><h2>遊戲紀錄</h2></div></header><LobbyGameRecords /></section>
-      <button class="member-logout" @click="handleLogout">登出目前帳號</button>
+      <button class="member-logout" @click="openLogoutConfirm">登出目前帳號</button>
 
       <ClientOnly><Teleport to="body"><Transition name="modal-fade"><div v-if="showVipTargetModal && nextVipLevel" class="modal-overlay" role="dialog" aria-modal="true" @click.self="showVipTargetModal = false"><div class="modal-box" style="max-width:440px"><div class="modal-inner"><button class="modal-close" @click="showVipTargetModal = false">×</button><p class="member-modal-kicker">NEXT VIP LEVEL</p><h2 class="modal-title">{{ nextVipLevel.name }} 條件</h2><div class="vip-benefits"><div><span>返水</span><strong>{{ nextVipLevel.rebate }}</strong></div><div><span>手續費</span><strong>{{ nextVipLevel.feeDiscount }}</strong></div></div><section class="vip-condition"><span>升級條件・需同時達成</span><p>{{ nextVipLevel.upgradeRequirement }}</p></section><section class="vip-condition"><span>保級條件・擇一達成</span><p>{{ nextVipLevel.maintainRequirement }}</p></section></div></div></div></Transition></Teleport></ClientOnly>
     </template>

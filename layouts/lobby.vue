@@ -109,6 +109,7 @@ function onClick() {
       <LoginModal />
       <LegalModal />
       <LobbyModal />
+      <LogoutConfirmModal />
     </ClientOnly>
   </div>
 </template>

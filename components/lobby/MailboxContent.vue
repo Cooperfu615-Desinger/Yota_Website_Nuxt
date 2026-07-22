@@ -34,10 +34,10 @@ async function runMock(key: string, action: () => number | boolean, successText:
 
 <template>
   <div class="lobby-page mailbox-page px-4 py-5">
-    <template v-if="!isLoggedIn"><div class="card-purple p-8 text-center max-w-sm mx-auto mt-8"><div class="text-5xl mb-4">📬</div><h1 class="text-xl font-black mb-2">信箱與禮物中心</h1><p class="text-sm mb-5" style="color:var(--color-text-muted);">登入後即可查看訊息、附件與待領禮物</p><button class="btn-gold w-full justify-center" @click="openLogin(route.fullPath)">立即登入 / 註冊</button></div></template>
+    <template v-if="!isLoggedIn"><div class="card-purple p-8 text-center max-w-sm mx-auto mt-8"><div class="text-5xl mb-4">📬</div><h1 class="text-xl font-black mb-2">信箱與獎勵卡</h1><p class="text-sm mb-5" style="color:var(--color-text-muted);">登入後即可查看訊息、附件與待領獎勵</p><button class="btn-gold w-full justify-center" @click="openLogin(route.fullPath)">立即登入 / 註冊</button></div></template>
     <template v-else>
-      <header class="mailbox-header"><div><p>MESSAGE & REWARDS</p><h1>收件中心</h1><span>信箱附件與禮物領取後會立即更新對應餘額</span></div><WalletBalances :user="userInfo" variant="cards" /></header>
-      <div class="mailbox-tabs"><button :class="{ active: activeTab === 'inbox' }" @click="selectTab('inbox')"><span>✉</span><div><strong>信箱</strong><small>{{ messages.filter(item => !item.read).length }} 封未讀</small></div></button><button :class="{ active: activeTab === 'gifts' }" @click="selectTab('gifts')"><span>禮</span><div><strong>禮物中心</strong><small>{{ unclaimedGiftCount }} 份待領</small></div></button></div>
+      <header class="mailbox-header"><div><p>MESSAGE & REWARDS</p><h1>收件中心</h1><span>信箱附件與獎勵卡領取後會立即更新對應餘額</span></div><WalletBalances :user="userInfo" variant="cards" /></header>
+      <div class="mailbox-tabs"><button :class="{ active: activeTab === 'inbox' }" @click="selectTab('inbox')"><span>✉</span><div><strong>信箱</strong><small>{{ messages.filter(item => !item.read).length }} 封未讀</small></div></button><button :class="{ active: activeTab === 'gifts' }" @click="selectTab('gifts')"><span>獎</span><div><strong>獎勵卡</strong><small>{{ unclaimedGiftCount }} 份待領</small></div></button></div>
       <p v-if="notice" class="mail-notice" aria-live="polite">{{ notice }}</p>
 
       <template v-if="activeTab === 'inbox'">
@@ -48,8 +48,8 @@ async function runMock(key: string, action: () => number | boolean, successText:
       </template>
 
       <template v-else>
-        <div class="gift-toolbar"><div><p>AVAILABLE GIFTS</p><h2>待領禮物</h2></div><button class="btn-gold" :disabled="!unclaimedGiftCount || loadingKey === 'gift-all'" @click="runMock('gift-all', claimAllGifts, '全部禮物已領取並更新餘額')">{{ loadingKey === 'gift-all' ? '領取中…' : `全部領取 (${unclaimedGiftCount})` }}</button></div>
-        <div class="gift-grid"><article v-for="gift in gifts" :key="gift.id" class="gift-card" :class="{ claimed: gift.claimed }"><div class="gift-mark">禮</div><div class="gift-copy"><small>FROM {{ gift.sender }}</small><h3>{{ gift.title }}</h3><p>{{ gift.description }}</p><div class="gift-rewards"><span v-for="reward in gift.rewards" :key="reward.label">{{ reward.label }}</span></div><time>有效期限 {{ gift.expiresAt }}</time></div><button :disabled="gift.claimed || loadingKey === `gift-${gift.id}`" @click="runMock(`gift-${gift.id}`, () => claimGift(gift.id), `${gift.title}已領取並更新餘額`)">{{ loadingKey === `gift-${gift.id}` ? '領取中…' : gift.claimed ? '已領取' : '領取禮物' }}</button></article></div>
+        <div class="gift-toolbar"><div><p>AVAILABLE REWARD CARDS</p><h2>待領獎勵</h2></div><button class="btn-gold" :disabled="!unclaimedGiftCount || loadingKey === 'gift-all'" @click="runMock('gift-all', claimAllGifts, '全部獎勵已領取並更新餘額')">{{ loadingKey === 'gift-all' ? '領取中…' : `全部領取 (${unclaimedGiftCount})` }}</button></div>
+        <div class="gift-grid"><article v-for="gift in gifts" :key="gift.id" class="gift-card" :class="{ claimed: gift.claimed }"><div class="gift-mark">獎</div><div class="gift-copy"><small>FROM {{ gift.sender }}</small><h3>{{ gift.title }}</h3><p>{{ gift.description }}</p><div class="gift-rewards"><span v-for="reward in gift.rewards" :key="reward.label">{{ reward.label }}</span></div><time>有效期限 {{ gift.expiresAt }}</time></div><button :disabled="gift.claimed || loadingKey === `gift-${gift.id}`" @click="runMock(`gift-${gift.id}`, () => claimGift(gift.id), `${gift.title}已領取並更新餘額`)">{{ loadingKey === `gift-${gift.id}` ? '領取中…' : gift.claimed ? '已領取' : '領取獎勵' }}</button></article></div>
       </template>
     </template>
   </div>

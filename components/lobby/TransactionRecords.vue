@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { FinancialTransactionStatus, FinancialTransactionType } from '~/composables/useFinancialState'
 
+withDefaults(defineProps<{ hideHeader?: boolean }>(), { hideHeader: false })
+
 type TypeFilter = 'all' | FinancialTransactionType
 type StatusFilter = 'all' | FinancialTransactionStatus
 const { transactions } = useFinancialState()
@@ -23,7 +25,7 @@ const walletLabel = { gold: '金幣', silver: '銀幣', bronze: '銅幣' }
 
 <template>
   <section class="records-wrap">
-    <header class="records-header"><div><p>TRANSACTION LOG</p><h2>交易紀錄</h2></div><span>重新整理後回到 Mock 初始資料</span></header>
+    <header v-if="!hideHeader" class="records-header"><div><p>TRANSACTION LOG</p><h2>交易紀錄</h2></div><span>重新整理後回到 Mock 初始資料</span></header>
     <div class="records-filters"><select v-model="typeFilter" class="input-field" aria-label="交易類型"><option v-for="option in typeOptions" :key="option.key" :value="option.key">{{ option.label }}</option></select><select v-model="statusFilter" class="input-field" aria-label="交易狀態"><option v-for="option in statusOptions" :key="option.key" :value="option.key">{{ option.label }}</option></select></div>
     <div v-if="visibleTransactions.length" class="records-list">
       <article v-for="item in visibleTransactions" :key="item.id" class="record-card">
