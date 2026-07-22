@@ -37,10 +37,10 @@ const tabData = computed(() =>
     </div>
 
     <Transition name="tab-fade" mode="out-in">
-      <div :key="activeTab">
+      <div :key="activeTab" class="leaderboard-results">
         <!-- 頒獎台 Top 3 -->
         <div class="px-4 mb-4 lg:px-8">
-          <div class="flex items-end justify-center gap-3 lg:gap-6 lg:max-w-lg lg:mx-auto" style="height:160px;">
+          <div class="leaderboard-podium flex items-end justify-center gap-3 lg:gap-6 lg:max-w-lg lg:mx-auto">
             <!-- 第2名 -->
             <div class="flex flex-col items-center gap-2 flex-1">
               <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background:linear-gradient(135deg,#A855F7,#6B21A8); border:2px solid #C0C0C0; font-size:22px;">👤</div>
@@ -51,7 +51,7 @@ const tabData = computed(() =>
             </div>
             <!-- 第1名 -->
             <div class="flex flex-col items-center gap-2 flex-1">
-              <span class="text-xl" aria-hidden="true">👑</span>
+              <span class="leaderboard-crown text-xl" aria-hidden="true">👑</span>
               <div class="w-16 h-16 rounded-full flex items-center justify-center" style="background:linear-gradient(135deg,#A855F7,#6B21A8); border:2px solid var(--color-gold); box-shadow:0 0 16px rgba(245,200,66,0.5); font-size:26px;">👤</div>
               <div class="text-xs text-center font-bold" style="color:var(--color-gold);">{{ tabData.top3[0].name }}</div>
               <div class="w-full rounded-t-lg flex flex-col items-center justify-end pt-2 pb-3" style="height:110px; background:linear-gradient(180deg,var(--color-gold),var(--color-gold-dark));">
@@ -99,4 +99,10 @@ const tabData = computed(() =>
 <style scoped>
 .tab-fade-enter-active, .tab-fade-leave-active { transition: opacity 0.2s; }
 .tab-fade-enter-from, .tab-fade-leave-to { opacity: 0; }
+.leaderboard-results { padding-top: 16px; }
+.leaderboard-podium { min-height: 260px; }
+@media (min-width: 1024px) {
+  .leaderboard-results { padding-top: 20px; }
+  .leaderboard-podium { min-height: 270px; }
+}
 </style>
