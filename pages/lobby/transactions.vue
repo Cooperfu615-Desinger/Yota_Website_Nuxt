@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'lobby' })
-const { isLoggedIn, openLogin, userInfo } = useAppState()
+const { isLoggedIn, openLogin } = useAppState()
 </script>
 
 <template>
@@ -14,15 +14,12 @@ const { isLoggedIn, openLogin, userInfo } = useAppState()
       </div>
     </template>
     <template v-else>
-      <header class="transactions-hero">
-        <div><p>ACCOUNT ACTIVITY</p><h1>交易紀錄</h1><span>儲值、保險箱、贈禮、兌換與獎勵紀錄集中顯示；重新整理後回到 Mock 初始資料</span></div>
-        <WalletBalances :user="userInfo" variant="cards" />
-      </header>
+      <h1 class="section-title mb-4">交易紀錄</h1>
       <LobbyTransactionRecords hide-header />
     </template>
   </div>
 </template>
 
 <style scoped>
-.transactions-page{max-width:1180px;margin:0 auto}.transactions-hero{display:grid;grid-template-columns:1fr minmax(300px,430px);align-items:end;gap:24px;padding:18px 0 20px}.transactions-hero p{margin:0 0 3px;color:var(--color-gold);font-size:10px;font-weight:900;letter-spacing:.18em}.transactions-hero h1{margin:0;font-size:30px;font-weight:900}.transactions-hero span{color:var(--color-text-muted);font-size:11px}@media(max-width:800px){.transactions-hero{grid-template-columns:1fr}}
+.transactions-page{max-width:1180px;margin:0 auto}
 </style>

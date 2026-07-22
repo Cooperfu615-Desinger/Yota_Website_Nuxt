@@ -182,6 +182,7 @@ function transferPlayer(p: ChatPlayerProfile) {
 
 <template>
   <div class="lobby-page flex flex-col" style="height: calc(100dvh - 56px - 40px); padding: 0; position: relative; overflow: hidden;">
+    <h1 class="section-title chat-page-title">聊天</h1>
     <!-- 頻道 Tab -->
     <div class="flex border-b px-3 pt-3 gap-1 flex-shrink-0" style="border-color:rgba(168,85,247,0.15); background:var(--color-bg-card);">
       <button
@@ -288,10 +289,14 @@ function transferPlayer(p: ChatPlayerProfile) {
   background: rgba(0,0,0,0.45);
   z-index: 20;
 }
+.chat-page-title {
+  margin: 20px 16px 16px;
+  flex-shrink: 0;
+}
 .chat-page-notice {
   position: absolute;
   left: 50%;
-  top: 66px;
+  top: 120px;
   z-index: 26;
   width: min(420px, calc(100% - 32px));
   transform: translateX(-50%);
