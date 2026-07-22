@@ -8,10 +8,14 @@ export interface RewardCardDefinition {
   currency: RewardCardCurrency
   amount: number
   rebateRate: number
+  rebateProgress: number
+  conversionLimit: number
+  expiresAt: string
 }
 
 export interface RewardCard extends RewardCardDefinition {
   status: RewardCardStatus
+  currentBalance: number
 }
 
 const rewardCardDefinitions: RewardCardDefinition[] = [
@@ -22,6 +26,9 @@ const rewardCardDefinitions: RewardCardDefinition[] = [
     currency: 'activity-silver',
     amount: 10_000,
     rebateRate: 1,
+    rebateProgress: 0,
+    conversionLimit: 10_000,
+    expiresAt: '2026/12/31',
   },
   {
     id: 'daily-20-activity-gold',
@@ -30,6 +37,9 @@ const rewardCardDefinitions: RewardCardDefinition[] = [
     currency: 'activity-gold',
     amount: 5_000,
     rebateRate: 2,
+    rebateProgress: 0,
+    conversionLimit: 10_000,
+    expiresAt: '2026/12/31',
   },
 ]
 
@@ -39,16 +49,16 @@ export const useRewardCardState = () => {
 
   const activityGoldBalance = computed(() => rewardCards.value
     .filter(card => card.currency === 'activity-gold' && card.status !== 'inactive')
-    .reduce((total, card) => total + card.amount, 0))
+    .reduce((total, card) => total + card.currentBalance, 0))
   const activitySilverBalance = computed(() => rewardCards.value
     .filter(card => card.currency === 'activity-silver' && card.status !== 'inactive')
-    .reduce((total, card) => total + card.amount, 0))
+    .reduce((total, card) => total + card.currentBalance, 0))
   const availableActivityGoldBalance = computed(() => rewardCards.value
     .filter(card => card.currency === 'activity-gold' && card.status === 'active')
-    .reduce((total, card) => total + card.amount, 0))
+    .reduce((total, card) => total + card.currentBalance, 0))
   const availableActivitySilverBalance = computed(() => rewardCards.value
     .filter(card => card.currency === 'activity-silver' && card.status === 'active')
-    .reduce((total, card) => total + card.amount, 0))
+    .reduce((total, card) => total + card.currentBalance, 0))
 
   function getDefinitionByMilestone(days: number) {
     return rewardCardDefinitions.find(card => card.milestoneDay === days) ?? null
@@ -61,7 +71,11 @@ export const useRewardCardState = () => {
   function claimRewardCard(days: number) {
     const definition = getDefinitionByMilestone(days)
     if (!definition || hasClaimedMilestone(days)) return null
-    const card: RewardCard = { ...definition, status: 'inactive' }
+    const card: RewardCard = {
+      ...definition,
+      status: 'inactive',
+      currentBalance: definition.amount,
+    }
     rewardCards.value = [...rewardCards.value, card]
     return card
   }
