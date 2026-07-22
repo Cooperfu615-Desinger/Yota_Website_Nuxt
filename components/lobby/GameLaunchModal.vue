@@ -3,6 +3,7 @@ import { siteContent, type GameItem } from '~/data/siteContent'
 import {
   DEFAULT_GAME_WALLET,
   GAME_WALLET_OPTIONS,
+  getGameWalletDisplayLabel,
   getGameWalletLabel,
   type GameWalletKey,
 } from '~/utils/gameWallets'
@@ -50,7 +51,7 @@ function enterGame() {
             <div class="wallet-select-wrap">
               <select id="game-wallet-select" v-model="selectedWallet" name="game-wallet">
                 <option v-for="wallet in GAME_WALLET_OPTIONS" :key="wallet.key" :value="wallet.key">
-                  {{ wallet.label }}
+                  {{ getGameWalletDisplayLabel(wallet) }}
                 </option>
               </select>
               <span aria-hidden="true">⌄</span>

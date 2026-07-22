@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { RewardCard, RewardCardCurrency, RewardCardStatus } from '~/composables/useRewardCardState'
+import { DEFAULT_ACTIVITY_WALLET_BALANCE } from '~/utils/gameWallets'
 
 const route = useRoute()
 const { isLoggedIn, openLogin } = useAppState()
@@ -16,9 +17,9 @@ const ruleInfo = ref<{ title: string } | null>(null)
 let noticeTimer: ReturnType<typeof setTimeout> | null = null
 
 const activityWalletSummary = [
-  { label: '活動金幣', mark: '金', amount: 250_000, tone: 'gold' },
-  { label: '活動銀幣', mark: '銀', amount: 250_000, tone: 'silver' },
-  { label: '銅幣', mark: '銅', amount: 250_000, tone: 'bronze' },
+  { label: '活動金幣', mark: '金', amount: DEFAULT_ACTIVITY_WALLET_BALANCE, tone: 'gold' },
+  { label: '活動銀幣', mark: '銀', amount: DEFAULT_ACTIVITY_WALLET_BALANCE, tone: 'silver' },
+  { label: '銅幣', mark: '銅', amount: DEFAULT_ACTIVITY_WALLET_BALANCE, tone: 'bronze' },
 ] as const
 
 const statusLabel: Record<RewardCardStatus, string> = {
