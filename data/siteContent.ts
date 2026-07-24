@@ -673,7 +673,7 @@ export const siteContent = {
     milestones: [
       { days: 5,  reward: 'NT$100'   },
       { days: 7,  reward: 'NT$200'   },
-      { days: 10, reward: 'NT$500'   },
+      { days: 10, reward: '銅幣 10,000,000' },
       { days: 15, reward: 'NT$1,000' },
       { days: 20, reward: 'NT$2,000' },
       { days: 25, reward: 'NT$3,500' },
