@@ -327,7 +327,7 @@ function getDayState(day: number): DayState {
                   </div>
                   <p class="reward-claim-kicker">DAY {{ pendingReward.milestoneDay }} REWARD CARD</p>
                   <h2 id="daily-reward-title">{{ pendingReward.title }} {{ pendingReward.amount.toLocaleString() }}</h2>
-                  <div class="reward-claim-rate">返水比例 <strong>{{ pendingReward.rebateRate }}%</strong></div>
+                  <div class="reward-claim-rate">流水量 <strong>{{ pendingReward.turnoverTarget.toLocaleString() }}</strong></div>
                   <p class="reward-claim-copy">領取後可前往獎勵卡頁面啟用；啟用前不會加入活動錢包。</p>
                   <div class="reward-claim-actions">
                     <button class="btn-outline-purple" @click="closeRewardClaim">取消</button>

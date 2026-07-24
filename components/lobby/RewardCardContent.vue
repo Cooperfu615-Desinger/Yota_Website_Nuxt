@@ -19,7 +19,6 @@ let noticeTimer: ReturnType<typeof setTimeout> | null = null
 const activityWalletSummary = [
   { label: '活動金幣', mark: '金', amount: DEFAULT_ACTIVITY_WALLET_BALANCE, tone: 'gold' },
   { label: '活動銀幣', mark: '銀', amount: DEFAULT_ACTIVITY_WALLET_BALANCE, tone: 'silver' },
-  { label: '銅幣', mark: '銅', amount: DEFAULT_ACTIVITY_WALLET_BALANCE, tone: 'bronze' },
 ] as const
 
 const statusLabel: Record<RewardCardStatus, string> = {
@@ -67,6 +66,11 @@ function confirmDelete() {
 
 function showRuleInfo(title: string) {
   ruleInfo.value = { title }
+}
+
+function turnoverProgress(card: RewardCard) {
+  if (card.turnoverTarget <= 0) return 0
+  return Math.min(100, Math.round((card.totalTurnover / card.turnoverTarget) * 100))
 }
 
 onUnmounted(() => {
@@ -138,28 +142,34 @@ onUnmounted(() => {
             <span class="status-badge">{{ statusLabel[card.status] }}</span>
           </header>
 
-          <div class="reward-amount">
-            <small>目前餘額 / 總金額</small>
-            <div>
-              <strong>{{ card.currentBalance.toLocaleString() }}</strong>
-              <span>/ {{ card.amount.toLocaleString() }}</span>
+          <div class="reward-amount-summary">
+            <div class="reward-turnover-total">
+              <small>總流水</small>
+              <strong>{{ card.totalTurnover.toLocaleString() }}</strong>
+            </div>
+            <div class="reward-balance-total">
+              <small>目前餘額 / 總金額</small>
+              <div>
+                <strong>{{ card.currentBalance.toLocaleString() }}</strong>
+                <span>/ {{ card.amount.toLocaleString() }}</span>
+              </div>
             </div>
           </div>
 
           <div class="rebate-progress-block">
             <div class="rebate-progress-label">
-              <span>返水 {{ card.rebateRate }}%</span>
-              <strong>{{ card.rebateProgress }}%</strong>
+              <span>流水量</span>
+              <strong>{{ card.totalTurnover.toLocaleString() }} / {{ card.turnoverTarget.toLocaleString() }}</strong>
             </div>
             <div
               class="rebate-progress-track"
               role="progressbar"
-              :aria-label="`${card.title}返水進度`"
-              :aria-valuenow="card.rebateProgress"
+              :aria-label="`${card.title}流水量進度`"
+              :aria-valuenow="turnoverProgress(card)"
               aria-valuemin="0"
               aria-valuemax="100"
             >
-              <i :style="{ width: `${card.rebateProgress}%` }" />
+              <i :style="{ width: `${turnoverProgress(card)}%` }" />
             </div>
           </div>
 
@@ -336,7 +346,7 @@ onUnmounted(() => {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -354,7 +364,6 @@ onUnmounted(() => {
 }
 
 .activity-wallet-grid article.wallet-silver { --wallet-accent: #d7e2f0; }
-.activity-wallet-grid article.wallet-bronze { --wallet-accent: #d88a4b; }
 
 .wallet-mark {
   display: grid;
@@ -589,8 +598,11 @@ onUnmounted(() => {
   background: color-mix(in srgb, var(--card-accent) 11%, transparent);
 }
 
-.reward-amount {
+.reward-amount-summary {
   position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  align-items: stretch;
   margin: 18px 0 13px;
   padding: 17px;
   border: 1px solid rgba(255, 255, 255, .08);
@@ -598,26 +610,50 @@ onUnmounted(() => {
   background: rgba(0, 0, 0, .18);
 }
 
-.reward-amount small {
+.reward-amount-summary small {
   display: block;
   margin-bottom: 5px;
   color: var(--color-text-muted);
   font-size: 9px;
 }
 
-.reward-amount > div {
+.reward-turnover-total,
+.reward-balance-total {
+  min-width: 0;
+}
+
+.reward-turnover-total {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.reward-balance-total {
+  padding-left: 18px;
+  border-left: 1px solid rgba(255, 255, 255, .08);
+  text-align: right;
+}
+
+.reward-balance-total > div {
   display: flex;
   align-items: baseline;
+  justify-content: flex-end;
   gap: 7px;
 }
 
-.reward-amount strong {
+.reward-turnover-total strong {
+  color: #fff;
+  font-size: 23px;
+  line-height: 1;
+}
+
+.reward-balance-total strong {
   color: var(--card-accent-soft);
   font-size: 31px;
   line-height: 1;
 }
 
-.reward-amount span {
+.reward-balance-total span {
   color: var(--color-text-muted);
   font-size: 13px;
   font-weight: 800;
@@ -867,8 +903,14 @@ onUnmounted(() => {
   .reward-card { padding: 16px; }
   .reward-card > header { grid-template-columns: 44px 1fr auto; }
   .currency-mark { width: 42px; height: 42px; }
-  .reward-amount strong { font-size: 27px; }
-  .reward-amount span { font-size: 11px; }
+  .reward-amount-summary {
+    grid-template-columns: minmax(0, .72fr) minmax(0, 1.28fr);
+    padding: 14px;
+  }
+  .reward-balance-total { padding-left: 12px; }
+  .reward-turnover-total strong { font-size: 20px; }
+  .reward-balance-total strong { font-size: 25px; }
+  .reward-balance-total span { font-size: 10px; }
   .reward-actions button { min-height: 42px; }
   .reward-empty { padding: 28px 18px; }
 }

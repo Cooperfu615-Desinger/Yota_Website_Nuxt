@@ -7,8 +7,8 @@ export interface RewardCardDefinition {
   title: string
   currency: RewardCardCurrency
   amount: number
-  rebateRate: number
-  rebateProgress: number
+  totalTurnover: number
+  turnoverTarget: number
   conversionLimit: number
   expiresAt: string
 }
@@ -25,8 +25,8 @@ const rewardCardDefinitions: RewardCardDefinition[] = [
     title: '活動銀幣',
     currency: 'activity-silver',
     amount: 10_000,
-    rebateRate: 1,
-    rebateProgress: 0,
+    totalTurnover: 0,
+    turnoverTarget: 100_000,
     conversionLimit: 10_000,
     expiresAt: '2026/12/31',
   },
@@ -36,8 +36,8 @@ const rewardCardDefinitions: RewardCardDefinition[] = [
     title: '活動金幣',
     currency: 'activity-gold',
     amount: 5_000,
-    rebateRate: 2,
-    rebateProgress: 0,
+    totalTurnover: 0,
+    turnoverTarget: 100_000,
     conversionLimit: 10_000,
     expiresAt: '2026/12/31',
   },
