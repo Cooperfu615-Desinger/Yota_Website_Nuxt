@@ -33,6 +33,7 @@ export interface RecentGame {
 
 export interface ChatPlayerProfile {
   playerId: string
+  account: string       // 中英文與數字，最多 20 個字元；不含空格與特殊符號
   name: string
   avatar: string
   vip: number          // 0 = 無 VIP，不顯示徽章
@@ -697,6 +698,7 @@ export const siteContent = {
       {
         id: 1,
         playerId: 'P10001',
+        account: 'Lucky88801',
         name: 'Lucky888',
         avatar: '🦁',
         vip: 5,
@@ -713,6 +715,7 @@ export const siteContent = {
       {
         id: 2,
         playerId: 'P10002',
+        account: 'DragonKing88',
         name: 'DragonKing',
         avatar: '🐉',
         vip: 3,
@@ -728,6 +731,7 @@ export const siteContent = {
       {
         id: 3,
         playerId: 'P10003',
+        account: 'StarPlayer09',
         name: 'StarPlayer',
         avatar: '⭐',
         vip: 0,
@@ -743,6 +747,7 @@ export const siteContent = {
       {
         id: 4,
         playerId: 'P10004',
+        account: 'JokerAce14',
         name: 'JokerAce',
         avatar: '🃏',
         vip: 2,
@@ -758,6 +763,7 @@ export const siteContent = {
       {
         id: 5,
         playerId: 'P10005',
+        account: '金幣王888',
         name: '金幣王',
         avatar: '👑',
         vip: 4,
@@ -773,6 +779,7 @@ export const siteContent = {
       {
         id: 6,
         playerId: 'P10006',
+        account: '幸運貓12',
         name: '幸運貓',
         avatar: '🐱',
         vip: 1,
@@ -788,6 +795,7 @@ export const siteContent = {
       {
         id: 7,
         playerId: 'P10007',
+        account: '賭神再臨7',
         name: '賭神再臨',
         avatar: '🎲',
         vip: 0,
@@ -803,6 +811,7 @@ export const siteContent = {
       {
         id: 8,
         playerId: 'P10008',
+        account: '富貴吉祥88',
         name: '富貴吉祥',
         avatar: '🧧',
         vip: 3,
@@ -829,6 +838,7 @@ export const siteContent = {
         id: 1,
         peer: {
           playerId: 'P10002',
+          account: 'DragonKing88',
           name: 'DragonKing',
           avatar: '🐉',
           vip: 3,
@@ -852,6 +862,7 @@ export const siteContent = {
         id: 2,
         peer: {
           playerId: 'P10001',
+          account: 'Lucky88801',
           name: 'Lucky888',
           avatar: '🦁',
           vip: 5,

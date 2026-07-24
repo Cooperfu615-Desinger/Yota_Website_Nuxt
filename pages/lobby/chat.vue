@@ -265,18 +265,18 @@ function transferPlayer(p: ChatPlayerProfile) {
       <LobbyOnlineRoster :players="onlinePlayers" @select="selectPlayer" @close="closeRoster" />
     </div>
 
-    <!-- 玩家小卡 -->
-    <LobbyPlayerCard
-      v-if="selectedPlayer"
-      :player="selectedPlayer"
-      @message="messagePlayer"
-      @report="reportPlayer"
-      @block="addPlayerToBlacklist"
-      @gift="giftPlayer"
-      @transfer="transferPlayer"
-      @close="closeCard"
-    />
     <ClientOnly>
+      <!-- 玩家個人資訊使用 Teleport，必須放在 ClientOnly 內避免 SSG hydration mismatch -->
+      <LobbyPlayerCard
+        v-if="selectedPlayer"
+        :player="selectedPlayer"
+        @message="messagePlayer"
+        @report="reportPlayer"
+        @block="addPlayerToBlacklist"
+        @gift="giftPlayer"
+        @transfer="transferPlayer"
+        @close="closeCard"
+      />
       <LobbyReportPlayerModal v-if="reportTarget" :player="reportTarget" @close="reportTarget = null" @submit="submitPlayerReport" />
     </ClientOnly>
   </div>
