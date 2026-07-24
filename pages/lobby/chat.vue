@@ -72,8 +72,8 @@ function sendPrivate(text: string) {
   if (activeConv.value) activeConv.value.messages.push(makeMsg(text))
 }
 
-// 世界頻道在線名單抽屜 + 玩家小卡
-const onlinePlayers = siteContent.chat.onlinePlayers.map(player => clonePlayer(player))
+// 世界頻道玩家清單抽屜 + 玩家小卡
+const playerList = siteContent.chat.onlinePlayers.map(player => clonePlayer(player))
 const showRoster = ref(false)
 const selectedPlayer = ref<ChatPlayerProfile | null>(null)
 const supportDraft = ref<{ title: string; player: ChatPlayerProfile } | null>(null)
@@ -83,7 +83,7 @@ let noticeTimer: ReturnType<typeof setTimeout> | null = null
 
 const playerDirectory = computed(() => {
   const players = new Map<string, ChatPlayerProfile>()
-  for (const player of onlinePlayers) players.set(player.name, player)
+  for (const player of playerList) players.set(player.name, player)
   for (const conv of conversations.value) players.set(conv.peer.name, conv.peer)
   return players
 })
@@ -114,6 +114,9 @@ function selectMessageUser(user: string) {
   selectPlayer(player)
 }
 function closeCard()   { selectedPlayer.value = null }
+function handleRosterFriendAdded(player: ChatPlayerProfile) {
+  showNotice(`${player.name} 已加入好友名單。`)
+}
 function messagePlayer(p: ChatPlayerProfile) {
   if (isBlockedPlayer(p.playerId)) {
     closeCard()
@@ -200,12 +203,14 @@ function transferPlayer(p: ChatPlayerProfile) {
 
       <button
         v-if="activeChannel === 'world'"
-        class="ml-auto self-center flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold"
+        class="player-list-trigger ml-auto self-center flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
         style="background:rgba(168,85,247,0.2); color:var(--color-purple-light); border:1px solid rgba(168,85,247,0.4);"
         @click="openRoster"
       >
-        <span class="w-1.5 h-1.5 rounded-full" style="background:#34d399;" />
-        在線 {{ onlinePlayers.length }}
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19a6 6 0 0 0-12 0m6-8a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm12 8a5 5 0 0 0-7-4.58M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        玩家清單
       </button>
     </div>
 
@@ -260,9 +265,14 @@ function transferPlayer(p: ChatPlayerProfile) {
       </template>
     </template>
 
-    <!-- 在線名單抽屜（世界頻道） -->
+    <!-- 玩家清單抽屜（世界頻道） -->
     <div v-if="showRoster" class="roster-overlay" @click.self="closeRoster">
-      <LobbyOnlineRoster :players="onlinePlayers" @select="selectPlayer" @close="closeRoster" />
+      <LobbyOnlineRoster
+        :players="playerList"
+        @select="selectPlayer"
+        @friend-added="handleRosterFriendAdded"
+        @close="closeRoster"
+      />
     </div>
 
     <ClientOnly>
@@ -287,7 +297,11 @@ function transferPlayer(p: ChatPlayerProfile) {
   position: absolute;
   inset: 0;
   background: rgba(0,0,0,0.45);
-  z-index: 20;
+  z-index: 90;
+}
+.player-list-trigger {
+  position: relative;
+  z-index: 81;
 }
 .chat-page-title {
   margin: 20px 16px 16px;
