@@ -88,5 +88,6 @@ watch([() => route.query.game, isLoggedIn], applyRouteLaunch)
     <ClientOnly>
       <LobbyGameLaunchModal v-if="launchGameKey" :game-key="launchGameKey" @close="clearLaunch" @enter="startRealGame" />
     </ClientOnly>
+    <LobbyRewardConversionModal />
   </div>
 </template>

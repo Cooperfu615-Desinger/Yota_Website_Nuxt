@@ -2,9 +2,9 @@
 import { siteContent, type GameItem } from '~/data/siteContent'
 import {
   DEFAULT_GAME_WALLET,
-  GAME_WALLET_OPTIONS,
   getGameWalletDisplayLabel,
   getGameWalletLabel,
+  resolveGameWalletOptions,
   type GameWalletKey,
 } from '~/utils/gameWallets'
 
@@ -14,8 +14,17 @@ const allGames: GameItem[] = [...siteContent.games, ...siteContent.lobbyGames] a
 const game = computed(() => allGames.find(item => item.key === props.gameKey))
 const { resolvePublicAsset } = usePublicAssetPath()
 const selectedWallet = ref<GameWalletKey>(DEFAULT_GAME_WALLET)
+const { balance, silverBalance, bronzeBalance } = useFinancialState()
+const { activityGoldBalance, activitySilverBalance } = useRewardCardState()
 
 const selectedWalletLabel = computed(() => getGameWalletLabel(selectedWallet.value))
+const walletOptions = computed(() => resolveGameWalletOptions({
+  storedGold: balance.value,
+  activityGold: activityGoldBalance.value,
+  storedSilver: silverBalance.value,
+  activitySilver: activitySilverBalance.value,
+  activityBronze: bronzeBalance.value,
+}))
 
 function enterGame() {
   emit('enter', selectedWallet.value)
@@ -50,7 +59,7 @@ function enterGame() {
             <label for="game-wallet-select">幣別</label>
             <div class="wallet-select-wrap">
               <select id="game-wallet-select" v-model="selectedWallet" name="game-wallet">
-                <option v-for="wallet in GAME_WALLET_OPTIONS" :key="wallet.key" :value="wallet.key">
+                <option v-for="wallet in walletOptions" :key="wallet.key" :value="wallet.key">
                   {{ getGameWalletDisplayLabel(wallet) }}
                 </option>
               </select>

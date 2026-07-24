@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { siteContent, type GameItem } from '~/data/siteContent'
 import { getGameWalletLabel, type GameWalletKey } from '~/utils/gameWallets'
+import type { RewardCardCurrency } from '~/composables/useRewardCardState'
 
 const props = defineProps<{
   gameKey: string
@@ -13,6 +14,20 @@ const emit  = defineEmits<{ close: []; switchMode: ['real' | 'demo'] }>()
 const allGames: GameItem[] = [...siteContent.games, ...siteContent.lobbyGames] as GameItem[]
 const game = computed(() => allGames.find(g => g.key === props.gameKey))
 const currentWalletLabel = computed(() => getGameWalletLabel(props.wallet))
+const { getActiveCardByCurrency, completeRewardCardConversion } = useRewardCardState()
+const selectedActivityCurrency = computed<RewardCardCurrency | null>(() => {
+  if (props.wallet === 'activity-gold') return 'activity-gold'
+  if (props.wallet === 'activity-silver') return 'activity-silver'
+  return null
+})
+const activeRewardCard = computed(() => selectedActivityCurrency.value
+  ? getActiveCardByCurrency(selectedActivityCurrency.value)
+  : null)
+
+function mockTurnoverComplete() {
+  if (!activeRewardCard.value) return
+  completeRewardCardConversion(activeRewardCard.value.id)
+}
 
 // 實際整合時換成真實遊戲 URL
 const gameUrl = computed(() =>
@@ -193,6 +208,18 @@ async function toggleFullscreen() {
 
       <!-- 右側：目前幣別與模式切換 -->
       <div class="gv-session-controls">
+        <button
+          v-if="mode === 'real' && activeRewardCard"
+          class="gv-turnover-trigger"
+          :class="activeRewardCard.currency === 'activity-gold' ? 'tone-gold' : 'tone-silver'"
+          :aria-label="`模擬${activeRewardCard.title}流水達成`"
+          @click="mockTurnoverComplete"
+        >
+          <span>REWARD CARD</span>
+          <strong>模擬流水達成</strong>
+          <small>{{ activeRewardCard.totalTurnover.toLocaleString() }} / {{ activeRewardCard.turnoverTarget.toLocaleString() }}</small>
+          <i aria-hidden="true">→</i>
+        </button>
         <div v-if="mode === 'real' && currentWalletLabel" class="gv-wallet-indicator" aria-label="目前遊戲幣別">
           <span>目前幣別</span>
           <strong>{{ currentWalletLabel }}</strong>
@@ -310,9 +337,71 @@ async function toggleFullscreen() {
 <style scoped>
 .gv-session-controls {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
+}
+
+.gv-turnover-trigger {
+  --turnover-accent: #f5c842;
+  position: relative;
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  min-height: 36px;
+  padding: 5px 30px 5px 10px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--turnover-accent) 40%, transparent);
+  border-radius: 11px;
+  color: #fff;
+  background:
+    linear-gradient(100deg, color-mix(in srgb, var(--turnover-accent) 13%, transparent), rgba(168, 85, 247, .07));
+  text-align: left;
+  box-shadow: 0 0 16px color-mix(in srgb, var(--turnover-accent) 12%, transparent);
+  animation: turnover-ready 2.2s ease-in-out infinite;
+}
+
+.gv-turnover-trigger.tone-silver { --turnover-accent: #d7e2f0; }
+
+.gv-turnover-trigger span {
+  grid-column: 1 / -1;
+  color: var(--turnover-accent);
+  font-size: 6px;
+  font-weight: 900;
+  letter-spacing: .14em;
+}
+
+.gv-turnover-trigger strong {
+  color: var(--turnover-accent);
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.gv-turnover-trigger small {
+  align-self: center;
+  color: var(--color-text-muted);
+  font-size: 7px;
+  white-space: nowrap;
+}
+
+.gv-turnover-trigger i {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  color: var(--turnover-accent);
+  font-size: 13px;
+  font-style: normal;
+  transform: translateY(-50%);
+  transition: transform .18s ease;
+}
+
+.gv-turnover-trigger:hover i { transform: translate(2px, -50%); }
+
+@keyframes turnover-ready {
+  0%, 100% { box-shadow: 0 0 10px color-mix(in srgb, var(--turnover-accent) 10%, transparent); }
+  50% { box-shadow: 0 0 22px color-mix(in srgb, var(--turnover-accent) 24%, transparent); }
 }
 
 .gv-wallet-indicator {
@@ -354,7 +443,15 @@ async function toggleFullscreen() {
     justify-content: space-between;
   }
 
+  .gv-turnover-trigger {
+    order: -1;
+    width: 100%;
+  }
   .gv-wallet-indicator { flex: 1; }
   .gv-mode-btn { padding-right: 10px; padding-left: 10px; font-size: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gv-turnover-trigger { animation: none; }
 }
 </style>

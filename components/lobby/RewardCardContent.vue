@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import type { RewardCard, RewardCardCurrency, RewardCardStatus } from '~/composables/useRewardCardState'
-import { DEFAULT_ACTIVITY_WALLET_BALANCE } from '~/utils/gameWallets'
 
 const route = useRoute()
 const { isLoggedIn, openLogin } = useAppState()
 const {
   rewardCards,
+  activityGoldBalance,
+  activitySilverBalance,
   activateRewardCard,
   pauseRewardCard,
   deleteRewardCard,
@@ -16,21 +17,23 @@ const deleteTarget = ref<RewardCard | null>(null)
 const ruleInfo = ref<{ title: string } | null>(null)
 let noticeTimer: ReturnType<typeof setTimeout> | null = null
 
-const activityWalletSummary = [
-  { label: '活動金幣', mark: '金', amount: DEFAULT_ACTIVITY_WALLET_BALANCE, tone: 'gold' },
-  { label: '活動銀幣', mark: '銀', amount: DEFAULT_ACTIVITY_WALLET_BALANCE, tone: 'silver' },
-] as const
+const activityWalletSummary = computed(() => [
+  { label: '活動金幣', mark: '金', amount: activityGoldBalance.value, tone: 'gold' },
+  { label: '活動銀幣', mark: '銀', amount: activitySilverBalance.value, tone: 'silver' },
+] as const)
 
 const statusLabel: Record<RewardCardStatus, string> = {
   inactive: '未啟用',
   active: '使用中',
   paused: '已停用',
+  converted: '已轉換',
 }
 
 const statusDescription: Record<RewardCardStatus, string> = {
   inactive: '啟用後，卡片額度才會加入對應的活動錢包。',
   active: '活動額度目前可使用，達成活動條件後會自動轉入儲值錢包。',
   paused: '活動額度已保留並暫停使用，可隨時重新啟用。',
+  converted: '流水條件已完成，符合轉換上限的餘額已自動加入儲值錢包。',
 }
 
 const currencyMark: Record<RewardCardCurrency, string> = {
@@ -173,6 +176,18 @@ onUnmounted(() => {
             </div>
           </div>
 
+          <div v-if="card.status === 'converted'" class="conversion-result">
+            <div>
+              <small>已轉換</small>
+              <strong>{{ card.convertedAmount.toLocaleString() }}</strong>
+            </div>
+            <div>
+              <small>系統回收</small>
+              <strong>{{ card.recoveredAmount.toLocaleString() }}</strong>
+            </div>
+            <time>{{ card.convertedAt }}</time>
+          </div>
+
           <dl class="reward-meta">
             <div>
               <dt>
@@ -195,7 +210,7 @@ onUnmounted(() => {
           <div class="reward-actions">
             <button
               class="action-enable"
-              :disabled="card.status === 'active'"
+              :disabled="card.status === 'active' || card.status === 'converted'"
               @click="activate(card)"
             >啟用</button>
             <button
@@ -548,6 +563,16 @@ onUnmounted(() => {
 
 .reward-card.is-paused { filter: saturate(.72); }
 
+.reward-card.is-converted {
+  border-color: rgba(74, 222, 128, .38);
+  background:
+    linear-gradient(145deg, rgba(21, 48, 45, .72), rgba(18, 8, 37, .97));
+}
+
+.reward-card.is-converted::after {
+  border-color: rgba(74, 222, 128, .16);
+}
+
 .reward-card > header {
   position: relative;
   display: grid;
@@ -596,6 +621,12 @@ onUnmounted(() => {
   border-color: color-mix(in srgb, var(--card-accent) 42%, transparent);
   color: var(--card-accent-soft);
   background: color-mix(in srgb, var(--card-accent) 11%, transparent);
+}
+
+.is-converted .status-badge {
+  border-color: rgba(74, 222, 128, .34);
+  color: #86efac;
+  background: rgba(74, 222, 128, .1);
 }
 
 .reward-amount-summary {
@@ -701,6 +732,47 @@ onUnmounted(() => {
   background: linear-gradient(90deg, var(--card-accent), var(--card-accent-soft));
   box-shadow: 0 0 14px var(--card-glow);
   transition: width .35s ease;
+}
+
+.conversion-result {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 13px;
+  padding: 11px;
+  border: 1px solid rgba(74, 222, 128, .22);
+  border-radius: 12px;
+  background: rgba(74, 222, 128, .06);
+}
+
+.conversion-result > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 9px;
+  border-radius: 9px;
+  background: rgba(0, 0, 0, .14);
+}
+
+.conversion-result small {
+  color: var(--color-text-muted);
+  font-size: 8px;
+}
+
+.conversion-result strong {
+  color: #86efac;
+  font-size: 13px;
+}
+
+.conversion-result > div:nth-child(2) strong { color: #fca5a5; }
+
+.conversion-result time {
+  grid-column: 1 / -1;
+  color: var(--color-text-muted);
+  font-size: 8px;
+  text-align: right;
 }
 
 .reward-meta {

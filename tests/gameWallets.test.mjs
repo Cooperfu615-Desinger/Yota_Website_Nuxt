@@ -6,6 +6,7 @@ import {
   GAME_WALLET_OPTIONS,
   getGameWalletDisplayLabel,
   getGameWalletLabel,
+  resolveGameWalletOptions,
 } from '../utils/gameWallets.ts'
 
 test('provides the five supported real-money game wallets', () => {
@@ -30,5 +31,21 @@ test('shows the mock balance after every wallet option', () => {
     '儲值銀幣 — 10,000,000',
     '活動銀幣 — 250,000',
     '活動銅幣 — 250,000',
+  ])
+})
+
+test('resolves live stored and activity wallet balances', () => {
+  assert.deepEqual(resolveGameWalletOptions({
+    storedGold: 10_005_000,
+    activityGold: 0,
+    storedSilver: 10_010_000,
+    activitySilver: 40_000,
+    activityBronze: 20_000_000,
+  }).map(getGameWalletDisplayLabel), [
+    '儲值金幣 — 10,005,000',
+    '活動金幣 — 0',
+    '儲值銀幣 — 10,010,000',
+    '活動銀幣 — 40,000',
+    '活動銅幣 — 20,000,000',
   ])
 })

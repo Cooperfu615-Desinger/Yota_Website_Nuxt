@@ -13,6 +13,14 @@ export interface GameWalletOption {
   amount: number
 }
 
+export interface GameWalletBalances {
+  storedGold: number
+  activityGold: number
+  storedSilver: number
+  activitySilver: number
+  activityBronze: number
+}
+
 export const DEFAULT_GAME_WALLET: GameWalletKey = 'stored-gold'
 export const DEFAULT_ACTIVITY_WALLET_BALANCE = 250_000
 
@@ -23,6 +31,21 @@ export const GAME_WALLET_OPTIONS: GameWalletOption[] = [
   { key: 'activity-silver', label: '活動銀幣', amount: DEFAULT_ACTIVITY_WALLET_BALANCE },
   { key: 'activity-bronze', label: '活動銅幣', amount: DEFAULT_ACTIVITY_WALLET_BALANCE },
 ]
+
+export function resolveGameWalletOptions(balances: GameWalletBalances): GameWalletOption[] {
+  const amountByKey: Record<GameWalletKey, number> = {
+    'stored-gold': balances.storedGold,
+    'activity-gold': balances.activityGold,
+    'stored-silver': balances.storedSilver,
+    'activity-silver': balances.activitySilver,
+    'activity-bronze': balances.activityBronze,
+  }
+
+  return GAME_WALLET_OPTIONS.map(option => ({
+    ...option,
+    amount: Math.max(0, Math.floor(amountByKey[option.key])),
+  }))
+}
 
 export function getGameWalletLabel(key?: GameWalletKey | null) {
   return GAME_WALLET_OPTIONS.find(option => option.key === key)?.label ?? ''
