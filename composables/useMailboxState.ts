@@ -20,9 +20,7 @@ export const useMailboxState = () => {
   const { addWalletReward } = useFinancialState()
 
   function markRead(id: number) { const item = messages.value.find(message => message.id === id); if (item) item.read = true }
-  function markAllRead() { messages.value.forEach(message => { message.read = true }) }
   function deleteMessage(id: number) { messages.value = messages.value.filter(message => message.id !== id) }
-  function deleteReadMessages() { messages.value = messages.value.filter(message => !message.read) }
 
   function claimMailReward(id: number) {
     const message = messages.value.find(item => item.id === id)
@@ -32,5 +30,5 @@ export const useMailboxState = () => {
     return true
   }
 
-  return { messages, markRead, markAllRead, deleteMessage, deleteReadMessages, claimMailReward }
+  return { messages, markRead, deleteMessage, claimMailReward }
 }
