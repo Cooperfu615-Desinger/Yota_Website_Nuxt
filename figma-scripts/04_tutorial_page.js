@@ -49,7 +49,7 @@ const W=390, CW=358, GAP=40;
 // ── SHARED ─────────────────────────────────────────────────
 function buildMarquee(p, y) {
   const mq=mkFrame(W,36,C.bgDeep); mq.x=0; mq.y=y; mq.clipsContent=true;
-  const t=mkTxt('🔴 玩家***豪 贏得 NT$38,500！  •  系統公告：服務正常  •  🔴 玩家***星 贏得 NT$12,800！',11,'Regular',C.muted,0.8);
+  const t=mkTxt('🔴 玩家***豪 贏得 38,500 金幣！  •  系統公告：服務正常  •  🔴 玩家***星 贏得 12,800 金幣！',11,'Regular',C.muted,0.8);
   t.x=12; t.y=10; mq.appendChild(t); p.appendChild(mq); return y+36;
 }
 

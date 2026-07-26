@@ -5,8 +5,9 @@ import {
   type WalletExchangeDirection,
 } from '~/utils/walletExchange'
 import { DEFAULT_WALLET_BALANCE, type WalletKey } from '~/utils/wallets'
+import { calculateWalletSpend } from '~/utils/walletSpend'
 
-export type FinancialTransactionType = 'deposit' | 'vault' | 'gift' | 'exchange' | 'reward'
+export type FinancialTransactionType = 'deposit' | 'vault' | 'gift' | 'exchange' | 'reward' | 'spend'
 export type FinancialTransactionStatus = 'success' | 'processing' | 'failed'
 
 export interface FinancialTransaction {
@@ -128,6 +129,29 @@ export const useFinancialState = () => {
     })
   }
 
+  function spendWalletBalance(wallet: WalletKey, amount: number, title: string, detail?: string) {
+    const currentBalance = wallet === 'gold'
+      ? financialState.value.balance
+      : wallet === 'silver'
+        ? financialState.value.silverBalance
+        : financialState.value.bronzeBalance
+    const spend = calculateWalletSpend(currentBalance, amount)
+    if (!spend) return null
+
+    if (wallet === 'gold') financialState.value.balance = spend.remainingBalance
+    if (wallet === 'silver') financialState.value.silverBalance = spend.remainingBalance
+    if (wallet === 'bronze') financialState.value.bronzeBalance = spend.remainingBalance
+
+    return addTransaction({
+      type: 'spend',
+      title,
+      amount: -spend.spentAmount,
+      wallet,
+      status: 'success',
+      detail,
+    })
+  }
+
   function completeDeposit(points: number, detail: string) {
     const normalizedPoints = Math.max(0, Math.floor(points))
     if (!normalizedPoints) return null
@@ -226,6 +250,7 @@ export const useFinancialState = () => {
     transactions,
     addTransaction,
     addWalletReward,
+    spendWalletBalance,
     completeDeposit,
     depositToVault,
     withdrawFromVault,

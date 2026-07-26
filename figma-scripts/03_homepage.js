@@ -49,7 +49,7 @@ const W=390, CW=358;
 // 1. 跑馬燈
 function buildMarquee(p, y) {
   const mq=mkFrame(W,36,C.bgDeep); mq.x=0; mq.y=y; mq.clipsContent=true;
-  const t=mkTxt('🔴 玩家***豪 在老虎機贏得 NT$38,500！  •  系統公告：服務正常  •  🔴 玩家***星 在百家樂贏得 NT$12,800！',11,'Regular',C.muted,0.8);
+  const t=mkTxt('🔴 玩家***豪 在老虎機贏得 38,500 金幣！  •  系統公告：服務正常  •  🔴 玩家***星 在百家樂贏得 12,800 金幣！',11,'Regular',C.muted,0.8);
   t.x=12; t.y=10; mq.appendChild(t); p.appendChild(mq); return y+36;
 }
 
@@ -64,7 +64,7 @@ function buildBanner(p, y) {
   inner.layoutMode='VERTICAL'; inner.primaryAxisSizingMode='AUTO'; inner.counterAxisSizingMode='AUTO';
   inner.primaryAxisAlignItems='CENTER'; inner.counterAxisAlignItems='MIN'; inner.itemSpacing=6;
   inner.appendChild(mkTxt('🎰 百萬大獎賽',28,'Black',C.gold));
-  inner.appendChild(mkTxt('獎金池 NT$1,280,000',13,'Regular',C.white,0.8));
+  inner.appendChild(mkTxt('獎金池 1,280,000 金幣',13,'Regular',C.white,0.8));
   const ctaBtn=mkFrame(140,40,linGrd('#F5C842','#E09520'),10);
   ctaBtn.layoutMode='HORIZONTAL'; ctaBtn.primaryAxisSizingMode='AUTO'; ctaBtn.counterAxisSizingMode='AUTO';
   ctaBtn.primaryAxisAlignItems='CENTER'; ctaBtn.counterAxisAlignItems='CENTER';
@@ -165,11 +165,11 @@ function buildLeaderboardSection(p, y) {
 
   // Rank items (5 items)
   const items=[
-    { rank:1, name:'玩家***旺', amount:'NT$2,580,000', game:'老虎機', amtColor:'#F5C842' },
-    { rank:2, name:'玩家***福', amount:'NT$1,820,000', game:'百家樂', amtColor:'#C0C0C0' },
-    { rank:3, name:'玩家***星', amount:'NT$960,000',   game:'老虎機', amtColor:'#CD7F32' },
-    { rank:4, name:'玩家***財', amount:'NT$800,000',   game:'老虎機', amtColor:'#AB80F7' },
-    { rank:5, name:'玩家***福', amount:'NT$720,000',   game:'百家樂', amtColor:'#AB80F7' },
+    { rank:1, name:'玩家***旺', amount:'2,580,000 金幣', game:'老虎機', amtColor:'#F5C842' },
+    { rank:2, name:'玩家***福', amount:'1,820,000 金幣', game:'百家樂', amtColor:'#C0C0C0' },
+    { rank:3, name:'玩家***星', amount:'960,000 金幣',   game:'老虎機', amtColor:'#CD7F32' },
+    { rank:4, name:'玩家***財', amount:'800,000 金幣',   game:'老虎機', amtColor:'#AB80F7' },
+    { rank:5, name:'玩家***福', amount:'720,000 金幣',   game:'百家樂', amtColor:'#AB80F7' },
   ];
   const card=mkFrame(CW,1,C.card,12); card.x=16; card.y=y;
   card.layoutMode='VERTICAL'; card.primaryAxisSizingMode='AUTO'; card.counterAxisSizingMode='FIXED';

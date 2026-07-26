@@ -49,7 +49,7 @@ const W=390, CW=358, GAP=40;
 // ── SHARED BUILDERS ────────────────────────────────────────
 function buildMarquee(p, y) {
   const mq=mkFrame(W,36,C.bgDeep); mq.x=0; mq.y=y; mq.clipsContent=true;
-  const t=mkTxt('🔴 玩家***旺 在老虎機贏得 NT$38,500！  •  系統公告：服務正常  •  🔴 玩家***龍 在水果老虎機贏得 ×2,560倍！',11,'Regular',C.muted,0.8);
+  const t=mkTxt('🔴 玩家***旺 在老虎機贏得 38,500 金幣！  •  系統公告：服務正常  •  🔴 玩家***龍 在水果老虎機贏得 ×2,560倍！',11,'Regular',C.muted,0.8);
   t.x=12; t.y=10; mq.appendChild(t); p.appendChild(mq); return y+36;
 }
 
@@ -231,18 +231,18 @@ function addAnnotationLabel(text, x, y) {
 const data = {
   win: {
     top3: [
-      { rank:1, name:'玩家***旺', amount:'NT$2,580,000', game:'老虎機', color:'gold' },
-      { rank:2, name:'玩家***福', amount:'NT$1,820,000', game:'百家樂', color:'silver' },
-      { rank:3, name:'玩家***星', amount:'NT$960,000',   game:'老虎機', color:'bronze' },
+      { rank:1, name:'玩家***旺', amount:'2,580,000 金幣', game:'老虎機', color:'gold' },
+      { rank:2, name:'玩家***福', amount:'1,820,000 金幣', game:'百家樂', color:'silver' },
+      { rank:3, name:'玩家***星', amount:'960,000 金幣',   game:'老虎機', color:'bronze' },
     ],
     rest: [
-      { rank:4,  name:'玩家***財', amount:'NT$800,000', game:'老虎機' },
-      { rank:5,  name:'玩家***福', amount:'NT$720,000', game:'百家樂' },
-      { rank:6,  name:'玩家***祿', amount:'NT$640,000', game:'捕魚' },
-      { rank:7,  name:'玩家***壽', amount:'NT$560,000', game:'老虎機' },
-      { rank:8,  name:'玩家***喜', amount:'NT$480,000', game:'百家樂' },
-      { rank:9,  name:'玩家***吉', amount:'NT$400,000', game:'老虎機' },
-      { rank:10, name:'玩家***順', amount:'NT$320,000', game:'捕魚' },
+      { rank:4,  name:'玩家***財', amount:'800,000 金幣', game:'老虎機' },
+      { rank:5,  name:'玩家***福', amount:'720,000 金幣', game:'百家樂' },
+      { rank:6,  name:'玩家***祿', amount:'640,000 金幣', game:'捕魚' },
+      { rank:7,  name:'玩家***壽', amount:'560,000 金幣', game:'老虎機' },
+      { rank:8,  name:'玩家***喜', amount:'480,000 金幣', game:'百家樂' },
+      { rank:9,  name:'玩家***吉', amount:'400,000 金幣', game:'老虎機' },
+      { rank:10, name:'玩家***順', amount:'320,000 金幣', game:'捕魚' },
     ],
   },
   multi: {

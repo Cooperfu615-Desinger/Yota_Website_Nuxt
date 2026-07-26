@@ -134,9 +134,9 @@ function goPage(p: number) {
               <tr style="color:var(--color-text-muted);">
                 <th class="text-center py-2 pr-3 whitespace-nowrap">編號</th>
                 <th class="text-right py-2 pr-3 whitespace-nowrap">遊戲名稱</th>
-                <th class="text-right py-2 pr-3 whitespace-nowrap">投注額</th>
-                <th class="text-right py-2 pr-3 whitespace-nowrap">贏分</th>
-                <th class="text-right py-2 whitespace-nowrap">錢包餘額</th>
+                <th class="text-right py-2 pr-3 whitespace-nowrap">投注額（金幣）</th>
+                <th class="text-right py-2 pr-3 whitespace-nowrap">贏分（金幣）</th>
+                <th class="text-right py-2 whitespace-nowrap">錢包餘額（金幣）</th>
               </tr>
             </thead>
             <tbody>

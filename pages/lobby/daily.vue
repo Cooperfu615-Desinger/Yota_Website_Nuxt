@@ -5,7 +5,7 @@ import type { RewardCardDefinition } from '~/composables/useRewardCardState'
 
 const { isLoggedIn, openLogin } = useAppState()
 const { getDefinitionByMilestone, claimRewardCard } = useRewardCardState()
-const { bronzeBalance, addWalletReward } = useFinancialState()
+const { balance, bronzeBalance, addWalletReward, spendWalletBalance } = useFinancialState()
 
 const BRONZE_REWARD_DAY = 10
 const BRONZE_REWARD_AMOUNT = 10_000_000
@@ -33,7 +33,7 @@ const missedDays = computed(() =>
     .filter(d => !checkedDays.value.includes(d))
 )
 
-const { milestones, makeupCostPerDay } = siteContent.dailyCheckin
+const { milestones, dailyRewards, makeupCostPerDay } = siteContent.dailyCheckin
 const pendingReward = ref<RewardCardDefinition | null>(null)
 const rewardClaimed = ref(false)
 const showBronzeReward = ref(false)
@@ -45,14 +45,17 @@ function milestoneLeft(days: number) {
 function isMilestoneReached(days: number)  { return totalCheckins.value >= days }
 function isMilestoneClaimed(days: number)  { return claimedMilestones.value.includes(days) }
 function rewardCardForMilestone(days: number) { return getDefinitionByMilestone(days) }
+function milestoneForDay(days: number) { return milestones.find(milestone => milestone.days === days) }
+function dailyRewardForDay(day: number) { return dailyRewards[day - 1] ?? 0 }
 
 function milestoneAccessibleLabel(days: number) {
   const reward = rewardCardForMilestone(days)
+  const milestone = milestoneForDay(days)
   const rewardText = days === BRONZE_REWARD_DAY
     ? `銅幣 ${BRONZE_REWARD_AMOUNT.toLocaleString()}`
     : reward
       ? `${reward.title} ${reward.amount.toLocaleString()}`
-      : `${days}天里程碑`
+      : milestone?.reward || `${days}天里程碑`
   const status = isMilestoneClaimed(days) ? '（已領取）' : isMilestoneReached(days) ? '（可領取）' : ''
   return `${days}天里程碑：${rewardText}${status}`
 }
@@ -62,6 +65,12 @@ function handleCheckin() {
   if (!isLoggedIn.value) { openLogin(); return }
   if (!todayChecked.value) {
     checkedDays.value = [...checkedDays.value, today].sort((a, b) => a - b)
+    addWalletReward(
+      'gold',
+      dailyRewardForDay(today),
+      '每日簽到獎勵',
+      `${monthLabel}・${today} 日`,
+    )
   }
 }
 
@@ -77,8 +86,17 @@ function claimMilestone(days: number) {
     rewardClaimed.value = false
     return
   }
+  const directGoldAmount = milestoneForDay(days)?.directGoldAmount ?? 0
+  if (directGoldAmount > 0) {
+    const transaction = addWalletReward(
+      'gold',
+      directGoldAmount,
+      `每日任務第 ${days} 天獎勵`,
+      `累積簽到第 ${days} 天`,
+    )
+    if (!transaction) return
+  }
   claimedMilestones.value = [...claimedMilestones.value, days]
-  // TODO: 串接後端領獎 API
 }
 
 function confirmBronzeReward() {
@@ -110,17 +128,37 @@ function closeRewardClaim() {
 // 補簽確認
 const makeupTarget = ref<number | null>(null)
 const makeupConfirmed = ref(false)
+const makeupError = ref('')
 
 function openMakeup(day: number) {
   makeupTarget.value = day
   makeupConfirmed.value = false
+  makeupError.value = ''
 }
 
 function confirmMakeup() {
   if (!makeupTarget.value) return
-  // TODO: 扣除遊戲幣 makeupCostPerDay，呼叫後端 API
+  const makeupDay = makeupTarget.value
+  if (makeupConfirmed.value || checkedDays.value.includes(makeupDay)) return
+  const transaction = spendWalletBalance(
+    'gold',
+    makeupCostPerDay,
+    '每日任務補簽',
+    `${monthLabel}・${makeupDay} 日`,
+  )
+  if (!transaction) {
+    makeupError.value = '金幣餘額不足，無法完成補簽'
+    return
+  }
+  addWalletReward(
+    'gold',
+    dailyRewardForDay(makeupDay),
+    '每日任務補簽獎勵',
+    `${monthLabel}・${makeupDay} 日`,
+  )
   checkedDays.value = [...checkedDays.value, makeupTarget.value].sort((a, b) => a - b)
   makeupConfirmed.value = true
+  makeupError.value = ''
   setTimeout(() => { makeupTarget.value = null }, 1200)
 }
 
@@ -220,6 +258,10 @@ function getDayState(day: number): DayState {
                 <div class="milestone-reward">{{ rewardCardForMilestone(m.days)?.title }}</div>
                 <div class="milestone-amount">{{ rewardCardForMilestone(m.days)?.amount.toLocaleString() }}</div>
               </template>
+              <template v-else-if="m.directGoldAmount">
+                <div class="milestone-reward">金幣</div>
+                <div class="milestone-amount">{{ m.directGoldAmount.toLocaleString() }}</div>
+              </template>
             </div>
           </div>
         </div>
@@ -251,7 +293,7 @@ function getDayState(day: number): DayState {
             :key="day"
             class="checkin-cell"
             :class="`cell-${getDayState(day)}`"
-            :aria-label="`${day}日${getDayState(day) === 'missed' ? '（可補簽，花費 NT$' + makeupCostPerDay + '）' : ''}`"
+            :aria-label="`${day}日${getDayState(day) === 'missed' ? '（可補簽，花費 ' + makeupCostPerDay + ' 金幣）' : ''}`"
             :disabled="getDayState(day) === 'future' || getDayState(day) === 'checked' || getDayState(day) === 'today-done'"
             @click="getDayState(day) === 'missed' ? openMakeup(day) : getDayState(day) === 'today-pending' ? handleCheckin() : undefined"
           >
@@ -276,11 +318,11 @@ function getDayState(day: number): DayState {
             class="text-xs px-2 py-0.5 rounded-full ml-1"
             style="background:rgba(168,85,247,0.15); color:var(--color-purple-light); border:1px solid rgba(168,85,247,0.3);"
           >
-            每天 NT${{ makeupCostPerDay }} 遊戲幣
+            每天 {{ makeupCostPerDay }} 金幣
           </span>
         </div>
         <p class="text-xs mb-3" style="color:var(--color-text-muted);">
-          點擊日曆中灰色的「補」格子，即可花費 NT${{ makeupCostPerDay }} 遊戲幣補回該天的簽到紀錄與獎勵。
+          點擊日曆中灰色的「補」格子，即可花費 {{ makeupCostPerDay }} 金幣補回該天的簽到紀錄與獎勵。
         </p>
         <div v-if="missedDays.length > 0" class="flex flex-wrap gap-2">
           <button
@@ -315,8 +357,12 @@ function getDayState(day: number): DayState {
               <p class="text-sm mb-4" style="color:rgba(255,255,255,0.7);">
                 補簽 <strong style="color:var(--color-gold);">{{ makeupTarget }} 日</strong>
                 需花費
-                <strong style="color:var(--color-gold);">NT${{ makeupCostPerDay }} 遊戲幣</strong>
+                <strong style="color:var(--color-gold);">{{ makeupCostPerDay }} 金幣</strong>
               </p>
+              <p class="text-xs mb-3" style="color:var(--color-text-muted);">
+                目前金幣餘額：{{ balance.toLocaleString() }}
+              </p>
+              <p v-if="makeupError" class="text-red-400 text-xs font-bold mb-3" role="alert">{{ makeupError }}</p>
               <div v-if="makeupConfirmed" class="text-green-400 font-bold mb-3">✅ 補簽成功！</div>
               <div v-else class="flex gap-3">
                 <button

@@ -23,7 +23,7 @@ const walletOptions = computed(() => resolveGameWalletOptions({
   activityGold: activityGoldBalance.value,
   storedSilver: silverBalance.value,
   activitySilver: activitySilverBalance.value,
-  activityBronze: bronzeBalance.value,
+  bronze: bronzeBalance.value,
 }))
 
 function enterGame() {

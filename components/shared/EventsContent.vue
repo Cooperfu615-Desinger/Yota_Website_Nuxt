@@ -123,7 +123,7 @@ const tabs = [
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(row, i) in [['🥇','玩家***旺','NT$400,000'],['🥈','玩家***福','NT$200,000'],['🥉','玩家***星','NT$100,000']]" :key="i" class="border-t" style="border-color:rgba(168,85,247,0.1);">
+              <tr v-for="(row, i) in [['🥇','玩家***旺','400,000 金幣'],['🥈','玩家***福','200,000 金幣'],['🥉','玩家***星','100,000 金幣']]" :key="i" class="border-t" style="border-color:rgba(168,85,247,0.1);">
                 <td class="py-2">{{ row[0] }}</td>
                 <td class="py-2" style="color:var(--color-text);">{{ row[1] }}</td>
                 <td class="py-2 text-right font-bold" style="color:var(--color-gold);">{{ row[2] }}</td>

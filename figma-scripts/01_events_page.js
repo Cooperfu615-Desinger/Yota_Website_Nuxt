@@ -65,7 +65,7 @@ const GAP = 40; // gap between frames
 // ── SHARED COMPONENTS ──────────────────────────────────────
 function buildMarquee(parent, y) {
   const mq = mkFrame(W, 36, C.bgDeep); mq.x = 0; mq.y = y; mq.clipsContent = true;
-  const t = mkTxt('🔴 玩家***豪 在老虎機贏得 NT$38,500！  •  系統公告：服務正常  •  🔴 玩家***星 在百家樂贏得 NT$12,800！', 11, 'Regular', C.muted, 0.8);
+  const t = mkTxt('🔴 玩家***豪 在老虎機贏得 38,500 金幣！  •  系統公告：服務正常  •  🔴 玩家***星 在百家樂贏得 12,800 金幣！', 11, 'Regular', C.muted, 0.8);
   t.x = 12; t.y = 10; mq.appendChild(t); parent.appendChild(mq); return y + 36;
 }
 
@@ -162,12 +162,12 @@ function addAnnotationLabel(text, x, y) {
 
 // ── DATA ───────────────────────────────────────────────────
 const activeEvs = [
-  { title:'百萬大獎賽', sub:'累積積分衝頂，贏取百萬獎金',   end:'2026/12/31', prize:'NT$1,280,000', g1:'#1a003a', g2:'#7C3AED' },
+  { title:'百萬大獎賽', sub:'累積積分衝頂，贏取百萬獎金',   end:'2026/12/31', prize:'1,280,000 金幣', g1:'#1a003a', g2:'#7C3AED' },
   { title:'新手首儲禮', sub:'首次儲值享最高 100% 加碼',     end:'長期',       prize:'+100%',        g1:'#1a0a00', g2:'#D97706' },
   { title:'每日簽到獎', sub:'連續簽到 7 天，累積豐厚獎勵', end:'長期',       prize:'每日點數',    g1:'#0a1a00', g2:'#166534' },
 ];
 const upcomingEvs = [
-  { title:'春節限定活動', sub:'農曆新年特別回饋，限時限量', end:'2026/02/10', prize:'NT$500,000',  g1:'#2d0a0a', g2:'#991b1b' },
+  { title:'春節限定活動', sub:'農曆新年特別回饋，限時限量', end:'2026/02/10', prize:'500,000 金幣',  g1:'#2d0a0a', g2:'#991b1b' },
   { title:'情人節特別賽', sub:'雙人對戰，贏取情侶大禮包', end:'2026/02/14',  prize:'神秘禮物',   g1:'#1a003a', g2:'#be185d' },
 ];
 
@@ -246,7 +246,7 @@ const upcomingEvs = [
   mBox.appendChild(mCover);
 
   // ③ Info rows
-  for (const [lbl, val, clr] of [['活動獎金','NT$1,280,000',C.gold],['截止日期','2026/12/31',C.text]]) {
+  for (const [lbl, val, clr] of [['活動獎金','1,280,000 金幣',C.gold],['截止日期','2026/12/31',C.text]]) {
     const row = mkFrame(10, 32); row.layoutMode = 'HORIZONTAL'; row.primaryAxisSizingMode = 'AUTO';
     row.counterAxisSizingMode = 'FIXED'; row.primaryAxisAlignItems = 'SPACE_BETWEEN'; row.counterAxisAlignItems = 'CENTER';
     row.appendChild(mkTxt(lbl, 13, 'Regular', C.muted, 0.7)); row.appendChild(mkTxt(val, 13, 'Bold', clr));

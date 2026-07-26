@@ -3,12 +3,13 @@ export type LeaderboardTabKey = 'multi' | 'win' | 'wealth'
 export interface CheckinMilestone {
   days: number
   reward: string
+  directGoldAmount?: number
 }
 
 export interface DailyCheckinConfig {
   milestones: CheckinMilestone[]
-  dailyRewards: number[]   // NT$ 點數，index 0 = 第1天
-  makeupCostPerDay: number // 補簽每天花費（遊戲幣）
+  dailyRewards: number[]   // 金幣，index 0 = 第1天
+  makeupCostPerDay: number // 補簽每天花費（金幣）
 }
 export type EventStatus = 'active' | 'upcoming' | 'ended'
 export type FaqCategory = 'account' | 'deposit' | 'game' | 'install'
@@ -33,7 +34,7 @@ export interface RecentGame {
 
 export interface ChatPlayerProfile {
   playerId: string
-  account: string       // 中英文與數字，最多 20 個字元；不含空格與特殊符號
+  account: string       // 中英文與數字，最多 20 個半形字元（中文字以 2 個計）；不含空格與特殊符號
   name: string
   avatar: string
   vip: number          // 0 = 無 VIP，不顯示徽章
@@ -175,9 +176,9 @@ export interface LeaderboardTab {
 }
 
 const winLeaderboardTop3 = [
-  { rank: 1, name: '玩家***旺', amount: 'NT$2,580,000', game: '老虎機', time: '最近活躍', color: 'var(--color-gold)' },
-  { rank: 2, name: '玩家***福', amount: 'NT$1,820,000', game: '百家樂', time: '3小時前', color: '#C0C0C0' },
-  { rank: 3, name: '玩家***星', amount: 'NT$960,000', game: '老虎機', time: '1天前', color: '#CD7F32' },
+  { rank: 1, name: '玩家***旺', amount: '2,580,000 金幣', game: '老虎機', time: '最近活躍', color: 'var(--color-gold)' },
+  { rank: 2, name: '玩家***福', amount: '1,820,000 金幣', game: '百家樂', time: '3小時前', color: '#C0C0C0' },
+  { rank: 3, name: '玩家***星', amount: '960,000 金幣', game: '老虎機', time: '1天前', color: '#CD7F32' },
 ] satisfies LeaderboardItem[]
 
 const multiLeaderboardTop3 = [
@@ -193,13 +194,13 @@ const eventLeaderboardTop3 = [
 ] satisfies LeaderboardItem[]
 
 const winLeaderboardRest = [
-  { rank: 4, name: '玩家***財', amount: 'NT$800,000', game: '老虎機' },
-  { rank: 5, name: '玩家***福', amount: 'NT$720,000', game: '百家樂' },
-  { rank: 6, name: '玩家***祿', amount: 'NT$640,000', game: '捕魚' },
-  { rank: 7, name: '玩家***壽', amount: 'NT$560,000', game: '老虎機' },
-  { rank: 8, name: '玩家***喜', amount: 'NT$480,000', game: '百家樂' },
-  { rank: 9, name: '玩家***吉', amount: 'NT$400,000', game: '老虎機' },
-  { rank: 10, name: '玩家***順', amount: 'NT$320,000', game: '捕魚' },
+  { rank: 4, name: '玩家***財', amount: '800,000 金幣', game: '老虎機' },
+  { rank: 5, name: '玩家***福', amount: '720,000 金幣', game: '百家樂' },
+  { rank: 6, name: '玩家***祿', amount: '640,000 金幣', game: '捕魚' },
+  { rank: 7, name: '玩家***壽', amount: '560,000 金幣', game: '老虎機' },
+  { rank: 8, name: '玩家***喜', amount: '480,000 金幣', game: '百家樂' },
+  { rank: 9, name: '玩家***吉', amount: '400,000 金幣', game: '老虎機' },
+  { rank: 10, name: '玩家***順', amount: '320,000 金幣', game: '捕魚' },
 ] satisfies LeaderboardItem[]
 
 const winLeaderboardPreview = [...winLeaderboardTop3, ...winLeaderboardRest.slice(0, 2)] satisfies LeaderboardItem[]
@@ -231,11 +232,11 @@ const eventLeaderboardPreview = [...eventLeaderboardTop3, ...eventLeaderboardRes
 export const siteContent = {
   marqueeAnnouncements: [
     { type: 'system', text: '【系統公告】官網改版上線，體驗全新遊戲大廳！' },
-    { type: 'win', text: '🎉 恭喜 <b>玩家王**</b> 贏得 <b style="color:var(--color-gold);">NT$88,888</b>' },
+    { type: 'win', text: '🎉 恭喜 <b>玩家王**</b> 贏得 <b style="color:var(--color-gold);">88,888 金幣</b>' },
     { type: 'system', text: '【防詐騙】官方不會要求玩家提供帳號密碼，請提高警覺' },
     { type: 'win', text: '🎉 恭喜 <b>玩家陳**</b> 單局倍率高達 <b style="color:var(--color-gold);">2,560 倍！</b>' },
     { type: 'system', text: '【維護公告】每日 05:00–05:30 例行維護，請妥善安排遊戲時間' },
-    { type: 'win', text: '🎉 恭喜 <b>玩家Lin**</b> 贏得 <b style="color:var(--color-gold);">NT$128,000</b>' },
+    { type: 'win', text: '🎉 恭喜 <b>玩家Lin**</b> 贏得 <b style="color:var(--color-gold);">128,000 金幣</b>' },
   ],
   bannerSlides: [
     {
@@ -461,12 +462,12 @@ export const siteContent = {
     ] satisfies LeaderboardTab[],
   },
   events: [
-    { id: 1, title: '百萬大獎賽', subtitle: '累積積分衝頂，贏取百萬獎金', status: 'active', endDate: '2026/12/31', prize: 'NT$1,280,000', gradient: 'linear-gradient(135deg,#1a003a,#7C3AED)', imageSrc: '/event_01.avif' },
+    { id: 1, title: '百萬大獎賽', subtitle: '累積積分衝頂，贏取百萬獎金', status: 'active', endDate: '2026/12/31', prize: '1,280,000 金幣', gradient: 'linear-gradient(135deg,#1a003a,#7C3AED)', imageSrc: '/event_01.avif' },
     { id: 2, title: '新手首儲禮', subtitle: '首次儲值享最高 100% 加碼', status: 'active', endDate: '長期', prize: '+100%', gradient: 'linear-gradient(135deg,#1a0a00,#D97706)', imageSrc: '/event_02.avif', deposit: true },
     { id: 3, title: '每日簽到獎', subtitle: '連續簽到 7 天，累積豐厚獎勵', status: 'active', endDate: '長期', prize: '每日點數', gradient: 'linear-gradient(135deg,#0a1a00,#166534)', imageSrc: '/event_03.avif' },
-    { id: 4, title: '春節限定活動', subtitle: '農曆新年特別回饋，限時限量', status: 'upcoming', endDate: '2026/02/10', prize: 'NT$500,000', gradient: 'linear-gradient(135deg,#2d0a0a,#991b1b)', imageSrc: '/event_05.avif' },
+    { id: 4, title: '春節限定活動', subtitle: '農曆新年特別回饋，限時限量', status: 'upcoming', endDate: '2026/02/10', prize: '500,000 金幣', gradient: 'linear-gradient(135deg,#2d0a0a,#991b1b)', imageSrc: '/event_05.avif' },
     { id: 5, title: '情人節特別賽', subtitle: '雙人對戰，贏取情侶大禮包', status: 'upcoming', endDate: '2026/02/14', prize: '神秘禮物', gradient: 'linear-gradient(135deg,#1a003a,#be185d)', imageSrc: '/event_06.avif' },
-    { id: 6, title: '跨年倒數賽', subtitle: '2025 年倒數特別活動（已結束）', status: 'ended', endDate: '2025/01/01', prize: 'NT$800,000', gradient: 'linear-gradient(135deg,#1a1a1a,#374151)', imageSrc: '/event_07.avif' },
+    { id: 6, title: '跨年倒數賽', subtitle: '2025 年倒數特別活動（已結束）', status: 'ended', endDate: '2025/01/01', prize: '800,000 金幣', gradient: 'linear-gradient(135deg,#1a1a1a,#374151)', imageSrc: '/event_07.avif' },
     { id: 7, title: '每週儲值回饋', subtitle: '每週累積儲值，回饋最高 15% 點數', status: 'active', endDate: '長期', prize: '+15%', gradient: 'linear-gradient(135deg,#0a1a2d,#1d4ed8)', deposit: true },
     { id: 8, title: 'VIP 儲值加碼', subtitle: 'VIP 等級越高，儲值加碼越多', status: 'active', endDate: '長期', prize: '最高 +30%', gradient: 'linear-gradient(135deg,#2d0a2d,#9333ea)', deposit: true },
   ] satisfies EventItem[],
@@ -479,7 +480,7 @@ export const siteContent = {
     ],
     items: {
       account: [
-        { q: '忘記帳號密碼怎麼辦？', a: '您可以透過手機號碼驗證重設密碼。請點選登入頁面的「忘記密碼」，輸入您的手機號碼，收到驗證碼後即可設定新密碼。' },
+        { q: '忘記密碼怎麼辦？', a: '請點選登入彈窗的「忘記密碼」，先輸入帳號，再透過已綁定的手機號碼接收驗證碼並設定新密碼。未綁定手機的帳號可聯繫客服協助處理。' },
         { q: '如何更換手機號碼？', a: '請聯繫客服提出申請，需提供帳號驗證資訊進行身份確認。為保護您的帳號安全，此操作需要人工審核。' },
         { q: '帳號被停用了怎麼辦？', a: '帳號停用可能因違反使用條款或異常活動所致。請聯繫客服說明情況，我們的客服人員將協助您處理。' },
         { q: '如何修改個人資料？', a: '登入後前往「會員專區」，點選「個人資料」即可修改暱稱、頭像等資訊。基本資料（真實姓名、身分證）修改需聯繫客服。' },
@@ -553,8 +554,8 @@ export const siteContent = {
         benefits: ['返水 0.2%', '手續費減免 1%'],
         rebate: '0.2%',
         feeDiscount: '手續費減免 1%',
-        upgradeRequirement: '累積儲值 NT$5,000，且累積投注 NT$120,000',
-        maintainRequirement: '每月有效投注 NT$80,000，或月儲值 NT$2,000',
+        upgradeRequirement: '累積儲值 5,000 金幣，且累積投注 120,000 金幣',
+        maintainRequirement: '每月有效投注 80,000 金幣，或月儲值 2,000 金幣',
       },
       {
         level: 2,
@@ -564,8 +565,8 @@ export const siteContent = {
         benefits: ['返水 0.4%', '手續費減免 2%'],
         rebate: '0.4%',
         feeDiscount: '手續費減免 2%',
-        upgradeRequirement: '累積儲值 NT$12,000，且累積投注 NT$350,000',
-        maintainRequirement: '每月有效投注 NT$160,000，或月儲值 NT$5,000',
+        upgradeRequirement: '累積儲值 12,000 金幣，且累積投注 350,000 金幣',
+        maintainRequirement: '每月有效投注 160,000 金幣，或月儲值 5,000 金幣',
       },
       {
         level: 3,
@@ -575,8 +576,8 @@ export const siteContent = {
         benefits: ['返水 0.6%', '手續費減免 3%'],
         rebate: '0.6%',
         feeDiscount: '手續費減免 3%',
-        upgradeRequirement: '累積儲值 NT$25,000，且累積投注 NT$800,000',
-        maintainRequirement: '每月有效投注 NT$320,000，或月儲值 NT$12,000',
+        upgradeRequirement: '累積儲值 25,000 金幣，且累積投注 800,000 金幣',
+        maintainRequirement: '每月有效投注 320,000 金幣，或月儲值 12,000 金幣',
       },
       {
         level: 4,
@@ -586,8 +587,8 @@ export const siteContent = {
         benefits: ['返水 0.8%', '手續費減免 4%'],
         rebate: '0.8%',
         feeDiscount: '手續費減免 4%',
-        upgradeRequirement: '累積儲值 NT$45,000，且累積投注 NT$1,400,000',
-        maintainRequirement: '每月有效投注 NT$560,000，或月儲值 NT$22,000',
+        upgradeRequirement: '累積儲值 45,000 金幣，且累積投注 1,400,000 金幣',
+        maintainRequirement: '每月有效投注 560,000 金幣，或月儲值 22,000 金幣',
       },
       {
         level: 5,
@@ -597,8 +598,8 @@ export const siteContent = {
         benefits: ['返水 1.0%', '手續費減免 5%'],
         rebate: '1.0%',
         feeDiscount: '手續費減免 5%',
-        upgradeRequirement: '累積儲值 NT$70,000，且累積投注 NT$2,100,000',
-        maintainRequirement: '每月有效投注 NT$900,000，或月儲值 NT$35,000',
+        upgradeRequirement: '累積儲值 70,000 金幣，且累積投注 2,100,000 金幣',
+        maintainRequirement: '每月有效投注 900,000 金幣，或月儲值 35,000 金幣',
       },
       {
         level: 6,
@@ -608,8 +609,8 @@ export const siteContent = {
         benefits: ['返水 1.2%', '手續費減免 6%'],
         rebate: '1.2%',
         feeDiscount: '手續費減免 6%',
-        upgradeRequirement: '累積儲值 NT$105,000，且累積投注 NT$3,000,000',
-        maintainRequirement: '每月有效投注 NT$1,300,000，或月儲值 NT$50,000',
+        upgradeRequirement: '累積儲值 105,000 金幣，且累積投注 3,000,000 金幣',
+        maintainRequirement: '每月有效投注 1,300,000 金幣，或月儲值 50,000 金幣',
       },
       {
         level: 7,
@@ -619,8 +620,8 @@ export const siteContent = {
         benefits: ['返水 1.4%', '手續費減免 7%'],
         rebate: '1.4%',
         feeDiscount: '手續費減免 7%',
-        upgradeRequirement: '累積儲值 NT$150,000，且累積投注 NT$4,200,000',
-        maintainRequirement: '每月有效投注 NT$1,800,000，或月儲值 NT$75,000',
+        upgradeRequirement: '累積儲值 150,000 金幣，且累積投注 4,200,000 金幣',
+        maintainRequirement: '每月有效投注 1,800,000 金幣，或月儲值 75,000 金幣',
       },
       {
         level: 8,
@@ -630,8 +631,8 @@ export const siteContent = {
         benefits: ['返水 1.6%', '手續費減免 8%'],
         rebate: '1.6%',
         feeDiscount: '手續費減免 8%',
-        upgradeRequirement: '累積儲值 NT$210,000，且累積投注 NT$5,600,000',
-        maintainRequirement: '每月有效投注 NT$2,400,000，或月儲值 NT$105,000',
+        upgradeRequirement: '累積儲值 210,000 金幣，且累積投注 5,600,000 金幣',
+        maintainRequirement: '每月有效投注 2,400,000 金幣，或月儲值 105,000 金幣',
       },
       {
         level: 9,
@@ -641,8 +642,8 @@ export const siteContent = {
         benefits: ['返水 1.8%', '手續費減免 9%'],
         rebate: '1.8%',
         feeDiscount: '手續費減免 9%',
-        upgradeRequirement: '累積儲值 NT$280,000，且累積投注 NT$7,300,000',
-        maintainRequirement: '每月有效投注 NT$3,100,000，或月儲值 NT$140,000',
+        upgradeRequirement: '累積儲值 280,000 金幣，且累積投注 7,300,000 金幣',
+        maintainRequirement: '每月有效投注 3,100,000 金幣，或月儲值 140,000 金幣',
       },
       {
         level: 10,
@@ -652,16 +653,16 @@ export const siteContent = {
         benefits: ['返水 2.0%', '手續費減免 10%'],
         rebate: '2.0%',
         feeDiscount: '手續費減免 10%',
-        upgradeRequirement: '累積儲值 NT$360,000，且累積投注 NT$9,200,000',
-        maintainRequirement: '每月有效投注 NT$4,000,000，或月儲值 NT$180,000',
+        upgradeRequirement: '累積儲值 360,000 金幣，且累積投注 9,200,000 金幣',
+        maintainRequirement: '每月有效投注 4,000,000 金幣，或月儲值 180,000 金幣',
       },
     ] satisfies VipLevel[],
     historyItems: [
-      { date: '2024/01/15 14:32', game: '老虎機 — 水果大豐收', result: '+NT$2,580', positive: true },
-      { date: '2024/01/15 13:20', game: '百家樂', result: '-NT$500', positive: false },
-      { date: '2024/01/14 22:15', game: '老虎機 — 招財貓', result: '+NT$1,200', positive: true },
-      { date: '2024/01/14 20:08', game: '捕魚機', result: '+NT$380', positive: true },
-      { date: '2024/01/14 18:55', game: '百家樂', result: '-NT$1,000', positive: false },
+      { date: '2024/01/15 14:32', game: '老虎機 — 水果大豐收', result: '+2,580 金幣', positive: true },
+      { date: '2024/01/15 13:20', game: '百家樂', result: '-500 金幣', positive: false },
+      { date: '2024/01/14 22:15', game: '老虎機 — 招財貓', result: '+1,200 金幣', positive: true },
+      { date: '2024/01/14 20:08', game: '捕魚機', result: '+380 金幣', positive: true },
+      { date: '2024/01/14 18:55', game: '百家樂', result: '-1,000 金幣', positive: false },
     ] satisfies HistoryItem[],
     tabs: [
       { key: 'profile' as MemberTab, label: '個人資料', icon: '👤' },
@@ -672,15 +673,15 @@ export const siteContent = {
   },
   dailyCheckin: {
     milestones: [
-      { days: 5,  reward: 'NT$100'   },
-      { days: 7,  reward: 'NT$200'   },
+      { days: 5,  reward: '100 金幣', directGoldAmount: 100 },
+      { days: 7,  reward: '200 金幣', directGoldAmount: 200 },
       { days: 10, reward: '銅幣 10,000,000' },
-      { days: 15, reward: 'NT$1,000' },
-      { days: 20, reward: 'NT$2,000' },
-      { days: 25, reward: 'NT$3,500' },
-      { days: 30, reward: 'NT$8,888' },
+      { days: 15, reward: '活動銀幣 10,000' },
+      { days: 20, reward: '活動金幣 5,000' },
+      { days: 25, reward: '3,500 金幣', directGoldAmount: 3_500 },
+      { days: 30, reward: '8,888 金幣', directGoldAmount: 8_888 },
     ] satisfies CheckinMilestone[],
-    // 每天簽到可獲得的點數（NT$），共31天
+    // 每天簽到可獲得的金幣，共31天
     dailyRewards: [
       10, 15, 20, 15, 25,   //  1-5
       30, 20, 25, 30, 35,   //  6-10
