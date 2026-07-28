@@ -508,6 +508,7 @@ export const siteContent = {
   member: {
     defaultUser: {
       id: 'P88888',
+      account: 'Player88888',
       name: '玩家888',
       vip: 3,
       avatar: '👤',

@@ -11,6 +11,7 @@ function normalizeProfile(saved?: Partial<UserProfile>): UserProfile {
   const base = siteContent.member.defaultUser
   return {
     id: String(saved?.id || base.id),
+    account: String(saved?.account || base.account),
     name: String(saved?.name || base.name),
     vip: Number.isFinite(saved?.vip) ? Number(saved?.vip) : base.vip,
     avatar: String(saved?.avatar || base.avatar),
@@ -73,8 +74,14 @@ export const useAppState = () => {
     localStorage.setItem(LS_USER_KEY, JSON.stringify(profile.value))
   }
 
-  function login(name?: string, provider: AuthProvider = 'account', closeAfterLogin = true) {
+  function login(
+    name?: string,
+    provider: AuthProvider = 'account',
+    closeAfterLogin = true,
+    account?: string,
+  ) {
     if (name) profile.value.name = name
+    if (account) profile.value.account = account
     profile.value.authProvider = provider
     isLoggedIn.value = true
     if (closeAfterLogin) closeLogin()
@@ -88,6 +95,7 @@ export const useAppState = () => {
     isLoggedIn.value = false
     profile.value = normalizeProfile()
     financial.resetFinancialState()
+    useGiftState().resetGiftState()
     useSocialState().resetSocialState()
     protectedDestination.value = null
     if (import.meta.client) {

@@ -196,6 +196,34 @@ export const useFinancialState = () => {
     return true
   }
 
+  function reserveGiftFromVault(amount: number) {
+    const normalizedAmount = Math.floor(amount)
+    if (normalizedAmount <= 0 || normalizedAmount > financialState.value.vaultBalance) return false
+    financialState.value.vaultBalance -= normalizedAmount
+    return true
+  }
+
+  function refundGiftToVault(amount: number) {
+    const normalizedAmount = Math.max(0, Math.floor(amount))
+    if (!normalizedAmount) return false
+    financialState.value.vaultBalance += normalizedAmount
+    return true
+  }
+
+  function receiveGiftToWallet(senderLabel: string, amount: number) {
+    const normalizedAmount = Math.max(0, Math.floor(amount))
+    if (!normalizedAmount) return null
+    financialState.value.balance += normalizedAmount
+    return addTransaction({
+      type: 'gift',
+      title: '收到玩家贈禮',
+      amount: normalizedAmount,
+      wallet: 'gold',
+      status: 'success',
+      detail: `送禮者 ${senderLabel}`,
+    })
+  }
+
   function transferFromVault(receiverId: string, amount: number) {
     if (!canSubmitVaultTransfer(receiverId, amount, financialState.value.vaultBalance)) return null
     const transfer = calculateVaultTransfer(amount)
@@ -254,6 +282,9 @@ export const useFinancialState = () => {
     completeDeposit,
     depositToVault,
     withdrawFromVault,
+    reserveGiftFromVault,
+    refundGiftToVault,
+    receiveGiftToWallet,
     transferFromVault,
     exchangeWalletCurrency,
     resetFinancialState,

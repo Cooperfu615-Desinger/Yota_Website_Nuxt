@@ -146,8 +146,12 @@ function onReferralInput(event: Event) {
   regForm.referralCode = (event.target as HTMLInputElement).value.toUpperCase().replace(/[^A-Z0-9]/g, '')
 }
 
-function finishLogin(name: string | undefined, provider: Parameters<typeof login>[1]) {
-  login(name, provider, false)
+function finishLogin(
+  name: string | undefined,
+  provider: Parameters<typeof login>[1],
+  account?: string,
+) {
+  login(name, provider, false, account)
   authStage.value = 'success'
   window.setTimeout(() => {
     closeLogin()
@@ -175,7 +179,7 @@ async function handleAccountLogin() {
   loading.value = true
   authStage.value = 'logging-in'
   await delay(900)
-  finishLogin(form.account.trim() || undefined, 'account')
+  finishLogin(form.account.trim() || undefined, 'account', form.account.trim())
   loading.value = false
 }
 
@@ -384,7 +388,7 @@ async function handleRegister() {
   loading.value = true
   authStage.value = 'logging-in'
   await delay(1000)
-  finishLogin(regForm.nickname.trim(), 'account')
+  finishLogin(regForm.nickname.trim(), 'account', regForm.account.trim())
   loading.value = false
 }
 

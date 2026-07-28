@@ -1,4 +1,10 @@
 <script setup lang="ts">
+import { siteContent, type ChatPlayerProfile } from '~/data/siteContent'
+import {
+  MAX_GIFT_REQUEST_AMOUNT,
+  type GiftParty,
+  type GiftRequest,
+} from '~/utils/giftRequest'
 import { calculateVaultTransfer, canSubmitVaultTransfer } from '~/utils/vaultTransfer'
 import {
   calculateWalletExchange,
@@ -9,6 +15,7 @@ import {
 
 type VaultTab = 'vault' | 'transfer' | 'exchange'
 type NoticeType = 'success' | 'error'
+const MAX_GIFT_AMOUNT = MAX_GIFT_REQUEST_AMOUNT
 
 const props = withDefaults(defineProps<{ embedded?: boolean; initialTab?: VaultTab; view?: 'vault' | 'exchange' }>(), {
   embedded: false,
@@ -24,27 +31,85 @@ const {
   openLogin,
   depositToVault,
   withdrawFromVault,
-  transferFromVault,
   exchangeWalletCurrency,
 } = useAppState()
+const {
+  friends,
+  isBlockedPlayer,
+} = useSocialState()
+const {
+  pendingRequests,
+  dailyRemaining,
+  dailyLimit,
+  initGiftState,
+  expireGiftRequests,
+  createGiftRequest,
+  acceptGiftRequest,
+  rejectGiftRequest,
+  cancelGiftRequest,
+} = useGiftState()
 
 const activeTab = ref<VaultTab>(props.view === 'exchange' ? 'exchange' : props.initialTab)
 const mode = ref<'deposit' | 'withdraw'>('deposit')
 const amount = ref(0)
-const transferReceiverId = ref('')
+const selectedReceiver = ref<ChatPlayerProfile | null>(null)
+const showPlayerSearch = ref(false)
 const transferAmount = ref(0)
 const transferNotice = ref<{ type: NoticeType; text: string } | null>(null)
+const pendingGiftAction = ref<{
+  action: 'accept' | 'reject' | 'cancel'
+  request: GiftRequest
+} | null>(null)
+const giftDialogRef = ref<HTMLElement | null>(null)
+const giftDialogBackRef = ref<HTMLButtonElement | null>(null)
+let giftDialogReturnFocus: HTMLElement | null = null
+const giftActionTitle = computed(() => {
+  if (pendingGiftAction.value?.action === 'accept') return '接受這份贈禮？'
+  if (pendingGiftAction.value?.action === 'reject') return '拒絕這份贈禮？'
+  return '取消贈禮申請？'
+})
+const giftActionDescription = computed(() => {
+  if (!pendingGiftAction.value) return ''
+  const { action, request } = pendingGiftAction.value
+  if (action === 'accept') {
+    return `接受後，${request.actualReceived.toLocaleString()} 金幣會直接存入你的金幣錢包。`
+  }
+  if (action === 'reject') {
+    return `拒絕後，${request.amount.toLocaleString()} 金幣會退回 ${request.sender.name} 的保險箱。`
+  }
+  return `取消後，${request.amount.toLocaleString()} 金幣會全額退回你的保險箱。`
+})
+const giftActionConfirmLabel = computed(() => {
+  if (pendingGiftAction.value?.action === 'accept') return '確認接受'
+  if (pendingGiftAction.value?.action === 'reject') return '確認拒絕'
+  return '確認取消'
+})
+const giftNow = ref(0)
 const exchangeDirection = ref<WalletExchangeDirection>('gold-to-silver')
 const exchangeAmount = ref(0)
 const exchangeNotice = ref<{ type: NoticeType; text: string } | null>(null)
 let transferNoticeTimer: ReturnType<typeof setTimeout> | null = null
 let exchangeNoticeTimer: ReturnType<typeof setTimeout> | null = null
+let giftClockTimer: ReturnType<typeof setInterval> | null = null
 
 const maxAmount = computed(() => mode.value === 'deposit' ? userInfo.value.balance : userInfo.value.vaultBalance)
+const maxTransferAmount = computed(() => Math.min(userInfo.value.vaultBalance, MAX_GIFT_AMOUNT))
 const transferSummary = computed(() => calculateVaultTransfer(transferAmount.value))
 const canConfirmTransfer = computed(() =>
-  canSubmitVaultTransfer(transferReceiverId.value, transferAmount.value, userInfo.value.vaultBalance)
+  canSubmitVaultTransfer(selectedReceiver.value?.playerId ?? '', transferAmount.value, userInfo.value.vaultBalance) &&
+  transferAmount.value <= MAX_GIFT_AMOUNT &&
+  dailyRemaining.value > 0
 )
+const currentGiftParty = computed<GiftParty>(() => ({
+  playerId: userInfo.value.id,
+  account: userInfo.value.account,
+  name: userInfo.value.name,
+  avatar: userInfo.value.avatar,
+}))
+const searchablePlayers = computed(() =>
+  siteContent.chat.onlinePlayers.filter(player => !isBlockedPlayer(player.playerId)),
+)
+const friendIds = computed(() => friends.value.map(friend => friend.playerId))
 const exchangeSourceBalance = computed(() =>
   exchangeDirection.value === 'gold-to-silver' ? userInfo.value.balance : userInfo.value.silverBalance
 )
@@ -58,16 +123,41 @@ watch([mode, maxAmount], () => {
   if (amount.value > maxAmount.value) amount.value = maxAmount.value
 })
 
-watch(() => userInfo.value.vaultBalance, (vaultBalance) => {
-  if (transferAmount.value > vaultBalance) transferAmount.value = vaultBalance
+watch(maxTransferAmount, (maximum) => {
+  if (transferAmount.value > maximum) transferAmount.value = maximum
 })
 
 watch([exchangeDirection, exchangeSourceBalance], () => {
   if (exchangeAmount.value > exchangeSourceBalance.value) exchangeAmount.value = exchangeSourceBalance.value
 })
 
+watch(pendingGiftAction, async (action) => {
+  if (!import.meta.client) return
+
+  if (action) {
+    await nextTick()
+    giftDialogBackRef.value?.focus()
+    return
+  }
+
+  await nextTick()
+  if (giftDialogReturnFocus?.isConnected) {
+    giftDialogReturnFocus.focus()
+  } else {
+    document.querySelector<HTMLElement>('[aria-label="待處理贈禮篩選"] button')?.focus()
+  }
+  giftDialogReturnFocus = null
+})
+
 onMounted(() => {
+  giftNow.value = Date.now()
+  initGiftState(currentGiftParty.value, giftNow.value)
+  expireGiftRequests(userInfo.value.id, giftNow.value)
   applyRouteQuery()
+  giftClockTimer = setInterval(() => {
+    giftNow.value = Date.now()
+    expireGiftRequests(userInfo.value.id, giftNow.value)
+  }, 60_000)
 })
 
 watch(() => route.query, () => {
@@ -77,6 +167,8 @@ watch(() => route.query, () => {
 onUnmounted(() => {
   if (transferNoticeTimer) clearTimeout(transferNoticeTimer)
   if (exchangeNoticeTimer) clearTimeout(exchangeNoticeTimer)
+  if (giftClockTimer) clearInterval(giftClockTimer)
+  if (import.meta.client && giftDialogReturnFocus?.isConnected) giftDialogReturnFocus.focus()
 })
 
 function applyRouteQuery() {
@@ -86,7 +178,7 @@ function applyRouteQuery() {
   }
   if (props.embedded) {
     activeTab.value = props.initialTab
-    if (typeof route.query.receiverId === 'string') transferReceiverId.value = route.query.receiverId
+    if (typeof route.query.receiverId === 'string') selectReceiverById(route.query.receiverId)
     return
   }
   if (route.query.tab === 'transfer') activeTab.value = 'transfer'
@@ -96,8 +188,21 @@ function applyRouteQuery() {
     return
   }
   if (typeof route.query.receiverId === 'string') {
-    transferReceiverId.value = route.query.receiverId
+    selectReceiverById(route.query.receiverId)
   }
+}
+
+function selectReceiverById(playerId: string) {
+  const player = siteContent.chat.onlinePlayers.find(item => item.playerId === playerId)
+  if (player && player.playerId !== userInfo.value.id && !isBlockedPlayer(player.playerId)) {
+    selectedReceiver.value = player
+  }
+}
+
+function selectReceiver(player: ChatPlayerProfile) {
+  selectedReceiver.value = player
+  showPlayerSearch.value = false
+  transferNotice.value = null
 }
 
 function selectVaultTab(tab: 'vault' | 'transfer') {
@@ -125,12 +230,12 @@ function confirm() {
 function onTransferAmountInput(e: Event) {
   let v = parseInt((e.target as HTMLInputElement).value.replace(/[^0-9]/g, ''), 10)
   if (isNaN(v) || v < 0) v = 0
-  if (v > userInfo.value.vaultBalance) v = userInfo.value.vaultBalance
+  if (v > maxTransferAmount.value) v = maxTransferAmount.value
   transferAmount.value = v
 }
 
 function setTransferPercent(percent: number) {
-  transferAmount.value = Math.floor(userInfo.value.vaultBalance * percent)
+  transferAmount.value = Math.floor(maxTransferAmount.value * percent)
 }
 
 function setExchangeDirection(direction: WalletExchangeDirection) {
@@ -171,9 +276,8 @@ function showExchangeNotice(type: NoticeType, text: string) {
 }
 
 function confirmTransfer() {
-  const receiverId = transferReceiverId.value.trim()
-  if (!receiverId) {
-    showTransferNotice('error', '請先輸入接收者 ID。')
+  if (!selectedReceiver.value) {
+    showTransferNotice('error', '請先搜尋並選擇收禮玩家。')
     return
   }
   if (transferAmount.value <= 0) {
@@ -181,18 +285,109 @@ function confirmTransfer() {
     return
   }
 
-  const result = transferFromVault(receiverId, transferAmount.value)
-  if (!result) {
-    showTransferNotice('error', '保險箱餘額不足，請先存入金幣。')
+  giftNow.value = Date.now()
+  const result = createGiftRequest(
+    currentGiftParty.value,
+    {
+      playerId: selectedReceiver.value.playerId,
+      account: selectedReceiver.value.account,
+      name: selectedReceiver.value.name,
+      avatar: selectedReceiver.value.avatar,
+    },
+    transferAmount.value,
+    giftNow.value,
+  )
+  if (!result.ok) {
+    if (result.reason === 'daily-limit') {
+      showTransferNotice('error', '今日贈禮申請次數已用完。')
+    } else if (result.reason === 'amount-limit') {
+      showTransferNotice('error', `單次贈禮上限為 ${MAX_GIFT_AMOUNT.toLocaleString()} 金幣。`)
+    } else if (result.reason === 'invalid-amount') {
+      showTransferNotice('error', '請輸入有效的贈禮金額。')
+    } else if (result.reason === 'invalid-recipient') {
+      showTransferNotice('error', '無法贈禮給這位玩家，請重新選擇。')
+    } else {
+      showTransferNotice('error', '保險箱餘額不足，請先存入金幣。')
+    }
     return
   }
 
   showTransferNotice(
     'success',
-    `已贈禮 ${result.amount.toLocaleString()} 點給 ${result.receiverId}，對方實收 ${result.actualReceived.toLocaleString()} 點。`
+    `贈禮申請已送出，等待 ${result.request.receiver.name} 接受；申請將於 168 小時後到期。`,
   )
-  transferReceiverId.value = ''
+  selectedReceiver.value = null
   transferAmount.value = 0
+}
+
+function openGiftAction(action: 'accept' | 'reject' | 'cancel', request: GiftRequest) {
+  if (import.meta.client) {
+    giftDialogReturnFocus = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null
+  }
+  pendingGiftAction.value = { action, request }
+}
+
+function closeGiftActionDialog() {
+  pendingGiftAction.value = null
+}
+
+function handleGiftDialogKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    event.preventDefault()
+    closeGiftActionDialog()
+    return
+  }
+
+  if (event.key !== 'Tab' || !giftDialogRef.value) return
+
+  const focusableElements = Array.from(
+    giftDialogRef.value.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+    ),
+  ).filter(element => !element.hasAttribute('hidden'))
+
+  if (!focusableElements.length) {
+    event.preventDefault()
+    giftDialogRef.value.focus()
+    return
+  }
+
+  const firstElement = focusableElements[0]
+  const lastElement = focusableElements[focusableElements.length - 1]
+  const focusIsInsideDialog = document.activeElement instanceof Node
+    && giftDialogRef.value.contains(document.activeElement)
+
+  if (event.shiftKey && (document.activeElement === firstElement || !focusIsInsideDialog)) {
+    event.preventDefault()
+    lastElement?.focus()
+  } else if (!event.shiftKey && (document.activeElement === lastElement || !focusIsInsideDialog)) {
+    event.preventDefault()
+    firstElement?.focus()
+  }
+}
+
+function confirmGiftAction() {
+  if (!pendingGiftAction.value) return
+  const { action, request } = pendingGiftAction.value
+  giftNow.value = Date.now()
+  const result = action === 'accept'
+    ? acceptGiftRequest(request.id, userInfo.value.id, giftNow.value)
+    : action === 'reject'
+      ? rejectGiftRequest(request.id, userInfo.value.id, giftNow.value)
+      : cancelGiftRequest(request.id, userInfo.value.id, giftNow.value)
+
+  if (!result.ok) {
+    showTransferNotice('error', '此申請狀態已更新，請重新確認列表。')
+  } else if (action === 'accept') {
+    showTransferNotice('success', `已接受 ${request.sender.name} 的贈禮，${request.actualReceived.toLocaleString()} 金幣已存入金幣錢包。`)
+  } else if (action === 'reject') {
+    showTransferNotice('success', `已拒絕 ${request.sender.name} 的贈禮申請。`)
+  } else {
+    showTransferNotice('success', `已取消贈禮申請，${request.amount.toLocaleString()} 金幣已退回保險箱。`)
+  }
+  closeGiftActionDialog()
 }
 
 function confirmExchange() {
@@ -228,7 +423,7 @@ function confirmExchange() {
       <div class="card-purple p-8 text-center max-w-sm mx-auto mt-8">
         <div class="text-5xl mb-4" aria-hidden="true">{{ props.view === 'exchange' ? '⇄' : '🔐' }}</div>
         <h1 class="text-xl font-black mb-2">{{ props.view === 'exchange' ? '兌換' : '保險箱 / 贈禮' }}</h1>
-        <p class="text-sm mb-5" style="color:var(--color-text-muted);">{{ props.view === 'exchange' ? '登入後即可進行金幣與銀幣兌換' : '登入後即可使用保險箱存放金幣，並將點數贈禮給其他會員' }}</p>
+        <p class="text-sm mb-5" style="color:var(--color-text-muted);">{{ props.view === 'exchange' ? '登入後即可進行金幣與銀幣兌換' : '登入後即可使用保險箱存放金幣，並將金幣贈禮給其他會員' }}</p>
         <button class="btn-gold w-full justify-center" @click="openLogin(props.view === 'exchange' ? '/lobby/exchange' : '/lobby/vault')">立即登入 / 註冊</button>
       </div>
     </template>
@@ -299,9 +494,10 @@ function confirmExchange() {
           </div>
         </div>
 
-        <div v-else-if="activeTab === 'transfer'" key="transfer" class="lg:grid lg:grid-cols-[300px_1fr] lg:gap-6 flex flex-col gap-4">
-          <!-- 左欄：規則與餘額 -->
-          <aside class="card-purple p-5 flex flex-col gap-4">
+        <div v-else-if="activeTab === 'transfer'" key="transfer" class="gift-tab-content">
+          <div class="gift-compose-grid">
+            <!-- 左欄：規則與餘額 -->
+            <aside class="card-purple p-5 flex flex-col gap-4">
             <div class="flex items-center gap-3 pb-4" style="border-bottom:1px solid rgba(255,255,255,0.12);">
               <div class="w-11 h-11 rounded-full flex items-center justify-center text-lg font-black" style="background:linear-gradient(135deg,var(--color-purple-mid),var(--color-gold)); color:#fff;">
                 VIP
@@ -312,29 +508,29 @@ function confirmExchange() {
               </div>
             </div>
 
-            <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.25);">
-              <div class="text-xs mb-1" style="color:var(--color-text-muted);">每日贈禮次數</div>
-              <div class="font-black">剩餘 5 <span class="text-xs font-normal" style="color:var(--color-text-muted);">/ 10 次</span></div>
-            </div>
-            <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.25);">
-              <div class="text-xs mb-1" style="color:var(--color-text-muted);">單次最高贈禮</div>
-              <div class="font-black" style="color:var(--color-gold);">1,000,000 點</div>
-            </div>
-            <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.25);">
-              <div class="text-xs mb-1" style="color:var(--color-text-muted);">目前手續費率</div>
-              <div class="font-black" style="color:#f87171;">5% <span class="text-xs font-normal" style="color:var(--color-text-muted);">VIP 6 可降至 3%</span></div>
-            </div>
+              <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.25);">
+                <div class="text-xs mb-1" style="color:var(--color-text-muted);">每日贈禮次數</div>
+                <div class="font-black">剩餘 {{ dailyRemaining }} <span class="text-xs font-normal" style="color:var(--color-text-muted);">/ {{ dailyLimit }} 次</span></div>
+              </div>
+              <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.25);">
+                <div class="text-xs mb-1" style="color:var(--color-text-muted);">單次最高贈禮</div>
+                <div class="font-black" style="color:var(--color-gold);">{{ MAX_GIFT_AMOUNT.toLocaleString() }} 金幣</div>
+              </div>
+              <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.25);">
+                <div class="text-xs mb-1" style="color:var(--color-text-muted);">目前手續費率</div>
+                <div class="font-black" style="color:#f87171;">5% <span class="text-xs font-normal" style="color:var(--color-text-muted);">送出申請時鎖定</span></div>
+              </div>
 
-            <div class="mt-auto pt-4" style="border-top:1px solid rgba(255,255,255,0.12);">
-              <div class="text-xs mb-1" style="color:var(--color-text-muted);">保險箱餘額</div>
-              <div class="text-2xl font-black" style="color:var(--color-gold);">{{ userInfo.vaultBalance.toLocaleString() }}</div>
-            </div>
-          </aside>
+              <div class="mt-auto pt-4" style="border-top:1px solid rgba(255,255,255,0.12);">
+                <div class="text-xs mb-1" style="color:var(--color-text-muted);">可用保險箱餘額</div>
+                <div class="text-2xl font-black" style="color:var(--color-gold);">{{ userInfo.vaultBalance.toLocaleString() }}</div>
+              </div>
+            </aside>
 
-          <!-- 右欄：贈禮表單 -->
-          <section class="card-purple p-5">
-            <h2 class="text-lg font-black mb-1">會員贈禮</h2>
-            <p class="text-sm mb-4" style="color:var(--color-text-muted);">贈禮金額會從保險箱扣除，系統會自動計算手續費與對方實收點數。</p>
+            <!-- 右欄：贈禮表單 -->
+            <section class="card-purple p-5">
+              <h2 class="text-lg font-black mb-1">建立贈禮申請</h2>
+              <p class="text-sm mb-4" style="color:var(--color-text-muted);">申請送出後會保留贈禮原額；對方接受才完成，取消、拒絕或 168 小時逾期皆全額退回。</p>
 
             <div
               v-if="transferNotice"
@@ -346,18 +542,29 @@ function confirmExchange() {
               {{ transferNotice.text }}
             </div>
 
-            <div class="grid gap-4">
-              <div>
-                <label class="input-label" for="transfer-receiver">接收者 ID</label>
-                <input
-                  id="transfer-receiver"
-                  v-model="transferReceiverId"
-                  type="text"
-                  class="input-field"
-                  placeholder="請輸入玩家 ID，例如 P10002"
-                  autocomplete="off"
-                />
-              </div>
+              <div class="grid gap-4">
+                <div>
+                  <span id="transfer-receiver-label" class="input-label">收禮玩家</span>
+                  <div class="receiver-picker" role="group" aria-labelledby="transfer-receiver-label">
+                    <div
+                      v-if="selectedReceiver"
+                      class="receiver-selected"
+                    >
+                      <span>{{ selectedReceiver.avatar }}</span>
+                      <div>
+                        <strong>{{ selectedReceiver.name }}</strong>
+                        <small>帳號：{{ selectedReceiver.account }}</small>
+                      </div>
+                      <button type="button" aria-label="清除已選玩家" @click="selectedReceiver = null">×</button>
+                    </div>
+                    <div v-else class="receiver-placeholder">
+                      尚未選擇玩家
+                    </div>
+                    <button type="button" class="receiver-search-button" @click="showPlayerSearch = true">
+                      搜尋
+                    </button>
+                  </div>
+                </div>
 
               <div>
                 <label class="input-label" for="transfer-amount">贈禮金額</label>
@@ -376,7 +583,7 @@ function confirmExchange() {
                     :value="transferAmount"
                     type="range"
                     min="0"
-                    :max="userInfo.vaultBalance"
+                    :max="maxTransferAmount"
                     step="1000"
                     class="w-full accent-[#F5C842]"
                     aria-label="贈禮金額拉桿"
@@ -407,17 +614,27 @@ function confirmExchange() {
                 </div>
               </div>
 
-              <button
-                class="btn-gold w-full justify-center text-lg py-3"
-                style="border-radius:14px;"
-                :disabled="!canConfirmTransfer"
-                :style="!canConfirmTransfer ? 'opacity:0.5;cursor:not-allowed;' : ''"
-                @click="confirmTransfer"
-              >
-                確認贈禮
-              </button>
-            </div>
-          </section>
+                <button
+                  class="btn-gold w-full justify-center text-lg py-3"
+                  style="border-radius:14px;"
+                  :disabled="!canConfirmTransfer"
+                  :style="!canConfirmTransfer ? 'opacity:0.5;cursor:not-allowed;' : ''"
+                  @click="confirmTransfer"
+                >
+                  送出贈禮申請
+                </button>
+              </div>
+            </section>
+          </div>
+
+          <LobbyGiftRequestList
+            :requests="pendingRequests"
+            :current-player-id="userInfo.id"
+            :now="giftNow"
+            @accept="openGiftAction('accept', $event)"
+            @reject="openGiftAction('reject', $event)"
+            @cancel="openGiftAction('cancel', $event)"
+          />
         </div>
 
         <div v-else key="exchange" class="lg:grid lg:grid-cols-[300px_1fr] lg:gap-6 flex flex-col gap-4">
@@ -552,6 +769,68 @@ function confirmExchange() {
         </div>
       </Transition>
     </template>
+
+    <ClientOnly>
+      <LobbyPlayerSearchModal
+        :open="showPlayerSearch"
+        :players="searchablePlayers"
+        :friend-ids="friendIds"
+        :current-player-id="userInfo.id"
+        @select="selectReceiver"
+        @close="showPlayerSearch = false"
+      />
+
+      <Teleport to="body">
+        <Transition name="gift-dialog">
+          <div
+            v-if="pendingGiftAction"
+            class="gift-dialog-overlay"
+            role="presentation"
+            @click.self="closeGiftActionDialog"
+          >
+            <section
+              ref="giftDialogRef"
+              class="gift-dialog-panel"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="gift-action-title"
+              aria-describedby="gift-action-description"
+              tabindex="-1"
+              @keydown="handleGiftDialogKeydown"
+            >
+              <span class="gift-dialog-mark" aria-hidden="true">
+                {{ pendingGiftAction.action === 'accept' ? '✓' : pendingGiftAction.action === 'reject' ? '×' : '↩' }}
+              </span>
+              <p>GIFT REQUEST</p>
+              <h2 id="gift-action-title">{{ giftActionTitle }}</h2>
+              <div class="gift-dialog-player">
+                <span aria-hidden="true">
+                  {{ pendingGiftAction.action === 'cancel' ? pendingGiftAction.request.receiver.avatar : pendingGiftAction.request.sender.avatar }}
+                </span>
+                <div>
+                  <strong>
+                    {{ pendingGiftAction.action === 'cancel' ? pendingGiftAction.request.receiver.name : pendingGiftAction.request.sender.name }}
+                  </strong>
+                  <small>{{ pendingGiftAction.request.amount.toLocaleString() }} 金幣</small>
+                </div>
+              </div>
+              <p id="gift-action-description" class="gift-dialog-description">{{ giftActionDescription }}</p>
+              <div class="gift-dialog-actions">
+                <button ref="giftDialogBackRef" type="button" class="gift-dialog-back" @click="closeGiftActionDialog">返回</button>
+                <button
+                  type="button"
+                  class="gift-dialog-confirm"
+                  :class="pendingGiftAction.action"
+                  @click="confirmGiftAction"
+                >
+                  {{ giftActionConfirmLabel }}
+                </button>
+              </div>
+            </section>
+          </div>
+        </Transition>
+      </Teleport>
+    </ClientOnly>
   </div>
 </template>
 
@@ -560,4 +839,53 @@ function confirmExchange() {
 .tab-fade-leave-active { transition: opacity 0.18s; }
 .tab-fade-enter-from,
 .tab-fade-leave-to { opacity: 0; }
+.gift-tab-content { display: flex; flex-direction: column; gap: 16px; }
+.gift-compose-grid { display: grid; grid-template-columns: minmax(250px,300px) minmax(0,1fr); gap: 18px; align-items: start; }
+.gift-compose-grid > * { min-width: 0; }
+.receiver-picker { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 9px; align-items: stretch; }
+.receiver-placeholder,
+.receiver-selected { min-height: 52px; border: 1px solid var(--color-border); border-radius: 12px; background: rgba(0,0,0,.24); }
+.receiver-placeholder { display: flex; align-items: center; padding: 0 14px; color: var(--color-text-muted); font-size: 12px; }
+.receiver-selected { display: grid; grid-template-columns: 34px minmax(0,1fr) 24px; align-items: center; gap: 9px; padding: 7px 9px; }
+.receiver-selected > span { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 10px; background: rgba(168,85,247,.14); font-size: 18px; }
+.receiver-selected > div { display: flex; min-width: 0; flex-direction: column; }
+.receiver-selected strong { overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.receiver-selected small { overflow: hidden; color: var(--color-text-muted); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.receiver-selected > button { width: 24px; height: 24px; color: var(--color-text-muted); border-radius: 50%; font-size: 16px; }
+.receiver-selected > button:hover { color: #fff; background: rgba(255,255,255,.08); }
+.receiver-search-button { min-width: 76px; padding: 0 16px; border: 1px solid rgba(245,200,66,.36); border-radius: 12px; color: #1b0a25; background: linear-gradient(135deg,#f8db6b,#f5c842); font-size: 12px; font-weight: 900; box-shadow: 0 8px 22px rgba(245,200,66,.12); }
+.receiver-search-button:hover { filter: brightness(1.06); }
+.gift-dialog-enter-active,
+.gift-dialog-leave-active { transition: opacity .2s ease; }
+.gift-dialog-enter-active .gift-dialog-panel,
+.gift-dialog-leave-active .gift-dialog-panel { transition: transform .2s ease, opacity .2s ease; }
+.gift-dialog-enter-from,
+.gift-dialog-leave-to { opacity: 0; }
+.gift-dialog-enter-from .gift-dialog-panel,
+.gift-dialog-leave-to .gift-dialog-panel { opacity: 0; transform: translateY(12px) scale(.97); }
+.gift-dialog-overlay { position: fixed; inset: 0; z-index: 1090; display: grid; place-items: center; padding: 18px; background: rgba(5,0,15,.84); backdrop-filter: blur(10px); }
+.gift-dialog-panel { width: min(410px,100%); padding: 26px; border: 1px solid rgba(168,85,247,.32); border-radius: 22px; color: var(--color-text); background: radial-gradient(circle at 100% 0,rgba(168,85,247,.2),transparent 34%),linear-gradient(155deg,#21103a,#10051f); box-shadow: 0 24px 70px rgba(0,0,0,.58); text-align: center; }
+.gift-dialog-mark { display: grid; width: 48px; height: 48px; margin: 0 auto 12px; place-items: center; border: 1px solid rgba(245,200,66,.32); border-radius: 15px; color: var(--color-gold); background: rgba(245,200,66,.08); font-size: 24px; font-weight: 900; }
+.gift-dialog-panel > p:first-of-type { margin: 0; color: var(--color-gold); font-size: 9px; font-weight: 900; letter-spacing: .17em; }
+.gift-dialog-panel h2 { margin: 4px 0 15px; font-size: 22px; }
+.gift-dialog-player { display: flex; align-items: center; gap: 10px; padding: 11px; border: 1px solid rgba(255,255,255,.07); border-radius: 12px; background: rgba(0,0,0,.2); text-align: left; }
+.gift-dialog-player > span { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 10px; background: rgba(168,85,247,.13); font-size: 19px; }
+.gift-dialog-player > div { display: flex; flex-direction: column; }
+.gift-dialog-player strong { font-size: 12px; }
+.gift-dialog-player small { color: var(--color-gold); font-size: 10px; }
+.gift-dialog-description { margin: 14px 0 0; color: var(--color-text-muted); font-size: 11px; line-height: 1.7; }
+.gift-dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 18px; }
+.gift-dialog-actions button { min-height: 42px; border-radius: 11px; font-size: 11px; font-weight: 900; }
+.gift-dialog-back { color: var(--color-text-muted); border: 1px solid var(--color-border); background: rgba(255,255,255,.04); }
+.gift-dialog-confirm { color: #170920; background: var(--color-gold); }
+.gift-dialog-confirm.reject,
+.gift-dialog-confirm.cancel { color: #fff; background: #be123c; }
+@media(max-width:900px) {
+  .gift-compose-grid { grid-template-columns: 1fr; }
+}
+@media(max-width:520px) {
+  .receiver-picker { grid-template-columns: 1fr; }
+  .receiver-search-button { min-height: 42px; }
+  .gift-dialog-panel { padding: 22px 18px; }
+}
 </style>
