@@ -432,9 +432,9 @@ function confirmExchange() {
     <template v-else>
       <h1 v-if="!props.embedded" class="section-title mb-4">{{ props.view === 'exchange' ? '兌換' : '保險箱 / 贈禮' }}</h1>
 
-      <div v-if="!props.embedded && props.view === 'vault'" class="tab-bar mb-4 max-w-lg" role="tablist" aria-label="保險箱與贈禮">
-        <button class="tab-btn" :class="{ active: activeTab === 'vault' }" role="tab" :aria-selected="activeTab === 'vault'" @click="selectVaultTab('vault')">保險箱</button>
-        <button class="tab-btn" :class="{ active: activeTab === 'transfer' }" role="tab" :aria-selected="activeTab === 'transfer'" @click="selectVaultTab('transfer')">贈禮</button>
+      <div v-if="!props.embedded && props.view === 'vault'" class="tab-bar mb-4 max-w-lg" role="group" aria-label="保險箱與贈禮">
+        <button class="tab-btn" :class="{ active: activeTab === 'vault' }" :aria-pressed="activeTab === 'vault'" @click="selectVaultTab('vault')">保險箱</button>
+        <button class="tab-btn" :class="{ active: activeTab === 'transfer' }" :aria-pressed="activeTab === 'transfer'" @click="selectVaultTab('transfer')">贈禮</button>
       </div>
 
       <Transition name="tab-fade" mode="out-in">
@@ -459,9 +459,9 @@ function confirmExchange() {
           <!-- 右欄：操作 -->
           <div class="card-purple p-5">
             <!-- 模式切換 -->
-            <div class="tab-bar mb-4" role="tablist" aria-label="保險箱操作">
-              <button class="tab-btn" :class="{ active: mode === 'deposit' }" role="tab" :aria-selected="mode === 'deposit'" @click="mode = 'deposit'">存入</button>
-              <button class="tab-btn" :class="{ active: mode === 'withdraw' }" role="tab" :aria-selected="mode === 'withdraw'" @click="mode = 'withdraw'">取出</button>
+            <div class="tab-bar mb-4" role="group" aria-label="保險箱操作">
+              <button class="tab-btn" :class="{ active: mode === 'deposit' }" :aria-pressed="mode === 'deposit'" @click="mode = 'deposit'">存入</button>
+              <button class="tab-btn" :class="{ active: mode === 'withdraw' }" :aria-pressed="mode === 'withdraw'" @click="mode = 'withdraw'">取出</button>
             </div>
 
             <h2 class="text-lg font-black text-center mb-1">{{ mode === 'deposit' ? '存入保險箱' : '取出至金幣' }}</h2>
@@ -497,50 +497,52 @@ function confirmExchange() {
         <div v-else-if="activeTab === 'transfer'" key="transfer" class="gift-tab-content">
           <div class="gift-compose-grid">
             <!-- 左欄：規則與餘額 -->
-            <aside class="card-purple p-5 flex flex-col gap-4">
-            <div class="flex items-center gap-3 pb-4" style="border-bottom:1px solid rgba(255,255,255,0.12);">
-              <div class="w-11 h-11 rounded-full flex items-center justify-center text-lg font-black" style="background:linear-gradient(135deg,var(--color-purple-mid),var(--color-gold)); color:#fff;">
-                VIP
-              </div>
-              <div>
-                <div class="font-black" style="color:var(--color-gold);">VIP {{ userInfo.vip }}</div>
-                <div class="text-xs" style="color:var(--color-text-muted);">保險箱贈禮權限</div>
-              </div>
-            </div>
+            <aside class="card-purple gift-rules-panel">
+              <header class="gift-rules-header">
+                <h2>贈禮規則</h2>
+                <b>VIP {{ userInfo.vip }}</b>
+              </header>
 
-              <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.25);">
-                <div class="text-xs mb-1" style="color:var(--color-text-muted);">每日贈禮次數</div>
-                <div class="font-black">剩餘 {{ dailyRemaining }} <span class="text-xs font-normal" style="color:var(--color-text-muted);">/ {{ dailyLimit }} 次</span></div>
-              </div>
-              <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.25);">
-                <div class="text-xs mb-1" style="color:var(--color-text-muted);">單次最高贈禮</div>
-                <div class="font-black" style="color:var(--color-gold);">{{ MAX_GIFT_AMOUNT.toLocaleString() }} 金幣</div>
-              </div>
-              <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.25);">
-                <div class="text-xs mb-1" style="color:var(--color-text-muted);">目前手續費率</div>
-                <div class="font-black" style="color:#f87171;">5% <span class="text-xs font-normal" style="color:var(--color-text-muted);">送出申請時鎖定</span></div>
-              </div>
+              <dl class="gift-rule-list">
+                <div>
+                  <dt>每日剩餘次數</dt>
+                  <dd>{{ dailyRemaining }} / {{ dailyLimit }} 次</dd>
+                </div>
+                <div>
+                  <dt>單次最高贈禮</dt>
+                  <dd>{{ MAX_GIFT_AMOUNT.toLocaleString() }} 金幣</dd>
+                </div>
+                <div>
+                  <dt>贈禮手續費</dt>
+                  <dd>5%</dd>
+                </div>
+                <div>
+                  <dt>申請有效期限</dt>
+                  <dd>168 小時</dd>
+                </div>
+              </dl>
 
-              <div class="mt-auto pt-4" style="border-top:1px solid rgba(255,255,255,0.12);">
-                <div class="text-xs mb-1" style="color:var(--color-text-muted);">可用保險箱餘額</div>
-                <div class="text-2xl font-black" style="color:var(--color-gold);">{{ userInfo.vaultBalance.toLocaleString() }}</div>
+              <div class="gift-vault-balance">
+                <span>可用保險箱餘額</span>
+                <strong>{{ userInfo.vaultBalance.toLocaleString() }} <small>金幣</small></strong>
               </div>
             </aside>
 
             <!-- 右欄：贈禮表單 -->
             <section class="card-purple p-5">
-              <h2 class="text-lg font-black mb-1">建立贈禮申請</h2>
-              <p class="text-sm mb-4" style="color:var(--color-text-muted);">申請送出後會保留贈禮原額；對方接受才完成，取消、拒絕或 168 小時逾期皆全額退回。</p>
+              <div class="gift-form-heading">
+                <h2>建立贈禮申請</h2>
+                <p>申請送出後會保留贈禮原額；對方接受才完成，取消、拒絕或逾期皆全額退回。</p>
+              </div>
 
-            <div
-              v-if="transferNotice"
-              class="mb-4 rounded-xl px-4 py-3 text-sm font-bold"
-              :style="transferNotice.type === 'success'
-                ? 'background:rgba(74,222,128,0.14); color:#86efac; border:1px solid rgba(74,222,128,0.3);'
-                : 'background:rgba(248,113,113,0.14); color:#fca5a5; border:1px solid rgba(248,113,113,0.3);'"
-            >
-              {{ transferNotice.text }}
-            </div>
+              <div
+                v-if="transferNotice"
+                class="gift-form-notice"
+                :class="transferNotice.type"
+                role="status"
+              >
+                {{ transferNotice.text }}
+              </div>
 
               <div class="grid gap-4">
                 <div>
@@ -560,7 +562,7 @@ function confirmExchange() {
                     <div v-else class="receiver-placeholder">
                       尚未選擇玩家
                     </div>
-                    <button type="button" class="receiver-search-button" @click="showPlayerSearch = true">
+                    <button type="button" class="btn-outline-purple receiver-search-button" @click="showPlayerSearch = true">
                       搜尋
                     </button>
                   </div>
@@ -568,55 +570,45 @@ function confirmExchange() {
 
               <div>
                 <label class="input-label" for="transfer-amount">贈禮金額</label>
-                <div class="rounded-xl p-4" style="background:rgba(0,0,0,0.3); border:1px solid var(--color-border);">
+                <div class="gift-amount-control">
+                  <div class="gift-amount-input">
                   <input
                     id="transfer-amount"
                     :value="transferAmount"
                     type="text"
                     inputmode="numeric"
-                    class="w-full bg-transparent outline-none text-3xl font-black text-center mb-3"
-                    style="color:var(--color-gold);"
+                    class="input-field"
                     placeholder="0"
                     @input="onTransferAmountInput"
                   />
-                  <input
-                    :value="transferAmount"
-                    type="range"
-                    min="0"
-                    :max="maxTransferAmount"
-                    step="1000"
-                    class="w-full accent-[#F5C842]"
-                    aria-label="贈禮金額拉桿"
-                    @input="onTransferAmountInput"
-                  />
-                  <div class="grid grid-cols-5 gap-2 mt-3">
-                    <button type="button" class="text-xs font-bold rounded-lg py-2" style="background:rgba(255,255,255,0.07); color:var(--color-text-muted);" @click="setTransferPercent(0)">0%</button>
-                    <button type="button" class="text-xs font-bold rounded-lg py-2" style="background:rgba(255,255,255,0.07); color:var(--color-text-muted);" @click="setTransferPercent(0.25)">25%</button>
-                    <button type="button" class="text-xs font-bold rounded-lg py-2" style="background:rgba(255,255,255,0.07); color:var(--color-text-muted);" @click="setTransferPercent(0.5)">50%</button>
-                    <button type="button" class="text-xs font-bold rounded-lg py-2" style="background:rgba(255,255,255,0.07); color:var(--color-text-muted);" @click="setTransferPercent(0.75)">75%</button>
-                    <button type="button" class="text-xs font-bold rounded-lg py-2" style="background:rgba(168,85,247,0.18); color:var(--color-gold); border:1px solid rgba(245,200,66,0.25);" @click="setTransferPercent(1)">MAX</button>
+                    <span>金幣</span>
+                  </div>
+                  <div class="gift-amount-shortcuts" role="group" aria-label="快速選擇贈禮金額比例">
+                    <button type="button" @click="setTransferPercent(0.25)">25%</button>
+                    <button type="button" @click="setTransferPercent(0.5)">50%</button>
+                    <button type="button" @click="setTransferPercent(0.75)">75%</button>
+                    <button type="button" @click="setTransferPercent(1)">MAX</button>
                   </div>
                 </div>
               </div>
 
-              <div class="grid sm:grid-cols-3 gap-3">
-                <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.22);">
-                  <div class="text-xs mb-1" style="color:var(--color-text-muted);">預計扣款</div>
-                  <div class="font-black">{{ transferSummary.amount.toLocaleString() }}</div>
+              <dl class="gift-transfer-summary">
+                <div>
+                  <dt>預計扣款</dt>
+                  <dd>{{ transferSummary.amount.toLocaleString() }}</dd>
                 </div>
-                <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.22);">
-                  <div class="text-xs mb-1" style="color:var(--color-text-muted);">手續費 5%</div>
-                  <div class="font-black" style="color:#f87171;">-{{ transferSummary.fee.toLocaleString() }}</div>
+                <div>
+                  <dt>手續費 5%</dt>
+                  <dd class="fee">-{{ transferSummary.fee.toLocaleString() }}</dd>
                 </div>
-                <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.22);">
-                  <div class="text-xs mb-1" style="color:var(--color-text-muted);">對方實收</div>
-                  <div class="font-black" style="color:var(--color-gold);">{{ transferSummary.actualReceived.toLocaleString() }}</div>
+                <div>
+                  <dt>對方實收</dt>
+                  <dd class="received">{{ transferSummary.actualReceived.toLocaleString() }}</dd>
                 </div>
-              </div>
+              </dl>
 
                 <button
                   class="btn-gold w-full justify-center text-lg py-3"
-                  style="border-radius:14px;"
                   :disabled="!canConfirmTransfer"
                   :style="!canConfirmTransfer ? 'opacity:0.5;cursor:not-allowed;' : ''"
                   @click="confirmTransfer"
@@ -784,49 +776,49 @@ function confirmExchange() {
         <Transition name="gift-dialog">
           <div
             v-if="pendingGiftAction"
-            class="gift-dialog-overlay"
+            class="modal-overlay gift-dialog-overlay"
             role="presentation"
             @click.self="closeGiftActionDialog"
           >
-            <section
-              ref="giftDialogRef"
-              class="gift-dialog-panel"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="gift-action-title"
-              aria-describedby="gift-action-description"
-              tabindex="-1"
-              @keydown="handleGiftDialogKeydown"
-            >
-              <span class="gift-dialog-mark" aria-hidden="true">
-                {{ pendingGiftAction.action === 'accept' ? '✓' : pendingGiftAction.action === 'reject' ? '×' : '↩' }}
-              </span>
-              <p>GIFT REQUEST</p>
-              <h2 id="gift-action-title">{{ giftActionTitle }}</h2>
-              <div class="gift-dialog-player">
-                <span aria-hidden="true">
-                  {{ pendingGiftAction.action === 'cancel' ? pendingGiftAction.request.receiver.avatar : pendingGiftAction.request.sender.avatar }}
-                </span>
-                <div>
-                  <strong>
-                    {{ pendingGiftAction.action === 'cancel' ? pendingGiftAction.request.receiver.name : pendingGiftAction.request.sender.name }}
-                  </strong>
-                  <small>{{ pendingGiftAction.request.amount.toLocaleString() }} 金幣</small>
+            <div class="modal-box gift-dialog-box">
+              <section
+                ref="giftDialogRef"
+                class="modal-inner gift-dialog-panel"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="gift-action-title"
+                aria-describedby="gift-action-description"
+                tabindex="-1"
+                @keydown="handleGiftDialogKeydown"
+              >
+                <button type="button" class="modal-close" aria-label="關閉贈禮確認視窗" @click="closeGiftActionDialog">×</button>
+                <p class="gift-dialog-eyebrow">GIFT REQUEST</p>
+                <h2 id="gift-action-title" class="modal-title">{{ giftActionTitle }}</h2>
+                <div class="gift-dialog-player">
+                  <span aria-hidden="true">
+                    {{ pendingGiftAction.action === 'cancel' ? pendingGiftAction.request.receiver.avatar : pendingGiftAction.request.sender.avatar }}
+                  </span>
+                  <div>
+                    <strong>
+                      {{ pendingGiftAction.action === 'cancel' ? pendingGiftAction.request.receiver.name : pendingGiftAction.request.sender.name }}
+                    </strong>
+                    <small>{{ pendingGiftAction.request.amount.toLocaleString() }} 金幣</small>
+                  </div>
                 </div>
-              </div>
-              <p id="gift-action-description" class="gift-dialog-description">{{ giftActionDescription }}</p>
-              <div class="gift-dialog-actions">
-                <button ref="giftDialogBackRef" type="button" class="gift-dialog-back" @click="closeGiftActionDialog">返回</button>
-                <button
-                  type="button"
-                  class="gift-dialog-confirm"
-                  :class="pendingGiftAction.action"
-                  @click="confirmGiftAction"
-                >
-                  {{ giftActionConfirmLabel }}
-                </button>
-              </div>
-            </section>
+                <p id="gift-action-description" class="gift-dialog-description">{{ giftActionDescription }}</p>
+                <div class="gift-dialog-actions">
+                  <button ref="giftDialogBackRef" type="button" class="btn-outline-purple gift-dialog-back" @click="closeGiftActionDialog">返回</button>
+                  <button
+                    type="button"
+                    class="btn-gold gift-dialog-confirm"
+                    :class="{ danger: pendingGiftAction.action === 'reject' || pendingGiftAction.action === 'cancel' }"
+                    @click="confirmGiftAction"
+                  >
+                    {{ giftActionConfirmLabel }}
+                  </button>
+                </div>
+              </section>
+            </div>
           </div>
         </Transition>
       </Teleport>
@@ -839,53 +831,385 @@ function confirmExchange() {
 .tab-fade-leave-active { transition: opacity 0.18s; }
 .tab-fade-enter-from,
 .tab-fade-leave-to { opacity: 0; }
-.gift-tab-content { display: flex; flex-direction: column; gap: 16px; }
-.gift-compose-grid { display: grid; grid-template-columns: minmax(250px,300px) minmax(0,1fr); gap: 18px; align-items: start; }
+
+.gift-tab-content {
+  display: flex;
+  width: 100%;
+  max-width: 1180px;
+  flex-direction: column;
+  gap: 20px;
+  margin: 0 auto;
+}
+
+.gift-compose-grid {
+  display: grid;
+  grid-template-columns: minmax(250px, 290px) minmax(0, 1fr);
+  align-items: start;
+  gap: 20px;
+}
+
 .gift-compose-grid > * { min-width: 0; }
-.receiver-picker { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 9px; align-items: stretch; }
+
+.gift-rules-panel {
+  padding: 20px;
+}
+
+.gift-rules-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.gift-rules-header h2,
+.gift-form-heading h2 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.gift-rules-header b {
+  padding: 5px 10px;
+  border: 1px solid rgba(245, 200, 66, 0.35);
+  border-radius: 999px;
+  color: var(--color-gold);
+  background: rgba(245, 200, 66, 0.08);
+  font-size: 10px;
+}
+
+.gift-rule-list {
+  margin: 4px 0 0;
+}
+
+.gift-rule-list > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.gift-rule-list dt {
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.gift-rule-list dd {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 11px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.gift-vault-balance {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 17px;
+}
+
+.gift-vault-balance > span {
+  color: var(--color-text-muted);
+  font-size: 10px;
+}
+
+.gift-vault-balance strong {
+  color: var(--color-gold);
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.gift-vault-balance small {
+  color: var(--color-text-muted);
+  font-size: 9px;
+}
+
+.gift-form-heading {
+  margin-bottom: 18px;
+}
+
+.gift-form-heading p {
+  margin: 5px 0 0;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.gift-form-notice {
+  margin-bottom: 16px;
+  padding: 11px 13px;
+  border: 1px solid;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.gift-form-notice.success {
+  border-color: rgba(74, 222, 128, 0.32);
+  color: #86efac;
+  background: rgba(74, 222, 128, 0.1);
+}
+
+.gift-form-notice.error {
+  border-color: rgba(248, 113, 113, 0.32);
+  color: #fca5a5;
+  background: rgba(248, 113, 113, 0.1);
+}
+
+.receiver-picker {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: 10px;
+}
+
 .receiver-placeholder,
-.receiver-selected { min-height: 52px; border: 1px solid var(--color-border); border-radius: 12px; background: rgba(0,0,0,.24); }
-.receiver-placeholder { display: flex; align-items: center; padding: 0 14px; color: var(--color-text-muted); font-size: 12px; }
-.receiver-selected { display: grid; grid-template-columns: 34px minmax(0,1fr) 24px; align-items: center; gap: 9px; padding: 7px 9px; }
-.receiver-selected > span { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 10px; background: rgba(168,85,247,.14); font-size: 18px; }
+.receiver-selected {
+  min-height: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.receiver-placeholder {
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.receiver-selected {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 9px;
+}
+
+.receiver-selected > span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(168, 85, 247, 0.14);
+  font-size: 18px;
+}
+
 .receiver-selected > div { display: flex; min-width: 0; flex-direction: column; }
 .receiver-selected strong { overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
 .receiver-selected small { overflow: hidden; color: var(--color-text-muted); font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
 .receiver-selected > button { width: 24px; height: 24px; color: var(--color-text-muted); border-radius: 50%; font-size: 16px; }
-.receiver-selected > button:hover { color: #fff; background: rgba(255,255,255,.08); }
-.receiver-search-button { min-width: 76px; padding: 0 16px; border: 1px solid rgba(245,200,66,.36); border-radius: 12px; color: #1b0a25; background: linear-gradient(135deg,#f8db6b,#f5c842); font-size: 12px; font-weight: 900; box-shadow: 0 8px 22px rgba(245,200,66,.12); }
-.receiver-search-button:hover { filter: brightness(1.06); }
+.receiver-selected > button:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
+
+.receiver-search-button {
+  min-width: 92px;
+  justify-content: center;
+  padding: 0 20px;
+  font-size: 12px;
+}
+
+.gift-amount-control {
+  padding: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.gift-amount-input {
+  position: relative;
+}
+
+.gift-amount-input .input-field {
+  padding-right: 58px;
+  color: var(--color-gold);
+  font-size: 20px;
+  font-weight: 900;
+  text-align: right;
+}
+
+.gift-amount-input > span {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  color: var(--color-text-muted);
+  font-size: 10px;
+  transform: translateY(-50%);
+}
+
+.gift-amount-shortcuts {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.gift-amount-shortcuts button {
+  min-width: 54px;
+  min-height: 34px;
+  padding: 7px 11px;
+  border: 1px solid rgba(192, 132, 252, 0.22);
+  border-radius: 7px;
+  color: var(--color-text-muted);
+  background: rgba(168, 85, 247, 0.07);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.gift-amount-shortcuts button:hover {
+  border-color: rgba(192, 132, 252, 0.48);
+  color: var(--color-text);
+  background: rgba(168, 85, 247, 0.14);
+}
+
+.gift-transfer-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.gift-transfer-summary > div {
+  padding: 12px 13px;
+}
+
+.gift-transfer-summary > div + div {
+  border-left: 1px solid rgba(255, 255, 255, 0.11);
+}
+
+.gift-transfer-summary dt {
+  margin-bottom: 3px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.gift-transfer-summary dd {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.gift-transfer-summary dd.fee { color: #fca5a5; }
+.gift-transfer-summary dd.received { color: var(--color-gold); }
+
 .gift-dialog-enter-active,
 .gift-dialog-leave-active { transition: opacity .2s ease; }
-.gift-dialog-enter-active .gift-dialog-panel,
-.gift-dialog-leave-active .gift-dialog-panel { transition: transform .2s ease, opacity .2s ease; }
+.gift-dialog-enter-active .gift-dialog-box,
+.gift-dialog-leave-active .gift-dialog-box { transition: transform .2s ease, opacity .2s ease; }
 .gift-dialog-enter-from,
 .gift-dialog-leave-to { opacity: 0; }
-.gift-dialog-enter-from .gift-dialog-panel,
-.gift-dialog-leave-to .gift-dialog-panel { opacity: 0; transform: translateY(12px) scale(.97); }
-.gift-dialog-overlay { position: fixed; inset: 0; z-index: 1090; display: grid; place-items: center; padding: 18px; background: rgba(5,0,15,.84); backdrop-filter: blur(10px); }
-.gift-dialog-panel { width: min(410px,100%); padding: 26px; border: 1px solid rgba(168,85,247,.32); border-radius: 22px; color: var(--color-text); background: radial-gradient(circle at 100% 0,rgba(168,85,247,.2),transparent 34%),linear-gradient(155deg,#21103a,#10051f); box-shadow: 0 24px 70px rgba(0,0,0,.58); text-align: center; }
-.gift-dialog-mark { display: grid; width: 48px; height: 48px; margin: 0 auto 12px; place-items: center; border: 1px solid rgba(245,200,66,.32); border-radius: 15px; color: var(--color-gold); background: rgba(245,200,66,.08); font-size: 24px; font-weight: 900; }
-.gift-dialog-panel > p:first-of-type { margin: 0; color: var(--color-gold); font-size: 9px; font-weight: 900; letter-spacing: .17em; }
-.gift-dialog-panel h2 { margin: 4px 0 15px; font-size: 22px; }
-.gift-dialog-player { display: flex; align-items: center; gap: 10px; padding: 11px; border: 1px solid rgba(255,255,255,.07); border-radius: 12px; background: rgba(0,0,0,.2); text-align: left; }
-.gift-dialog-player > span { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 10px; background: rgba(168,85,247,.13); font-size: 19px; }
+.gift-dialog-enter-from .gift-dialog-box,
+.gift-dialog-leave-to .gift-dialog-box { opacity: 0; transform: scale(.94); }
+
+.gift-dialog-overlay {
+  z-index: 1090;
+}
+
+.gift-dialog-box {
+  width: min(430px, 100%);
+}
+
+.gift-dialog-panel {
+  padding: 28px 24px;
+  outline: none;
+  text-align: center;
+}
+
+.gift-dialog-eyebrow {
+  margin: 0 0 4px;
+  color: var(--color-gold);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+}
+
+.gift-dialog-panel .modal-title {
+  margin-bottom: 18px;
+}
+
+.gift-dialog-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  text-align: left;
+}
+
+.gift-dialog-player > span {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 19px;
+}
+
 .gift-dialog-player > div { display: flex; flex-direction: column; }
-.gift-dialog-player strong { font-size: 12px; }
-.gift-dialog-player small { color: var(--color-gold); font-size: 10px; }
-.gift-dialog-description { margin: 14px 0 0; color: var(--color-text-muted); font-size: 11px; line-height: 1.7; }
-.gift-dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 18px; }
-.gift-dialog-actions button { min-height: 42px; border-radius: 11px; font-size: 11px; font-weight: 900; }
-.gift-dialog-back { color: var(--color-text-muted); border: 1px solid var(--color-border); background: rgba(255,255,255,.04); }
-.gift-dialog-confirm { color: #170920; background: var(--color-gold); }
-.gift-dialog-confirm.reject,
-.gift-dialog-confirm.cancel { color: #fff; background: #be123c; }
+.gift-dialog-player strong { color: #fff; font-size: 13px; }
+.gift-dialog-player small { color: rgba(255, 255, 255, 0.7); font-size: 10px; }
+
+.gift-dialog-description {
+  margin: 14px 0 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+.gift-dialog-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.gift-dialog-actions button {
+  min-height: 43px;
+  justify-content: center;
+  padding: 10px 16px;
+  font-size: 12px;
+}
+
+.gift-dialog-back {
+  border-color: rgba(255, 255, 255, 0.62);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.gift-dialog-panel .gift-dialog-confirm.danger {
+  border-color: rgba(255, 255, 255, 0.8);
+  color: #fff;
+  background: linear-gradient(180deg, #fb7185, #be123c);
+  box-shadow: 0 4px 16px rgba(136, 19, 55, 0.28);
+}
+
 @media(max-width:900px) {
   .gift-compose-grid { grid-template-columns: 1fr; }
 }
+
 @media(max-width:520px) {
   .receiver-picker { grid-template-columns: 1fr; }
   .receiver-search-button { min-height: 42px; }
-  .gift-dialog-panel { padding: 22px 18px; }
+  .gift-transfer-summary { grid-template-columns: 1fr; }
+  .gift-transfer-summary > div + div {
+    border-top: 1px solid rgba(255, 255, 255, 0.11);
+    border-left: 0;
+  }
+  .gift-dialog-panel { padding: 26px 20px 22px; }
+  .gift-dialog-actions { grid-template-columns: 1fr; }
 }
 </style>

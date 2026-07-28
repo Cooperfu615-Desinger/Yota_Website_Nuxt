@@ -101,23 +101,22 @@ function isPastDue(request: GiftRequest) {
 </script>
 
 <template>
-  <section class="request-panel" aria-labelledby="gift-request-heading">
+  <section class="request-panel card-purple" aria-labelledby="gift-request-heading">
     <header class="request-header">
       <div class="request-title">
-        <p>PENDING GIFT REQUESTS</p>
         <div>
           <h2 id="gift-request-heading">待處理贈禮</h2>
           <span>{{ pendingRequests.length }} 筆等待處理</span>
         </div>
       </div>
 
-      <div class="request-filters" role="tablist" aria-label="待處理贈禮篩選">
+      <div class="request-filters tab-bar" role="group" aria-label="待處理贈禮篩選">
         <button
           v-for="filter in filterOptions"
           :key="filter.key"
           type="button"
-          role="tab"
-          :aria-selected="activeFilter === filter.key"
+          class="tab-btn request-filter-button"
+          :aria-pressed="activeFilter === filter.key"
           :class="{ active: activeFilter === filter.key }"
           @click="activeFilter = filter.key"
         >
@@ -127,93 +126,102 @@ function isPastDue(request: GiftRequest) {
       </div>
     </header>
 
-    <TransitionGroup
-      v-if="visibleRequests.length"
-      name="request-list"
-      tag="div"
-      class="request-list"
-    >
-      <article
-        v-for="request in visibleRequests"
-        :key="request.id"
-        class="request-card"
-        :class="{
-          incoming: isIncoming(request),
-          outgoing: isOutgoing(request),
-          urgent: isUrgent(request),
-          overdue: isPastDue(request),
-        }"
+    <div v-if="visibleRequests.length" class="request-table">
+      <div class="request-column-head" aria-hidden="true">
+        <span>玩家 / 方向</span>
+        <span>贈禮金額</span>
+        <span>申請期限</span>
+        <span>操作</span>
+      </div>
+
+      <TransitionGroup
+        name="request-list"
+        tag="div"
+        class="request-list"
+        role="list"
       >
-        <div class="identity-block">
-          <div class="avatar" aria-hidden="true">
-            {{ counterparty(request).avatar || '👤' }}
+        <article
+          v-for="request in visibleRequests"
+          :key="request.id"
+          class="request-card"
+          role="listitem"
+          :class="{
+            incoming: isIncoming(request),
+            outgoing: isOutgoing(request),
+            urgent: isUrgent(request),
+            overdue: isPastDue(request),
+          }"
+        >
+          <div class="identity-block">
+            <div class="avatar" aria-hidden="true">
+              {{ counterparty(request).avatar || '👤' }}
+            </div>
+            <div class="identity-copy">
+              <span class="direction-badge">
+                <i aria-hidden="true">{{ isIncoming(request) ? '↓' : '↑' }}</i>
+                {{ isIncoming(request) ? '收到贈禮' : '送出贈禮' }}
+              </span>
+              <strong>{{ counterparty(request).name }}</strong>
+              <small>@{{ counterparty(request).account }}</small>
+            </div>
           </div>
-          <div class="identity-copy">
-            <span class="direction-badge">
-              <i aria-hidden="true">{{ isIncoming(request) ? '↓' : '↑' }}</i>
-              {{ isIncoming(request) ? '收到贈禮' : '送出贈禮' }}
-            </span>
-            <strong>{{ counterparty(request).name }}</strong>
-            <small>@{{ counterparty(request).account }}</small>
-          </div>
-        </div>
 
-        <dl class="amount-block">
-          <div>
-            <dt>贈禮金額</dt>
-            <dd>{{ request.amount.toLocaleString() }} <small>金幣</small></dd>
-          </div>
-          <span aria-hidden="true">→</span>
-          <div class="received-value">
-            <dt>{{ isIncoming(request) ? '你將實收' : '對方實收' }}</dt>
-            <dd>{{ request.actualReceived.toLocaleString() }} <small>金幣</small></dd>
-          </div>
-        </dl>
+          <dl class="amount-block">
+            <div>
+              <dt>贈禮金額</dt>
+              <dd>{{ request.amount.toLocaleString() }} <small>金幣</small></dd>
+            </div>
+            <div class="received-value">
+              <dt>{{ isIncoming(request) ? '你將實收' : '對方實收' }}</dt>
+              <dd>{{ request.actualReceived.toLocaleString() }} <small>金幣</small></dd>
+            </div>
+          </dl>
 
-        <div class="time-block">
-          <div>
-            <span>剩餘期限</span>
-            <strong>{{ formatGiftRequestRemainingTime(request, now) }}</strong>
+          <div class="time-block">
+            <div>
+              <span>剩餘期限</span>
+              <strong>{{ formatGiftRequestRemainingTime(request, now) }}</strong>
+            </div>
+            <time :datetime="toDateTime(request.createdAt)">
+              申請於 {{ formatCreatedAt(request.createdAt) }}
+            </time>
           </div>
-          <time :datetime="toDateTime(request.createdAt)">
-            申請於 {{ formatCreatedAt(request.createdAt) }}
-          </time>
-        </div>
 
-        <div class="request-actions">
-          <template v-if="isIncoming(request)">
+          <div class="request-actions">
+            <template v-if="isIncoming(request)">
+              <button
+                type="button"
+                class="action-button reject"
+                :disabled="isPastDue(request)"
+                :aria-label="`拒絕 ${counterparty(request).name} 的贈禮`"
+                @click="emit('reject', request)"
+              >
+                拒絕
+              </button>
+              <button
+                type="button"
+                class="action-button accept"
+                :disabled="isPastDue(request)"
+                :aria-label="`接受 ${counterparty(request).name} 的贈禮`"
+                @click="emit('accept', request)"
+              >
+                接受
+              </button>
+            </template>
             <button
-              type="button"
-              class="action-button reject"
+              v-else
+                type="button"
+                class="action-button cancel"
               :disabled="isPastDue(request)"
-              :aria-label="`拒絕 ${counterparty(request).name} 的贈禮`"
-              @click="emit('reject', request)"
+              :aria-label="`取消送給 ${counterparty(request).name} 的贈禮申請`"
+              @click="emit('cancel', request)"
             >
-              拒絕
+              取消申請
             </button>
-            <button
-              type="button"
-              class="action-button accept"
-              :disabled="isPastDue(request)"
-              :aria-label="`接受 ${counterparty(request).name} 的贈禮`"
-              @click="emit('accept', request)"
-            >
-              接受
-            </button>
-          </template>
-          <button
-            v-else
-            type="button"
-            class="action-button cancel"
-            :disabled="isPastDue(request)"
-            :aria-label="`取消送給 ${counterparty(request).name} 的贈禮申請`"
-            @click="emit('cancel', request)"
-          >
-            取消申請
-          </button>
-        </div>
-      </article>
-    </TransitionGroup>
+          </div>
+        </article>
+      </TransitionGroup>
+    </div>
 
     <div v-else class="request-empty" role="status">
       <span aria-hidden="true">禮</span>
@@ -228,154 +236,177 @@ function isPastDue(request: GiftRequest) {
   --incoming-color: #f5c842;
   --outgoing-color: #c084fc;
   position: relative;
-  padding: 20px;
-  border: 1px solid var(--color-border);
-  border-radius: 20px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 18px;
   overflow: hidden;
   background:
-    radial-gradient(circle at 100% 0, rgba(245, 200, 66, 0.08), transparent 30%),
-    linear-gradient(145deg, rgba(26, 10, 46, 0.92), rgba(15, 0, 32, 0.9));
+    linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.045)),
+    rgba(20, 6, 40, 0.72);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.24),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .request-panel::before {
   position: absolute;
-  inset: 0;
+  inset: 0 18% auto;
+  height: 1px;
   pointer-events: none;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px);
-  background-size: 100% 44px;
+  background: linear-gradient(90deg, transparent, rgba(245, 200, 66, 0.75), transparent);
   content: "";
-  mask-image: linear-gradient(to bottom, black, transparent 76%);
+}
+
+.request-panel.card-purple:hover {
+  transform: none;
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.24),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .request-header {
   position: relative;
   display: flex;
-  align-items: end;
+  align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  margin-bottom: 16px;
-}
-
-.request-title > p {
-  margin: 0 0 4px;
-  color: var(--color-gold);
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: 0.18em;
+  gap: 24px;
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.13);
 }
 
 .request-title > div {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  gap: 12px;
 }
 
 .request-title h2 {
   margin: 0;
-  font-size: 20px;
+  color: var(--color-text);
+  font-size: 22px;
   font-weight: 900;
   letter-spacing: 0.01em;
 }
 
 .request-title span {
   color: var(--color-text-muted);
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .request-filters {
   display: flex;
-  padding: 3px;
-  border: 1px solid rgba(168, 85, 247, 0.18);
-  border-radius: 11px;
-  background: rgba(0, 0, 0, 0.18);
+  width: min(330px, 42%);
+  flex: 0 0 auto;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 10px;
+  background: rgba(7, 1, 16, 0.32);
 }
 
-.request-filters button {
+.request-filter-button {
   display: flex;
-  min-height: 32px;
+  min-height: 38px;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 6px 11px;
-  border-radius: 8px;
+  padding: 7px 12px;
+  border-radius: 7px;
   color: var(--color-text-muted);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
   transition: color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
 }
 
-.request-filters button span {
+.request-filter-button span {
   display: grid;
-  min-width: 17px;
-  height: 17px;
+  min-width: 18px;
+  height: 18px;
   place-items: center;
-  padding: 0 4px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  font-size: 8px;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 9px;
 }
 
-.request-filters button:hover {
+.request-filter-button:hover {
   color: var(--color-text);
 }
 
-.request-filters button.active {
-  color: #1c0a22;
-  background: var(--color-gold);
-  box-shadow: 0 4px 14px rgba(245, 200, 66, 0.18);
+.request-filter-button.active {
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-purple-mid), var(--color-purple));
+  box-shadow: 0 3px 12px rgba(124, 58, 237, 0.32);
 }
 
-.request-filters button.active span {
-  background: rgba(28, 10, 34, 0.12);
+.request-filter-button.active span {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.request-table {
+  margin: 20px 24px 24px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+  background: rgba(7, 1, 16, 0.18);
+}
+
+.request-column-head {
+  display: grid;
+  grid-template-columns: minmax(190px, 1.15fr) minmax(230px, 1.3fr) minmax(145px, 0.8fr) minmax(126px, auto);
+  gap: 18px;
+  padding: 10px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+  color: var(--color-text-muted);
+  background: rgba(255, 255, 255, 0.045);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.request-column-head span:last-child {
+  text-align: right;
 }
 
 .request-list {
   position: relative;
-  display: grid;
-  gap: 9px;
 }
 
 .request-card {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(190px, 1.15fr) minmax(230px, 1.3fr) minmax(145px, 0.8fr) auto;
+  grid-template-columns: minmax(190px, 1.15fr) minmax(230px, 1.3fr) minmax(145px, 0.8fr) minmax(126px, auto);
   align-items: center;
   gap: 18px;
-  min-height: 96px;
-  padding: 14px 14px 14px 17px;
-  border: 1px solid rgba(168, 85, 247, 0.17);
-  border-radius: 15px;
-  overflow: hidden;
-  background: rgba(9, 2, 20, 0.42);
-  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  min-height: 88px;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  transition: background 0.18s ease;
+}
+
+.request-card:last-child {
+  border-bottom: 0;
 }
 
 .request-card::before {
   position: absolute;
-  inset: 12px auto 12px 0;
-  width: 3px;
-  border-radius: 0 4px 4px 0;
+  inset: 0 auto 0 0;
+  width: 2px;
   background: var(--outgoing-color);
-  box-shadow: 0 0 14px rgba(192, 132, 252, 0.45);
   content: "";
 }
 
 .request-card.incoming::before {
   background: var(--incoming-color);
-  box-shadow: 0 0 14px rgba(245, 200, 66, 0.42);
 }
 
 .request-card:hover {
-  border-color: rgba(192, 132, 252, 0.31);
-  background: rgba(20, 7, 38, 0.74);
-  transform: translateY(-1px);
-}
-
-.request-card.incoming:hover {
-  border-color: rgba(245, 200, 66, 0.27);
+  background: rgba(255, 255, 255, 0.045);
 }
 
 .request-card.urgent {
-  border-color: rgba(248, 113, 113, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.22);
 }
 
 .request-card.overdue {
@@ -391,14 +422,14 @@ function isPastDue(request: GiftRequest) {
 
 .avatar {
   display: grid;
-  width: 45px;
-  height: 45px;
+  width: 42px;
+  height: 42px;
   flex: 0 0 auto;
   place-items: center;
   border: 1px solid rgba(192, 132, 252, 0.22);
-  border-radius: 14px;
+  border-radius: 9px;
   background: rgba(168, 85, 247, 0.1);
-  font-size: 21px;
+  font-size: 20px;
 }
 
 .incoming .avatar {
@@ -419,7 +450,7 @@ function isPastDue(request: GiftRequest) {
   gap: 4px;
   margin-bottom: 3px;
   color: var(--outgoing-color);
-  font-size: 8px;
+  font-size: 10px;
   font-weight: 900;
   letter-spacing: 0.08em;
 }
@@ -429,14 +460,21 @@ function isPastDue(request: GiftRequest) {
 }
 
 .direction-badge i {
+  display: inline-grid;
+  width: 16px;
+  height: 16px;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 4px;
   font-style: normal;
+  line-height: 1;
 }
 
 .identity-copy strong {
   max-width: 100%;
   overflow: hidden;
   color: var(--color-text);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 900;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -447,46 +485,45 @@ function isPastDue(request: GiftRequest) {
   margin-top: 1px;
   overflow: hidden;
   color: var(--color-text-muted);
-  font-size: 9px;
+  font-size: 11px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .amount-block {
   display: grid;
-  grid-template-columns: minmax(90px, 1fr) 20px minmax(90px, 1fr);
+  grid-template-columns: repeat(2, minmax(90px, 1fr));
   align-items: center;
-  gap: 8px;
+  gap: 18px;
   margin: 0;
-  padding: 0 18px;
+  padding: 0 20px;
   border-right: 1px solid rgba(255, 255, 255, 0.07);
   border-left: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-.amount-block > span {
-  color: rgba(196, 181, 213, 0.35);
-  font-size: 13px;
-  text-align: center;
+.amount-block .received-value {
+  padding-left: 18px;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .amount-block dt,
 .time-block span {
   margin-bottom: 3px;
   color: var(--color-text-muted);
-  font-size: 8px;
+  font-size: 10px;
 }
 
 .amount-block dd {
   margin: 0;
   color: var(--color-text);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 900;
   white-space: nowrap;
 }
 
 .amount-block dd small {
   color: var(--color-text-muted);
-  font-size: 8px;
+  font-size: 10px;
   font-weight: 600;
 }
 
@@ -508,7 +545,7 @@ function isPastDue(request: GiftRequest) {
 
 .time-block strong {
   color: var(--color-text);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 900;
 }
 
@@ -520,7 +557,7 @@ function isPastDue(request: GiftRequest) {
 .time-block time {
   overflow: hidden;
   color: var(--color-text-muted);
-  font-size: 8px;
+  font-size: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -528,19 +565,19 @@ function isPastDue(request: GiftRequest) {
 .request-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 6px;
+  gap: 8px;
 }
 
 .action-button {
-  min-width: 58px;
-  min-height: 34px;
-  padding: 7px 11px;
+  min-width: 62px;
+  min-height: 38px;
+  padding: 8px 14px;
   border: 1px solid transparent;
-  border-radius: 9px;
-  font-size: 9px;
+  border-radius: 8px;
+  font-size: 11px;
   font-weight: 900;
   white-space: nowrap;
-  transition: filter 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+  transition: filter 0.18s ease, background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
 }
 
 .action-button:hover:not(:disabled) {
@@ -561,34 +598,37 @@ function isPastDue(request: GiftRequest) {
 
 .action-button.accept {
   color: #1c0a22;
-  background: var(--color-gold);
-  box-shadow: 0 5px 15px rgba(245, 200, 66, 0.14);
+  background: linear-gradient(135deg, #f5c842, #d97706);
+  box-shadow: 0 4px 15px rgba(245, 200, 66, 0.22);
 }
 
-.action-button.reject,
-.action-button.cancel {
+.action-button.reject {
   color: #fca5a5;
-  border-color: rgba(248, 113, 113, 0.22);
+  border-color: rgba(248, 113, 113, 0.42);
   background: rgba(248, 113, 113, 0.08);
 }
 
 .action-button.cancel {
-  min-width: 74px;
+  min-width: 82px;
+  color: var(--color-purple-light);
+  border-color: rgba(192, 132, 252, 0.42);
+  background: rgba(168, 85, 247, 0.08);
 }
 
 .request-empty {
   position: relative;
   display: flex;
-  min-height: 180px;
+  min-height: 172px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin: 20px 24px 24px;
   padding: 28px 18px;
-  border: 1px dashed rgba(168, 85, 247, 0.22);
-  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
   color: var(--color-text-muted);
   text-align: center;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(7, 1, 16, 0.18);
 }
 
 .request-empty > span {
@@ -598,7 +638,7 @@ function isPastDue(request: GiftRequest) {
   margin-bottom: 10px;
   place-items: center;
   border: 1px solid rgba(245, 200, 66, 0.25);
-  border-radius: 50%;
+  border-radius: 9px;
   color: var(--color-gold);
   background: rgba(245, 200, 66, 0.07);
   font-size: 15px;
@@ -607,12 +647,12 @@ function isPastDue(request: GiftRequest) {
 
 .request-empty strong {
   color: var(--color-text);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .request-empty p {
   margin: 4px 0 0;
-  font-size: 9px;
+  font-size: 10px;
 }
 
 .request-list-enter-active,
@@ -626,7 +666,11 @@ function isPastDue(request: GiftRequest) {
   transform: translateY(6px);
 }
 
-@media (max-width: 1040px) {
+@media (max-width: 1100px) {
+  .request-column-head {
+    display: none;
+  }
+
   .request-card {
     grid-template-columns: minmax(180px, 1fr) minmax(215px, 1.2fr) auto;
   }
@@ -661,14 +705,11 @@ function isPastDue(request: GiftRequest) {
 }
 
 @media (max-width: 720px) {
-  .request-panel {
-    padding: 15px;
-    border-radius: 17px;
-  }
-
   .request-header {
     align-items: flex-start;
     flex-direction: column;
+    gap: 16px;
+    padding: 19px 16px 16px;
   }
 
   .request-filters {
@@ -680,10 +721,14 @@ function isPastDue(request: GiftRequest) {
     justify-content: center;
   }
 
+  .request-table {
+    margin: 16px;
+  }
+
   .request-card {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 13px;
-    padding: 14px 13px 14px 16px;
+    padding: 15px 14px 15px 16px;
   }
 
   .identity-block {
@@ -698,6 +743,10 @@ function isPastDue(request: GiftRequest) {
     border-right: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     border-left: 0;
+  }
+
+  .amount-block .received-value {
+    padding-left: 14px;
   }
 
   .time-block {
@@ -722,6 +771,7 @@ function isPastDue(request: GiftRequest) {
 
   .request-card {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .identity-block,
@@ -752,10 +802,15 @@ function isPastDue(request: GiftRequest) {
   .request-actions {
     grid-row: 4;
     width: 100%;
+    justify-content: stretch;
   }
 
   .action-button {
     flex: 1;
+  }
+
+  .request-empty {
+    margin: 16px;
   }
 }
 

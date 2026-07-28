@@ -176,13 +176,13 @@ onBeforeUnmount(() => {
     <Transition name="player-search">
       <div
         v-if="open"
-        class="player-search-overlay"
+        class="modal-overlay player-search-overlay"
         role="presentation"
         @click.self="closeModal"
       >
         <section
           ref="dialogRef"
-          class="player-search-panel"
+          class="modal-box player-search-box"
           role="dialog"
           aria-modal="true"
           aria-labelledby="player-search-title"
@@ -190,33 +190,20 @@ onBeforeUnmount(() => {
           tabindex="-1"
           @keydown="handleDialogKeydown"
         >
-          <header class="modal-header">
-            <div class="title-lockup">
-              <span class="title-icon" aria-hidden="true">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 19a6 6 0 0 0-12 0m6-8a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7.5 1.5 4 4m0-4-4 4M16 7h5"/>
-                </svg>
-              </span>
-              <div>
-                <p>GIFT RECIPIENT</p>
-                <h2 id="player-search-title">選擇收禮玩家</h2>
-              </div>
-            </div>
-            <button class="close-button" type="button" aria-label="關閉玩家選擇視窗" @click="closeModal">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 6 12 12M18 6 6 18"/>
-              </svg>
-            </button>
-          </header>
+          <div class="modal-inner player-search-panel">
+            <button class="modal-close" type="button" aria-label="關閉玩家選擇視窗" @click="closeModal">×</button>
+            <p class="modal-eyebrow">GIFT RECIPIENT</p>
+            <h2 id="player-search-title" class="modal-title">選擇收禮玩家</h2>
 
-          <p id="player-search-description" class="modal-description">
-            使用暱稱或帳號找到指定玩家，確認身分後再送出贈禮申請。
-          </p>
+            <p id="player-search-description" class="modal-description">
+              使用暱稱或帳號找到指定玩家，確認身分後再送出贈禮申請。
+            </p>
 
-          <div class="directory-tabs" role="tablist" aria-label="玩家來源">
+          <div class="login-tab-bar directory-tabs" role="tablist" aria-label="玩家來源">
             <button
               id="player-search-tab"
               ref="playerSearchTabRef"
+              class="login-tab-btn"
               type="button"
               role="tab"
               :aria-selected="activeTab === 'search'"
@@ -234,6 +221,7 @@ onBeforeUnmount(() => {
             <button
               id="friend-list-tab"
               ref="friendListTabRef"
+              class="login-tab-btn"
               type="button"
               role="tab"
               :aria-selected="activeTab === 'friends'"
@@ -323,7 +311,7 @@ onBeforeUnmount(() => {
                   </span>
                 </span>
                 <button
-                  class="select-button"
+                  class="btn-gold select-button"
                   type="button"
                   :aria-label="`選擇 ${player.name}，帳號 ${player.account}`"
                   @click="emit('select', player)"
@@ -348,12 +336,13 @@ onBeforeUnmount(() => {
             </div>
           </div>
 
-          <footer class="safety-note">
+          <div class="safety-note">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3 4.5 6v5.4c0 4.7 3.2 8.2 7.5 9.6 4.3-1.4 7.5-4.9 7.5-9.6V6L12 3Zm-3 9 2 2 4-4"/>
             </svg>
             <span>送出前請再次核對玩家暱稱與帳號，避免選錯收禮對象。</span>
-          </footer>
+          </div>
+          </div>
         </section>
       </div>
     </Transition>
@@ -382,181 +371,132 @@ onBeforeUnmount(() => {
   transform: translateY(16px) scale(0.975);
 }
 
-.player-search-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1140;
-  display: grid;
-  place-items: center;
-  padding: 20px;
-  background:
-    radial-gradient(circle at 50% 20%, rgba(91, 33, 182, 0.16), transparent 36%),
-    rgba(5, 0, 15, 0.86);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
-.player-search-panel {
-  position: relative;
-  width: min(620px, 100%);
-  max-height: min(760px, calc(100dvh - 40px));
+/* Align this picker with the website authentication modal, rather than the app sheet. */
+.player-search-overlay {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.player-search-box {
+  width: min(600px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 32px);
   overflow: hidden;
-  color: var(--color-text, #f3e8ff);
-  background:
-    linear-gradient(135deg, rgba(245, 200, 66, 0.07), transparent 23%),
-    radial-gradient(circle at 100% 0%, rgba(168, 85, 247, 0.18), transparent 31%),
-    linear-gradient(155deg, #21103a 0%, #150729 52%, #0d0319 100%);
-  border: 1px solid rgba(245, 200, 66, 0.3);
-  border-radius: 26px;
-  box-shadow:
-    0 35px 100px rgba(0, 0, 0, 0.66),
-    0 0 0 1px rgba(255, 255, 255, 0.025) inset;
   outline: none;
 }
 
-.player-search-panel::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 28px;
-  right: 28px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 230, 145, 0.85), transparent);
-  pointer-events: none;
-}
-
-.modal-header {
+.player-search-panel {
+  width: 100%;
+  height: min(700px, calc(100dvh - 62px));
+  max-height: none;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  flex-shrink: 0;
-  padding: 24px 26px 15px;
-}
-
-.title-lockup {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  min-width: 0;
-}
-
-.title-icon {
-  width: 46px;
-  height: 46px;
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  color: #f5c842;
-  background: linear-gradient(145deg, rgba(245, 200, 66, 0.16), rgba(245, 200, 66, 0.035));
-  border: 1px solid rgba(245, 200, 66, 0.27);
-  border-radius: 15px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-}
-
-.title-icon svg {
-  width: 24px;
-  height: 24px;
-}
-
-.title-lockup p {
-  margin: 0 0 3px;
-  color: #f5c842;
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: 0.21em;
-}
-
-.title-lockup h2 {
-  margin: 0;
-  font-size: clamp(20px, 3vw, 25px);
-  font-weight: 950;
-  letter-spacing: 0.025em;
-}
-
-.close-button {
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  color: rgba(243, 232, 255, 0.65);
-  background: rgba(255, 255, 255, 0.045);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
-}
-
-.close-button:hover {
+  flex-direction: column;
+  overflow: hidden;
   color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: rotate(4deg);
+  background: linear-gradient(180deg, #8890ff 0%, #5a63e8 50%, #3f46aa 100%);
+  border: 0;
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 1.5px rgba(255, 255, 255, 0.25),
+    0 0 0 3px rgba(122, 131, 255, 0.75),
+    0 4px 20px rgba(63, 70, 170, 0.4);
 }
 
-.close-button svg {
-  width: 18px;
-  height: 18px;
+.modal-eyebrow {
+  flex-shrink: 0;
+  margin: 4px 0 3px;
+  color: var(--color-gold);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  text-align: center;
+}
+
+.player-search-panel > .modal-title {
+  flex-shrink: 0;
+  margin: 0 0 10px;
 }
 
 .modal-description {
-  margin: 0;
-  padding: 0 26px 18px;
-  color: rgba(216, 200, 229, 0.65);
+  flex-shrink: 0;
+  max-width: 470px;
+  margin: 0 auto 18px;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.72);
   font-size: 12px;
   line-height: 1.65;
+  text-align: center;
 }
 
 .directory-tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 5px;
+  width: 100%;
+  height: 62px;
+  display: flex;
+  gap: 0;
   flex-shrink: 0;
-  margin: 0 26px;
-  padding: 5px;
-  background: rgba(4, 0, 12, 0.5);
-  border: 1px solid rgba(168, 85, 247, 0.18);
-  border-radius: 14px;
+  margin: 0;
+  padding: 8px 10px;
+  background: linear-gradient(180deg, #5f5ccd 0%, #707cff 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 18px;
 }
 
-.directory-tabs > button {
-  min-height: 43px;
+.directory-tabs > .login-tab-btn {
+  min-height: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: rgba(216, 200, 229, 0.62);
+  color: #c3d2f6;
   background: transparent;
-  border: 1px solid transparent;
+  border: 0;
   border-radius: 10px;
-  font-size: 12px;
-  font-weight: 900;
-  transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: none;
+  font-size: 14px;
+  font-weight: 700;
 }
 
-.directory-tabs > button svg {
+.directory-tabs > .login-tab-btn svg {
   width: 17px;
   height: 17px;
+  flex-shrink: 0;
 }
 
-.directory-tabs > button.active {
+.directory-tabs > .login-tab-btn.active {
   color: #fff;
-  background: linear-gradient(135deg, rgba(109, 40, 217, 0.72), rgba(76, 29, 149, 0.78));
-  border-color: rgba(192, 132, 252, 0.3);
-  box-shadow: 0 6px 20px rgba(76, 29, 149, 0.27), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+  background: linear-gradient(180deg, #58acff 0%, #5926f3 100%);
+  border: 0;
+  box-shadow:
+    inset 0 1px 0 #fff,
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+    inset 0 -4px 0 rgba(62, 30, 167, 0.5),
+    0 4px 20px rgba(13, 12, 67, 0.25);
 }
 
 .friend-count {
-  min-width: 21px;
+  min-width: 22px;
   padding: 2px 6px;
-  color: rgba(245, 200, 66, 0.86);
-  background: rgba(245, 200, 66, 0.09);
-  border: 1px solid rgba(245, 200, 66, 0.14);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 999px;
-  font-size: 9px;
-  line-height: 1.3;
+  font-size: 10px;
 }
 
 .directory-panel {
@@ -564,12 +504,12 @@ onBeforeUnmount(() => {
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 18px 26px 0;
+  padding: 16px 0 0;
 }
 
 .search-controls {
   display: grid;
-  grid-template-columns: 132px 1fr;
+  grid-template-columns: 130px minmax(0, 1fr);
   gap: 10px;
   flex-shrink: 0;
 }
@@ -577,26 +517,28 @@ onBeforeUnmount(() => {
 .search-mode {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 3px;
+  gap: 2px;
   padding: 4px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(168, 85, 247, 0.19);
-  border-radius: 12px;
+  background: rgba(25, 22, 98, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 10px;
 }
 
 .search-mode button {
   min-height: 40px;
-  color: rgba(216, 200, 229, 0.58);
-  border-radius: 8px;
-  font-size: 11px;
-  font-weight: 900;
+  color: rgba(255, 255, 255, 0.62);
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 800;
   transition: color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
 }
 
 .search-mode button.active {
-  color: #261200;
-  background: linear-gradient(180deg, #ffe995, #f5c842);
-  box-shadow: 0 5px 14px rgba(245, 200, 66, 0.17);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
 }
 
 .search-field {
@@ -606,31 +548,31 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 10px;
   padding: 0 13px;
-  background: rgba(255, 255, 255, 0.055);
-  border: 1px solid rgba(168, 85, 247, 0.23);
-  border-radius: 12px;
+  background: rgba(10, 8, 50, 0.42);
+  border: 1.5px solid rgba(255, 255, 255, 0.24);
+  border-radius: 10px;
   cursor: text;
   transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
 }
 
 .search-field:focus-within {
-  background: rgba(255, 255, 255, 0.075);
-  border-color: rgba(245, 200, 66, 0.48);
-  box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.07);
+  background: rgba(10, 8, 50, 0.52);
+  border-color: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
 }
 
 .search-field > svg {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
-  color: rgba(192, 132, 252, 0.76);
+  color: rgba(255, 255, 255, 0.68);
 }
 
 .search-field input {
   min-width: 0;
   width: 100%;
   color: #fff;
-  background: none;
+  background: transparent;
   border: 0;
   outline: 0;
   font: inherit;
@@ -638,7 +580,7 @@ onBeforeUnmount(() => {
 }
 
 .search-field input::placeholder {
-  color: rgba(216, 200, 229, 0.43);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .search-field input::-webkit-search-cancel-button {
@@ -649,8 +591,9 @@ onBeforeUnmount(() => {
   width: 26px;
   height: 26px;
   flex-shrink: 0;
-  color: rgba(216, 200, 229, 0.65);
-  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.12);
+  border: 0;
   border-radius: 50%;
   font-size: 18px;
   line-height: 1;
@@ -661,61 +604,68 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-  padding: 17px 2px 9px;
-  color: rgba(216, 200, 229, 0.5);
-  font-size: 10px;
-  font-weight: 850;
-  letter-spacing: 0.08em;
+  padding: 14px 3px 8px;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
 }
 
 .result-summary strong {
-  color: rgba(245, 200, 66, 0.78);
-  font-size: 10px;
+  color: #fff;
+  font-size: 11px;
 }
 
 .player-list {
+  display: block;
   min-height: 0;
-  display: grid;
-  gap: 7px;
+  flex: 1;
   overflow-y: auto;
   margin: 0;
-  padding: 0 4px 5px 0;
+  padding: 0;
+  background: rgba(24, 20, 91, 0.26);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
   list-style: none;
   scrollbar-width: thin;
-  scrollbar-color: rgba(168, 85, 247, 0.35) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.45) transparent;
 }
 
 .player-item {
   display: grid;
-  grid-template-columns: 48px minmax(0, 1fr) auto;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
-  padding: 10px 10px 10px 11px;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(168, 85, 247, 0.13);
-  border-radius: 14px;
-  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+  padding: 11px 12px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 0;
+  transform: none;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.player-item:last-child {
+  border-bottom: 0;
 }
 
 .player-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(192, 132, 252, 0.25);
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.13);
+  transform: none;
 }
 
 .avatar {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.18), transparent 35%),
-    linear-gradient(145deg, rgba(168, 85, 247, 0.32), rgba(76, 29, 149, 0.35));
-  border: 1px solid rgba(192, 132, 252, 0.28);
-  border-radius: 14px;
-  font-size: 23px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.11);
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  box-shadow: none;
+  font-size: 21px;
 }
 
 .avatar img {
@@ -727,7 +677,7 @@ onBeforeUnmount(() => {
 .player-identity {
   min-width: 0;
   display: grid;
-  gap: 5px;
+  gap: 4px;
 }
 
 .player-name {
@@ -735,9 +685,9 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 7px;
   overflow: hidden;
-  color: #f8f0ff;
+  color: #fff;
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 800;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -745,17 +695,17 @@ onBeforeUnmount(() => {
 .friend-mark {
   padding: 2px 6px;
   flex-shrink: 0;
-  color: #d8b4fe;
-  background: rgba(168, 85, 247, 0.11);
-  border: 1px solid rgba(192, 132, 252, 0.18);
+  color: #e8e8ff;
+  background: rgba(52, 40, 177, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 999px;
-  font-size: 8px;
+  font-size: 9px;
   line-height: 1.4;
 }
 
 .player-account {
   overflow: hidden;
-  color: rgba(216, 200, 229, 0.57);
+  color: rgba(255, 255, 255, 0.66);
   font-size: 11px;
   font-weight: 650;
   text-overflow: ellipsis;
@@ -764,33 +714,24 @@ onBeforeUnmount(() => {
 
 .player-account small {
   margin-right: 5px;
-  color: rgba(245, 200, 66, 0.64);
-  font-size: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 10px;
   font-weight: 900;
   letter-spacing: 0.08em;
 }
 
 .select-button {
   min-height: 36px;
-  display: flex;
-  align-items: center;
+  padding: 0 16px;
   justify-content: center;
-  gap: 3px;
-  padding: 0 12px;
-  color: #321c00;
-  background: linear-gradient(180deg, #ffe995, #f5c842);
-  border: 1px solid rgba(255, 240, 180, 0.76);
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(245, 200, 66, 0.13);
-  font-size: 11px;
-  font-weight: 950;
-  transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.18s ease;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .select-button:hover {
-  filter: brightness(1.06);
-  box-shadow: 0 7px 20px rgba(245, 200, 66, 0.22);
-  transform: translateY(-1px);
+  filter: none;
 }
 
 .select-button svg {
@@ -799,13 +740,16 @@ onBeforeUnmount(() => {
 }
 
 .empty-state {
-  min-height: 210px;
+  min-height: 190px;
   display: flex;
   flex: 1;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 30px;
+  background: rgba(24, 20, 91, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
   text-align: center;
 }
 
@@ -815,10 +759,10 @@ onBeforeUnmount(() => {
   display: grid;
   place-items: center;
   margin-bottom: 14px;
-  color: rgba(192, 132, 252, 0.62);
-  background: rgba(168, 85, 247, 0.07);
-  border: 1px dashed rgba(192, 132, 252, 0.25);
-  border-radius: 18px;
+  color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px dashed rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
 }
 
 .empty-icon svg {
@@ -827,14 +771,14 @@ onBeforeUnmount(() => {
 }
 
 .empty-state strong {
-  color: rgba(243, 232, 255, 0.88);
+  color: #fff;
   font-size: 14px;
 }
 
 .empty-state p {
   max-width: 300px;
   margin: 6px 0 0;
-  color: rgba(216, 200, 229, 0.47);
+  color: rgba(255, 255, 255, 0.62);
   font-size: 11px;
   line-height: 1.7;
 }
@@ -844,11 +788,12 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 9px;
   flex-shrink: 0;
-  margin-top: 16px;
-  padding: 13px 26px 17px;
-  color: rgba(216, 200, 229, 0.54);
-  background: rgba(6, 1, 15, 0.35);
-  border-top: 1px solid rgba(168, 85, 247, 0.12);
+  margin-top: 12px;
+  padding: 10px 12px;
+  color: rgba(255, 255, 255, 0.68);
+  background: rgba(24, 20, 91, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
   font-size: 10px;
   line-height: 1.55;
 }
@@ -857,65 +802,66 @@ onBeforeUnmount(() => {
   width: 17px;
   height: 17px;
   flex-shrink: 0;
-  color: rgba(245, 200, 66, 0.7);
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
+  color: #b8ffe0;
 }
 
 button:focus-visible,
 input:focus-visible {
-  outline: 2px solid #f5c842;
+  outline: 2px solid #fff;
   outline-offset: 2px;
 }
 
 @media (max-width: 640px) {
   .player-search-overlay {
-    align-items: end;
-    padding: 0;
+    align-items: center;
+    padding: 14px;
+  }
+
+  .player-search-box {
+    width: min(600px, calc(100vw - 28px));
+    max-height: calc(100dvh - 28px);
+    border-radius: 20px;
+    padding: 12px;
   }
 
   .player-search-panel {
     width: 100%;
-    max-height: 92dvh;
-    border-right: 0;
-    border-bottom: 0;
-    border-left: 0;
-    border-radius: 24px 24px 0 0;
+    height: min(690px, calc(100dvh - 52px));
+    max-height: none;
+    border: 0;
+    border-radius: 12px;
+    padding: 24px 16px 18px;
   }
 
-  .modal-header {
-    padding: 20px 19px 13px;
+  .modal-eyebrow {
+    margin-top: 1px;
   }
 
-  .title-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 13px;
-  }
-
-  .title-lockup p {
-    letter-spacing: 0.16em;
+  .player-search-panel > .modal-title {
+    font-size: 20px;
+    margin-bottom: 8px;
   }
 
   .modal-description {
-    padding: 0 19px 15px;
+    margin-bottom: 14px;
     font-size: 11px;
   }
 
   .directory-tabs {
-    margin: 0 19px;
+    height: 56px;
+    margin: 0;
+    padding: 6px 8px;
+    border-radius: 15px;
+  }
+
+  .directory-tabs > .login-tab-btn {
+    min-height: 42px;
+    height: 42px;
+    font-size: 12px;
   }
 
   .directory-panel {
-    padding: 15px 19px 0;
+    padding: 12px 0 0;
   }
 
   .search-controls {
@@ -924,40 +870,41 @@ input:focus-visible {
   }
 
   .search-mode button {
-    min-height: 34px;
+    min-height: 32px;
   }
 
   .search-field {
-    min-height: 46px;
+    min-height: 44px;
   }
 
   .player-item {
-    grid-template-columns: 43px minmax(0, 1fr) auto;
+    grid-template-columns: 40px minmax(0, 1fr) auto;
     gap: 9px;
-    padding: 9px;
+    padding: 9px 10px;
   }
 
   .avatar {
-    width: 43px;
-    height: 43px;
-    border-radius: 12px;
-    font-size: 21px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 19px;
   }
 
   .select-button {
-    min-width: 42px;
-    padding: 0 9px;
-    font-size: 0;
+    min-width: auto;
+    min-height: 34px;
+    padding: 0 11px;
+    font-size: 11px;
   }
 
   .select-button svg {
-    width: 17px;
-    height: 17px;
+    width: 13px;
+    height: 13px;
   }
 
   .safety-note {
-    margin-top: 12px;
-    padding: 12px 19px calc(12px + env(safe-area-inset-bottom));
+    margin-top: 10px;
+    padding: 9px 10px;
   }
 }
 
@@ -968,8 +915,12 @@ input:focus-visible {
   .player-search-leave-active .player-search-panel,
   .player-item,
   .select-button,
-  .close-button {
+  .modal-close {
     transition: none;
+  }
+
+  .player-search-box {
+    animation: none;
   }
 }
 </style>
