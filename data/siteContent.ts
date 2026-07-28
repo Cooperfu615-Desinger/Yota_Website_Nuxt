@@ -56,6 +56,56 @@ export interface PrivateConversation {
   messages: ChatMessage[]
 }
 
+export type SupportQuestionCategoryKey =
+  | 'account'
+  | 'deposit'
+  | 'withdrawal'
+  | 'game'
+  | 'event'
+  | 'vault'
+  | 'report'
+
+export interface SupportQuestionCategory {
+  key: SupportQuestionCategoryKey
+  label: string
+  description: string
+  icon: string
+}
+
+export type SupportTicketStatus = 'ongoing' | 'closed'
+
+export interface SupportPlayerReportContext {
+  playerId: string
+  account: string
+  name: string
+  avatar: string
+  reason: string
+  detail: string
+}
+
+export interface SupportTicket {
+  id: string
+  categoryKey: SupportQuestionCategoryKey
+  categoryLabel: string
+  subject: string
+  status: SupportTicketStatus
+  createdAt: string
+  updatedAt: string
+  unread: number
+  messages: ChatMessage[]
+  reportContext?: SupportPlayerReportContext
+}
+
+export const supportQuestionCategories = [
+  { key: 'account', label: '帳號問題', icon: '👤', description: '登入、註冊、帳號安全與個人資料' },
+  { key: 'deposit', label: '儲值／付款', icon: '💳', description: '儲值方式、付款狀態與金幣入帳' },
+  { key: 'withdrawal', label: '提款／審核', icon: '🧾', description: '提款申請、審核進度與退回原因' },
+  { key: 'game', label: '遊戲／結算', icon: '🎮', description: '遊戲異常、下注紀錄與派彩結算' },
+  { key: 'event', label: '活動／獎勵', icon: '🎁', description: '活動資格、任務進度與獎勵發放' },
+  { key: 'vault', label: '保險箱／贈禮', icon: '🔐', description: '保險箱存取、贈禮申請與收受' },
+  { key: 'report', label: '檢舉玩家', icon: '🛡️', description: '檢舉玩家行為或不當聊天內容' },
+] as const satisfies readonly SupportQuestionCategory[]
+
 export interface HomepageQuickLink {
   key: 'deposit' | 'events' | 'leaderboard' | 'tutorial'
   to: string
@@ -884,10 +934,52 @@ export const siteContent = {
         ],
       },
     ] satisfies PrivateConversation[],
-    supportMessages: [
-      { id: 1, user: '客服小幫手', avatar: '🎧', text: '您好！我是巨亨ONLINE客服，請問有什麼可以協助您的？', time: '14:00' },
-      { id: 2, user: '我',         avatar: '👤', text: '想詢問儲值優惠活動', time: '14:01', self: true },
-      { id: 3, user: '客服小幫手', avatar: '🎧', text: '目前新會員首儲享100%加碼，老會員每週儲值也有15%回饋！詳情請至活動頁查看 🎁', time: '14:01' },
-    ] satisfies ChatMessage[],
+    supportCategories: supportQuestionCategories,
+    supportTickets: [
+      {
+        id: 'CS-000001',
+        categoryKey: 'deposit',
+        categoryLabel: '儲值／付款',
+        subject: '儲值金幣尚未入帳',
+        status: 'ongoing',
+        createdAt: '2026-07-28T08:42:00+08:00',
+        updatedAt: '2026-07-28T10:24:00+08:00',
+        unread: 2,
+        messages: [
+          { id: 11, user: '我', avatar: '👤', text: '今天早上已完成付款，但金幣還沒有入帳，想請客服協助確認。', time: '08:42', self: true },
+          { id: 12, user: '客服小幫手', avatar: '🎧', text: '您好，已收到您的問題，我們正在核對付款紀錄。', time: '09:10' },
+          { id: 13, user: '客服小幫手', avatar: '🎧', text: '請您確認付款頁顯示的訂單末五碼，回覆後我們會接續查詢。', time: '10:24' },
+        ],
+      },
+      {
+        id: 'CS-000002',
+        categoryKey: 'game',
+        categoryLabel: '遊戲／結算',
+        subject: '遊戲結算顯示異常',
+        status: 'ongoing',
+        createdAt: '2026-07-27T21:16:00+08:00',
+        updatedAt: '2026-07-27T21:48:00+08:00',
+        unread: 0,
+        messages: [
+          { id: 21, user: '我', avatar: '👤', text: '百家樂結束後顯示的派彩金額和下注紀錄不同。', time: '昨天 21:16', self: true },
+          { id: 22, user: '客服小幫手', avatar: '🎧', text: '已為您登記查詢，客服會依局號與遊戲紀錄進一步核對。', time: '昨天 21:48' },
+        ],
+      },
+      {
+        id: 'CS-000003',
+        categoryKey: 'event',
+        categoryLabel: '活動／獎勵',
+        subject: '每日簽到獎勵確認',
+        status: 'closed',
+        createdAt: '2026-07-22T14:05:00+08:00',
+        updatedAt: '2026-07-23T11:30:00+08:00',
+        unread: 0,
+        messages: [
+          { id: 31, user: '我', avatar: '👤', text: '昨天完成簽到後沒有看到里程碑獎勵。', time: '7/22 14:05', self: true },
+          { id: 32, user: '客服小幫手', avatar: '🎧', text: '已確認獎勵於今日 11:28 補發至您的金幣錢包。', time: '7/23 11:28' },
+          { id: 33, user: '客服小幫手', avatar: '🎧', text: '此問題已處理完成並由客服結案；如有其他問題，請建立新的提問。', time: '7/23 11:30' },
+        ],
+      },
+    ] satisfies SupportTicket[],
   },
 } as const

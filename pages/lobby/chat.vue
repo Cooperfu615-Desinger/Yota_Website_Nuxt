@@ -1,13 +1,34 @@
 <script setup lang="ts">
 import { siteContent } from '~/data/siteContent'
-import type { ChatMessage, ChatPlayerProfile, OnlinePlayer, PrivateConversation } from '~/data/siteContent'
+import type {
+  ChatMessage,
+  ChatPlayerProfile,
+  OnlinePlayer,
+  PrivateConversation,
+  SupportQuestionCategoryKey,
+  SupportTicket,
+} from '~/data/siteContent'
 
 definePageMeta({ layout: 'lobby' })
 
 type Channel = 'world' | 'private' | 'support'
 const activeChannel = ref<Channel>('world')
 const { blockPlayer, isBlockedPlayer } = useSocialState()
+const route = useRoute()
 const router = useRouter()
+const {
+  supportCategories,
+  maxOngoing,
+  sortedTickets,
+  ongoingCount,
+  unreadTotal: supportUnreadTotal,
+  canCreateTicket,
+  getTicketById,
+  createTicket,
+  sendMessage: sendSupportMessage,
+  markTicketRead,
+  createPlayerReportTicket,
+} = useSupportTicketState()
 
 const channels: { key: Channel; label: string; icon: string }[] = [
   { key: 'world',   label: '世界頻道', icon: '🌐' },
@@ -22,9 +43,8 @@ function clonePlayer<T extends ChatPlayerProfile>(player: T): T {
   } as T
 }
 
-// 執行期訊息存區域 ref（seed 自 siteContent，重整重置）
+// 世界頻道仍使用頁面區域 Mock；客服案件由 useState 跨元件共用。
 const worldMessages = ref<ChatMessage[]>([...siteContent.chat.worldMessages])
-const supportMessages = ref<ChatMessage[]>([...siteContent.chat.supportMessages])
 
 // 私人對話（深拷貝 seed，避免動到 as const 來源）+ 主從導覽狀態
 const conversations = ref<PrivateConversation[]>(
@@ -38,11 +58,60 @@ const activeConvId = ref<number | null>(null)   // null = 顯示清單
 const activeConv = computed(() => conversations.value.find(c => c.id === activeConvId.value) || null)
 const activePeerBlocked = computed(() => activeConv.value ? isBlockedPlayer(activeConv.value.peer.playerId) : false)
 
+// 客服頻道主從導覽：清單 → 類別選擇 → 草稿對話／既有案件。
+const activeSupportTicketId = ref<string | null>(null)
+const activeSupportTicket = computed<SupportTicket | null>(() =>
+  activeSupportTicketId.value ? getTicketById(activeSupportTicketId.value) : null
+)
+const choosingSupportCategory = ref(false)
+const supportDraftCategoryKey = ref<SupportQuestionCategoryKey | null>(null)
+const supportDraftCategory = computed(() =>
+  supportCategories.find(category => category.key === supportDraftCategoryKey.value) ?? null
+)
+const supportFilter = ref<'all' | 'ongoing' | 'closed'>('all')
+
 function openConversation(conv: PrivateConversation) {
   activeConvId.value = conv.id
   conv.unread = 0
 }
 function backToList() { activeConvId.value = null }
+
+function openSupportList() {
+  activeSupportTicketId.value = null
+  supportDraftCategoryKey.value = null
+  choosingSupportCategory.value = false
+}
+
+function openSupportTicket(ticketId: string) {
+  const result = markTicketRead(ticketId)
+  if (!result.ok) {
+    showNotice('目前找不到這筆提問紀錄。')
+    openSupportList()
+    return
+  }
+  activeSupportTicketId.value = ticketId
+  supportDraftCategoryKey.value = null
+  choosingSupportCategory.value = false
+}
+
+function startSupportQuestion() {
+  if (!canCreateTicket.value) {
+    showNotice(`同時最多只能有 ${maxOngoing} 筆進行中的提問。`)
+  }
+  activeSupportTicketId.value = null
+  supportDraftCategoryKey.value = null
+  choosingSupportCategory.value = true
+}
+
+function selectSupportCategory(categoryKey: SupportQuestionCategoryKey) {
+  if (!canCreateTicket.value) {
+    showNotice(`同時最多只能有 ${maxOngoing} 筆進行中的提問。`)
+    return
+  }
+  activeSupportTicketId.value = null
+  supportDraftCategoryKey.value = categoryKey
+  choosingSupportCategory.value = false
+}
 
 function makeMsg(text: string): ChatMessage {
   return {
@@ -57,12 +126,20 @@ function makeMsg(text: string): ChatMessage {
 
 function sendWorld(text: string)   { worldMessages.value.push(makeMsg(text)) }
 function sendSupport(text: string) {
-  if (supportDraft.value) {
-    supportMessages.value.push(makeMsg(`【${supportDraft.value.title}】${text}`))
-    supportDraft.value = null
+  if (supportDraftCategoryKey.value) {
+    const result = createTicket(supportDraftCategoryKey.value, text)
+    if (!result.ok) {
+      showSupportFailure(result.reason)
+      return
+    }
+    activeSupportTicketId.value = result.ticket.id
+    supportDraftCategoryKey.value = null
+    showNotice('提問已建立，客服將盡快回覆。')
     return
   }
-  supportMessages.value.push(makeMsg(text))
+  if (!activeSupportTicket.value) return
+  const result = sendSupportMessage(activeSupportTicket.value.id, text)
+  if (!result.ok) showSupportFailure(result.reason)
 }
 function sendPrivate(text: string) {
   if (activePeerBlocked.value) {
@@ -76,7 +153,6 @@ function sendPrivate(text: string) {
 const playerList = siteContent.chat.onlinePlayers.map(player => clonePlayer(player))
 const showRoster = ref(false)
 const selectedPlayer = ref<ChatPlayerProfile | null>(null)
-const supportDraft = ref<{ title: string; player: ChatPlayerProfile } | null>(null)
 const reportTarget = ref<ChatPlayerProfile | null>(null)
 const pageNotice = ref('')
 let noticeTimer: ReturnType<typeof setTimeout> | null = null
@@ -96,6 +172,18 @@ function showNotice(text: string) {
   noticeTimer = setTimeout(() => {
     pageNotice.value = ''
   }, 2600)
+}
+
+function showSupportFailure(reason: string) {
+  if (reason === 'max-ongoing') {
+    showNotice(`同時最多只能有 ${maxOngoing} 筆進行中的提問。`)
+    return
+  }
+  if (reason === 'closed') {
+    showNotice('此提問已結案，請新增提問。')
+    return
+  }
+  showNotice('暫時無法送出，請稍後再試。')
 }
 function selectPlayer(p: ChatPlayerProfile) {
   if (isBlockedPlayer(p.playerId)) {
@@ -148,16 +236,22 @@ function reportPlayer(p: ChatPlayerProfile) {
 function submitPlayerReport(reason: string, detail: string) {
   const player = reportTarget.value
   if (!player) return
-  supportMessages.value.push({
-    id: Date.now(),
-    user: '系統',
-    avatar: '🛡️',
-    text: `已收到對 ${player.name} 的檢舉：${reason}${detail ? `｜${detail}` : ''}`,
-    time: new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false }),
-  })
+  const result = createPlayerReportTicket(player, reason, detail)
+  if (!result.ok) {
+    // 關閉高層級 Modal，確保案件上限等頁面通知不會被遮住。
+    reportTarget.value = null
+    if (result.reason === 'max-ongoing') {
+      showNotice(`已有 ${maxOngoing} 筆進行中提問，本次檢舉尚未送出。`)
+      return
+    }
+    showSupportFailure(result.reason)
+    return
+  }
   reportTarget.value = null
   activeChannel.value = 'support'
-  showNotice('檢舉已送出，客服將依 Mock 流程進行確認。')
+  openSupportTicket(result.ticket.id)
+  syncChannelQuery('support')
+  showNotice('檢舉已建立客服提問，客服將進行確認。')
 }
 function addPlayerToBlacklist(p: ChatPlayerProfile) {
   blockPlayer(p)
@@ -181,6 +275,33 @@ function transferPlayer(p: ChatPlayerProfile) {
     },
   })
 }
+
+function syncChannelQuery(channel: Channel) {
+  const nextQuery = { ...route.query }
+  if (channel === 'world') delete nextQuery.channel
+  else nextQuery.channel = channel
+  router.replace({ query: nextQuery })
+}
+
+function selectChannel(channel: Channel) {
+  activeChannel.value = channel
+  syncChannelQuery(channel)
+}
+
+function applyChannelQuery() {
+  const channel = route.query.channel
+  if (channel === 'support' || channel === 'private' || channel === 'world') {
+    activeChannel.value = channel
+    return
+  }
+  activeChannel.value = 'world'
+}
+
+onMounted(applyChannelQuery)
+watch(() => route.query.channel, applyChannelQuery)
+onUnmounted(() => {
+  if (noticeTimer) clearTimeout(noticeTimer)
+})
 </script>
 
 <template>
@@ -195,10 +316,20 @@ function transferPlayer(p: ChatPlayerProfile) {
         :style="activeChannel === ch.key
           ? 'background:var(--color-bg); color:var(--color-purple-light); border-bottom: 2px solid var(--color-purple-light);'
           : 'color:var(--color-text-muted);'"
-        @click="activeChannel = ch.key"
+        :aria-label="ch.key === 'support' && supportUnreadTotal > 0
+          ? `客服頻道，${supportUnreadTotal} 則未讀訊息`
+          : ch.label"
+        @click="selectChannel(ch.key)"
       >
         <span>{{ ch.icon }}</span>
         <span>{{ ch.label }}</span>
+        <span
+          v-if="ch.key === 'support' && supportUnreadTotal > 0"
+          class="channel-unread"
+          aria-hidden="true"
+        >
+          {{ supportUnreadTotal > 99 ? '99+' : supportUnreadTotal }}
+        </span>
       </button>
 
       <button
@@ -227,14 +358,89 @@ function transferPlayer(p: ChatPlayerProfile) {
       @send="sendWorld"
       @select-user="selectMessageUser"
     />
-    <LobbyChatThread
-      v-else-if="activeChannel === 'support'"
-      :messages="supportMessages"
-      :placeholder="supportDraft ? '請輸入檢舉內容…' : '輸入訊息…'"
-      :notice-title="supportDraft?.title"
-      :notice-text="supportDraft ? '客服會收到此檢舉標題，請補上具體原因、時間或對話內容後送出。' : ''"
-      @send="sendSupport"
-    />
+    <!-- 客服頻道：提問紀錄 → 新增提問 → 對話 -->
+    <template v-else-if="activeChannel === 'support'">
+      <LobbySupportQuestionStart
+        v-if="choosingSupportCategory"
+        :categories="supportCategories"
+        :ongoing-count="ongoingCount"
+        :max-ongoing="maxOngoing"
+        @select="selectSupportCategory"
+        @cancel="openSupportList"
+      />
+
+      <template v-else-if="supportDraftCategory">
+        <div class="support-thread-header">
+          <button
+            type="button"
+            class="support-back-button"
+            aria-label="返回提問紀錄"
+            @click="openSupportList"
+          >
+            ‹
+          </button>
+          <span class="support-thread-icon" aria-hidden="true">{{ supportDraftCategory.icon }}</span>
+          <span class="support-thread-heading">
+            <small>新增提問 · 尚未送出</small>
+            <strong>{{ supportDraftCategory.label }}</strong>
+          </span>
+          <span class="support-ticket-status draft">草稿</span>
+        </div>
+        <LobbyChatThread
+          :messages="[]"
+          placeholder="請輸入問題內容…"
+          :notice-title="`請描述「${supportDraftCategory.label}」`"
+          notice-text="送出第一則訊息後才會正式建立提問；目前離開不會留下紀錄。"
+          @send="sendSupport"
+        />
+      </template>
+
+      <template v-else-if="activeSupportTicket">
+        <div class="support-thread-header">
+          <button
+            type="button"
+            class="support-back-button"
+            aria-label="返回提問紀錄"
+            @click="openSupportList"
+          >
+            ‹
+          </button>
+          <span class="support-thread-icon" aria-hidden="true">🎧</span>
+          <span class="support-thread-heading">
+            <small>案件 {{ activeSupportTicket.id }} · {{ activeSupportTicket.categoryLabel }}</small>
+            <strong>{{ activeSupportTicket.subject }}</strong>
+          </span>
+          <span
+            class="support-ticket-status"
+            :class="activeSupportTicket.status"
+          >
+            {{ activeSupportTicket.status === 'ongoing' ? '進行中' : '已結案' }}
+          </span>
+          <button
+            v-if="activeSupportTicket.status === 'closed'"
+            type="button"
+            class="support-new-again"
+            @click="startSupportQuestion"
+          >
+            新增提問
+          </button>
+        </div>
+        <LobbyChatThread
+          :messages="activeSupportTicket.messages"
+          :readonly="activeSupportTicket.status === 'closed'"
+          placeholder="輸入訊息…"
+          @send="sendSupport"
+        />
+      </template>
+
+      <LobbySupportTicketList
+        v-else
+        v-model:active-filter="supportFilter"
+        :tickets="sortedTickets"
+        @open="openSupportTicket"
+        @new="startSupportQuestion"
+      />
+    </template>
 
     <!-- 私人頻道：主從導覽 -->
     <template v-else>
@@ -303,6 +509,21 @@ function transferPlayer(p: ChatPlayerProfile) {
   position: relative;
   z-index: 81;
 }
+.channel-unread {
+  display: inline-grid;
+  min-width: 18px;
+  height: 18px;
+  place-items: center;
+  padding: 0 5px;
+  color: #1a0a00;
+  background: var(--color-gold);
+  border: 1px solid rgba(255,255,255,0.34);
+  border-radius: 999px;
+  box-shadow: 0 0 12px rgba(245,200,66,0.24);
+  font-size: 9px;
+  font-weight: 950;
+  line-height: 1;
+}
 .chat-page-title {
   margin: 20px 16px 16px;
   flex-shrink: 0;
@@ -351,5 +572,119 @@ function transferPlayer(p: ChatPlayerProfile) {
   border-radius: 999px;
   font-size: 11px;
   font-weight: 900;
+}
+.support-thread-header {
+  display: flex;
+  min-height: 62px;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  background:
+    linear-gradient(90deg, rgba(168,85,247,0.08), transparent 45%),
+    var(--color-bg-card);
+  border-bottom: 1px solid rgba(168,85,247,0.16);
+}
+.support-back-button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  flex: 0 0 auto;
+  color: var(--color-purple-light);
+  background: rgba(168,85,247,0.08);
+  border: 1px solid rgba(168,85,247,0.22);
+  border-radius: 10px;
+  font-size: 24px;
+  line-height: 1;
+  transition: color 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+}
+.support-back-button:hover {
+  color: var(--color-gold);
+  background: rgba(245,200,66,0.06);
+  border-color: rgba(245,200,66,0.32);
+}
+.support-thread-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  flex: 0 0 auto;
+  background: rgba(245,200,66,0.09);
+  border: 1px solid rgba(245,200,66,0.23);
+  border-radius: 11px;
+  font-size: 17px;
+}
+.support-thread-heading {
+  display: block;
+  min-width: 0;
+  flex: 1;
+}
+.support-thread-heading small,
+.support-thread-heading strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.support-thread-heading small {
+  margin-bottom: 2px;
+  color: var(--color-text-muted);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+}
+.support-thread-heading strong {
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 900;
+}
+.support-ticket-status {
+  display: inline-flex;
+  min-height: 24px;
+  flex: 0 0 auto;
+  align-items: center;
+  padding: 4px 9px;
+  color: #86efac;
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(74,222,128,0.26);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+}
+.support-ticket-status.closed {
+  color: #cbd5e1;
+  background: rgba(148,163,184,0.1);
+  border-color: rgba(203,213,225,0.2);
+}
+.support-ticket-status.draft {
+  color: var(--color-gold);
+  background: rgba(245,200,66,0.08);
+  border-color: rgba(245,200,66,0.24);
+}
+.support-new-again {
+  min-height: 31px;
+  flex: 0 0 auto;
+  padding: 6px 11px;
+  color: #1a0a00;
+  background: linear-gradient(135deg,#f7d55f,#d98912);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+}
+@media (max-width: 560px) {
+  .support-thread-header {
+    gap: 7px;
+    padding-inline: 10px;
+  }
+  .support-thread-icon {
+    display: none;
+  }
+  .support-thread-heading small {
+    max-width: 180px;
+  }
+  .support-new-again {
+    padding-inline: 9px;
+  }
 }
 </style>

@@ -97,6 +97,7 @@ export const useAppState = () => {
     financial.resetFinancialState()
     useGiftState().resetGiftState()
     useSocialState().resetSocialState()
+    useSupportTicketState().resetSupportTicketState()
     protectedDestination.value = null
     if (import.meta.client) {
       localStorage.removeItem(LS_LOGIN_KEY)
