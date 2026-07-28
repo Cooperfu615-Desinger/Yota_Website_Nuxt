@@ -53,6 +53,46 @@ function toGiftParty(player: ChatPlayerProfile): GiftParty {
   }
 }
 
+interface MockGiftRequestSeed {
+  id: string
+  playerId: string
+  direction: 'incoming' | 'outgoing'
+  amount: number
+  hoursAgo: number
+  status?: 'expired'
+}
+
+const MOCK_GIFT_REQUESTS = [
+  { id: 'GIFT-MOCK-001', playerId: 'P10001', direction: 'incoming', amount: 120_000, hoursAgo: 26 },
+  { id: 'GIFT-MOCK-002', playerId: 'P10002', direction: 'outgoing', amount: 85_000, hoursAgo: 10 },
+  { id: 'GIFT-MOCK-003', playerId: 'P10003', direction: 'incoming', amount: 45_000, hoursAgo: 92 },
+  { id: 'GIFT-MOCK-004', playerId: 'P10008', direction: 'outgoing', amount: 300_000, hoursAgo: 139 },
+  { id: 'GIFT-MOCK-005', playerId: 'P10005', direction: 'incoming', amount: 68_000, hoursAgo: 164 },
+  { id: 'GIFT-MOCK-006', playerId: 'P10006', direction: 'incoming', amount: 25_000, hoursAgo: 190, status: 'expired' },
+  { id: 'GIFT-MOCK-007', playerId: 'P10007', direction: 'outgoing', amount: 220_000, hoursAgo: 236, status: 'expired' },
+] satisfies readonly MockGiftRequestSeed[]
+
+function createMockGiftRequests(currentUser: GiftParty, now: number) {
+  return MOCK_GIFT_REQUESTS.flatMap((mock) => {
+    const player = siteContent.chat.onlinePlayers.find(item => item.playerId === mock.playerId)
+    if (!player) return []
+
+    const otherParty = toGiftParty(player)
+    const request = buildGiftRequest({
+      id: mock.id,
+      sender: mock.direction === 'incoming' ? otherParty : currentUser,
+      receiver: mock.direction === 'incoming' ? currentUser : otherParty,
+      amount: mock.amount,
+      createdAt: now - mock.hoursAgo * 60 * 60 * 1000,
+    })
+    return [
+      mock.status === 'expired'
+        ? resolveGiftRequest(request, 'expired', request.expiresAt)
+        : request,
+    ]
+  })
+}
+
 export const useGiftState = () => {
   const giftState = useState<GiftRequestState>('giftRequestState', createInitialGiftState)
   const financial = useFinancialState()
@@ -90,18 +130,7 @@ export const useGiftState = () => {
       return
     }
 
-    const lucky = siteContent.chat.onlinePlayers.find(player => player.playerId === 'P10001')
-    const seededRequests: GiftRequest[] = []
-
-    if (lucky) {
-      seededRequests.push(buildGiftRequest({
-        id: 'GIFT-MOCK-001',
-        sender: toGiftParty(lucky),
-        receiver: currentUser,
-        amount: 120_000,
-        createdAt: now - 26 * 60 * 60 * 1000,
-      }))
-    }
+    const seededRequests: GiftRequest[] = createMockGiftRequests(currentUser, now)
 
     giftState.value = {
       requests: seededRequests,
@@ -125,7 +154,10 @@ export const useGiftState = () => {
       if (request.status !== 'pending' || now < request.expiresAt) return request
       const expired = resolveGiftRequest(request, 'expired', now)
       if (request.sender.playerId === currentPlayerId) {
-        financial.refundGiftToVault(request.amount)
+        financial.refundGiftToVault(request.amount, {
+          title: '贈禮逾期退回保險箱',
+          detail: `原贈禮給 ${request.receiver.name}（@${request.receiver.account}）・${request.id}`,
+        })
       }
       changed = true
       return expired

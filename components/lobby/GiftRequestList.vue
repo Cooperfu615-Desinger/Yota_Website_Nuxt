@@ -4,7 +4,7 @@ import {
   type GiftRequest,
 } from '~/utils/giftRequest'
 
-type RequestFilter = 'all' | 'incoming' | 'outgoing'
+type RequestFilter = 'all' | 'incoming' | 'outgoing' | 'expired'
 
 const props = defineProps<{
   requests: GiftRequest[]
@@ -20,15 +20,23 @@ const emit = defineEmits<{
 
 const activeFilter = ref<RequestFilter>('all')
 
-const pendingRequests = computed(() => props.requests
+const relatedRequests = computed(() => props.requests
   .filter(request =>
-    request.status === 'pending'
-    && (
-      request.sender.playerId === props.currentPlayerId
-      || request.receiver.playerId === props.currentPlayerId
-    )
+    request.sender.playerId === props.currentPlayerId
+    || request.receiver.playerId === props.currentPlayerId
   )
+)
+
+const pendingRequests = computed(() => relatedRequests.value
+  .filter(request => request.status === 'pending')
   .sort((a, b) => a.expiresAt - b.expiresAt))
+
+const expiredRequests = computed(() => relatedRequests.value
+  .filter(request => request.status === 'expired')
+  .sort((a, b) =>
+    (b.resolvedAt ?? b.expiresAt) - (a.resolvedAt ?? a.expiresAt)
+    || a.id.localeCompare(b.id),
+  ))
 
 const incomingCount = computed(() => pendingRequests.value
   .filter(request => request.receiver.playerId === props.currentPlayerId).length)
@@ -40,9 +48,13 @@ const filterOptions = computed<{ key: RequestFilter; label: string; count: numbe
   { key: 'all', label: '全部', count: pendingRequests.value.length },
   { key: 'incoming', label: '收到', count: incomingCount.value },
   { key: 'outgoing', label: '送出', count: outgoingCount.value },
+  { key: 'expired', label: '已過期', count: expiredRequests.value.length },
 ])
 
 const visibleRequests = computed(() => {
+  if (activeFilter.value === 'expired') {
+    return expiredRequests.value
+  }
   if (activeFilter.value === 'incoming') {
     return pendingRequests.value.filter(request => isIncoming(request))
   }
@@ -52,11 +64,28 @@ const visibleRequests = computed(() => {
   return pendingRequests.value
 })
 
+const panelHeading = computed(() =>
+  activeFilter.value === 'expired' ? '已過期' : '待處理',
+)
+
+const panelSummary = computed(() =>
+  activeFilter.value === 'expired'
+    ? `${expiredRequests.value.length} 筆過期紀錄`
+    : `${pendingRequests.value.length} 筆等待處理`,
+)
+
 const emptyMessage = computed(() => {
+  if (activeFilter.value === 'expired') return '目前沒有已過期的贈禮'
   if (activeFilter.value === 'incoming') return '目前沒有等待你回覆的贈禮'
   if (activeFilter.value === 'outgoing') return '目前沒有等待對方回覆的贈禮'
   return '目前沒有待處理的贈禮申請'
 })
+
+const emptyDescription = computed(() =>
+  activeFilter.value === 'expired'
+    ? '過期申請會保留在這裡；你送出的金額會自動退回保險箱。'
+    : '新的贈禮申請會顯示在這裡，申請期限為 168 小時。',
+)
 
 const createdAtFormatter = new Intl.DateTimeFormat('zh-TW', {
   year: 'numeric',
@@ -98,6 +127,10 @@ function isUrgent(request: GiftRequest) {
 function isPastDue(request: GiftRequest) {
   return request.expiresAt <= props.now
 }
+
+function isExpired(request: GiftRequest) {
+  return request.status === 'expired'
+}
 </script>
 
 <template>
@@ -105,12 +138,12 @@ function isPastDue(request: GiftRequest) {
     <header class="request-header">
       <div class="request-title">
         <div>
-          <h2 id="gift-request-heading">待處理贈禮</h2>
-          <span>{{ pendingRequests.length }} 筆等待處理</span>
+          <h2 id="gift-request-heading">{{ panelHeading }}</h2>
+          <span>{{ panelSummary }}</span>
         </div>
       </div>
 
-      <div class="request-filters tab-bar" role="group" aria-label="待處理贈禮篩選">
+      <div class="request-filters tab-bar" role="group" aria-label="贈禮申請篩選">
         <button
           v-for="filter in filterOptions"
           :key="filter.key"
@@ -130,8 +163,8 @@ function isPastDue(request: GiftRequest) {
       <div class="request-column-head" aria-hidden="true">
         <span>玩家 / 方向</span>
         <span>贈禮金額</span>
-        <span>申請期限</span>
-        <span>操作</span>
+        <span>{{ activeFilter === 'expired' ? '到期時間' : '申請期限' }}</span>
+        <span>{{ activeFilter === 'expired' ? '結果' : '操作' }}</span>
       </div>
 
       <TransitionGroup
@@ -149,7 +182,8 @@ function isPastDue(request: GiftRequest) {
             incoming: isIncoming(request),
             outgoing: isOutgoing(request),
             urgent: isUrgent(request),
-            overdue: isPastDue(request),
+            overdue: !isExpired(request) && isPastDue(request),
+            expired: isExpired(request),
           }"
         >
           <div class="identity-block">
@@ -172,23 +206,46 @@ function isPastDue(request: GiftRequest) {
               <dd>{{ request.amount.toLocaleString() }} <small>金幣</small></dd>
             </div>
             <div class="received-value">
-              <dt>{{ isIncoming(request) ? '你將實收' : '對方實收' }}</dt>
+              <dt>
+                {{ isExpired(request)
+                  ? (isIncoming(request) ? '原可實收' : '對方原可實收')
+                  : (isIncoming(request) ? '你將實收' : '對方實收') }}
+              </dt>
               <dd>{{ request.actualReceived.toLocaleString() }} <small>金幣</small></dd>
             </div>
           </dl>
 
           <div class="time-block">
             <div>
-              <span>剩餘期限</span>
-              <strong>{{ formatGiftRequestRemainingTime(request, now) }}</strong>
+              <span>{{ isExpired(request) ? '到期時間' : '剩餘期限' }}</span>
+              <time
+                v-if="isExpired(request)"
+                class="expiry-time"
+                :datetime="toDateTime(request.expiresAt)"
+              >
+                已於 {{ formatCreatedAt(request.expiresAt) }} 過期
+              </time>
+              <strong v-else>{{ formatGiftRequestRemainingTime(request, now) }}</strong>
             </div>
-            <time :datetime="toDateTime(request.createdAt)">
+            <time class="created-time" :datetime="toDateTime(request.createdAt)">
               申請於 {{ formatCreatedAt(request.createdAt) }}
             </time>
           </div>
 
           <div class="request-actions">
-            <template v-if="isIncoming(request)">
+            <div
+              v-if="isExpired(request)"
+              class="expired-result"
+              :class="{ refunded: isOutgoing(request) }"
+            >
+              <strong>{{ isOutgoing(request) ? '已退回保險箱' : '申請已失效' }}</strong>
+              <small>
+                {{ isOutgoing(request)
+                  ? `原額 ${request.amount.toLocaleString()} 金幣`
+                  : '逾期後無法接受' }}
+              </small>
+            </div>
+            <template v-else-if="isIncoming(request)">
               <button
                 type="button"
                 class="action-button reject"
@@ -226,7 +283,7 @@ function isPastDue(request: GiftRequest) {
     <div v-else class="request-empty" role="status">
       <span aria-hidden="true">禮</span>
       <strong>{{ emptyMessage }}</strong>
-      <p>新的贈禮申請會顯示在這裡，申請期限為 168 小時。</p>
+      <p>{{ emptyDescription }}</p>
     </div>
   </section>
 </template>
@@ -295,7 +352,7 @@ function isPastDue(request: GiftRequest) {
 
 .request-filters {
   display: flex;
-  width: min(330px, 42%);
+  width: min(420px, 52%);
   flex: 0 0 auto;
   gap: 4px;
   padding: 4px;
@@ -306,11 +363,13 @@ function isPastDue(request: GiftRequest) {
 
 .request-filter-button {
   display: flex;
+  min-width: 0;
   min-height: 38px;
+  flex: 1;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 7px 12px;
+  padding: 7px 9px;
   border-radius: 7px;
   color: var(--color-text-muted);
   font-size: 12px;
@@ -411,6 +470,38 @@ function isPastDue(request: GiftRequest) {
 
 .request-card.overdue {
   opacity: 0.65;
+}
+
+.request-card.expired {
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.request-card.expired::before {
+  background: rgba(196, 181, 213, 0.34);
+}
+
+.request-card.expired:hover {
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.request-card.expired .avatar {
+  border-color: rgba(196, 181, 213, 0.15);
+  background: rgba(196, 181, 213, 0.055);
+  filter: grayscale(0.45);
+  opacity: 0.72;
+}
+
+.request-card.expired .direction-badge,
+.request-card.expired .identity-copy small,
+.request-card.expired .amount-block dt,
+.request-card.expired .amount-block dd small {
+  color: rgba(196, 181, 213, 0.52);
+}
+
+.request-card.expired .identity-copy strong,
+.request-card.expired .amount-block dd,
+.request-card.expired .amount-block .received-value dd {
+  color: rgba(243, 232, 255, 0.72);
 }
 
 .identity-block {
@@ -562,10 +653,43 @@ function isPastDue(request: GiftRequest) {
   white-space: nowrap;
 }
 
+.time-block .expiry-time {
+  color: rgba(243, 232, 255, 0.7);
+  font-size: 12px;
+  font-weight: 900;
+}
+
 .request-actions {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
   gap: 8px;
+}
+
+.expired-result {
+  display: flex;
+  min-width: 118px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  text-align: right;
+}
+
+.expired-result strong {
+  color: rgba(243, 232, 255, 0.72);
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.expired-result small {
+  color: rgba(196, 181, 213, 0.5);
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.expired-result.refunded strong {
+  color: rgba(245, 200, 66, 0.72);
 }
 
 .action-button {
@@ -774,6 +898,19 @@ function isPastDue(request: GiftRequest) {
     gap: 12px;
   }
 
+  .request-filter-button {
+    gap: 4px;
+    padding: 7px 5px;
+    font-size: 11px;
+  }
+
+  .request-filter-button span {
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    font-size: 8px;
+  }
+
   .identity-block,
   .amount-block,
   .time-block,
@@ -803,6 +940,13 @@ function isPastDue(request: GiftRequest) {
     grid-row: 4;
     width: 100%;
     justify-content: stretch;
+  }
+
+  .expired-result {
+    width: 100%;
+    align-items: flex-start;
+    padding-top: 2px;
+    text-align: left;
   }
 
   .action-button {

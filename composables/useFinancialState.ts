@@ -29,6 +29,11 @@ export interface FinancialState {
   transactions: FinancialTransaction[]
 }
 
+interface GiftRefundTransaction {
+  title: string
+  detail?: string
+}
+
 function createInitialTransactions(): FinancialTransaction[] {
   return [
     {
@@ -203,10 +208,20 @@ export const useFinancialState = () => {
     return true
   }
 
-  function refundGiftToVault(amount: number) {
+  function refundGiftToVault(amount: number, transaction?: GiftRefundTransaction) {
     const normalizedAmount = Math.max(0, Math.floor(amount))
     if (!normalizedAmount) return false
     financialState.value.vaultBalance += normalizedAmount
+    if (transaction) {
+      addTransaction({
+        type: 'gift',
+        title: transaction.title,
+        amount: normalizedAmount,
+        wallet: 'gold',
+        status: 'success',
+        detail: transaction.detail,
+      })
+    }
     return true
   }
 

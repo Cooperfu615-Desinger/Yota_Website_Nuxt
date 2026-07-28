@@ -38,7 +38,7 @@ const {
   isBlockedPlayer,
 } = useSocialState()
 const {
-  pendingRequests,
+  requests,
   dailyRemaining,
   dailyLimit,
   initGiftState,
@@ -144,7 +144,7 @@ watch(pendingGiftAction, async (action) => {
   if (giftDialogReturnFocus?.isConnected) {
     giftDialogReturnFocus.focus()
   } else {
-    document.querySelector<HTMLElement>('[aria-label="待處理贈禮篩選"] button')?.focus()
+    document.querySelector<HTMLElement>('[aria-label="贈禮申請篩選"] button')?.focus()
   }
   giftDialogReturnFocus = null
 })
@@ -531,7 +531,7 @@ function confirmExchange() {
             <!-- 右欄：贈禮表單 -->
             <section class="card-purple p-5">
               <div class="gift-form-heading">
-                <h2>建立贈禮申請</h2>
+                <h2>贈禮</h2>
                 <p>申請送出後會保留贈禮原額；對方接受才完成，取消、拒絕或逾期皆全額退回。</p>
               </div>
 
@@ -560,7 +560,7 @@ function confirmExchange() {
                       <button type="button" aria-label="清除已選玩家" @click="selectedReceiver = null">×</button>
                     </div>
                     <div v-else class="receiver-placeholder">
-                      尚未選擇玩家
+                      尚未選擇
                     </div>
                     <button type="button" class="btn-outline-purple receiver-search-button" @click="showPlayerSearch = true">
                       搜尋
@@ -613,14 +613,14 @@ function confirmExchange() {
                   :style="!canConfirmTransfer ? 'opacity:0.5;cursor:not-allowed;' : ''"
                   @click="confirmTransfer"
                 >
-                  送出贈禮申請
+                  送出
                 </button>
               </div>
             </section>
           </div>
 
           <LobbyGiftRequestList
-            :requests="pendingRequests"
+            :requests="requests"
             :current-player-id="userInfo.id"
             :now="giftNow"
             @accept="openGiftAction('accept', $event)"
