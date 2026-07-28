@@ -19,6 +19,7 @@ export interface FinancialTransaction {
   status: FinancialTransactionStatus
   createdAt: string
   detail?: string
+  referenceId?: string
 }
 
 export interface FinancialState {
@@ -34,8 +35,42 @@ interface GiftRefundTransaction {
   detail?: string
 }
 
+export interface GiftTransactionParty {
+  name: string
+  account: string
+}
+
+export interface GiftSuccessSnapshot {
+  requestId: string
+  amount: number
+  fee: number
+  actualReceived: number
+}
+
 function createInitialTransactions(): FinancialTransaction[] {
   return [
+    {
+      id: 'TX-MOCK-004',
+      type: 'gift',
+      title: '收到贈禮',
+      amount: 90_250,
+      wallet: 'gold',
+      status: 'success',
+      createdAt: '2026/07/27 18:42',
+      detail: '來自 JokerAce（@JokerAce14）・原額 95,000・手續費 4,750・GIFT-HISTORY-001',
+      referenceId: 'GIFT-HISTORY-001',
+    },
+    {
+      id: 'TX-MOCK-005',
+      type: 'gift',
+      title: '贈禮成功',
+      amount: -50_000,
+      wallet: 'gold',
+      status: 'success',
+      createdAt: '2026/07/26 18:05',
+      detail: '贈送給 富貴吉祥（@富貴吉祥88）・對方實收 47,500・手續費 2,500・GIFT-HISTORY-002',
+      referenceId: 'GIFT-HISTORY-002',
+    },
     {
       id: 'TX-MOCK-001',
       type: 'deposit',
@@ -44,7 +79,7 @@ function createInitialTransactions(): FinancialTransaction[] {
       wallet: 'gold',
       status: 'success',
       createdAt: '2026/07/18 20:15',
-      detail: 'NT$1,000 儲值方案',
+      detail: '1,150 金幣儲值方案',
     },
     {
       id: 'TX-MOCK-002',
@@ -64,7 +99,7 @@ function createInitialTransactions(): FinancialTransaction[] {
       wallet: 'gold',
       status: 'processing',
       createdAt: '2026/07/16 09:30',
-      detail: 'NT$5,000 儲值方案',
+      detail: '6,200 金幣儲值方案',
     },
   ]
 }
@@ -114,6 +149,14 @@ export const useFinancialState = () => {
     }
     financialState.value.transactions = [transaction, ...financialState.value.transactions]
     return transaction
+  }
+
+  function findGiftSuccessTransaction(requestId: string, title: string) {
+    return financialState.value.transactions.find(transaction =>
+      transaction.type === 'gift'
+      && transaction.referenceId === requestId
+      && transaction.title === title,
+    )
   }
 
   function addWalletReward(wallet: WalletKey, amount: number, title: string, detail?: string) {
@@ -225,17 +268,38 @@ export const useFinancialState = () => {
     return true
   }
 
-  function receiveGiftToWallet(senderLabel: string, amount: number) {
-    const normalizedAmount = Math.max(0, Math.floor(amount))
+  function receiveGiftToWallet(sender: GiftTransactionParty, snapshot: GiftSuccessSnapshot) {
+    const existing = findGiftSuccessTransaction(snapshot.requestId, '收到贈禮')
+    if (existing) return existing
+
+    const normalizedAmount = Math.max(0, Math.floor(snapshot.actualReceived))
     if (!normalizedAmount) return null
     financialState.value.balance += normalizedAmount
     return addTransaction({
       type: 'gift',
-      title: '收到玩家贈禮',
+      title: '收到贈禮',
       amount: normalizedAmount,
       wallet: 'gold',
       status: 'success',
-      detail: `送禮者 ${senderLabel}`,
+      detail: `來自 ${sender.name}（@${sender.account}）・原額 ${snapshot.amount.toLocaleString()}・手續費 ${snapshot.fee.toLocaleString()}・${snapshot.requestId}`,
+      referenceId: snapshot.requestId,
+    })
+  }
+
+  function recordSentGiftSuccess(receiver: GiftTransactionParty, snapshot: GiftSuccessSnapshot) {
+    const existing = findGiftSuccessTransaction(snapshot.requestId, '贈禮成功')
+    if (existing) return existing
+
+    const normalizedAmount = Math.max(0, Math.floor(snapshot.amount))
+    if (!normalizedAmount) return null
+    return addTransaction({
+      type: 'gift',
+      title: '贈禮成功',
+      amount: -normalizedAmount,
+      wallet: 'gold',
+      status: 'success',
+      detail: `贈送給 ${receiver.name}（@${receiver.account}）・對方實收 ${snapshot.actualReceived.toLocaleString()}・手續費 ${snapshot.fee.toLocaleString()}・${snapshot.requestId}`,
+      referenceId: snapshot.requestId,
     })
   }
 
@@ -245,7 +309,7 @@ export const useFinancialState = () => {
     financialState.value.vaultBalance -= transfer.amount
     addTransaction({
       type: 'gift',
-      title: '贈禮給玩家',
+      title: '贈禮成功',
       amount: -transfer.amount,
       wallet: 'gold',
       status: 'success',
@@ -300,6 +364,7 @@ export const useFinancialState = () => {
     reserveGiftFromVault,
     refundGiftToVault,
     receiveGiftToWallet,
+    recordSentGiftSuccess,
     transferFromVault,
     exchangeWalletCurrency,
     resetFinancialState,

@@ -233,7 +233,12 @@ export const useGiftState = () => {
     replaceRequest(resolved)
 
     if (resolution === 'accepted') {
-      financial.receiveGiftToWallet(request.sender.name, request.actualReceived)
+      financial.receiveGiftToWallet(request.sender, {
+        requestId: request.id,
+        amount: request.amount,
+        fee: request.fee,
+        actualReceived: request.actualReceived,
+      })
     } else if (isSender) {
       financial.refundGiftToVault(request.amount)
     }
