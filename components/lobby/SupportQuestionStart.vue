@@ -6,7 +6,7 @@ const props = withDefaults(defineProps<{
   ongoingCount: number
   maxOngoing?: number
 }>(), {
-  maxOngoing: 5,
+  maxOngoing: 1,
 })
 
 const emit = defineEmits<{

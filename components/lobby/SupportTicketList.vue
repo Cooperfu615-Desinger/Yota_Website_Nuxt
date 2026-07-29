@@ -6,8 +6,12 @@ type TicketFilter = 'all' | SupportTicket['status']
 const props = withDefaults(defineProps<{
   tickets: SupportTicket[]
   activeFilter?: TicketFilter
+  showSummary?: boolean
+  showFilters?: boolean
 }>(), {
   activeFilter: 'all',
+  showSummary: false,
+  showFilters: false,
 })
 
 const emit = defineEmits<{
@@ -91,7 +95,7 @@ const emptyCopy = computed(() => {
         </span>
         <div>
           <h2 id="support-ticket-list-title">提問紀錄</h2>
-          <p>{{ props.tickets.length }} 筆客服對話</p>
+          <p v-if="props.showSummary">{{ props.tickets.length }} 筆客服對話</p>
         </div>
       </div>
 
@@ -103,7 +107,7 @@ const emptyCopy = computed(() => {
       </button>
     </header>
 
-    <div class="ticket-filter" role="group" aria-label="篩選提問狀態">
+    <div v-if="props.showFilters" class="ticket-filter" role="group" aria-label="篩選提問狀態">
       <button
         v-for="option in filterOptions"
         :key="option.key"

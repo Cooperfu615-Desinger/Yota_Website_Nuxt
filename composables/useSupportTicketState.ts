@@ -8,7 +8,7 @@ import {
   type SupportTicket,
 } from '~/data/siteContent'
 
-export const MAX_ONGOING_SUPPORT_TICKETS = 5
+export const MAX_ONGOING_SUPPORT_TICKETS = 1
 
 export interface SupportTicketState {
   tickets: SupportTicket[]
