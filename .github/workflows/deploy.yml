@@ -29,6 +29,10 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        env:
+          # playwright 僅供本機 specs/spec-book/capture.mjs 截圖使用，
+          # CI 不需要瀏覽器，跳過下載可省下數分鐘部署時間
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
 
       - name: Generate static site
         run: npm run generate
