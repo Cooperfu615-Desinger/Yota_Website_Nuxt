@@ -37,19 +37,19 @@
 
 | 編號 | 畫面 | 官網路由 | 截圖 | 三方狀態 | 備註 |
 |---|---|---|---|---|---|
-| <a id="F-04"></a>`F-04` | 銀行 — 儲值 | `/lobby/bank` | [桌機](shots/F-04-desktop.png) ／ [手機](shots/F-04-mobile.png) | 🔴 | 🔴 官網 NT$ + ATM／超商／信用卡；APP USD + IAP。後台兩種通道都有 — 待決策是否為刻意平台差異 |
+| <a id="F-04"></a>`F-04` | 銀行 — 儲值 | `/lobby/bank` | [桌機](shots/F-04-desktop.png) ／ [手機](shots/F-04-mobile.png) | ✅ | 已確認為刻意平台差異：官網 NT$ + ATM／超商／信用卡，APP USD + IAP；官網不提供外部提款 |
 | <a id="F-04b"></a>`F-04b` | 銀行 — 優惠 | `/lobby/bank?tab=offers` | [桌機](shots/F-04b-desktop.png) ／ [手機](shots/F-04b-mobile.png) | — |  |
 | <a id="F-04c"></a>`F-04c` | 保險箱 — 存取 | `/lobby/vault` | [桌機](shots/F-04c-desktop.png) ／ [手機](shots/F-04c-mobile.png) | ✅ | 兩前台都已把保險箱從銀行拆出，結構一致 ✅ |
-| <a id="F-04d"></a>`F-04d` | 保險箱 — 贈禮申請 | `/lobby/vault?tab=transfer` | [桌機](shots/F-04d-desktop.png) ／ [手機](shots/F-04d-mobile.png) | 🔴 | 🔴 第一階段最大落差：官網雙向確認（申請→接受／拒絕／取消／168h 逾期），APP 直接轉帳 |
-| <a id="F-04e"></a>`F-04e` | 保險箱 — 贈禮申請列表 | `/lobby/vault?tab=transfer` | [桌機](shots/F-04e-desktop.png) ／ [手機](shots/F-04e-mobile.png) | — | APP 無此畫面。費率快照凍結於 GiftRequest.feeRate |
-| <a id="W-06"></a>`W-06` | 兌換（金↔銀） | `/lobby/exchange` | [桌機](shots/W-06-desktop.png) ／ [手機](shots/W-06-mobile.png) | ✅ | 常數三方一致：1:100、銀換金需 100 倍數、手續費 0 ✅ |
+| <a id="F-04d"></a>`F-04d` | 保險箱 — 贈禮申請 | `/lobby/vault?tab=transfer` | [桌機](shots/F-04d-desktop.png) ／ [手機](shots/F-04d-mobile.png) | ✅ | 已拍板採官網雙向確認（申請→接受／拒絕／取消／168h 逾期）；APP 需對齊 |
+| <a id="F-04e"></a>`F-04e` | 保險箱 — 贈禮申請列表 | `/lobby/vault?tab=transfer` | [桌機](shots/F-04e-desktop.png) ／ [手機](shots/F-04e-mobile.png) | ⚠️ | APP 無此畫面；正式費率依 VIP 分級，建立申請時凍結費率與手續費快照 |
+| <a id="W-06"></a>`W-06` | 兌換（金↔銀） | `/lobby/exchange` | [桌機](shots/W-06-desktop.png) ／ [手機](shots/W-06-mobile.png) | ✅ | `NT$1＝金1＝銀100`；金額整數、小數捨去；銀換金需 100 倍數、手續費 0 |
 | <a id="W-07"></a>`W-07` | 交易紀錄 | `/lobby/transactions` | [桌機](shots/W-07-desktop.png) ／ [手機](shots/W-07-mobile.png) | ⚠️ | ⚠️ 交易類型 enum 三方全不同（官網 6 種／APP 10 種／後台 10 種），需統一。位置也不同（APP 在銀行分頁內） |
 
 ### 任務與活動
 
 | 編號 | 畫面 | 官網路由 | 截圖 | 三方狀態 | 備註 |
 |---|---|---|---|---|---|
-| <a id="F-02"></a>`F-02` | 每日簽到 | `/lobby/daily` | [桌機](shots/F-02-desktop.png) ／ [手機](shots/F-02-mobile.png) | ✅ | ✅ 三方完全一致：里程碑 5/7/25/30 金幣、10 天 10,000,000 銅幣、15 天銀卡、20 天金卡、補簽 100 |
+| <a id="F-02"></a>`F-02` | 每日簽到 | `/lobby/daily` | [桌機](shots/F-02-desktop.png) ／ [手機](shots/F-02-mobile.png) | ✅ | 原型里程碑一致；10 天銅幣為無價值試玩幣，15 天銀卡、20 天金卡、補簽 100 |
 | <a id="F-02b"></a>`F-02b` | 活動列表 | `/lobby/events` | [桌機](shots/F-02b-desktop.png) ／ [手機](shots/F-02b-mobile.png) | ⚠️ | ⚠️ 分類維度不同（官網 active／upcoming／ended vs APP sale／tournament／vip）；官網無報名狀態 |
 | <a id="F-02c"></a>`F-02c` | 排行榜（三榜） | `/lobby/leaderboard` | [桌機](shots/F-02c-desktop.png) ／ [手機](shots/F-02c-mobile.png) | ⚠️ | ✅ 三榜一致（倍數／贏分／富豪）；⚠️ 更新時間官網為本地假計時，需 server updatedAt |
 
@@ -73,7 +73,7 @@
 | <a id="F-01"></a>`F-01` | 聊天 — 世界頻道 | `/lobby/chat?channel=world` | [桌機](shots/F-01-desktop.png) ／ [手機](shots/F-01-mobile.png) | ⚠️ | ✅ 三頻道一致；⚠️ 官網無 Emoji 選擇器、無 M-07 自動傳送 |
 | <a id="F-01b"></a>`F-01b` | 聊天 — 私人頻道 | `/lobby/chat?channel=private` | [桌機](shots/F-01b-desktop.png) ／ [手機](shots/F-01b-mobile.png) | ⚠️ | ⚠️ 官網私訊無附件選單（APP 有遊戲點數→贈禮） |
 | <a id="F-01c"></a>`F-01c` | 聊天 — 客服頻道／工單 | `/lobby/chat?channel=support` | [桌機](shots/F-01c-desktop.png) ／ [手機](shots/F-01c-mobile.png) | 🔴 | 🔴 官網最完整（工單狀態機、上限、7 種分類），APP 左欄是空殼落後兩級 |
-| <a id="M-08"></a>`M-08` | 玩家資料卡 | `/lobby/chat?channel=world` | [桌機](shots/M-08-desktop.png) ／ [手機](shots/M-08-mobile.png) | ✅ | ✅ 三方一致：私訊／送禮／檢舉／加好友／黑名單 |
+| <a id="M-08"></a>`M-08` | 玩家資料卡 | `/lobby/chat?channel=world` | [桌機](shots/M-08-desktop.png) ／ [手機](shots/M-08-mobile.png) | ✅ | 黑名單已確認指玩家社交封鎖（由 Wu 負責），不是營運後台的 IP／裝置風控封鎖 |
 | <a id="W-08"></a>`W-08` | 檢舉玩家 | ➖ 無 | 待補 | ⚠️ | ⚠️ 官網 5 個中文理由硬編，需改 reason code。截圖需由玩家卡開啟後補拍 |
 | <a id="W-09"></a>`W-09` | 客服中心（獨立頁） | `/lobby/support` | [桌機](shots/W-09-desktop.png) ／ [手機](shots/W-09-mobile.png) | — |  |
 

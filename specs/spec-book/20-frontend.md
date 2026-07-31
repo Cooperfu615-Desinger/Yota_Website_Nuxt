@@ -34,7 +34,7 @@
 
 | 檔案 | 匯出 | 對應測試 |
 |---|---|---|
-| `vaultTransfer.ts` | `VAULT_TRANSFER_FEE_RATE = 0.05`、`calculateVaultTransfer(amount)`、`canSubmitVaultTransfer(receiverId, amount, vaultBalance)` | `tests/vaultTransfer.test.mjs` |
+| `vaultTransfer.ts` | 目前仍有原型常數 `VAULT_TRANSFER_FEE_RATE = 0.05`；正式串接須改讀 VIP 費率並保留費率快照 | `tests/vaultTransfer.test.mjs` |
 | `walletExchange.ts` | `GOLD_TO_SILVER_RATE = 100`、`calculateWalletExchange(direction, amount)`、`canSubmitWalletExchange(...)`（銀→金強制 100 倍數） | `tests/walletExchange.test.mjs` |
 | `giftRequest.ts` | `GIFT_REQUEST_EXPIRY_MS`（168h）、`MAX_GIFT_REQUEST_AMOUNT`（100 萬）、`createGiftRequest`／`resolveGiftRequest`／`expireGiftRequest`／`formatGiftRequestRemainingTime` | `tests/giftRequest.test.mjs` |
 | `rewardCardConversion.ts` | `calculateRewardCardConversion(currentBalance, conversionLimit)` → `min(餘額,上限)`，其餘 `recoveredAmount` | `tests/rewardCardConversion.test.mjs` |
@@ -43,7 +43,7 @@
 | `wallets.ts` | 三幣顯示格式化，`DEFAULT_WALLET_BALANCE = 10_000_000` | 併入上列測試 |
 | `account.ts` | 帳號規則：4–20 半形字元（中文以 2 計）、僅中英文數字 | `tests/account.test.mjs` |
 
-**串接原則**：這些函式已經是「業務邏輯與 UI 分離」的正確形狀 —— 後端串接時，UI 元件呼叫這些函式的地方全部換成呼叫對應 API，函式本身的常數與計算邏輯直接搬到後端驗證（金額計算不能只信前端）。改動前後端邏輯前，先跑 `node --test tests/` 確認現有 7 支測試綠燈，改完再跑一次確認沒破壞既有規則。
+**串接原則**：這些函式已經把部分業務邏輯與 UI 分離，但原型常數不等於正式規則。後端串接時，金額一律整數運算並無條件捨去小數，後端必須重驗；費率由 VIP 契約提供，不能再信任固定 5%。改動前後先跑 `node --test tests/*.test.mjs`，確認全部測試通過。
 
 ### 0.3 路由與版面
 
@@ -152,7 +152,7 @@ GameCard.vue（hover 顯示「真錢玩／試玩」，CSS opacity 控制，遮�
 
 ### 4.1 錢包顯示
 
-三幣（金/銀/銅）＋保險箱，統一透過 `WalletBalances.vue` 顯示，資料源頭都是 `useFinancialState`。初始餘額三幣皆為 `DEFAULT_WALLET_BALANCE = 10,000,000`（三方一致 ✅）。
+三幣（金/銀/銅）＋保險箱，統一透過 `WalletBalances.vue` 顯示，資料源頭都是 `useFinancialState`。初始餘額三幣皆為 `DEFAULT_WALLET_BALANCE = 10,000,000`，但這只是原型 mock，不是正式發幣規則。正式價值為 `NT$1＝金幣1＝銀幣100`，銅幣是無價值試玩幣；所有輸入含小數時無條件捨去。
 
 ### 4.2 銀行（`F-04`／`F-04b`）
 
@@ -174,7 +174,7 @@ GameCard.vue（hover 顯示「真錢玩／試玩」，CSS opacity 控制，遮�
 createGiftRequest()
   ├─ 檢查：dailyUsed < DAILY_GIFT_LIMIT(10)         → 否則 reason: 'max-daily'（見 GiftRequestFailure）
   ├─ 檢查：0 < amount ≤ MAX_GIFT_REQUEST_AMOUNT(1,000,000)
-  ├─ 費率快照：feeRate 建立當下寫死（預設 VAULT_TRANSFER_FEE_RATE=5%），之後費率調整不影響已建立的申請
+  ├─ 費率快照：正式版由後端依發起人當下 VIP 等級決定並寫入 feeRate；現行固定 5% 僅為原型
   └─ expiresAt = createdAt + 168h（GIFT_REQUEST_EXPIRY_MS）
 
 acceptGiftRequest(id, actorId) → resolveRequest(status:'accepted')
@@ -183,17 +183,17 @@ cancelGiftRequest(id, actorId) → resolveRequest(status:'cancelled')  // 僅發
 expireGiftRequests(currentPlayerId, now) → 主動掃描 pending 且逾時的申請，批次轉 expired
 ```
 
-⚠️ 費率快照機制（`normalizeFeeRate`＋建立時寫死 `feeRate`）代表**未來若要把手續費改成 VIP 分級**（`VIPLevel.gift_fee_rate`，矩陣 §4.1 提到後台已是分級但兩前台寫死 5%），前端這層的資料結構已經預留了空間（每筆申請自帶 `feeRate`），後端只需要在建立申請當下依發起人 VIP 等級決定費率，不需要改前端型別。
+✅ 贈禮手續費已確認採 **VIP 分級**。前端現有費率快照結構（`normalizeFeeRate`＋`GiftRequest.feeRate`）可沿用，但建立申請時必須採用後端回傳的當下 VIP 費率與手續費；不得自行用固定 5% 計算。API 也必須統一費率單位，避免 `5` 與 `0.05` 混用。
 
 APP 端串接規格（本階段新增）：需要新增「贈禮申請列表」畫面（對應 `F-04e`）、申請狀態機、168h 倒數顯示（`formatGiftRequestRemainingTime` 可直接複用邏輯）、每日 10 次與單次 100 萬的**強制**檢查（不只是顯示文字）。
 
 ### 4.5 兌換（`W-06`）
 
-`ExchangeContent.vue`（僅 3 行，實際邏輯在 `VaultContent.vue` 的 `exchange` 分頁與 `utils/walletExchange.ts`）。金→銀 1:100，銀→金需 100 倍數（`canSubmitWalletExchange` 強制），手續費 0。三方常數一致 ✅，串接時直接沿用。
+`ExchangeContent.vue`（僅 3 行，實際邏輯在 `VaultContent.vue` 的 `exchange` 分頁與 `utils/walletExchange.ts`）。金→銀 1:100，銀→金需 100 倍數（`canSubmitWalletExchange` 強制），手續費 0。正式串接另須先將輸入小數無條件捨去，再做大於 0、倍數與餘額驗證。
 
 ### 4.6 交易紀錄（`W-07`）
 
-`TransactionRecords.vue`。型別：`FinancialTransactionType = 'deposit'|'vault'|'gift'|'exchange'|'reward'|'spend'`（6 種），`FinancialTransactionStatus = 'success'|'processing'|'failed'`（3 種）。⚠️ **enum 三方不同**（官網 6／APP 10／後台 10 種，矩陣 §4.5），本冊不代入統一方案（未拍板），串接時需要一張三方對照表（後端串接階段的前置工作，建議下一輪拍板事項）。後台額外有 `PENDING｜EXPIRED｜MANUAL｜REFUNDED｜VERIFY_ERROR` 等狀態，兩前台目前都顯示不出來，是明確的功能落差而非命名問題。
+`TransactionRecords.vue`。型別：`FinancialTransactionType = 'deposit'|'vault'|'gift'|'exchange'|'reward'|'spend'`（6 種），`FinancialTransactionStatus = 'success'|'processing'|'failed'`（3 種）。⚠️ **enum 三方不同**（官網 6／APP 10／營運後台原型 10 種），串接時需要一張對照表。正式玩家前台不提供外部提款；保險箱存入／取回應明確映射為 `VAULT_IN`／`VAULT_OUT`，不能把原型的 `withdraw`／`WITHDRAW` 直接顯示成現金提款。後台原型額外出現的狀態仍須由 API 契約按交易領域確認，不能視為已實作。
 
 ---
 
@@ -201,7 +201,7 @@ APP 端串接規格（本階段新增）：需要新增「贈禮申請列表」�
 
 ### 5.1 每日簽到（`F-02`）
 
-`pages/lobby/daily.vue`，✅ 三方完全一致：里程碑 5/7/25/30 天 = 金幣、10 天 = 10,000,000 銅幣、15 天 = 銀卡（觸發獎勵卡 `daily-15-activity-silver`）、20 天 = 金卡（`daily-20-activity-gold`），補簽成本 100。已簽到日期與已領取里程碑目前是寫死的 mock 陣列（`daily.vue:17-21`），串接時整段換成後端查詢。
+`pages/lobby/daily.vue`，原型里程碑三方一致：5/7/25/30 天 = 金幣、10 天 = 10,000,000 銅幣、15 天 = 銀卡（觸發獎勵卡 `daily-15-activity-silver`）、20 天 = 金卡（`daily-20-activity-gold`），補簽成本 100；其中銅幣只具試玩用途，沒有現金或可兌換價值。已簽到日期與已領取里程碑目前是寫死的 mock 陣列（`daily.vue:17-21`），串接時整段換成後端查詢。
 
 ### 5.2 活動列表（`F-02b`）／排行榜（`F-02c`）
 
@@ -223,7 +223,7 @@ APP 端串接規格（本階段新增）：需要新增「贈禮申請列表」�
 
 卡片狀態機：`inactive → active → (paused) → converted`。轉換演算 `calculateRewardCardConversion`：`converted = min(現有餘額, conversionLimit)`，其餘記為 `recoveredAmount`（回收）。三方一致 ✅。
 
-🔴 **流水累積目前是假機制**：`GameView.vue` 內有「完成流水」測試按鈕直接把某張卡的 `totalTurnover` 打滿，APP 同樣靠測試鈕。後台已有真實機制（`AssetLog` 每筆下注/中獎紀錄帶 `valid_turnover`／`remain_target`）。**這是串接時工作量最大的一塊**：需要把「玩家在遊戲內的每一注怎麼累積進獎勵卡流水」這條資料流從無到有建起來，前端目前完全沒有這條邏輯,只有寫死的測試按鈕。
+🔴 **流水累積目前是假機制**：`GameView.vue` 內有「完成流水」測試按鈕直接把某張卡的 `totalTurnover` 打滿，APP 同樣靠測試鈕。營運後台原型雖有 `AssetLog.valid_turnover`／`remain_target` 欄位，但這不代表後端機制已完成。有效流水須由 Gordan × Hulk 依獎勵卡、Provider 的 BET／Cancel／Refund／Rollback 與冪等規則共同定義，前端只顯示後端產出的累積值。
 
 ⚠️ 命名：文件稱「禮物 Gifts」、UI 稱「獎勵卡」、後台稱 `BonusCard`，路由是 `/lobby/gifts` 但元件是 `RewardCardContent.vue`。建議串接前先統一命名（不影響邏輯，純粹避免溝通成本），本冊不代做決定。
 
@@ -300,7 +300,7 @@ MAX_ONGOING_SUPPORT_TICKETS = 1   // 同時只能有一張進行中的工單（�
 
 ### 9.3 遊戲紀錄（`M-01d`）
 
-`GameRecords.vue`（198 行），目前 100 筆隨機生成假資料，後台已有真實查詢（`GameLogs.vue`），串接時直接換資料源即可，UI 結構可保留。
+`GameRecords.vue`（198 行），目前 100 筆隨機生成假資料；營運後台原型的 `GameLogs.vue` 可供操作與欄位參考，但實際資料查詢仍以 A-10 API schema 與測試環境為準。UI 結構可保留。
 
 ### 9.4 頭像（`W-10`）
 
@@ -316,8 +316,8 @@ MAX_ONGOING_SUPPORT_TICKETS = 1   // 同時只能有一張進行中的工單（�
 
 ## 附錄：串接優先序建議（依本冊落差嚴重度排序，非最終定案，供後端排期參考）
 
-1. **VIP 結構化門檻**（`M-01c`）——資料結構要新增，且獎勵卡/贈禮費率之後若走 VIP 分級都依賴這份資料
+1. **VIP 結構化門檻與贈禮費率**（`M-01c`）——資料結構要新增；正式費率已確認依 VIP 分級
 2. **贈禮 APP 端補流程** —— 官網邏輯已就緒可直接參照，APP 改動量大但路徑清楚
-3. **獎勵卡真實流水累積** —— 目前完全靠假按鈕，是三方中唯一「前端邏輯掛零」的功能區塊
+3. **獎勵卡真實流水累積** —— 目前完全靠假按鈕；等待 Gordan × Hulk 定義有效流水契約
 4. **交易類型 enum 統一** —— 需要三方對照表，屬於串接前的橋接工作，不是單一前端能決定
-5. **客服工單常數核對**（矩陣 5 筆 vs 程式碼 1 筆）—— 5 分鐘可以查清楚但會卡住工單相關的後續規格討論，建議優先排查
+5. **交易 enum 與狀態對照** —— 明確排除外部提款，並按儲值、贈禮、保險箱與遊戲交易分別定義狀態

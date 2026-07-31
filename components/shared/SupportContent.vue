@@ -131,7 +131,7 @@ const lineSvgPath = 'M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H1
           <div class="flex flex-col gap-2 text-sm">
             <div class="flex justify-between"><span style="color:var(--color-text-muted);">LINE 客服</span><span class="font-bold" style="color:#4ade80;">24 小時</span></div>
             <div class="flex justify-between"><span style="color:var(--color-text-muted);">儲值到帳</span><span style="color:var(--color-text);">即時～30 分</span></div>
-            <div class="flex justify-between"><span style="color:var(--color-text-muted);">提款審核</span><span style="color:var(--color-text);">1–3 工作天</span></div>
+            <div class="flex justify-between"><span style="color:var(--color-text-muted);">帳務／訂單</span><span style="color:var(--color-text);">1–3 工作天</span></div>
           </div>
         </div>
       </aside>

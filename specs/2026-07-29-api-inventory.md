@@ -3,7 +3,7 @@
 - 建立日期：2026-07-29
 - 盤點基準：commit `aa326bd`（feat: add support ticket workflow）
 - 方法：唯讀掃描 `composables/`、`utils/`、`components/`、`pages/`、`data/`、`tests/`，反推每個狀態讀取點（Query）與變更點（Mutation）
-- **重要前提**：目前全專案**沒有任何 `fetch` / `$fetch` / `useFetch` 呼叫**，所有資料皆為前端 mock、存活於 `useState` 記憶體，重整即重置（唯二例外：`jh_isLoggedIn`、`jh_userInfo`、`jh_recentGames` 三個 localStorage key）。
+- **重要前提**：目前全專案**沒有任何 `fetch` / `$fetch` / `useFetch` 呼叫**，所有資料皆為前端 mock、存活於 `useState` 記憶體，重整即重置。localStorage 例外有 `jh_isLoggedIn`、`jh_userInfo`、`jh_recentGames`、`jh_preferences`。
 - 本文件**只描述前端已存在的行為與需求**。凡前端未定義、需由業務決策拍板者，一律標注 `not_stated`，不做臆測。
 
 ---
@@ -18,7 +18,7 @@
 | 4 | 遊戲大廳與啟動 | 7 | REST | 遊戲啟動 URL 目前寫死 `example.com`，需 launch token |
 | 5 | 錢包與交易 | 10 | REST | 需交易冪等性與併發控制 |
 | 6 | 贈禮（雙向確認） | 6 | REST + push | 逾期退款需後端排程，非前端輪詢 |
-| 7 | 獎勵卡與流水 | 6 | REST + push | **流水累積機制前端完全不存在**，需後端定義 |
+| 7 | 獎勵卡與流水 | 7 | REST + push | **流水累積機制前端完全不存在**；新卡提示及有效流水需補契約 |
 | 8 | 每日任務 | 5 | REST | 「今天」目前由 client 決定，須改由 server 判定 |
 | 9 | 社交（好友／黑名單） | 6 | REST | 無好友請求／同意流程，目前單方面加入 |
 | 10 | 聊天（世界／私訊） | 8 | **WebSocket** | 訊息載體缺 playerId、缺 timestamp、缺分頁 |
@@ -174,7 +174,7 @@
 | POST | `/deposit/orders` | 建立儲值訂單 | `DepositContent.vue:50-65` |
 | GET | `/deposit/orders/{id}` | 查詢訂單狀態（`processing` 需要） | not_stated（前端 1200ms 直接成功） |
 | POST | `/vault/deposit` | 存入保險箱 | `useFinancialState.ts:217-230` |
-| POST | `/vault/withdraw` | 取出保險箱 | `useFinancialState.ts:232-245` |
+| POST | `/vault/withdraw` | 從保險箱取回主錢包（內部存取，不是外部提款） | `useFinancialState.ts:232-245` |
 | POST | `/wallets/exchange` | 金↔銀兌換 | `useFinancialState.ts:321-344` |
 
 ### 5.3 FinancialTransaction 欄位（`useFinancialState.ts:13-23`）
@@ -193,7 +193,7 @@
 ### 5.4 業務規則與常數
 | 規則 | 值 | 來源 |
 |---|---|---|
-| 保險箱轉帳／贈禮手續費率 | 0.05（5%） | `utils/vaultTransfer.ts:1` |
+| 前端原型贈禮手續費率 | 0.05（5%，**待移除**） | `utils/vaultTransfer.ts:1` |
 | 手續費計算 | `fee = floor(amount * rate)`；`actualReceived = max(0, amount - fee)` | `utils/vaultTransfer.ts:20-25` |
 | 金→銀匯率 | 1 : 100 | `utils/walletExchange.ts:3,17-19` |
 | 銀→金匯率 | 100 : 1（floor），**金額須為 100 的倍數** | `utils/walletExchange.ts:19,36` |
@@ -202,10 +202,12 @@
 | 所有金額一律 `Math.floor` 且下限 0 | — | `vaultTransfer.ts:13-16`、`walletExchange.ts:16`、`walletSpend.ts:7-8` 等 |
 | 儲值方案（NT$→金幣） | 300→300、500→550、1000→1150、2000→2400、5000→6200、10000→13000 | `DepositContent.vue:26-31` |
 
+> ✅ **2026-07-31 已拍板**：整數運算，小數無條件捨去；`NT$ 1＝金幣 1＝銀幣 100`；銅幣是無價值試玩幣。贈禮費率改由 VIP 分級提供，建立申請時凍結快照。
+
 > ✅ 這些規則已有 node 測試覆蓋：`tests/vaultTransfer.test.mjs`、`walletExchange.test.mjs`、`walletSpend.test.mjs`、`gameWallets.test.mjs`、`account.test.mjs`（`node --test tests/` 執行）。後端實作應以這些測試為契約基準。
 
 ### 5.5 錯誤碼需求
-`insufficient-balance`（餘額不足）、`invalid-amount`（金額 ≤0 或非整數）、`exchange-unit-mismatch`（銀→金非 100 倍數）、`deposit-order-failed`。
+`insufficient-balance`（餘額不足）、`invalid-amount`（捨去小數後金額 ≤0）、`exchange-unit-mismatch`（銀→金非 100 倍數）、`deposit-order-failed`。
 前端文案對照見 `VaultContent.vue:394-407`、`daily.vue:149-152`。
 
 ### 5.6 疑點 / not_stated
@@ -265,6 +267,7 @@
 | 方法 | 路徑 | 說明 | 來源 |
 |---|---|---|---|
 | GET | `/me/reward-cards` | 獎勵卡清單 | `useRewardCardState.ts:41-64` |
+| GET | `/me/reward-cards/unread` | 新卡到達提示（活動幣補償一律派卡、不經信箱） | [API 總表 A-5／A-8](2026-07-29-api-master-list.md)衍生需求 |
 | POST | `/me/reward-cards/{id}/activate` | 啟用 | `:126-136` |
 | POST | `/me/reward-cards/{id}/pause` | 停用 | `:138-143` |
 | DELETE | `/me/reward-cards/{id}` | 刪除 | `:145-151` |
@@ -394,7 +397,7 @@
 - `status` 列舉只有 `ongoing`、`closed`（`siteContent.ts:75`）。「草稿」是 UI 偽狀態（`chat.vue:387`），不存在於資料模型。
 - **`ongoing → closed` 前端沒有任何程式路徑**，僅出現在 seed 資料（`siteContent.ts:973`）。**必須由後端／客服端觸發並推送。**
 - `closed` 為終態：輸入框唯讀（`chat.vue:430`、`ChatThread.vue:10`），送訊與客服回覆皆被 `reason:'closed'` 擋下（`useSupportTicketState.ts:191,214`）。玩家能否主動結案 not_stated。
-- **同時最多 5 筆 ongoing**（`MAX_ONGOING_SUPPORT_TICKETS = 5`，`useSupportTicketState.ts:11`），closed 不計入。
+- **同時最多 1 筆 ongoing**（`MAX_ONGOING_SUPPORT_TICKETS = 1`），closed 不計入；後端仍須重驗。
 
 ### 11.2 端點
 | 方法 | 路徑 | 說明 | 來源 |
@@ -411,7 +414,7 @@
 
 ### 11.3 SupportTicket 欄位（`siteContent.ts:86-97`）
 `id`(`CS-000001`,✅)、`categoryKey`(✅)、`categoryLabel`(冗餘,✅)、`subject`(✅)、`status`(✅)、`createdAt`(ISO8601,✅)、`updatedAt`(ISO8601,✅)、`unread`(number,✅)、`messages`(✅)、`reportContext`(❌，僅 report 類)。
-分類 key（`:59-66`）：`account｜deposit｜withdrawal｜game｜event｜vault｜report`。
+分類 key（`:59-66`）：`account｜deposit｜billing｜game｜event｜vault｜report`。產品不提供外部提款；`billing` 表示儲值訂單、交易紀錄與退款爭議。
 
 ### 11.4 錯誤碼（`useSupportTicketState.ts:19-30`）
 `max-ongoing`、`invalid-category`、`empty-message`、`not-found`、`closed`、`invalid-report-target`。
@@ -463,7 +466,7 @@
 1. **獎勵卡流水認列規則** — 什麼下注算流水、比例、回報頻率（§7.3）
 2. **VIP 各級升級／保級的實際數值門檻**（§2）
 3. **儲值優惠疊加規則** — 首儲 +100%、每週回饋 15%、VIP 加碼 30% 如何計算與疊加（§5.6.4）
-4. **贈禮被拒絕時的退款責任方**（§6.5.1，目前是資金消失的 bug）
+4. **贈禮拒絕／取消／逾期的退款實作**（§6.5.1；規則已確定應退 sender，但前端仍有 bug）
 5. **好友是否需要雙向同意**（§9）
 6. **選座位（機台）是否納入正式流程**（§4，目前是 dead code）
 7. **遊戲最低進場金額**（§4）
@@ -477,7 +480,7 @@
 本文件的**結構性宣稱**（欄位、常數、行號）可用以下方式反向驗證：
 
 ```bash
-node --test tests/
+node --test tests/*.test.mjs
 ```
 
 現有 7 支測試（`account`、`gameWallets`、`giftRequest`、`rewardCardConversion`、`vaultTransfer`、`walletExchange`、`walletSpend`）即為 §5.4、§6.3、§7.2 業務規則的可執行契約，**後端實作應以這些測試為契約基準**，避免前後端規則漂移。

@@ -5,7 +5,8 @@
 - 比對對象：
   - **APP**：`Cooperfu615-Desinger/Casino-Lobby-Prototype` @ `phase-1-mvp` (`3c3e396`, 2026-07-27)，React 18，1280×720 固定畫布
   - **官網**：本專案 `巨亨ONLINE-Nuxt` @ `aa326bd`，Nuxt 3 SSG
-  - **後台**：`cofa-Song/Game_operations` @ `06fdbbe`，Vue 3 wireframe
+  - **營運後台原型**：`cofa-Song/Game_operations` @ `06fdbbe`，Vue 3 wireframe；只用來理解操作、欄位與流程，**不是後端 API 契約或完成證明**
+  - **後端工作清單**：[`sources/2026-07-27-backend-api-worklist.md`](sources/2026-07-27-backend-api-worklist.md)；狀態空白代表製作中尚未完成
 - 主鍵：採用 **APP 的畫面編號**（P-/F-/M-/L-/C-），因三方中只有它有系統化編號（`docs/art-design-checklist.md`）
 - 標記：✅ 三方一致｜⚠️ 有差異需確認｜🔴 明確衝突｜➖ 該側無此功能（合理）｜🟣 第二階段
 
@@ -24,7 +25,7 @@
 | 7 | **選座位** | APP 有完整 `GameSeat` 資料模型（3 頁/機台數據），官網是 dead code，後台有 `min_seat_vip_level` | ⚠️ |
 | 8 | **頭像數量** | APP 20 款圖片，官網 12 個 emoji + VIP5 解鎖規則，後台是素材清單 API | ⚠️ |
 
-> ✅ **好消息**：財務核心常數三方一致 —— 三幣各 10,000,000、贈禮費率 5%、金銀 1:100、銀換金需 100 倍數、獎勵卡（15天銀10,000／20天金5,000，流水目標 100,000、轉換上限 10,000、到期 2026/12/31）、補簽 100、帳號規則 4–20 半形中英數。這些不用動。
+> 📌 **已確認的正式財務規則**：金額一律整數運算，小數無條件捨去；`NT$1＝金幣1＝銀幣100`；銅幣是無價值試玩幣；官網不提供外部提款。兩前台目前寫死的贈禮 5% 只是原型值，正式費率依 VIP 分級並在建立申請時凍結快照。獎勵卡的**有效流水認列**仍由 Gordan × Hulk 對齊 Provider 交易後定義。
 
 ---
 
@@ -86,16 +87,15 @@
 
 ## 4. 財務：銀行 F-04 / 保險箱
 
-### 4.1 ✅ 三方一致的常數（不用動）
-| 常數 | 值 | APP | 官網 |
+### 4.1 原型常數與已確認正式規則
+| 項目 | 原型現況 | 正式規則／處理 |
 |---|---|---|---|
-| 三幣初始餘額 | 10,000,000 | `AuthContext.tsx:53,77-81` | `utils/wallets.ts:17` |
-| 贈禮手續費率 | 5% | `VaultInterface.tsx:34` | `utils/vaultTransfer.ts:1` |
-| 金→銀匯率 | 1:100 | `utils/walletExchange.ts:3` | `utils/walletExchange.ts:3` |
-| 銀→金最小單位 | 100 倍數 | `walletExchange.ts:36` | `walletExchange.ts:36` |
-| 兌換手續費 | 0 | 同 | 同 |
-
-> ⚠️ 但**後台的 `VIPLevel.gift_fee_rate` 是 VIP 分級的** —— 兩個前台都寫死 5%。三方要一起改。
+| 三幣初始餘額 | APP／官網 mock 皆為 10,000,000 | 僅測試資料，不是正式發幣量 |
+| 金額精度 | 原型未完整限制 | 整數運算；小數無條件捨去，捨去後 ≤0 拒絕 |
+| 台幣／金幣／銀幣 | 兩前台金銀兌換為 1:100 | `NT$1＝金幣1＝銀幣100` |
+| 銅幣 | 原型可顯示與遊玩 | 無價值試玩幣，不可兌現 |
+| 贈禮手續費 | 兩前台寫死 5% | 依 VIP 分級；建立申請時凍結費率與手續費快照 |
+| 外部提款 | APP enum 留有 `withdraw`，官網沒有流程 | 第一階段不提供；保險箱 `/vault/withdraw` 僅是內部 `VAULT_OUT` |
 
 ### 4.2 🔴 儲值：幣別與通道完全不同
 | | APP | 官網 | 後台 |
@@ -136,7 +136,7 @@
 
 只有後台區分 `P2P_OUT`/`P2P_IN`（收/送）與 `BET`/`WIN`。APP 有 `rebate`（返水）、`gift_package`，官網有 `spend`。**需要一張三方對照表 + 統一 enum。**
 
-APP 已知瑕疵：`withdrawFromVault` 也記成 `vault_deposit`，靠 `method` 文字判方向（`AuthContext.tsx:269`、`BankInterface.tsx:186`）；`vault_gift` 型別無產生端。
+`WITHDRAW`／`withdraw` 不能直接解讀為對外提款：正式玩家前台不提供外部提款，保險箱取回主錢包統一映射為 `VAULT_OUT`。APP 已知瑕疵：`withdrawFromVault` 也記成 `vault_deposit`，靠 `method` 文字判方向（`AuthContext.tsx:269`、`BankInterface.tsx:186`）；`vault_gift`、外部 `withdraw` 型別無產生端。
 
 ### 4.6 交易狀態
 | APP／官網 | 後台 |
@@ -169,7 +169,7 @@ APP 已知瑕疵：`withdrawFromVault` 也記成 `vault_deposit`，靠 `method` 
 | 卡片定義 | 15 天銀 10,000／20 天金 5,000，流水 100,000，上限 10,000，到期 2026/12/31 | **完全相同** | `BonusCard{multiplier, target_current, cap, end_time}` | ✅ |
 | 轉換演算 | `converted = min(餘額, 上限)`，其餘 `recovered` | 相同（`utils/rewardCardConversion.ts`） | 同概念 | ✅ |
 | 同幣別單卡 active | ✅ | ✅ | — | ✅ |
-| 流水累積 | 🔴 靠遊戲室「完成流水」測試鈕（`GameRoom.tsx:48-54`） | 🔴 靠 `GameView.vue:28-29` 測試鈕 | ✅ `AssetLog` 每筆帶 `valid_turnover`／`remain_target` | 🔴 **兩前台都是假的，後台有真機制** |
+| 流水累積 | 🔴 靠遊戲室「完成流水」測試鈕（`GameRoom.tsx:48-54`） | 🔴 靠 `GameView.vue:28-29` 測試鈕 | 原型有 `valid_turnover`／`remain_target` 欄位 | 🔴 **實際認列規則尚待 Gordan × Hulk 定義** |
 | 轉換通知彈窗 | `RewardConversionModal.tsx` | `RewardConversionModal.vue` | — | ✅ |
 
 ---
@@ -197,7 +197,7 @@ APP 已知瑕疵：`withdrawFromVault` 也記成 `vault_deposit`，靠 `method` 
 | Emoji 選擇器 | ✅ 3 分頁 | ➖ | — | ⚠️ |
 | M-07 自動傳送 | ✅ VIP 專屬（`AutoSendSettingsModal`） | ➖ **官網無** | — | ⚠️ |
 | 好友 | ✅ `SocialContext.tsx:36-114`（懶載入 650ms） | ✅ `useSocialState.ts` | ➖ | ⚠️ **後端 API 清單無好友端點** |
-| 黑名單（社交封鎖） | ✅ `BlacklistModal` | ✅ `settings.vue` | 🔴 後台「前台黑名單」是 **IP 封鎖**，不同東西 | 🔴 見 gap §5 |
+| 黑名單（社交封鎖） | ✅ `BlacklistModal` | ✅ `settings.vue` | 營運後台另有 IP／裝置風控封鎖，屬不同功能 | ✅ 已確認此處專指玩家社交封鎖，由 Wu 負責 |
 | M-08 玩家資料卡 | ✅ 私訊/送禮/檢舉/加好友/黑名單 | ✅ `PlayerCard.vue` | ➖ | ✅ |
 | 檢舉 | ✅ 導向客服草稿（`【標題】內容`） | ✅ `ReportPlayerModal.vue`（5 個中文理由硬編） | ✅ 觸發紀錄審核 | ⚠️ 需 reason code |
 | **客服工單** | 🔴 **左欄空殼**，只有 1 則機器人開場（`:382-394`） | ✅ **完整**：`SupportTicketList`、同時進行中上限 1 筆（`MAX_ONGOING_SUPPORT_TICKETS`）、狀態機、7 種分類 | ✅ 工單管理（4 種狀態、指派、轉接、結案） | 🔴 **APP 落後兩級** |
@@ -261,8 +261,8 @@ APP 已知瑕疵：`withdrawFromVault` 也記成 `vault_deposit`，靠 `method` 
 ### 第一階段必須先對齊（依急迫度）
 1. **贈禮流程**：雙向確認 vs 直接轉帳 —— 二選一，兩邊改成一致
 2. **儲值幣別與通道**：確認是刻意的平台差異，若是則方案表要能依平台回不同內容
-3. **VIP 結構化門檻**：官網補上（APP 與後台都已有，直接抄）
-4. **贈禮手續費改吃 VIP 分級**：三方一起改（後台 `gift_fee_rate`）
+3. **VIP 結構化門檻**：官網補上（APP 與營運後台原型已有可參考結構；最終以 API 契約為準）
+4. **贈禮手續費改吃 VIP 分級**：三方一起改，建立申請時保存快照
 5. **遊戲分類與 catalog**：三方統一，官網先合併兩份清單
 6. **交易類型 enum**：做三方對照表後統一
 7. **客服工單**：APP 補上（官網已完整，可直接對齊）
@@ -277,6 +277,7 @@ APP 已知瑕疵：`withdrawFromVault` 也記成 `vault_deposit`，靠 `method` 
 ## 13. 驗證方式與限制
 
 - APP 側資料來自 `phase-1-mvp` 分支 `3c3e396`；官網側來自本專案 `aa326bd`；後台側來自 `06fdbbe`
-- 財務常數的三方一致性（費率、匯率、獎勵卡定義、補簽成本）我已逐項核對雙方原始碼行號
-- **限制**：三份都是原型，資料模型不等於最終實作；後台側尤其只是 wireframe
+- 原型中的固定值已逐項核對，但正式規則以決策文件為準；固定 5% 與初始餘額不得直接搬進正式環境
+- **限制**：三份都是原型，資料模型不等於最終實作；營運後台尤其只提供操作、欄位與流程參考
+- 遊戲供應商 Seamless Wallet／Webhook 與 A-10 全 12 支由 Hulk 負責；有效流水由 Hulk 與 Gordan 共同定義
 - 兩個 clone 位於 scratchpad，session 結束即消失，需要時可重新 clone

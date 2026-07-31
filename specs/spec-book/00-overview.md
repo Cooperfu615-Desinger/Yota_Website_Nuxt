@@ -14,8 +14,8 @@
 |---|---|---|---|
 | **W** 官網（本專案） | `巨亨ONLINE-Nuxt` | Nuxt 3 SSG | 本書截圖來源 |
 | **A** APP 原型 | `Casino-Lobby-Prototype` @ `phase-1-mvp` 分支 | React 18，1280×720 固定畫布 | 「活文件規格」，不是 main 分支 |
-| **B** 營運後台 | `Game_operations` | Vue 3 + Naive UI wireframe | `BACKEND_TECH_SPEC.md` 為 B2B 聚合平台描述，與 `src/` 的 B2C 實作幾乎不重疊，別當後端契約 |
-| **E** 後端已開發清單 | `API_list.md` | — | 2026-07-27 版本 |
+| **B** 營運後台原型 | `Game_operations` | Vue 3 + Naive UI wireframe | 僅供理解操作、欄位與流程；`BACKEND_TECH_SPEC.md` 亦不可直接當成玩家端 API 契約 |
+| **E** 後端工作清單 | [repo 內快照](../sources/2026-07-27-backend-api-worklist.md) | — | 2026-07-27 版本；狀態空白＝製作中尚未完成 |
 
 詳細比對方法與限制見 [`specs/2026-07-29-three-way-screen-matrix.md` §13](../2026-07-29-three-way-screen-matrix.md#13-驗證方式與限制)。
 
@@ -52,13 +52,14 @@
 
 | 名詞 | 定義 | 來源 |
 |---|---|---|
-| 三幣 | 金幣 `balance`、銀幣 `silverBalance`、銅幣 `bronzeBalance` | `composables/useFinancialState.ts` |
+| 點數與價值 | `NT$1＝金幣1＝銀幣100`；銅幣為無價值試玩幣；金額小數無條件捨去 | [決策 §5](../decisions/2026-07-30-first-phase-alignment-decisions.md#5-金額匯率與點數價值--整數運算小數無條件捨去) |
 | 保險箱 | `vaultBalance`，第一階段已併入銀行，`pages/lobby/vault.vue` 只 redirect | 見 memory `chat-feature-architecture` |
-| 贈禮 | 玩家間轉帳，官網走雙向確認（申請→接受/拒絕/取消/168h 逾期），5% 手續費 | `utils/vaultTransfer.ts`、`utils/giftRequest.ts` |
+| 贈禮 | 玩家間雙向確認（申請→接受/拒絕/取消/168h 逾期）；手續費依 VIP 分級，建立時保存快照 | [決策 §1、§6](../decisions/2026-07-30-first-phase-alignment-decisions.md) |
 | 兌換 | 金↔銀，1:100，銀換金需 100 倍數，手續費 0 | `utils/walletExchange.ts` |
 | 獎勵卡 | 15 天銀 10,000／20 天金 5,000，流水目標 100,000，轉換上限 10,000，到期 2026/12/31 | `utils/rewardCardConversion.ts`、`composables/useRewardCardState.ts` |
+| 外部提款 | 第一階段不提供；`/vault/withdraw` 只代表保險箱取回主錢包（`VAULT_OUT`） | [決策 §5](../decisions/2026-07-30-first-phase-alignment-decisions.md#5-金額匯率與點數價值--整數運算小數無條件捨去) |
 
-> 這幾個常數三方一致，**不用再確認**，直接抄。其餘 enum（交易類型、頭像、遊戲分類）三方不同，見 §4 落差清單。
+> 原型固定值只用來重現現有畫面；正式實作以決策紀錄與 API 契約為準。尤其固定 5% 與初始 mock 餘額不可直接搬入正式環境。
 
 ---
 
@@ -89,11 +90,13 @@
 | 7 | 選座位 | 官網是 dead code | ⚠️ | [`W-05`](_index-table.md#W-05)（無截圖，見備註） |
 | 8 | 頭像數量 | 官網 12 emoji，APP 20 圖片，三方全不同 | ⚠️ | [`W-10`](_index-table.md#W-10) |
 
-> ✅ **這 4 項已於 2026-07-30 拍板**，決策內容與理由見 [`specs/decisions/2026-07-30-first-phase-alignment-decisions.md`](../decisions/2026-07-30-first-phase-alignment-decisions.md)：
+> ✅ **前 4 項已於 2026-07-30 拍板，並於 2026-07-31 補定金額／點數價值與 VIP 費率**。完整內容與理由見 [`specs/decisions/2026-07-30-first-phase-alignment-decisions.md`](../decisions/2026-07-30-first-phase-alignment-decisions.md)：
 > 1. 贈禮流程 → 統一為雙向確認（官網現況，APP 需補流程）
 > 2. 儲值幣別通道 → 維持平台差異，不強制統一
 > 3. 遊戲分類數量 → 本階段只統一資料結構，範圍留待營運/採購階段決定
 > 4. VIP 結構化門檻 → 官網補齊結構化（比照 APP `VIP_LEVEL_RULES`）
+> 5. 金額／點數 → 整數、小數捨去；台1＝金1＝銀100；銅幣無價值；無外部提款
+> 6. 贈禮費率 → 依 VIP 分級並在建立申請時凍結；有效流水由 Gordan × Hulk 共同定義
 >
 > `20-frontend.md` 以此決策為準撰寫，不再重複列現況分岔。
 

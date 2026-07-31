@@ -59,7 +59,7 @@ export interface PrivateConversation {
 export type SupportQuestionCategoryKey =
   | 'account'
   | 'deposit'
-  | 'withdrawal'
+  | 'billing'
   | 'game'
   | 'event'
   | 'vault'
@@ -99,7 +99,7 @@ export interface SupportTicket {
 export const supportQuestionCategories = [
   { key: 'account', label: '帳號問題', icon: '👤', description: '登入、註冊、帳號安全與個人資料' },
   { key: 'deposit', label: '儲值／付款', icon: '💳', description: '儲值方式、付款狀態與金幣入帳' },
-  { key: 'withdrawal', label: '提款／審核', icon: '🧾', description: '提款申請、審核進度與退回原因' },
+  { key: 'billing', label: '帳務／訂單', icon: '🧾', description: '儲值訂單、交易紀錄與退款爭議' },
   { key: 'game', label: '遊戲／結算', icon: '🎮', description: '遊戲異常、下注紀錄與派彩結算' },
   { key: 'event', label: '活動／獎勵', icon: '🎁', description: '活動資格、任務進度與獎勵發放' },
   { key: 'vault', label: '保險箱／贈禮', icon: '🔐', description: '保險箱存取、贈禮申請與收受' },
@@ -539,12 +539,12 @@ export const siteContent = {
         { q: '儲值後點數沒有到帳？', a: '儲值完成後通常在 5 分鐘內到帳。若超過 30 分鐘仍未到帳，請保留儲值證明並聯繫客服。不同支付方式的到帳時間可能有所不同。' },
         { q: '支援哪些付款方式？', a: '目前支援：信用卡（Visa/MasterCard）、ATM 轉帳、超商代碼繳費（7-11/全家/萊爾富/OK超商）、MyCard、GASH、FunPay、iWin 點數卡。' },
         { q: '儲值有上下限嗎？', a: '最低儲值金額為 NT$300，每日最高儲值上限依 VIP 等級不同：一般玩家 NT$50,000 / VIP3 NT$200,000 / VIP6 無上限。' },
-        { q: '如何申請提款？', a: '提款需完成身份認證，登入後前往「會員專區」→「申請提款」，填寫銀行帳戶資訊。審核時間約 1-3 個工作天。' },
+        { q: '儲值點數可以提款或兌現嗎？', a: '平台點數僅供站內遊戲與功能使用，不提供外部提款或現金兌換。若儲值訂單有異常，請保留付款證明並聯繫客服。' },
       ] satisfies FaqItem[],
       game: [
         { q: '遊戲載入失敗怎麼辦？', a: '請先確認網路連線是否穩定。若使用 iOS 設備，請確保已完成信任設定。建議清除瀏覽器快取後重試，或改用 APP 進行遊戲。' },
         { q: '遊戲過程中斷線怎麼辦？', a: '我們的系統會自動記錄您斷線前的遊戲狀態。重新連線後，您的資產不會有任何損失，遊戲紀錄也會完整保存。' },
-        { q: '試玩模式與正式模式有何不同？', a: '試玩模式使用虛擬點數，不消耗真實餘額，適合熟悉遊戲規則。正式模式使用真實餘額，贏得的獎金可提款。' },
+        { q: '試玩模式與正式模式有何不同？', a: '試玩模式使用無價值的銅幣，不消耗儲值點數，適合熟悉遊戲規則。正式模式使用儲值或活動點數，但平台點數不提供提款或現金兌換。' },
         { q: '遊戲公平性如何保障？', a: '我們所有遊戲均採用國際認證的 RNG（隨機數生成器），確保每局結果完全隨機公正。相關認證報告可在官網查詢。' },
       ] satisfies FaqItem[],
       install: [

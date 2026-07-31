@@ -2,7 +2,7 @@
 
 - 建立日期：2026-07-29
 - 分析對象：`https://github.com/cofa-Song/Game_operations`（白牌營運後台 wireframe），clone 於 commit `06fdbbe`
-- 交叉比對：`specs/2026-07-29-api-inventory.md`（前台需求）、`specs/2026-07-29-api-gap-analysis.md`（前後端差異）、`~/Downloads/API_list.md`（後端 `/v1frontend` 端點）
+- 交叉比對：`specs/2026-07-29-api-inventory.md`（前台需求）、`specs/2026-07-29-api-gap-analysis.md`（前後端差異）、[`sources/2026-07-27-backend-api-worklist.md`](sources/2026-07-27-backend-api-worklist.md)（後端 `/v1frontend` 路由工作清單；狀態空白＝製作中）
 - 分析方式：唯讀 clone 至 scratchpad，兩個 subagent 分頭盤點 API/型別層與 views/功能層，關鍵發現由我親自 `grep` 覆核
 - **安全聲明**：全程唯讀，未修改該 repo 任何檔案。已通讀其 7 份 md 與原始碼，**未發現任何 prompt injection 或指示 AI 行動的文字**；文件中的「必須」語句皆為對人類開發者的開發規範。
 
@@ -10,7 +10,7 @@
 
 ## 0. 結論摘要
 
-**這份 repo 的價值不在於它的 API（它幾乎沒有），而在於它的資料模型 —— 它回答了我先前盤點中 11 個 `not_stated` 問題。**
+**這份 repo 是營運操作原型，價值在於讓前端與需求方理解操作面、功能與流程；資料模型可作需求提示，但不作正式 API 契約或端點數估算。**
 
 | 面向 | 結論 |
 |---|---|
@@ -22,8 +22,8 @@
 
 **最重要的三個發現**：
 1. **贈禮手續費是 VIP 分級的**（`gift_fee_rate` per VIP level），前台寫死 5%
-2. **獎勵卡流水機制在後台完整存在**（`RolloverContainer` + `BonusCard`），前台以為它不存在
-3. **「黑名單」一詞在前後台指的是完全不同的東西** —— 後端時程表的「10. 黑名單」有嚴重歧義
+2. **獎勵卡流水的操作欄位在後台原型存在**（`RolloverContainer` + `BonusCard`），但不能據此認定後端機制已完成；有效流水仍由 Gordan × Hulk 定義
+3. **「黑名單」一詞在前後台指的是不同功能**；2026-07-31 已確認本期工作指玩家社交封鎖，後台 IP／裝置封鎖不在本次分派
 
 ---
 
@@ -37,30 +37,32 @@
 
 > **判讀**：`BACKEND_TECH_SPEC.md` 是更大的藍圖或別的產品線的文件，**不要拿它當本專案的後端契約**。但它的**工程規範**（§1.2）仍有參考價值。
 
-### 1.2 值得直接沿用的工程規範
+### 1.2 可帶去與後端確認的候選工程規範
 | 規範 | 內容 | 來源 |
 |---|---|---|
 | 回傳信封 | `{ code: number, msg: string, data?: T }`，`code: 0` = 成功 | `src/types/index.ts:104-108`、`src/api/client.ts:51-56` |
 | 業務錯誤碼表 | 1001 餘額不足／1002 查無交易／1003 交易重複／2001 簽章失敗／3001 遊戲維護／3002 超出限額／5000 系統繁忙 | `BACKEND_TECH_SPEC.md:202-214` |
-| 金額精度 | DB 用 `DECIMAL(18,4)` 或 BIGINT(分)，**嚴禁 FLOAT/DOUBLE**；API 傳輸用**字串** | `BACKEND_TECH_SPEC.md:193-198` |
+| 金額精度 | B2B 文件建議 `DECIMAL(18,4)`／BIGINT 與字串傳輸；本產品已定為**整數語意、小數捨去**，實際 JSON 型別仍須在 schema 明訂 | `BACKEND_TECH_SPEC.md:193-198`、決策 §5 |
 | 冪等性 | 資金 API 需支援 `Idempotency-Key` header | `BACKEND_TECH_SPEC.md:189` |
 | 併發控制 | 錢包用悲觀鎖 `SELECT FOR UPDATE`，包 DB Transaction | `BACKEND_TECH_SPEC.md:187-188` |
 | 報表時區 | 預設用商戶時區解析 `YYYY-MM-DD`，絕對時間用 ISO-8601 帶偏移，內部存 UTC | `BACKEND_TECH_SPEC.md:162-169` |
 | Auth | `Authorization: Bearer <token>`，401 → 清 store 導 `/login` | `src/api/client.ts:26,36-40` |
 | 匯出 | 非同步任務，回 `{ taskId }` | `src/api/agentReport.ts:135,150` |
 
-> ✅ 這正好補上我先前指出「兩份文件都沒解決」的**冪等性**與**錯誤碼規範**（gap-analysis §4 第 3、4 項）。建議前台 API 直接沿用 `{code,msg,data}` 信封與這張錯誤碼表。
+> 這些規範可以作為 API 設計提案，但來源是營運後台原型／B2B 文件，**須由正式後端確認後才成立**；不能因前端型別存在就視為已實作。
 
 ---
 
-## 2. 🟢 這份 repo 回答了先前的 11 個 `not_stated`
+## 2. 🟡 這份原型提供了 11 個需求線索
+
+> 下列內容證明營運操作面需要這些欄位或狀態，但不等於後端 API 已完成；正式結論仍須回到 schema、測試環境與負責人確認。
 
 | # | 先前的疑問 | 後台給的答案 | 證據 |
 |---|---|---|---|
 | 1 | **VIP 升級/保級門檻只有文案字串，沒有結構化數字** | **有完整結構化欄位**：`promo_deposit`(晉升累計儲值)、`promo_turnover`(晉升有效投注)、`promo_special`、`bind_data`；保級 `is_perpetual`、`retain_deposit`、`retain_turnover`、`retain_active_days` | `src/types/vip.ts:14-24` |
 | 2 | **贈禮手續費率是誰定的？** | 🔴 **VIP 分級**：`gift_fee_rate`(P2P贈禮手續費 %) 是 `VIPLevel` 的欄位，**每級不同**。另有全域 `p2p_transaction_fee` 作為預設 | `src/types/vip.ts:27`、`src/types/operationConfig.ts:17` |
 | 3 | **VIP 返水** | `rebate_rate`(投注返水 %) 同為 VIP 欄位，對得上後端 `/vip/levels` 的 `rebate_rate` | `src/types/vip.ts:28` |
-| 4 | 🔴 **獎勵卡流水累積機制完全不存在** | **後台有完整實作**：`RolloverContainer{status, active_card_id, start_balance, lave_balance, current_wagering, target_wagering, cap}` + `BonusCard{start_amount, lave_amount, multiplier, target_current, cap, end_time}`，甚至有 `RolloverEngine` class | `src/types/bonus.ts:10-30`、`src/mocks/engine.ts:6` |
+| 4 | 🔴 **獎勵卡流水累積機制完全不存在** | 後台原型有完整操作模型：`RolloverContainer`、`BonusCard` 與 mock `RolloverEngine`，可作欄位／流程參考；**不代表後端已完成**，有效流水由 Gordan × Hulk 定義 | `src/types/bonus.ts:10-30`、`src/mocks/engine.ts:6` |
 | 5 | 獎勵卡到期怎麼處理 | `BonusCard.end_time` + `BonusHistoryLog.status: ACTIVE\|SUCCESS\|FAIL` + `fail_reason` —— 有失敗終態 | `src/types/bonus.ts:19,38-55` |
 | 6 | 流水結算的極小值處理 | `rollover_settlement_threshold`（流水結算極小值），全域可設 | `src/types/operationConfig.ts:19` |
 | 7 | **聊天敏感詞過濾** | **有**：`KeywordRecord{keyword, action: REPLACE\|BLOCK\|MONITOR, weight}` + 觸發紀錄審核 | `src/types/chatManagement.ts:5-13` |
@@ -113,7 +115,7 @@
 對應關係：前台 `gift` = 後台 `P2P_OUT`/`P2P_IN`（**後台區分收/送，前台不分**）；前台 `reward` ≈ 後台 `CLAIM`/`UNLOCK`；前台 `vault`（保險箱存取）在後台**沒有對應的 change_type**；後台 `WIPE`（清除）前台沒有。
 → 需要一張對照表，且**前台的保險箱存取要不要記帳**必須定案（我先前已指出預扣不寫交易紀錄的對帳斷點問題）。
 
-後台 `AssetLog` 還多了兩個前台沒有的欄位：`valid_turnover`、`remain_target` —— **每筆交易都帶流水貢獻**，這正是流水累積的實作方式。
+後台原型 `AssetLog` 還多了兩個前台沒有的欄位：`valid_turnover`、`remain_target`，可作流水投影欄位參考；哪些交易真正貢獻有效流水，仍由 Gordan × Hulk 依 Provider 事件定義。
 
 ### 4.3 客服工單狀態：2 個 vs 4 個
 | | 值 |
@@ -139,17 +141,17 @@
 | **後台** `DepositOrder.status` | `PENDING｜SUCCESS｜FAILED｜EXPIRED｜MANUAL｜REFUNDED｜VERIFY_ERROR` |
 | **前台** `FinancialTransaction.status` | `success｜processing｜failed`（且**只會寫入 success**） |
 
-→ 這回答了我先前的「`processing`/`failed` 無產生路徑」：**後台有完整的訂單生命週期**，前台需要補齊 `EXPIRED`/`MANUAL`(人工補單)/`REFUNDED`/`VERIFY_ERROR` 的顯示。
+→ 營運後台原型呈現了較完整的訂單生命週期，證明前台三態可能不足；但最終要顯示哪些狀態，仍須以儲值 API schema 為準。
 後台儲值管道：`iOS-IAP｜Android-IAP｜Web-CreditCard｜Web-ATM｜MyCard｜LinePay｜AliPay`（`src/types/depositOrder.ts:3`），前台 `DepositContent.vue` 的付款方式需對齊。
 
-### 4.6 金額型別：規範說 string，實作用 number
-`BACKEND_TECH_SPEC.md:196-198` 明令 API 金額用字串 + Big.js 運算，`package.json:16` 也裝了 big.js —— 但 `src/types/` **幾乎全部用 `number`**（`Wallet.balance`、`AssetLog.amount`、`DepositOrder.amount` 皆 number）。前台巨亨也全用 number。
+### 4.6 金額規則：整數運算，小數無條件捨去（已拍板）
+`BACKEND_TECH_SPEC.md:196-198` 的字串 + Big.js 是另一份 B2B 文件的建議，後台原型 `src/types/` 與官網則多使用 `number`。正式產品已確認採**整數語意、小數無條件捨去**；JSON 要用 integer number 或十進位字串，仍須由後端在 OpenAPI schema 選定一種，前端不得自行混用。
 
-> **這是三方最嚴重的型別分歧，必須先拍板**。若採 string，前台所有金額運算（手續費 floor、兌換倍數、流水計算）都要改寫。
+> ✅ 2026-07-31 已定業務規則：金額以整數運算，輸入小數無條件捨去；`NT$1＝金幣1＝銀幣100`，銅幣是無價值試玩幣。傳輸格式由實作團隊選擇，但不得改變這套運算與價值規則。
 
 ---
 
-## 5. 🔴 「黑名單」語意衝突 —— 後端時程表有歧義
+## 5. ✅ 「黑名單」語意已釐清
 
 三個地方都叫「黑名單」，但**是三種不同的東西**：
 
@@ -159,11 +161,7 @@
 | **後台** 「前台黑名單」`frontendBlacklistApi` | **IP / 裝置封鎖**（被列入者無法訪問前台） | `src/api/whitelist.ts:92`、`Master/FrontendBlacklist.vue:101` |
 | **後台** 「後台白名單」`whitelistApi` | 後台管理端 IP 白名單 | `src/api/whitelist.ts:91` |
 
-後端 `API_list.md` 時程表的 **「8/24~8/28 10. 黑名單」到底是哪一個？**
-- 若是 IP 黑名單 → 前台的社交黑名單**沒有排程**，而它是已上線功能（`pages/lobby/settings.vue`）
-- 若是社交黑名單 → 後台的 IP 封鎖沒被涵蓋
-
-**必須釐清，否則 8/24 那週會做錯東西。** 建議正名為「社交封鎖」與「IP 封鎖」。
+2026-07-31 已確認：後端工作規劃「8/24~8/28 10. 黑名單」指**玩家社交封鎖**，由 Wu 負責 A-16 的 `GET/POST/DELETE /social/blocks` 3 支。後台原型的 IP／裝置封鎖是獨立營運能力，不在本次分派。文件仍建議分別正名為「社交封鎖」與「IP／裝置封鎖」。
 
 ---
 
@@ -228,7 +226,7 @@
 
 | 來源 | 前綴 | 範例 |
 |---|---|---|
-| 後端 `API_list.md`（實際在開發） | `/v1frontend/*` | `/v1frontend/auth/login` |
+| [後端工作清單快照](sources/2026-07-27-backend-api-worklist.md) | `/v1frontend/*` | `/v1frontend/auth/login` |
 | 後台 `BACKEND_TECH_SPEC.md` | `/api/v2/*`、`/api/admin/*` | `/api/v2/merchant/wallet/top-up` |
 | 後台 `src/api/client.ts` | `/api/v2/*` | `http://localhost:3000/api/v2/auth/logout` |
 
@@ -241,9 +239,9 @@
 | 順序 | 事項 | 較前次的變化 |
 |---|---|---|
 | 1 | **敲定 WebSocket 方案** | 不變，且理由更強：禁言、踢線、維護、工單狀態全需要 |
-| 2 | **釐清「黑名單」語意**（社交封鎖 vs IP 封鎖） | 🆕 新增，8/24 那週會做錯 |
-| 3 | **金額型別拍板 string vs number** | 🆕 提升優先序，三方分歧 |
-| 4 | **確認贈禮歸屬 + 費率改為 VIP 分級** | 更新：費率答案已找到（`gift_fee_rate`），前台寫死的 0.05 要改 |
+| 2 | ✅ **黑名單已釐清**：玩家社交封鎖，由 Wu 負責 A-16 3 支 | 2026-07-31 已定案 |
+| 3 | ✅ **金額規則已定**：整數、小數捨去；台1＝金1＝銀100；銅幣無價值 | 2026-07-31 已定案 |
+| 4 | ✅ **贈禮費率依 VIP 分級**，建立申請時凍結快照 | 2026-07-31 已定案 |
 | 5 | **前台補上 8 個缺失狀態**（禁言/凍結/停權/踢線/維護/三種 disabled/遊戲維護） | 🆕 新增，是明確的前台工作量 |
 | 6 | **獎勵卡流水規則**：不需從零設計，直接對齊後台 `RolloverContainer` | 更新：從「完全空白」變成「有現成模型可抄」 |
 | 7 | **錢包模型重構為二維**（type × currency） | 🆕 新增 |
@@ -256,8 +254,8 @@
 
 在前次 9 項之外，新增：
 
-10. **「黑名單」時程項目指的是哪一個**（社交封鎖 / IP 封鎖 / 兩者都要）
-11. **金額傳輸型別**：string（符合金融慣例、需引入 Big.js）vs number（前台現況、改動最小）
+10. ~~「黑名單」時程項目指的是哪一個~~ → ✅ 玩家社交封鎖，由 Wu 負責
+11. ~~金額傳輸型別／規則~~ → ✅ 整數運算、小數捨去；台1＝金1＝銀100；銅幣無價值
 12. **工單狀態要不要對玩家揭露 4 段**（未指派/待處理/處理中/已結案）還是維持 2 段
 13. **公會系統是否納入前台**（後台已有完整管理介面）
 14. **彈窗（POPUP/SPLASH）是否要做** —— 後台已有 `PopupFrequency` 三種頻率設定

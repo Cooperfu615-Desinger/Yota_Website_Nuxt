@@ -2,7 +2,7 @@
 
 - 建立日期：2026-07-29
 - 比對對象 A：`specs/2026-07-29-api-inventory.md`（從前端 commit `aa326bd` 反推的需求）
-- 比對對象 B：`~/Downloads/API_list.md`（後端現況，50 支已開發端點 + 2026.07.27 待補時程）
+- 比對對象 B：[`sources/2026-07-27-backend-api-worklist.md`](sources/2026-07-27-backend-api-worklist.md)（後端 50 支路由工作清單 + 2026.07.27 時程；狀態空白＝製作中尚未完成）
 - 目的：找出**遺漏、衝突、與文件本身的問題**
 - 原則：後端文件未提及者一律標 `not_stated`，不臆測其實作
 
@@ -10,24 +10,25 @@
 
 ## 0. 結論摘要
 
-後端已開發 **50 支端點 / 9 個模組**。與前端需求比對後：
+後端工作清單共列 **50 支路由 / 9 個模組**：24 支狀態空白、製作中；24 支標記 `🆕`、2 支標記 `✏️`。其中 5 支訊息模板限 Merchant 身分，玩家官網／APP 的實際範圍是 45 支。
 
 | 判定 | 數量 | 說明 |
 |---|---|---|
-| ✅ 已覆蓋且對齊 | 2 個領域 | 信箱、客服工單 |
-| 🟡 已開發但有衝突 | 4 個領域 | 會員資料、頭像、三方綁定、VIP |
-| 🔵 已排入時程 | 8 個項目 | 儲值/每日任務/優惠碼/獎勵卡/排行榜/遊戲/交易紀錄/黑名單/保險箱/兌換 |
+| 🏷️ 有 `🆕`／`✏️` 標記 | 4 個領域 | system 2支、信箱、訊息、客服；標記不等於驗收完成，仍須 schema 與測試環境 |
+| 🚧 製作中 | 24 支 | auth 8、system 2、account 4、account/oauth 5、operator-setting 5 |
+| 🟡 契約或前端仍需調整 | 3 個領域 | 頭像、VIP、mailbox enum |
+| 🔵 舊時程表列出 | 12 個編號項目 | 儲值／客服中心／每日任務／優惠碼／mailbox／獎勵卡／排行榜／遊戲／交易紀錄／黑名單／保險箱／兌換；重複跨週項目的進度語意仍不清楚 |
 | 🔴 **完全缺席**（無端點、且不在時程） | **9 個領域** | 見 §1 |
 | ⚠️ 文件本身的問題 | 6 項 | 見 §5 |
 
 **最高風險三件事**：
 1. **沒有任何 WebSocket / 即時推送規劃** — 聊天與客服工單的核心語意成立不了（§1.1）
-2. **贈禮（雙向確認）完全缺席** — 最近 5 個 commit 的主線功能，後端無端點也不在時程（§1.2）
+2. **贈禮（雙向確認）尚未出現在 E 的路由清單**，但已確認由 Gordan 的 `p2p` 工作負責（§1.2）
 3. **公開的「忘記密碼」流程完全缺席** — 前端有完整四步驟 UI，後端只有需登入的改密碼（§1.3）
 
 ---
 
-## 1. 🔴 完全缺席：無端點、且不在 2026.07.27 時程內
+## 1. 🔴 E 尚未列出：需由工作分派或新增規格補齊
 
 ### 1.1 即時推送（WebSocket）— 最高優先
 
@@ -48,11 +49,9 @@
 
 ---
 
-### 1.2 贈禮（雙向確認流程）— 6 支端點全缺
+### 1.2 贈禮（雙向確認流程）— E 未列 6 支，已分派 Gordan
 
-前端已完整實作（`useGiftState.ts`、`utils/giftRequest.ts`、`GiftRequestList.vue`，含測試 `tests/giftRequest.test.mjs`），是最近 5 個 commit 的主線（`ae3093d`~`03e5821`）。後端**既無端點，時程表也沒有這一項** — 時程只有「11. 保險箱 12. 兌換」（8/31~9/4）。
-
-需確認：**保險箱項目是否已包含贈禮？** 若否，這是明確遺漏。
+前端已完整實作（`useGiftState.ts`、`utils/giftRequest.ts`、`GiftRequestList.vue`，含測試 `tests/giftRequest.test.mjs`）。2026-07-27 的 E 路由清單與舊時程沒有列出贈禮端點，但最新工作分派已確認 **Gordan 的 `p2p` 就是雙向贈禮**；目前缺的是 6 支有效端點的 request/response schema、逾期退款 job 與驗收環境，不再視為無人負責。
 
 | 缺的端點 | 前端來源 |
 |---|---|
@@ -100,7 +99,7 @@
 
 ### 1.6 好友系統 — 3 支端點缺
 
-時程表有「10. 黑名單」（8/24~8/28），但**沒有好友**。前端 `useSocialState.ts` 是好友 + 黑名單**同一個 composable**，`PlayerCard.vue:31-39` 有加好友按鈕，贈禮選人也依賴好友清單（`PlayerSearchModal.vue:7-43`）。
+時程表的「10. 黑名單」（8/24~8/28）已確認為**玩家社交封鎖**，由 Wu 負責 `GET/POST/DELETE /social/blocks` 3 支；但**目前提供的分派表未列好友3支**。前端 `useSocialState.ts` 是好友 + 黑名單同一個 composable，`PlayerCard.vue:31-39` 有加好友按鈕，贈禮選人也依賴好友清單（`PlayerSearchModal.vue:7-43`）。
 
 缺：`GET /me/friends`、`POST /me/friends`、`DELETE /me/friends/{playerId}`。
 
@@ -158,11 +157,11 @@
 
 ---
 
-## 2. 🟡 已開發但與前端衝突（需要一方改）
+## 2. 🟡 E 已列路由，但契約與前端衝突（需要一方調整）
 
 ### 2.1 email 可否重複修改 — 直接衝突
 
-- **後端**：`PUT /account/profile` —「email/phone 一旦有值即**鎖定**」
+- **E 工作清單**：`PUT /account/profile` —「email/phone 一旦有值即**鎖定**」；目前狀態空白、仍在製作中
 - **前端**：`member.vue:45-48` 讓使用者**自由編輯 email**，且無格式驗證；phone 是 `disabled` 唯讀（`member.vue:84`）
 
 前端會送出一個後端必然拒絕的請求，且沒有對應的錯誤 UI。**前端需改為：email 有值後轉唯讀，並提供「首次設定」入口。**
@@ -173,7 +172,7 @@
 
 | | 前端 | 後端 |
 |---|---|---|
-| 來源 | **硬編碼 12 個 emoji**（`member.vue:17`） | `GET /system/default-avatars` 素材清單 |
+| 來源 | **硬編碼 12 個 emoji**（`member.vue:17`） | E 列 `GET /system/default-avatars` 素材清單（狀態空白） |
 | 識別 | `avatarId` = 陣列 index + 1（1–12） | 素材 ID |
 | 上傳 | **無上傳 UI** | `PUT /account/avatar` 支援檔案上傳（file > asset 優先序） |
 | 註冊 | 前端不處理 | **後端隨機賦予** |
@@ -185,7 +184,7 @@
 
 ### 2.3 三方綁定 / 解綁 — 安全規則缺失
 
-- **後端**：`DELETE /account/oauth/{provider}` —「無本地密碼且為最後一個綁定時**拒絕**」
+- **E 工作清單**：`DELETE /account/oauth/{provider}` —「無本地密碼且為最後一個綁定時**拒絕**」；目前狀態空白
 - **前端**：`member.vue:56-63` — 750ms 假延遲後**直接 toggle**，無任何驗證、無錯誤處理
 
 前端需補：解綁前置檢查、後端拒絕時的錯誤 UI。另外前端解綁手機也不需驗證碼 — 後端是否要求 `not_stated`。
@@ -194,7 +193,7 @@
 
 ### 2.4 三方登入流程 — 前端等同要重寫
 
-- **後端**：完整 OAuth（取授權 URL → callback → 未註冊回 **404 引導註冊** → `/auth/oauth/register` 補資料），且有 **App 系統瀏覽器 + poll_id 輪詢**模式
+- **E 工作清單的目標流程**：取授權 URL → callback → 未註冊回 **404 引導註冊** → `/auth/oauth/register` 補資料，且有 **App 系統瀏覽器 + poll_id 輪詢**模式；相關 6 支目前狀態空白、尚未完成
 - **前端**：`LoginModal.vue:217-232` 是 700ms 假 connecting → 900ms confirm，**沒有 redirect、沒有 token 交換、沒有「未註冊」分支**
 
 前端社群登入需依後端流程重寫，並新增「三方登入但未註冊 → 補資料建號」的 UI 分支。
@@ -227,7 +226,7 @@
 後端 6 支端點與前端需求**高度吻合**（建單、發訊、標記已讀、清單含未讀數、詳情、問題分類）。需確認：
 
 1. **`status` 列舉是否為 `ongoing` / `closed`**（前端只認這兩個，`siteContent.ts:75`）；`closed` 是終態、前端輸入框唯讀（`chat.vue:430`）
-2. **「同時最多 5 筆 ongoing」規則**（`MAX_ONGOING_SUPPORT_TICKETS = 5`，`useSupportTicketState.ts:11`）後端是否實作 — 目前只在前端擋，且錯誤碼 `max-ongoing` 需後端對齊
+2. **「同時最多 1 筆 ongoing」規則**（`MAX_ONGOING_SUPPORT_TICKETS = 1`）後端是否實作 — 目前只在前端擋，且錯誤碼 `max-ongoing` 需後端對齊
 
 ---
 
@@ -248,14 +247,14 @@
 | 1. 儲值 | 7/27~7/31 | **優惠疊加規則** — 首儲+100%、週回饋15%、VIP加碼30% 目前前端完全沒生效（`siteContent.ts:516,521,522`）；**非同步入帳流程**（`processing`/`failed` 狀態前端無產生路徑） |
 | 3. 每日任務 | 7/27~7/31 | **「今天」必須由 server 判定**（前端目前用 client `new Date()`，`daily.vue:14-16`）；里程碑看**連續天數還是累計天數**（前端用累計，`:28`） |
 | 4. 優惠碼 | 8/3~8/7 | ⚠️ **前端完全沒有優惠碼功能** — 需先做 UI 規格。注意與註冊的「推薦碼」是兩回事 |
-| 6. 獎勵卡 | 8/3, 8/17 | 🔴 **流水認列規則完全未定義** — 前端 `totalTurnover` 只在轉換瞬間被設成目標值，靠遊戲頁一顆測試按鈕觸發（`useRewardCardState.ts:173`、`GameView.vue:28-29`）。什麼下注算流水、比例、回報頻率全部待定 |
+| 6. 獎勵卡 | 8/3, 8/17 | 🔴 **流水認列規則由 Gordan × Hulk 共同定義** — 前端 `totalTurnover` 只在轉換瞬間被設成目標值，靠遊戲頁測試按鈕觸發。需交付有效投注、取消／退款／回滾、比例與冪等規則 |
 | 7. 排行榜 | 8/10~8/14 | `amount` 應回**結構化數值 + 單位**，前端目前是含單位字串（`'2,580,000 金幣'`、`'×2,560 倍'`，`siteContent.ts:229-231`）；需回 `updatedAt`（前端 `useLeaderboardTimer.ts:11` 只是本地每秒+1 的假計時） |
 | 8. 遊戲相關 | 8/10~8/28 | **兩份遊戲清單並存**需先合併（`siteContent.games` 24 款 vs `lobbyGames` 30 款，key 空間不同）；**最低進場金額**規則（目前餘額 0 也能進，`GameLaunchModal.vue:29-31`）；**選座位是否納入正式流程**（`SeatSelectionModal.vue` 目前是 dead code） |
 | 9. 交易紀錄 | 8/17~8/21 | `createdAt` 回 ISO8601（前端目前存已格式化本地字串）；`id` 由 server 發號（前端目前自產 `TX-000101`） |
 | 11. 保險箱 | 8/31~9/4 | **是否包含贈禮**（見 §1.2）；**預扣需寫交易紀錄**（目前 `reserveGiftFromVault` 只扣餘額不寫 transaction，對帳會斷） |
-| 12. 兌換 | 8/31~9/4 | 已有測試契約可直接對照：`tests/walletExchange.test.mjs`（金銀 1:100、銀換金須 100 倍數、手續費 0） |
+| 12. 兌換 | 8/31~9/4 | 已拍板：小數無條件捨去；`NT$1＝金幣1＝銀幣100`；銅幣是無價值試玩幣。既有 `walletExchange` 測試覆蓋金銀 1:100 |
 
-> ✅ **現有 7 支測試可直接當後端契約**：`tests/{account,gameWallets,giftRequest,rewardCardConversion,vaultTransfer,walletExchange,walletSpend}.test.mjs`（`node --test tests/`）。建議後端實作時以此為準，避免規則漂移。
+> ✅ 現有7支前端業務規則測試可作為參考向量：`tests/{account,gameWallets,giftRequest,rewardCardConversion,vaultTransfer,walletExchange,walletSpend}.test.mjs`（`node --test tests/*.test.mjs`）。正式後端契約仍需補 schema、併發、冪等與整合測試。
 
 ---
 
@@ -280,11 +279,11 @@
 2. `GET /message`（列表）被誤標成 `@Router ... [post]`，與 `POST /message` 撞路徑 — swagger 只顯示一支且方法錯誤
 3. `customerservice` 全部端點在 swagger 被誤判為公開（缺 `@Param Authorization`），且 `GET /question-categories` 未進 swagger
 
-### 5.2 時程表與現況矛盾
-- 時程「7/27~7/31 **2. 客服中心**」，但 §九 客服 6 支端點**已標 🆕 完成**
-- 時程「8/3~8/7 **5. mail box**」，但 §五 信箱 4 支端點**已標 🆕 完成**
+### 5.2 狀態語意已釐清
 
-→ 需確認：時程指的是**前端串接**還是**後端開發**？若是前端串接，整張表的語意要改標題註明。
+- 狀態空白＝後端製作中尚未完成。
+- `🆕`／`✏️` 是新增／調整標記；是否可串接仍須以測試環境與 schema 驗收。
+- 因此不能再把清單50支全部稱為「已開發完成」。
 
 ### 5.3 時程表編號錯亂
 - 編號 1–12 但 **6. 獎勵卡**出現兩次（8/3~8/7、8/17~8/21）、**8. 遊戲相關**出現三次（8/10、8/17、8/24）
@@ -304,7 +303,7 @@
 特別是：`GET /operator-setting/image` 的 type 是否涵蓋 Banner？前端 `BannerSlide` 有 `targetUrl` 與 `mobileImageSrc` 欄位（`siteContent.ts:121-122`）但目前無人使用 — Banner 可否點擊導流需一併確認。
 
 ### 5.6 前台清單混入後台功能？
-§8-2「訊息模板 template」5 支限**商戶身分**（`AccountIdentityType=Merchant`）。前端玩家介面完全沒有此概念。確認是否誤列入前台清單。
+§8-2「訊息模板 template」5 支限**商戶身分**（`AccountIdentityType=Merchant`），已確認不計入玩家官網／APP 範圍；玩家前台路由範圍為45支。
 
 ---
 
@@ -312,10 +311,10 @@
 
 | 順序 | 事項 | 理由 |
 |---|---|---|
-| 1 | **敲定 WebSocket 方案**（協定/事件/鑑權/重連） | 聊天與客服已開發但語意不完整，越晚定改動越大 |
-| 2 | **確認贈禮歸屬**（是否在保險箱項目內） | 前端已完成的主線功能無後端對應，是最大的單點缺口 |
+| 1 | **敲定 WebSocket 方案**（協定/事件/鑑權/重連） | E 只列 REST 路由；未有即時事件契約，越晚定改動越大 |
+| 2 | **Gordan 補齊 p2p／贈禮契約** | 歸屬已確認；下一步是雙向確認6支端點與退款／費率快照 schema |
 | 3 | **補 request/response schema** | 沒有 schema 前端無法開工，時程 7/27 已啟動 |
-| 4 | **拍板獎勵卡流水規則** | 8/3 就要開發，但規則完全空白 |
+| 4 | **Gordan × Hulk 交付有效流水規則** | 需由錢包與 Provider 交易兩側共同定義 |
 | 5 | **決定忘記密碼 / 手機登入 / 訪客登入是否保留** | 影響前端是否要刪除既有 UI |
 | 6 | **統一 id 與時間格式規範** | 橫向影響所有模組，越早定越省事 |
 | 7 | 修正 §2 的 7 項前後端衝突 | 多為前端調整，可平行進行 |
@@ -324,6 +323,6 @@
 
 ## 7. 驗證方式
 
-- 本文件的**前端側宣稱**（欄位、常數、行號）可由 `node --test tests/` 與原始碼交叉驗證
-- 本文件的**後端側宣稱**僅來自 `API_list.md` 文字，**未經實際打 API 驗證**。所有標記 `not_stated` 者需由後端補充 schema 後才能確認
+- 本文件的**前端側宣稱**（欄位、常數、行號）可由 `node --test tests/*.test.mjs` 與原始碼交叉驗證
+- 本文件的**後端側宣稱**僅來自[後端工作清單快照](sources/2026-07-27-backend-api-worklist.md)文字，**未經實際打 API 驗證**。所有標記 `not_stated` 者需由後端補充 schema 後才能確認
 - 建議下一步：取得後端 swagger JSON，做一次**自動化的欄位級比對**（目前只做到端點級）
