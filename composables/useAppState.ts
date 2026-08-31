@@ -85,6 +85,17 @@ export const useAppState = () => {
     if (name) profile.value.name = name
     if (account) profile.value.account = account
     profile.value.authProvider = provider
+    // 規格中的前台 Mock：一般登入者從 VIP6 開始，訪客從 VIP0 開始。
+    profile.value.vip = provider === 'guest' ? 0 : 6
+    if (provider === 'guest') {
+      profile.value.account = `Guest${profile.value.id.replace(/\D/g, '')}`
+      profile.value.phone = ''
+      profile.value.email = ''
+      profile.value.emailLocked = false
+      profile.value.birthday = ''
+      profile.value.birthdayLocked = false
+      profile.value.accountBindings = { ...profile.value.accountBindings, phone: false, google: false }
+    }
     isLoggedIn.value = true
     if (closeAfterLogin) closeLogin()
     if (import.meta.client) {
