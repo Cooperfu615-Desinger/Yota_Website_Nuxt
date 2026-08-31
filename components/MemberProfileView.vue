@@ -5,7 +5,7 @@ import { validateMemberBirthday, validateMemberEmail, validateMemberNickname } f
 const props = withDefaults(defineProps<{ embedded?: boolean }>(), { embedded: false })
 const emit = defineEmits<{ close: [] }>()
 
-type BindingProvider = 'phone' | 'facebook' | 'line' | 'apple' | 'google'
+type BindingProvider = 'phone' | 'google'
 
 const { isLoggedIn, userInfo, openLogin, updateProfile, setAccountBinding } = useAppState()
 const { openLogoutConfirm } = useLogoutState()
@@ -20,6 +20,13 @@ const showProfileConfirm = ref(false)
 const profileSaving = ref(false)
 const pendingProfileSave = ref<{ name: string; email: string; birthday: string; bio: string } | null>(null)
 const bindingLoading = ref<BindingProvider | null>(null)
+const bindingStage = ref<'idle' | 'phone-entry' | 'phone-code'>('idle')
+const phoneForm = ref('')
+const phoneCode = ref('')
+const phoneError = ref('')
+const phoneCountdown = ref(0)
+const phoneVerifying = ref(false)
+let phoneTimer: ReturnType<typeof setInterval> | null = null
 
 const profileForm = reactive({ name: '', email: '', birthday: '', bio: '' })
 const avatars = [
@@ -36,9 +43,6 @@ const avatars = [
 ]
 const bindingOptions: { key: BindingProvider; label: string; mark: string; description: string }[] = [
   { key: 'phone', label: '手機號碼', mark: '09', description: '使用驗證碼登入與帳號復原' },
-  { key: 'facebook', label: 'Facebook', mark: 'f', description: '連結 Facebook 快速登入' },
-  { key: 'line', label: 'LINE', mark: 'L', description: '連結 LINE 快速登入' },
-  { key: 'apple', label: 'Apple', mark: '●', description: '使用 Apple ID 安全登入' },
   { key: 'google', label: 'Google', mark: 'G', description: '連結 Google 快速登入' },
 ]
 const sections = [
@@ -71,6 +75,7 @@ function resetProfileForm() {
 
 onMounted(resetProfileForm)
 watch(isLoggedIn, loggedIn => { if (loggedIn) resetProfileForm() })
+onUnmounted(() => { if (phoneTimer) clearInterval(phoneTimer) })
 
 function validateProfile() {
   profileErrors.name = validateMemberNickname(profileForm.name)
@@ -131,13 +136,66 @@ function saveAvatar() {
   profileNotice.value = '頭像已更新'
 }
 
-async function toggleBinding(provider: BindingProvider) {
-  bindingLoading.value = provider
-  await new Promise(resolve => setTimeout(resolve, 750))
-  const nextValue = !userInfo.value.accountBindings[provider]
-  setAccountBinding(provider, nextValue)
+function startPhoneBinding() {
+  phoneForm.value = ''
+  phoneCode.value = ''
+  phoneError.value = ''
+  bindingStage.value = 'phone-entry'
+}
+
+function startPhoneCountdown() {
+  if (phoneTimer) clearInterval(phoneTimer)
+  phoneCountdown.value = 60
+  phoneTimer = setInterval(() => {
+    phoneCountdown.value -= 1
+    if (phoneCountdown.value <= 0 && phoneTimer) {
+      clearInterval(phoneTimer)
+      phoneTimer = null
+    }
+  }, 1000)
+}
+
+function sendPhoneCode() {
+  phoneError.value = ''
+  if (!/^09\d{8}$/.test(phoneForm.value)) {
+    phoneError.value = '請輸入正確的 10 碼手機號碼'
+    return
+  }
+  phoneCode.value = ''
+  bindingStage.value = 'phone-code'
+  startPhoneCountdown()
+}
+
+async function verifyPhoneCode() {
+  phoneError.value = ''
+  if (!/^\d{6}$/.test(phoneCode.value)) {
+    phoneError.value = '請輸入 6 碼驗證碼'
+    return
+  }
+  if (phoneCode.value !== '123456') {
+    phoneError.value = '驗證碼錯誤，請重新輸入'
+    return
+  }
+  phoneVerifying.value = true
+  await new Promise(resolve => setTimeout(resolve, 650))
+  updateProfile({ phone: `${phoneForm.value.slice(0, 4)}***${phoneForm.value.slice(-3)}` })
+  setAccountBinding('phone', true)
+  phoneVerifying.value = false
+  bindingStage.value = 'idle'
+  phoneCode.value = ''
+  phoneError.value = ''
+  if (phoneTimer) { clearInterval(phoneTimer); phoneTimer = null }
+  phoneCountdown.value = 0
+  profileNotice.value = '手機號碼綁定成功'
+}
+
+async function bindGoogle() {
+  if (userInfo.value.accountBindings.google || bindingLoading.value) return
+  bindingLoading.value = 'google'
+  await new Promise(resolve => setTimeout(resolve, 850))
+  setAccountBinding('google', true)
   bindingLoading.value = null
-  profileNotice.value = `${bindingOptions.find(item => item.key === provider)?.label}${nextValue ? '綁定成功' : '已解除綁定'}`
+  profileNotice.value = 'Google 綁定成功'
 }
 </script>
 
@@ -196,7 +254,31 @@ async function toggleBinding(provider: BindingProvider) {
       </div>
     </section>
 
-    <section v-else-if="activeSection === 'bindings'" class="member-content"><header><div><p>ACCOUNT SECURITY</p><h2>帳號綁定</h2></div><span>綁定狀態會隨個人資料保留</span></header><div class="binding-list"><article v-for="option in bindingOptions" :key="option.key"><div class="binding-mark" :class="`provider-${option.key}`">{{ option.mark }}</div><div><strong>{{ option.label }}</strong><small>{{ option.description }}</small></div><span :class="{ bound: userInfo.accountBindings[option.key] }">{{ userInfo.accountBindings[option.key] ? '已綁定' : '未綁定' }}</span><button type="button" :disabled="bindingLoading === option.key" @click="toggleBinding(option.key)">{{ bindingLoading === option.key ? '連線中…' : userInfo.accountBindings[option.key] ? '解除' : '綁定' }}</button></article></div></section>
+    <section v-else-if="activeSection === 'bindings'" class="member-content">
+      <header><div><p>ACCOUNT SECURITY</p><h2>帳號綁定</h2></div><span>綁定後無法解除</span></header>
+      <div class="binding-list">
+        <article v-for="option in bindingOptions" :key="option.key">
+          <div class="binding-mark" :class="`provider-${option.key}`">{{ option.mark }}</div>
+          <div><strong>{{ option.label }}</strong><small>{{ option.description }}</small></div>
+          <span :class="{ bound: userInfo.accountBindings[option.key] }">{{ userInfo.accountBindings[option.key] ? '已綁定' : '未綁定' }}</span>
+          <button v-if="option.key === 'phone' && !userInfo.accountBindings.phone" type="button" @click="startPhoneBinding">綁定</button>
+          <button v-else-if="option.key === 'google' && !userInfo.accountBindings.google" type="button" :disabled="bindingLoading === 'google'" @click="bindGoogle">{{ bindingLoading === 'google' ? '連線中…' : '綁定' }}</button>
+          <button v-else type="button" disabled>已綁定</button>
+        </article>
+      </div>
+      <div v-if="bindingStage === 'phone-entry'" class="phone-binding-panel">
+        <label class="input-label" for="binding-phone">手機號碼</label>
+        <div class="phone-binding-row"><input id="binding-phone" v-model="phoneForm" class="input-field" inputmode="numeric" maxlength="10" placeholder="09xxxxxxxx" @input="phoneForm = phoneForm.replace(/\D/g, '')" /><button type="button" class="btn-gold" @click="sendPhoneCode">發送驗證碼</button></div>
+        <small class="binding-hint">僅支援台灣 09 開頭的 10 碼手機號碼</small>
+        <p v-if="phoneError" class="profile-field-error" role="alert">{{ phoneError }}</p>
+      </div>
+      <div v-else-if="bindingStage === 'phone-code'" class="phone-binding-panel">
+        <label class="input-label" for="binding-code">驗證碼</label>
+        <div class="phone-binding-row"><input id="binding-code" v-model="phoneCode" class="input-field" inputmode="numeric" maxlength="6" placeholder="請輸入 6 碼驗證碼" @input="phoneCode = phoneCode.replace(/\D/g, '')" /><button type="button" class="btn-gold" :disabled="phoneVerifying" @click="verifyPhoneCode">{{ phoneVerifying ? '驗證中…' : '確認驗證' }}</button></div>
+        <div class="binding-code-meta"><small>測試驗證碼：123456</small><button type="button" :disabled="phoneCountdown > 0" @click="sendPhoneCode">{{ phoneCountdown > 0 ? `${phoneCountdown} 秒後可重發` : '重新發送' }}</button></div>
+        <p v-if="phoneError" class="profile-field-error" role="alert">{{ phoneError }}</p>
+      </div>
+    </section>
 
     <section v-else-if="activeSection === 'vip'" class="member-content vip-content"><header><div><p>VIP JOURNEY</p><h2>VIP {{ userInfo.vip }} 升級進度</h2></div><button v-if="nextVipLevel" class="btn-outline-purple" type="button" @click="showVipTargetModal = true">查看 {{ nextVipLevel.name }} 條件</button></header><div v-if="!isMaxVip" class="vip-progress-grid"><article><div><span>累積儲值（金幣）</span><strong>{{ vipUpgrade.deposit.current.toLocaleString() }} / {{ vipUpgrade.deposit.target.toLocaleString() }}</strong></div><i><b :style="{ width: `${depositPct}%` }" /></i><small>升級必須同時達成</small></article><article><div><span>累積投注（金幣）</span><strong>{{ vipUpgrade.wager.current.toLocaleString() }} / {{ vipUpgrade.wager.target.toLocaleString() }}</strong></div><i><b :style="{ width: `${wagerPct}%` }" /></i><small>升級必須同時達成</small></article></div><div class="vip-level-grid"><article v-for="vip in vipLevels" :key="vip.level" :class="{ current: vip.level === userInfo.vip }"><span :style="{ color: vip.color }">VIP {{ vip.level }}</span><strong>返水 {{ vip.rebate }}</strong><small>{{ vip.feeDiscount }}</small></article></div></section>
 
@@ -246,10 +328,11 @@ async function toggleBinding(provider: BindingProvider) {
 .profile-grid { display:grid; grid-template-columns:1fr 1fr; gap:13px; }.profile-bio { position:relative; grid-column:1/-1; }.profile-bio textarea { resize:vertical; }.profile-bio small { position:absolute; right:8px; bottom:7px; color:var(--color-text-muted); font-size:8px; }
 .profile-grid em { color:var(--color-text-muted); font-size:8px; font-style:normal; }.input-readonly { opacity:.65; cursor:not-allowed; }.profile-field-error { display:block; margin-top:5px; color:#fca5a5; font-size:9px; }
 .binding-list { display:grid; gap:8px; }.binding-list article { display:grid; grid-template-columns:40px 1fr auto 70px; align-items:center; gap:11px; padding:12px; border:1px solid rgba(255,255,255,.07); border-radius:12px; background:rgba(0,0,0,.14); }.binding-mark { display:grid; width:38px; height:38px; place-items:center; border-radius:11px; color:#fff; background:#6b21a8; font-size:11px; font-weight:900; }.provider-facebook { background:#1877f2; }.provider-line { background:#06c755; }.provider-apple { background:#555; }.provider-google { background:#ea4335; }.binding-list article>div:nth-child(2) { display:flex; flex-direction:column; }.binding-list strong { font-size:11px; }.binding-list small { color:var(--color-text-muted); font-size:8px; }.binding-list article>span { padding:4px 7px; border-radius:99px; color:var(--color-text-muted); background:rgba(255,255,255,.05); font-size:8px; }.binding-list article>span.bound { color:#86efac; background:rgba(74,222,128,.08); }.binding-list article>button { padding:7px; border:1px solid var(--color-border); border-radius:8px; color:var(--color-purple-light); font-size:9px; font-weight:800; }
+.phone-binding-panel { padding:14px; margin-top:12px; border:1px solid rgba(168,85,247,.22); border-radius:12px; background:rgba(15,0,32,.35); }.phone-binding-row { display:flex; gap:8px; }.phone-binding-row .input-field { flex:1; }.phone-binding-row .btn-gold { flex-shrink:0; padding-inline:16px; justify-content:center; }.binding-hint { display:block; margin-top:6px; color:var(--color-text-muted); font-size:9px; }.binding-code-meta { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:7px; }.binding-code-meta small { color:var(--color-text-muted); font-size:9px; }.binding-code-meta button { color:var(--color-purple-light); font-size:9px; }.binding-code-meta button:disabled { color:var(--color-text-muted); cursor:not-allowed; }
 .vip-progress-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }.vip-progress-grid article { padding:14px; border:1px solid rgba(255,255,255,.07); border-radius:12px; background:rgba(0,0,0,.14); }.vip-progress-grid article>div { display:flex; justify-content:space-between; font-size:10px; }.vip-progress-grid strong { color:var(--color-gold); }.vip-progress-grid i { display:block; height:7px; margin:10px 0 5px; overflow:hidden; border-radius:99px; background:rgba(168,85,247,.12); }.vip-progress-grid b { display:block; height:100%; border-radius:99px; background:linear-gradient(90deg,#a855f7,#f5c842); }.vip-progress-grid small { color:var(--color-text-muted); font-size:8px; }
 .vip-level-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:7px; margin-top:12px; }.vip-level-grid article { display:flex; flex-direction:column; gap:3px; padding:10px; border:1px solid rgba(255,255,255,.07); border-radius:10px; background:rgba(0,0,0,.12); }.vip-level-grid article.current { border-color:var(--color-gold); background:rgba(245,200,66,.08); }.vip-level-grid span { font-size:9px; font-weight:900; }.vip-level-grid strong { font-size:9px; }.vip-level-grid small { color:var(--color-text-muted); font-size:7px; }
 .member-logout { width:100%; padding:11px; border:1px solid rgba(248,113,113,.24); border-radius:11px; color:#fca5a5; background:rgba(248,113,113,.07); font-size:10px; font-weight:900; }.member-modal-kicker { text-align:center; }.vip-benefits { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }.vip-benefits>div { padding:12px; border:1px solid rgba(245,200,66,.17); border-radius:11px; background:rgba(245,200,66,.05); }.vip-benefits span,.vip-benefits strong { display:block; }.vip-benefits span { color:var(--color-text-muted); font-size:8px; }.vip-benefits strong { margin-top:3px; color:var(--color-gold); font-size:14px; }.vip-condition { padding:12px; margin-top:8px; border:1px solid var(--color-border); border-radius:11px; background:rgba(168,85,247,.07); }.vip-condition span { color:var(--color-purple-light); font-size:9px; font-weight:900; }.vip-condition p { margin:5px 0 0; color:var(--color-text-muted); font-size:10px; line-height:1.7; }
 .profile-confirm-overlay { position:fixed; inset:0; z-index:1100; display:grid; place-items:center; padding:16px; background:rgba(0,0,0,.58); backdrop-filter:blur(4px); }.profile-confirm-card { width:min(420px,100%); padding:22px; border:1px solid rgba(255,255,255,.22); border-radius:17px; background:linear-gradient(160deg,#3a315d,#211a3c); box-shadow:0 16px 48px rgba(0,0,0,.5); }.profile-confirm-card h2 { margin:0 0 8px; font-size:18px; }.profile-confirm-card p { margin:0; color:var(--color-text-muted); font-size:11px; line-height:1.7; }.profile-confirm-card>div { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }.profile-confirm-card button { min-width:92px; justify-content:center; }
 @media(max-width:800px){.member-identity{grid-template-columns:74px 1fr}.member-identity>.wallet-balances{grid-column:1/-1}.member-avatar{width:68px;height:68px}.avatar-grid{grid-template-columns:repeat(5,1fr)}.vip-level-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:520px){.member-sections{grid-template-columns:1fr 1fr}.profile-grid,.vip-progress-grid{grid-template-columns:1fr}.binding-list article{grid-template-columns:36px 1fr auto}.binding-list article>span{display:none}.vip-level-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.member-sections{grid-template-columns:1fr 1fr}.profile-grid,.vip-progress-grid{grid-template-columns:1fr}.binding-list article{grid-template-columns:36px 1fr auto}.binding-list article>span{display:none}.phone-binding-row{flex-direction:column}.phone-binding-row .btn-gold{width:100%;justify-content:center}.vip-level-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
