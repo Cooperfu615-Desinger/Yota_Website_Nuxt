@@ -5,7 +5,28 @@ const LS_USER_KEY = 'jh_userInfo'
 
 type AuthProvider = 'account' | 'guest' | 'phone' | 'facebook' | 'line' | 'apple' | 'google'
 
-type UserProfile = Omit<typeof siteContent.member.defaultUser, 'balance' | 'silverBalance' | 'bronzeBalance' | 'vaultBalance'>
+interface UserProfile {
+  id: string
+  account: string
+  name: string
+  vip: number
+  avatar: string
+  avatarId: number
+  bio: string
+  birthday: string
+  birthdayLocked: boolean
+  email: string
+  emailLocked: boolean
+  phone: string
+  authProvider: AuthProvider
+  accountBindings: {
+    phone: boolean
+    facebook: boolean
+    line: boolean
+    apple: boolean
+    google: boolean
+  }
+}
 
 function normalizeProfile(saved?: Partial<UserProfile>): UserProfile {
   const base = siteContent.member.defaultUser

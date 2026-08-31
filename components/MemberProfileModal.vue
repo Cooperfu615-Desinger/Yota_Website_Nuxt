@@ -1,6 +1,13 @@
 <script setup lang="ts">
 const { isLoggedIn } = useAppState()
 const { isOpen, closeProfile } = useMemberProfileState()
+const modalRoot = ref<HTMLElement | null>(null)
+
+watch(isOpen, async opened => {
+  if (!opened) return
+  await nextTick()
+  modalRoot.value?.focus()
+})
 </script>
 
 <template>
@@ -8,6 +15,7 @@ const { isOpen, closeProfile } = useMemberProfileState()
     <Transition name="member-profile-modal-fade">
       <div
         v-if="isOpen && isLoggedIn"
+        ref="modalRoot"
         class="modal-overlay member-profile-modal-overlay"
         role="dialog"
         aria-modal="true"

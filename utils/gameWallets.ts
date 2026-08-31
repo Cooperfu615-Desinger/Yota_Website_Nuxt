@@ -1,4 +1,4 @@
-import { DEFAULT_WALLET_BALANCE } from './wallets.ts'
+import { DEFAULT_WALLET_BALANCE } from './wallets'
 
 export type GameWalletKey =
   | 'stored-gold'

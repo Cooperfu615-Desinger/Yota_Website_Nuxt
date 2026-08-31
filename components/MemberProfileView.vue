@@ -9,8 +9,10 @@ type BindingProvider = 'phone' | 'google'
 
 const { isLoggedIn, userInfo, openLogin, updateProfile, setAccountBinding } = useAppState()
 const { openLogoutConfirm } = useLogoutState()
-const { activeSection } = useMemberProfileState()
+const { activeSection, sessionKey } = useMemberProfileState()
+const fieldIdPrefix = computed(() => props.embedded ? 'member-modal-' : 'member-page-')
 const showVipOverviewModal = ref(false)
+const vipOverviewTableWrap = ref<HTMLElement | null>(null)
 const showAvatarPicker = ref(false)
 const avatarPickerTab = ref<'avatar' | 'frame'>('avatar')
 const pendingAvatarId = ref(1)
@@ -84,6 +86,11 @@ function resetProfileForm() {
 
 onMounted(resetProfileForm)
 watch(isLoggedIn, loggedIn => { if (loggedIn) resetProfileForm() })
+watch(showVipOverviewModal, async opened => {
+  if (!opened) return
+  await nextTick()
+  vipOverviewTableWrap.value?.querySelector('tr.current')?.scrollIntoView({ block: 'center' })
+})
 onUnmounted(() => { if (phoneTimer) clearInterval(phoneTimer) })
 
 function validateProfile() {
@@ -118,7 +125,7 @@ async function commitProfileSave() {
   profileSaving.value = false
   pendingProfileSave.value = null
   showProfileConfirm.value = false
-  profileNotice.value = '個人資料已儲存'
+  profileNotice.value = '個人資料已更新'
 }
 
 function cancelProfileSave() {
@@ -167,12 +174,13 @@ function startPhoneCountdown() {
 function sendPhoneCode() {
   phoneError.value = ''
   if (!/^09\d{8}$/.test(phoneForm.value)) {
-    phoneError.value = '請輸入正確的 10 碼手機號碼'
+    phoneError.value = '請輸入 09 開頭的 10 碼手機號碼'
     return
   }
   phoneCode.value = ''
   bindingStage.value = 'phone-code'
   startPhoneCountdown()
+  profileNotice.value = '驗證碼已發送（Mock：123456）'
 }
 
 async function verifyPhoneCode() {
@@ -182,7 +190,7 @@ async function verifyPhoneCode() {
     return
   }
   if (phoneCode.value !== '123456') {
-    phoneError.value = '驗證碼錯誤，請重新輸入'
+    phoneError.value = '驗證碼錯誤，請輸入 123456'
     return
   }
   phoneVerifying.value = true
@@ -238,28 +246,30 @@ async function bindGoogle() {
     </header>
     <p v-if="profileNotice" class="profile-notice" role="status">{{ profileNotice }}</p>
 
-    <section v-if="showAvatarPicker" class="avatar-picker">
-      <header><div><p>AVATAR COLLECTION</p><h2>選擇頭像</h2></div><button type="button" aria-label="關閉頭像選擇" @click="showAvatarPicker = false">×</button></header>
-      <div class="avatar-picker-tabs" role="tablist" aria-label="頭像設定"><button type="button" role="tab" :aria-selected="avatarPickerTab === 'avatar'" :class="{ active: avatarPickerTab === 'avatar' }" @click="avatarPickerTab = 'avatar'">頭像</button><button type="button" role="tab" :aria-selected="avatarPickerTab === 'frame'" :class="{ active: avatarPickerTab === 'frame' }" @click="avatarPickerTab = 'frame'">頭像框</button></div>
-      <div v-if="avatarPickerTab === 'avatar'" class="avatar-grid"><button v-for="avatar in avatars" :key="avatar.id" type="button" :aria-label="`${avatar.name} ${avatar.requirement ? `（${avatar.requirement}）` : ''}`" :class="{ active: pendingAvatarId === avatar.id, locked: avatar.id > 10 }" @click="selectAvatar(avatar.id)"><span>{{ avatar.emoji }}</span><small>{{ avatar.id > 10 ? avatar.requirement : `#${avatar.id}` }}</small></button></div>
-      <div v-else class="avatar-frame-coming"><span aria-hidden="true">▣</span><strong>頭像框</strong><small>即將推出</small><button type="button" disabled>尚未開放</button></div>
-      <button v-if="avatarPickerTab === 'avatar'" type="button" class="btn-gold avatar-save" :disabled="pendingAvatarId > 10" @click="saveAvatar">儲存頭像</button>
-    </section>
+    <div v-if="showAvatarPicker" class="avatar-picker-overlay" role="dialog" aria-modal="true" :aria-labelledby="`${fieldIdPrefix}avatar-picker-title`">
+      <section class="avatar-picker">
+        <header><div><p>AVATAR COLLECTION</p><h2 :id="`${fieldIdPrefix}avatar-picker-title`">選擇頭像</h2></div><button type="button" aria-label="關閉頭像選擇" @click="showAvatarPicker = false">×</button></header>
+        <div class="avatar-picker-tabs" role="tablist" aria-label="頭像設定"><button type="button" role="tab" :aria-selected="avatarPickerTab === 'avatar'" :class="{ active: avatarPickerTab === 'avatar' }" @click="avatarPickerTab = 'avatar'">頭像</button><button type="button" role="tab" :aria-selected="avatarPickerTab === 'frame'" :class="{ active: avatarPickerTab === 'frame' }" @click="avatarPickerTab = 'frame'">頭像框</button></div>
+        <div v-if="avatarPickerTab === 'avatar'" class="avatar-grid"><button v-for="avatar in avatars" :key="avatar.id" type="button" :disabled="avatar.id > 10" :aria-label="`${avatar.name} ${avatar.requirement ? `（${avatar.requirement}）` : ''}`" :class="{ active: pendingAvatarId === avatar.id, locked: avatar.id > 10 }" @click="selectAvatar(avatar.id)"><span>{{ avatar.emoji }}</span><small>{{ avatar.id > 10 ? avatar.requirement : `#${avatar.id}` }}</small></button></div>
+        <div v-else class="avatar-frame-coming"><span aria-hidden="true">▣</span><strong>頭像框</strong><small>即將推出</small><button type="button" disabled>尚未開放</button></div>
+        <button v-if="avatarPickerTab === 'avatar'" type="button" class="btn-gold avatar-save" :disabled="pendingAvatarId > 10 || pendingAvatarId === userInfo.avatarId" @click="saveAvatar">儲存頭像</button>
+      </section>
+    </div>
 
     <div class="member-sections" role="tablist" aria-label="玩家資料分頁">
       <button v-for="section in sections" :key="section.key" type="button" role="tab" :aria-selected="activeSection === section.key" :class="{ active: activeSection === section.key }" @click="activeSection = section.key"><span aria-hidden="true">{{ section.mark }}</span>{{ section.label }}</button>
     </div>
 
     <section v-if="activeSection === 'profile'" class="member-content profile-editor">
-      <header><div><p>EDIT PROFILE</p><h2>編輯個人資料</h2></div><button class="btn-gold" type="button" :disabled="profileSaving" @click="saveProfile">{{ profileSaving ? '儲存中…' : '儲存變更' }}</button></header>
+      <header><div><p>EDIT PROFILE</p><h2>編輯個人資料</h2><small class="profile-guide">暱稱與簡介可隨時修改；生日與電子郵件設定後不可再次變更</small></div><button class="btn-gold" type="button" :disabled="profileSaving" @click="saveProfile">{{ profileSaving ? '儲存中…' : '儲存資料' }}</button></header>
       <div class="profile-grid">
-        <div><label class="input-label" for="profile-account">帳號</label><input id="profile-account" :value="userInfo.account" class="input-field input-readonly" readonly disabled /></div>
-        <div><label class="input-label" for="profile-id">玩家 ID</label><input id="profile-id" :value="userInfo.id" class="input-field input-readonly" readonly disabled /></div>
-        <div><label class="input-label" for="profile-name">暱稱</label><input id="profile-name" v-model="profileForm.name" class="input-field" maxlength="20" :aria-invalid="!!profileErrors.name" aria-describedby="profile-name-error" /><small v-if="profileErrors.name" id="profile-name-error" class="profile-field-error">{{ profileErrors.name }}</small></div>
-        <div><label class="input-label" for="profile-email">電子郵件 <em v-if="userInfo.emailLocked">（已設定）</em></label><input id="profile-email" v-model="profileForm.email" type="email" class="input-field" :readonly="userInfo.emailLocked" :disabled="userInfo.emailLocked" :aria-invalid="!!profileErrors.email" aria-describedby="profile-email-error" /><small v-if="profileErrors.email" id="profile-email-error" class="profile-field-error">{{ profileErrors.email }}</small></div>
-        <div><label class="input-label" for="profile-birthday">生日 <em v-if="userInfo.birthdayLocked">（已設定）</em></label><input id="profile-birthday" v-model="profileForm.birthday" type="date" class="input-field" min="1900-01-01" :max="birthdayMax" :readonly="userInfo.birthdayLocked" :disabled="userInfo.birthdayLocked" :aria-invalid="!!profileErrors.birthday" aria-describedby="profile-birthday-error" /><small v-if="profileErrors.birthday" id="profile-birthday-error" class="profile-field-error">{{ profileErrors.birthday }}</small></div>
+        <div><label class="input-label" :for="`${fieldIdPrefix}profile-account`">帳號</label><input :id="`${fieldIdPrefix}profile-account`" :value="userInfo.account" class="input-field input-readonly" readonly disabled /></div>
+        <div><label class="input-label" :for="`${fieldIdPrefix}profile-id`">玩家 ID</label><input :id="`${fieldIdPrefix}profile-id`" :value="userInfo.id" class="input-field input-readonly" readonly disabled /></div>
+        <div><label class="input-label" :for="`${fieldIdPrefix}profile-name`">暱稱</label><input :id="`${fieldIdPrefix}profile-name`" v-model="profileForm.name" class="input-field" maxlength="20" :aria-invalid="!!profileErrors.name" :aria-describedby="`${fieldIdPrefix}profile-name-error`" /><small v-if="profileErrors.name" :id="`${fieldIdPrefix}profile-name-error`" class="profile-field-error">{{ profileErrors.name }}</small></div>
+        <div><label class="input-label" :for="`${fieldIdPrefix}profile-email`">電子郵件 <em v-if="userInfo.emailLocked">（已設定）</em></label><input :id="`${fieldIdPrefix}profile-email`" v-model="profileForm.email" type="email" class="input-field" :readonly="userInfo.emailLocked" :disabled="userInfo.emailLocked" :aria-invalid="!!profileErrors.email" :aria-describedby="`${fieldIdPrefix}profile-email-error`" /><small v-if="profileErrors.email" :id="`${fieldIdPrefix}profile-email-error`" class="profile-field-error">{{ profileErrors.email }}</small></div>
+        <div><label class="input-label" :for="`${fieldIdPrefix}profile-birthday`">生日 <em v-if="userInfo.birthdayLocked">（已設定）</em></label><input :id="`${fieldIdPrefix}profile-birthday`" v-model="profileForm.birthday" type="date" class="input-field" min="1900-01-01" :max="birthdayMax" :readonly="userInfo.birthdayLocked" :disabled="userInfo.birthdayLocked" :aria-invalid="!!profileErrors.birthday" :aria-describedby="`${fieldIdPrefix}profile-birthday-error`" /><small v-if="profileErrors.birthday" :id="`${fieldIdPrefix}profile-birthday-error`" class="profile-field-error">{{ profileErrors.birthday }}</small></div>
         <div><label class="input-label">手機號碼</label><input :value="userInfo.phone || '尚未綁定'" class="input-field input-readonly" readonly disabled /></div>
-        <div class="profile-bio"><label class="input-label" for="profile-bio">個人簡介</label><textarea id="profile-bio" v-model="profileForm.bio" class="input-field" rows="4" maxlength="120" /><small>{{ profileForm.bio.length }} / 120</small></div>
+        <div class="profile-bio"><label class="input-label" :for="`${fieldIdPrefix}profile-bio`">個人簡介</label><textarea :id="`${fieldIdPrefix}profile-bio`" v-model="profileForm.bio" class="input-field" rows="4" maxlength="120" /><small>{{ profileForm.bio.length }} / 120</small></div>
       </div>
     </section>
 
@@ -276,15 +286,15 @@ async function bindGoogle() {
         </article>
       </div>
       <div v-if="bindingStage === 'phone-entry'" class="phone-binding-panel">
-        <label class="input-label" for="binding-phone">手機號碼</label>
-        <div class="phone-binding-row"><input id="binding-phone" v-model="phoneForm" class="input-field" inputmode="numeric" maxlength="10" placeholder="09xxxxxxxx" @input="phoneForm = phoneForm.replace(/\D/g, '')" /><button type="button" class="btn-gold" @click="sendPhoneCode">發送驗證碼</button></div>
+        <label class="input-label" :for="`${fieldIdPrefix}binding-phone`">手機號碼</label>
+        <div class="phone-binding-row"><input :id="`${fieldIdPrefix}binding-phone`" v-model="phoneForm" class="input-field" inputmode="numeric" maxlength="10" placeholder="09xxxxxxxx" @input="phoneForm = phoneForm.replace(/\D/g, '')" /><button type="button" class="btn-gold" @click="sendPhoneCode">發送驗證碼</button></div>
         <small class="binding-hint">僅支援台灣 09 開頭的 10 碼手機號碼</small>
         <p v-if="phoneError" class="profile-field-error" role="alert">{{ phoneError }}</p>
       </div>
       <div v-else-if="bindingStage === 'phone-code'" class="phone-binding-panel">
-        <label class="input-label" for="binding-code">驗證碼</label>
-        <div class="phone-binding-row"><input id="binding-code" v-model="phoneCode" class="input-field" inputmode="numeric" maxlength="6" placeholder="請輸入 6 碼驗證碼" @input="phoneCode = phoneCode.replace(/\D/g, '')" /><button type="button" class="btn-gold" :disabled="phoneVerifying" @click="verifyPhoneCode">{{ phoneVerifying ? '驗證中…' : '確認驗證' }}</button></div>
-        <div class="binding-code-meta"><small>測試驗證碼：123456</small><button type="button" :disabled="phoneCountdown > 0" @click="sendPhoneCode">{{ phoneCountdown > 0 ? `${phoneCountdown} 秒後可重發` : '重新發送' }}</button></div>
+        <label class="input-label" :for="`${fieldIdPrefix}binding-code`">驗證碼</label>
+        <div class="phone-binding-row"><input :id="`${fieldIdPrefix}binding-code`" v-model="phoneCode" class="input-field" inputmode="numeric" maxlength="6" placeholder="請輸入 6 碼驗證碼" @input="phoneCode = phoneCode.replace(/\D/g, '')" /><button type="button" class="btn-gold" :disabled="phoneVerifying || phoneCode.length !== 6" @click="verifyPhoneCode">{{ phoneVerifying ? '驗證中…' : '確認驗證' }}</button></div>
+        <div class="binding-code-meta"><small>測試驗證碼：123456</small><div><button type="button" class="binding-back" @click="startPhoneBinding">返回修改</button><button type="button" :disabled="phoneCountdown > 0" @click="sendPhoneCode">{{ phoneCountdown > 0 ? `${phoneCountdown} 秒後可重發` : '重新發送' }}</button></div></div>
         <p v-if="phoneError" class="profile-field-error" role="alert">{{ phoneError }}</p>
       </div>
     </section>
@@ -299,14 +309,14 @@ async function bindGoogle() {
       </div>
     </section>
 
-    <section v-else class="member-content"><header><div><p>GAME HISTORY</p><h2>遊戲紀錄</h2></div></header><LobbyGameRecords /></section>
+    <section v-else class="member-content"><header><div><p>GAME HISTORY</p><h2>遊戲紀錄</h2></div></header><LobbyGameRecords :key="sessionKey" /></section>
     <button class="member-logout" type="button" @click="openLogoutConfirm">登出目前帳號</button>
 
-    <div v-if="showProfileConfirm" class="profile-confirm-overlay" role="alertdialog" aria-modal="true" aria-labelledby="profile-confirm-title">
-      <div class="profile-confirm-card"><h2 id="profile-confirm-title">確認儲存資料？</h2><p>生日與電子郵件設定後將無法再次修改，請確認資料正確。</p><div><button type="button" class="btn-outline-purple" @click="cancelProfileSave">取消</button><button type="button" class="btn-gold" :disabled="profileSaving" @click="commitProfileSave">{{ profileSaving ? '儲存中…' : '確認儲存' }}</button></div></div>
+    <div v-if="showProfileConfirm" class="profile-confirm-overlay" role="alertdialog" aria-modal="true" :aria-labelledby="`${fieldIdPrefix}profile-confirm-title`">
+      <div class="profile-confirm-card"><h2 :id="`${fieldIdPrefix}profile-confirm-title`">確認儲存一次性資料？</h2><p>以下資料儲存後將無法再次修改：</p><ul><li v-if="!userInfo.birthdayLocked && pendingProfileSave?.birthday">生日</li><li v-if="!userInfo.emailLocked && pendingProfileSave?.email">電子郵件</li></ul><div><button type="button" class="btn-outline-purple" @click="cancelProfileSave">返回修改</button><button type="button" class="btn-gold" :disabled="profileSaving" @click="commitProfileSave">{{ profileSaving ? '儲存中…' : '確認並儲存' }}</button></div></div>
     </div>
 
-    <ClientOnly><Teleport to="body"><Transition name="modal-fade"><div v-if="showVipOverviewModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="vip-overview-title" @click.self="showVipOverviewModal = false"><div class="modal-box vip-overview-modal"><div class="modal-inner"><button class="modal-close" type="button" aria-label="關閉 VIP 等級總覽" @click="showVipOverviewModal = false">×</button><p class="member-modal-kicker">VIP LEVELS</p><h2 id="vip-overview-title" class="modal-title">VIP 等級總覽</h2><div class="vip-overview-table-wrap"><table class="vip-overview-table"><thead><tr><th>等級</th><th>升級條件</th><th>保級條件</th><th>升級獎勵</th><th>P2P 手續費</th></tr></thead><tbody><tr v-for="vip in vipLevels" :key="vip.level" :class="{ current: vip.level === userInfo.vip }"><td><strong :style="{ color: vip.color }">VIP {{ vip.level }}</strong><small v-if="vip.level === userInfo.vip">目前等級</small></td><td>{{ vip.upgradeRequirement }}</td><td>{{ vip.maintainRequirement }}</td><td>{{ vip.upgradeReward }}</td><td>{{ vip.p2pFee }}</td></tr></tbody></table></div></div></div></div></Transition></Teleport></ClientOnly>
+    <ClientOnly><Teleport to="body"><Transition name="modal-fade"><div v-if="showVipOverviewModal" class="modal-overlay" role="dialog" aria-modal="true" :aria-labelledby="`${fieldIdPrefix}vip-overview-title`" @click.self="showVipOverviewModal = false"><div class="modal-box vip-overview-modal"><div class="modal-inner"><button class="modal-close" type="button" aria-label="關閉 VIP 等級總覽" @click="showVipOverviewModal = false">×</button><p class="member-modal-kicker">VIP LEVELS</p><h2 :id="`${fieldIdPrefix}vip-overview-title`" class="modal-title">VIP 等級總覽</h2><div ref="vipOverviewTableWrap" class="vip-overview-table-wrap"><table class="vip-overview-table"><thead><tr><th>等級</th><th>升級條件</th><th>保級條件</th><th>升級獎勵</th><th>P2P 手續費</th></tr></thead><tbody><tr v-for="vip in vipLevels" :key="vip.level" :class="{ current: vip.level === userInfo.vip }"><td><strong :style="{ color: vip.color }">VIP {{ vip.level }}</strong><small v-if="vip.level === userInfo.vip">目前等級</small></td><td>{{ vip.upgradeRequirement }}</td><td>{{ vip.maintainRequirement }}</td><td>{{ vip.upgradeReward }}</td><td>{{ vip.p2pFee }}</td></tr></tbody></table></div></div></div></div></Transition></Teleport></ClientOnly>
   </div>
 </template>
 
@@ -326,6 +336,8 @@ async function bindGoogle() {
 .member-identity-meta b { color:var(--color-gold); }
 .profile-notice { padding:9px 12px; border:1px solid rgba(74,222,128,.25); border-radius:9px; color:#86efac; background:rgba(74,222,128,.08); font-size:10px; }
 .avatar-picker { padding:16px; margin-bottom:14px; border:1px solid var(--color-border); border-radius:17px; background:rgba(15,0,32,.72); }
+.avatar-picker-overlay { position:fixed; inset:0; z-index:1050; display:grid; place-items:center; overflow-y:auto; padding:16px; background:rgba(0,0,0,.58); backdrop-filter:blur(5px); }
+.avatar-picker-overlay .avatar-picker { width:min(760px,100%); max-height:calc(100dvh - 32px); overflow-y:auto; margin:0; box-shadow:0 18px 55px rgba(0,0,0,.55); }
 .avatar-picker header,.member-content>header { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:14px; }
 .avatar-picker h2,.member-content h2 { margin:3px 0; font-size:19px; }
 .avatar-picker header button { color:var(--color-text-muted); background:none; font-size:22px; }
@@ -343,14 +355,14 @@ async function bindGoogle() {
 .member-sections button span { display:grid; width:23px; height:23px; place-items:center; border-radius:7px; background:rgba(168,85,247,.1); font-size:8px; }.member-sections button.active { color:#1b0a25; background:var(--color-gold); }
 .member-content { padding:20px; margin-bottom:14px; border:1px solid var(--color-border); border-radius:18px; background:rgba(26,10,46,.66); }.member-content header>span { color:var(--color-text-muted); font-size:9px; }
 .profile-grid { display:grid; grid-template-columns:1fr 1fr; gap:13px; }.profile-bio { position:relative; grid-column:1/-1; }.profile-bio textarea { resize:vertical; }.profile-bio small { position:absolute; right:8px; bottom:7px; color:var(--color-text-muted); font-size:8px; }
-.profile-grid em { color:var(--color-text-muted); font-size:8px; font-style:normal; }.input-readonly { opacity:.65; cursor:not-allowed; }.profile-field-error { display:block; margin-top:5px; color:#fca5a5; font-size:9px; }
+.profile-grid em { color:var(--color-text-muted); font-size:8px; font-style:normal; }.input-readonly { opacity:.65; cursor:not-allowed; }.profile-field-error { display:block; margin-top:5px; color:#fca5a5; font-size:9px; }.profile-guide { display:block; max-width:420px; margin-top:5px; color:var(--color-text-muted); font-size:9px; line-height:1.55; }
 .binding-list { display:grid; gap:8px; }.binding-list article { display:grid; grid-template-columns:40px 1fr auto 70px; align-items:center; gap:11px; padding:12px; border:1px solid rgba(255,255,255,.07); border-radius:12px; background:rgba(0,0,0,.14); }.binding-mark { display:grid; width:38px; height:38px; place-items:center; border-radius:11px; color:#fff; background:#6b21a8; font-size:11px; font-weight:900; }.provider-facebook { background:#1877f2; }.provider-line { background:#06c755; }.provider-apple { background:#555; }.provider-google { background:#ea4335; }.binding-list article>div:nth-child(2) { display:flex; flex-direction:column; }.binding-list strong { font-size:11px; }.binding-list small { color:var(--color-text-muted); font-size:8px; }.binding-list article>span { padding:4px 7px; border-radius:99px; color:var(--color-text-muted); background:rgba(255,255,255,.05); font-size:8px; }.binding-list article>span.bound { color:#86efac; background:rgba(74,222,128,.08); }.binding-list article>button { padding:7px; border:1px solid var(--color-border); border-radius:8px; color:var(--color-purple-light); font-size:9px; font-weight:800; }
-.phone-binding-panel { padding:14px; margin-top:12px; border:1px solid rgba(168,85,247,.22); border-radius:12px; background:rgba(15,0,32,.35); }.phone-binding-row { display:flex; gap:8px; }.phone-binding-row .input-field { flex:1; }.phone-binding-row .btn-gold { flex-shrink:0; padding-inline:16px; justify-content:center; }.binding-hint { display:block; margin-top:6px; color:var(--color-text-muted); font-size:9px; }.binding-code-meta { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:7px; }.binding-code-meta small { color:var(--color-text-muted); font-size:9px; }.binding-code-meta button { color:var(--color-purple-light); font-size:9px; }.binding-code-meta button:disabled { color:var(--color-text-muted); cursor:not-allowed; }
+.phone-binding-panel { padding:14px; margin-top:12px; border:1px solid rgba(168,85,247,.22); border-radius:12px; background:rgba(15,0,32,.35); }.phone-binding-row { display:flex; gap:8px; }.phone-binding-row .input-field { flex:1; }.phone-binding-row .btn-gold { flex-shrink:0; padding-inline:16px; justify-content:center; }.binding-hint { display:block; margin-top:6px; color:var(--color-text-muted); font-size:9px; }.binding-code-meta { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:7px; }.binding-code-meta small { color:var(--color-text-muted); font-size:9px; }.binding-code-meta div { display:flex; gap:10px; }.binding-code-meta button { color:var(--color-purple-light); font-size:9px; }.binding-code-meta button:disabled { color:var(--color-text-muted); cursor:not-allowed; }.binding-code-meta .binding-back { color:var(--color-text-muted); }
 .vip-progress-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }.vip-progress-grid article { padding:14px; border:1px solid rgba(255,255,255,.07); border-radius:12px; background:rgba(0,0,0,.14); }.vip-progress-grid article>div { display:flex; justify-content:space-between; font-size:10px; }.vip-progress-grid strong { color:var(--color-gold); }.vip-progress-grid i { display:block; height:7px; margin:10px 0 5px; overflow:hidden; border-radius:99px; background:rgba(168,85,247,.12); }.vip-progress-grid b { display:block; height:100%; border-radius:99px; background:linear-gradient(90deg,#a855f7,#f5c842); }.vip-progress-grid small { color:var(--color-text-muted); font-size:8px; }
 .vip-level-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:7px; margin-top:12px; }.vip-level-grid article { display:flex; flex-direction:column; gap:3px; padding:10px; border:1px solid rgba(255,255,255,.07); border-radius:10px; background:rgba(0,0,0,.12); }.vip-level-grid article.current { border-color:var(--color-gold); background:rgba(245,200,66,.08); }.vip-level-grid span { font-size:9px; font-weight:900; }.vip-level-grid strong { font-size:9px; }.vip-level-grid small { color:var(--color-text-muted); font-size:7px; }
 .vip-main-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }.vip-panel { min-height:178px; padding:16px; border:1px solid rgba(255,255,255,.22); border-radius:14px; background:rgba(18,10,43,.36); }.vip-panel-label { margin-bottom:9px; color:var(--color-text-muted); font-size:9px; font-weight:800; letter-spacing:.08em; }.vip-current-number { display:block; font-size:30px; font-weight:950; line-height:1.1; }.vip-current-panel>b { display:block; margin-top:4px; color:var(--color-text); font-size:13px; }.vip-stat-list { display:grid; gap:5px; margin-top:14px; }.vip-stat-list span { display:flex; justify-content:space-between; color:var(--color-text-muted); font-size:9px; }.vip-stat-list strong { color:var(--color-text); }.vip-muted { display:block; margin-top:10px; color:var(--color-text-muted); font-size:8px; line-height:1.6; }.vip-benefit-row { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.08); color:var(--color-text-muted); font-size:9px; }.vip-benefit-row strong { color:var(--color-gold); font-size:11px; text-align:right; }.vip-next-line { display:grid; gap:4px; margin-bottom:12px; }.vip-next-line span { color:var(--color-purple-light); font-size:10px; font-weight:900; }.vip-next-line strong { color:var(--color-text); font-size:9px; line-height:1.6; }.vip-progress-row { display:grid; grid-template-columns:1fr auto; gap:5px 8px; margin-top:9px; color:var(--color-text-muted); font-size:8px; }.vip-progress-row b { color:var(--color-text); font-size:8px; font-weight:800; }.vip-progress-row i { grid-column:1/-1; display:block; height:6px; overflow:hidden; border-radius:99px; background:rgba(168,85,247,.15); }.vip-progress-row i em { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--color-purple-glow),var(--color-gold)); }.vip-maintain-status { color:var(--color-text); font-size:12px; font-weight:900; }.vip-maintain-status.ready { color:#86efac; }.vip-max-state,.vip-undefined-state { display:grid; min-height:112px; place-items:center; color:var(--color-gold); font-size:14px; font-weight:900; text-align:center; }.vip-undefined-state { color:var(--color-purple-light); }.vip-overview-modal { max-width:min(1040px,calc(100vw - 30px)); }.vip-overview-table-wrap { max-height:60vh; overflow:auto; border:1px solid rgba(255,255,255,.15); border-radius:10px; }.vip-overview-table { width:100%; min-width:760px; border-collapse:collapse; font-size:9px; }.vip-overview-table th { position:sticky; top:0; z-index:1; padding:9px 8px; color:var(--color-gold); background:#292147; text-align:left; }.vip-overview-table td { padding:9px 8px; border-top:1px solid rgba(255,255,255,.08); color:var(--color-text-muted); vertical-align:top; line-height:1.55; }.vip-overview-table td:first-child { white-space:nowrap; }.vip-overview-table tr.current td { background:rgba(168,85,247,.18); }.vip-overview-table td strong { display:block; font-size:10px; }.vip-overview-table td small { display:block; margin-top:3px; color:var(--color-gold); font-size:7px; }
 .member-logout { width:100%; padding:11px; border:1px solid rgba(248,113,113,.24); border-radius:11px; color:#fca5a5; background:rgba(248,113,113,.07); font-size:10px; font-weight:900; }.member-modal-kicker { text-align:center; }.vip-benefits { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }.vip-benefits>div { padding:12px; border:1px solid rgba(245,200,66,.17); border-radius:11px; background:rgba(245,200,66,.05); }.vip-benefits span,.vip-benefits strong { display:block; }.vip-benefits span { color:var(--color-text-muted); font-size:8px; }.vip-benefits strong { margin-top:3px; color:var(--color-gold); font-size:14px; }.vip-condition { padding:12px; margin-top:8px; border:1px solid var(--color-border); border-radius:11px; background:rgba(168,85,247,.07); }.vip-condition span { color:var(--color-purple-light); font-size:9px; font-weight:900; }.vip-condition p { margin:5px 0 0; color:var(--color-text-muted); font-size:10px; line-height:1.7; }
-.profile-confirm-overlay { position:fixed; inset:0; z-index:1100; display:grid; place-items:center; padding:16px; background:rgba(0,0,0,.58); backdrop-filter:blur(4px); }.profile-confirm-card { width:min(420px,100%); padding:22px; border:1px solid rgba(255,255,255,.22); border-radius:17px; background:linear-gradient(160deg,#3a315d,#211a3c); box-shadow:0 16px 48px rgba(0,0,0,.5); }.profile-confirm-card h2 { margin:0 0 8px; font-size:18px; }.profile-confirm-card p { margin:0; color:var(--color-text-muted); font-size:11px; line-height:1.7; }.profile-confirm-card>div { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }.profile-confirm-card button { min-width:92px; justify-content:center; }
+.profile-confirm-overlay { position:fixed; inset:0; z-index:1100; display:grid; place-items:center; padding:16px; background:rgba(0,0,0,.58); backdrop-filter:blur(4px); }.profile-confirm-card { width:min(420px,100%); padding:22px; border:1px solid rgba(255,255,255,.22); border-radius:17px; background:linear-gradient(160deg,#3a315d,#211a3c); box-shadow:0 16px 48px rgba(0,0,0,.5); }.profile-confirm-card h2 { margin:0 0 8px; font-size:18px; }.profile-confirm-card p { margin:0; color:var(--color-text-muted); font-size:11px; line-height:1.7; }.profile-confirm-card ul { margin:8px 0 0; padding-left:18px; color:var(--color-text); font-size:11px; line-height:1.7; }.profile-confirm-card>div { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }.profile-confirm-card button { min-width:92px; justify-content:center; }
 @media(max-width:800px){.member-identity{grid-template-columns:74px 1fr}.member-identity>.wallet-balances{grid-column:1/-1}.member-avatar{width:68px;height:68px}.avatar-grid{grid-template-columns:repeat(5,1fr)}.vip-main-grid{grid-template-columns:1fr}.vip-level-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:520px){.member-sections{grid-template-columns:1fr 1fr}.profile-grid,.vip-progress-grid{grid-template-columns:1fr}.binding-list article{grid-template-columns:36px 1fr auto}.binding-list article>span{display:none}.phone-binding-row{flex-direction:column}.phone-binding-row .btn-gold{width:100%;justify-content:center}.vip-level-grid{grid-template-columns:repeat(2,1fr)}}
 </style>

@@ -7,9 +7,11 @@ export type MemberSection = 'profile' | 'bindings' | 'vip' | 'history'
 export const useMemberProfileState = () => {
   const isOpen = useState('memberProfileOpen', () => false)
   const activeSection = useState<MemberSection>('memberProfileSection', () => 'profile')
+  const sessionKey = useState('memberProfileSessionKey', () => 0)
 
   function openProfile() {
     activeSection.value = 'profile'
+    sessionKey.value += 1
     isOpen.value = true
   }
 
@@ -18,5 +20,5 @@ export const useMemberProfileState = () => {
     activeSection.value = 'profile'
   }
 
-  return { isOpen, activeSection, openProfile, closeProfile }
+  return { isOpen, activeSection, sessionKey, openProfile, closeProfile }
 }

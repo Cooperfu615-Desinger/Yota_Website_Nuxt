@@ -95,8 +95,6 @@ function goPage(p: number) {
 
 <template>
   <div class="card-purple mb-4">
-    <div class="px-4 pt-4 pb-2 font-bold" style="color:var(--color-gold);">遊戲紀錄</div>
-
     <!-- 查詢區 -->
     <div class="px-4 pb-2 flex flex-wrap items-end gap-2">
       <div class="flex-1 min-w-[120px]">

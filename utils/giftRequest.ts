@@ -1,7 +1,7 @@
 import {
   calculateVaultTransfer,
   VAULT_TRANSFER_FEE_RATE,
-} from './vaultTransfer.ts'
+} from './vaultTransfer'
 
 export const GIFT_REQUEST_EXPIRY_MS = 168 * 60 * 60 * 1000
 export const MAX_GIFT_REQUEST_AMOUNT = 1_000_000
