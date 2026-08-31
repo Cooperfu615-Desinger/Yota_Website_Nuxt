@@ -30,16 +30,16 @@ let phoneTimer: ReturnType<typeof setInterval> | null = null
 
 const profileForm = reactive({ name: '', email: '', birthday: '', bio: '' })
 const avatars = [
-  { id: 1, emoji: '👤', name: '初心者' }, { id: 2, emoji: '🦁', name: '雄獅' },
-  { id: 3, emoji: '🐉', name: '神龍' }, { id: 4, emoji: '⭐', name: '星耀' },
-  { id: 5, emoji: '🃏', name: '王牌' }, { id: 6, emoji: '👑', name: '王者' },
-  { id: 7, emoji: '🐱', name: '幸運貓' }, { id: 8, emoji: '🎲', name: '骰王' },
-  { id: 9, emoji: '🧧', name: '招財' }, { id: 10, emoji: '🦊', name: '靈狐' },
-  { id: 11, emoji: '🐼', name: '國寶', requirement: 'VIP5' }, { id: 12, emoji: '🦄', name: '獨角獸', requirement: 'VIP5' },
-  { id: 13, emoji: '🐯', name: '猛虎', requirement: '活動限定' }, { id: 14, emoji: '🦅', name: '蒼鷹', requirement: '活動限定' },
-  { id: 15, emoji: '🐺', name: '狼王', requirement: 'VIP8' }, { id: 16, emoji: '🦈', name: '深海王', requirement: 'VIP8' },
-  { id: 17, emoji: '🔥', name: '焰心', requirement: '活動限定' }, { id: 18, emoji: '💎', name: '鑽耀', requirement: 'VIP10' },
-  { id: 19, emoji: '🌙', name: '月影', requirement: '活動限定' }, { id: 20, emoji: '🪐', name: '星軌', requirement: 'VIP10' },
+  { id: 1, emoji: '🐯', name: '猛虎' }, { id: 2, emoji: '🦁', name: '雄獅' },
+  { id: 3, emoji: '🐉', name: '神龍' }, { id: 4, emoji: '🦊', name: '狐狸' },
+  { id: 5, emoji: '🐺', name: '惡狼' }, { id: 6, emoji: '🦅', name: '老鷹' },
+  { id: 7, emoji: '🐼', name: '熊貓' }, { id: 8, emoji: '🦄', name: '獨角獸' },
+  { id: 9, emoji: '🔥', name: '鳳凰' }, { id: 10, emoji: '❔', name: '謎面' },
+  { id: 11, emoji: '👑', name: '王冠', requirement: 'VIP 5+' }, { id: 12, emoji: '💎', name: '鑽耀', requirement: 'VIP 10+' },
+  { id: 13, emoji: '🌙', name: '月影', requirement: 'VIP 10+' }, { id: 14, emoji: '⭐', name: '星芒', requirement: 'VIP 10+' },
+  { id: 15, emoji: '🪐', name: '星軌', requirement: 'VIP 10+' }, { id: 16, emoji: '🦈', name: '深海', requirement: '活動獎勵' },
+  { id: 17, emoji: '🧧', name: '招財', requirement: '活動獎勵' }, { id: 18, emoji: '🎴', name: '花札', requirement: '活動獎勵' },
+  { id: 19, emoji: '🎯', name: '必中', requirement: '活動獎勵' }, { id: 20, emoji: '🏆', name: '冠軍', requirement: '活動獎勵' },
 ]
 const bindingOptions: { key: BindingProvider; label: string; mark: string; description: string }[] = [
   { key: 'phone', label: '手機號碼', mark: '09', description: '使用驗證碼登入與帳號復原' },
