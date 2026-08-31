@@ -110,6 +110,7 @@ function onClick() {
       <LegalModal />
       <LobbyModal />
       <LogoutConfirmModal />
+      <MemberProfileModal />
     </ClientOnly>
   </div>
 </template>

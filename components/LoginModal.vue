@@ -179,7 +179,8 @@ async function handleAccountLogin() {
   loading.value = true
   authStage.value = 'logging-in'
   await delay(900)
-  finishLogin(form.account.trim() || undefined, 'account', form.account.trim())
+  // 帳號與暱稱是兩個獨立欄位；登入時不應把帳號覆寫成玩家暱稱。
+  finishLogin(undefined, 'account', form.account.trim())
   loading.value = false
 }
 

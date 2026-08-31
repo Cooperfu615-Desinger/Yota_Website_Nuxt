@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { isLoggedIn, userInfo, openLogin } = useAppState()
-const router = useRouter()
+const { openProfile } = useMemberProfileState()
 </script>
 
 <template>
@@ -15,7 +15,7 @@ const router = useRouter()
     <div class="lobby-header-right">
       <template v-if="isLoggedIn">
         <!-- 統一樣式：VIP 徽章 + 姓名/錢包 + 頭像 -->
-        <button class="lobby-user-card" aria-label="個人資訊" @click="router.push('/lobby/member')">
+        <button class="lobby-user-card" aria-label="開啟玩家資料" @click="openProfile">
           <span class="lobby-user-vip">VIP {{ userInfo.vip }}</span>
           <div class="lobby-user-info">
             <span class="lobby-user-name">{{ userInfo.name }}</span>
