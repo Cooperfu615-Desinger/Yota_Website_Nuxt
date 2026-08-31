@@ -565,7 +565,9 @@ export const siteContent = {
       avatarId: 1,
       bio: '享受遊戲，也享受每一次漂亮的操作。',
       birthday: '1995-08-08',
+      birthdayLocked: true,
       email: 'player888@example.com',
+      emailLocked: true,
       phone: '0912***888',
       authProvider: 'account' as 'account' | 'guest' | 'phone' | 'facebook' | 'line' | 'apple' | 'google',
       accountBindings: {

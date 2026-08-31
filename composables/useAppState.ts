@@ -18,7 +18,9 @@ function normalizeProfile(saved?: Partial<UserProfile>): UserProfile {
     avatarId: Number.isFinite(saved?.avatarId) ? Number(saved?.avatarId) : base.avatarId,
     bio: String(saved?.bio ?? base.bio),
     birthday: String(saved?.birthday ?? base.birthday),
+    birthdayLocked: Boolean(saved?.birthdayLocked ?? base.birthdayLocked),
     email: String(saved?.email ?? base.email),
+    emailLocked: Boolean(saved?.emailLocked ?? base.emailLocked),
     phone: String(saved?.phone ?? base.phone),
     authProvider: (saved?.authProvider || base.authProvider) as AuthProvider,
     accountBindings: {
@@ -105,7 +107,7 @@ export const useAppState = () => {
     }
   }
 
-  function updateProfile(updates: Partial<Pick<UserProfile, 'name' | 'avatar' | 'avatarId' | 'bio' | 'birthday' | 'email' | 'phone'>>) {
+  function updateProfile(updates: Partial<Pick<UserProfile, 'name' | 'avatar' | 'avatarId' | 'bio' | 'birthday' | 'birthdayLocked' | 'email' | 'emailLocked' | 'phone'>>) {
     profile.value = normalizeProfile({ ...profile.value, ...updates })
     persistProfile()
   }
