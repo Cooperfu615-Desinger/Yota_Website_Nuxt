@@ -48,7 +48,7 @@ const bindingOptions: { key: BindingProvider; label: string; mark: string; descr
   { key: 'google', label: 'Google', mark: 'G', description: '連結 Google 快速登入' },
 ]
 const sections = [
-  { key: 'profile' as const, label: '個人資料', mark: '人' },
+  { key: 'profile' as const, label: '基本資料', mark: '人' },
   { key: 'bindings' as const, label: '帳號綁定', mark: '鏈' },
   { key: 'vip' as const, label: 'VIP 等級', mark: 'V' },
   { key: 'history' as const, label: '遊戲紀錄', mark: '錄' },
