@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { siteContent } from '~/data/siteContent'
 import { validateMemberBirthday, validateMemberEmail, validateMemberNickname } from '~/utils/memberProfile'
+import { resolveVipReward } from '~/utils/vipReward'
 
 const props = withDefaults(defineProps<{ embedded?: boolean }>(), { embedded: false })
 const emit = defineEmits<{ close: [] }>()
 
 type BindingProvider = 'phone' | 'google'
 
-const { isLoggedIn, userInfo, openLogin, updateProfile, setAccountBinding } = useAppState()
+const { isLoggedIn, userInfo, openLogin, updateProfile, setAccountBinding, claimVipReward, vipClaimedRewardLevels } = useAppState()
 const { openLogoutConfirm } = useLogoutState()
 const { activeSection, sessionKey } = useMemberProfileState()
 const fieldIdPrefix = computed(() => props.embedded ? 'member-modal-' : 'member-page-')
 const showVipOverviewModal = ref(false)
+const vipMechanismTab = ref<'overview' | 'rules'>('overview')
 const vipOverviewTableWrap = ref<HTMLElement | null>(null)
 const showAvatarPicker = ref(false)
 const avatarPickerTab = ref<'avatar' | 'frame'>('avatar')
@@ -61,6 +63,8 @@ const birthdayMax = computed(() => {
 })
 const nextVipLevel = computed(() => vipLevels.find(vip => vip.level === userInfo.value.vip + 1) ?? null)
 const currentVipLevel = computed(() => vipLevels.find(vip => vip.level === userInfo.value.vip) ?? vipLevels[0])
+const currentVipReward = computed(() => resolveVipReward(userInfo.value.vip, currentVipLevel.value.upgradeReward))
+const vipRewardClaimed = computed(() => vipClaimedRewardLevels.value.includes(userInfo.value.vip))
 const vipUpgrade = computed(() => userInfo.value.vip === 0
   ? { ...vipUpgradeSeed, historicalDeposit: 0, historicalWager: 0, monthlyDeposit: 0, monthlyWager: 0, activeDays: 0, highestVip: 0, upgradeProtection: false, deposit: { current: 0, target: nextVipLevel.value?.historicalDeposit ?? 0 }, wager: { current: 0, target: nextVipLevel.value?.monthlyWager ?? 0 } }
   : vipUpgradeSeed)
@@ -86,12 +90,28 @@ function resetProfileForm() {
 
 onMounted(resetProfileForm)
 watch(isLoggedIn, loggedIn => { if (loggedIn) resetProfileForm() })
-watch(showVipOverviewModal, async opened => {
-  if (!opened) return
+watch([showVipOverviewModal, vipMechanismTab], async ([opened, tab]) => {
+  if (!opened || tab !== 'overview') return
   await nextTick()
   vipOverviewTableWrap.value?.querySelector('tr.current')?.scrollIntoView({ block: 'center' })
 })
 onUnmounted(() => { if (phoneTimer) clearInterval(phoneTimer) })
+
+function openVipMechanism() {
+  vipMechanismTab.value = 'overview'
+  showVipOverviewModal.value = true
+}
+
+function closeVipMechanism() {
+  showVipOverviewModal.value = false
+  vipMechanismTab.value = 'overview'
+}
+
+function claimCurrentVipReward() {
+  if (!currentVipReward.value || vipRewardClaimed.value) return
+  const transaction = claimVipReward(userInfo.value.vip)
+  if (transaction) profileNotice.value = `已領取 VIP ${userInfo.value.vip} 升級獎勵：${currentVipLevel.value.upgradeReward}`
+}
 
 function validateProfile() {
   profileErrors.name = validateMemberNickname(profileForm.name)
@@ -300,10 +320,10 @@ async function bindGoogle() {
     </section>
 
     <section v-else-if="activeSection === 'vip'" class="member-content vip-content">
-      <header><div><p>VIP JOURNEY</p><h2>VIP {{ userInfo.vip }}・{{ currentVipLevel.name }}</h2></div><button class="btn-outline-purple" type="button" @click="showVipOverviewModal = true">查看全部等級</button></header>
+      <header><div><p>VIP JOURNEY</p><h2>VIP {{ userInfo.vip }}・{{ currentVipLevel.name }}</h2></div><button class="btn-outline-purple" type="button" @click="openVipMechanism">VIP機制說明</button></header>
       <div class="vip-main-grid">
-        <article class="vip-panel vip-current-panel"><div class="vip-panel-label">目前等級</div><strong class="vip-current-number" :style="{ color: currentVipLevel.color }">VIP {{ userInfo.vip }}</strong><b>{{ currentVipLevel.name }}</b><div class="vip-stat-list"><span>歷史最高 <strong>VIP {{ vipUpgrade.highestVip }}</strong></span><span>歷史儲值 <strong>{{ vipUpgrade.historicalDeposit.toLocaleString() }} 金幣</strong></span><span>歷史投注 <strong>{{ vipUpgrade.historicalWager.toLocaleString() }} 金幣</strong></span></div><small class="vip-muted">每日 00:00 判定升級，月結算判定保級</small></article>
-        <article class="vip-panel vip-benefit-panel"><div class="vip-panel-label">等級權益</div><div class="vip-benefit-row"><span>贈禮手續費</span><strong>{{ currentVipLevel.p2pFee }}</strong></div><div class="vip-benefit-row"><span>本級升級獎勵</span><strong>{{ currentVipLevel.upgradeReward }}</strong></div><div class="vip-benefit-row"><span>獎勵狀態</span><strong>{{ userInfo.vip === 0 ? '不適用' : '已發放' }}</strong></div><small class="vip-muted">已取得的同級獎勵不重複發放</small></article>
+        <article class="vip-panel vip-current-panel"><div class="vip-panel-label">目前等級</div><strong class="vip-current-number" :style="{ color: currentVipLevel.color }">VIP {{ userInfo.vip }}</strong><b>{{ currentVipLevel.name }}</b><div class="vip-stat-list"><span>歷史最高 <strong>VIP {{ vipUpgrade.highestVip }}</strong></span><span>歷史儲值 <strong>{{ vipUpgrade.historicalDeposit.toLocaleString() }} 金幣</strong></span><span>歷史投注 <strong>{{ vipUpgrade.historicalWager.toLocaleString() }} 金幣</strong></span><span>活躍指數 <strong>0</strong></span></div><small class="vip-muted">活躍指數功能規劃中，數值僅供預覽</small></article>
+        <article class="vip-panel vip-benefit-panel"><div class="vip-panel-label">等級權益</div><div class="vip-benefit-row"><span>贈禮手續費</span><strong>{{ currentVipLevel.p2pFee }}</strong></div><div class="vip-benefit-row"><span>本級升級獎勵</span><strong>{{ currentVipLevel.upgradeReward }}</strong></div><button class="btn-gold vip-reward-button" type="button" :disabled="!currentVipReward || vipRewardClaimed" @click="claimCurrentVipReward">{{ !currentVipReward ? '無可領取獎勵' : vipRewardClaimed ? '已領取' : '領取獎勵' }}</button></article>
         <article class="vip-panel vip-upgrade-panel"><div class="vip-panel-label">升級條件・全數達成</div><div v-if="isMaxVip" class="vip-max-state">已達目前最高等級</div><div v-else-if="isVip2Undefined" class="vip-undefined-state">VIP2 升級條件待設定</div><template v-else><div class="vip-next-line"><span>下一級 VIP {{ nextVipLevel.level }}・{{ nextVipLevel.name }}</span><strong>{{ nextVipLevel.upgradeRequirement }}</strong></div><div class="vip-progress-row"><span>歷史儲值</span><b>{{ vipUpgrade.deposit.current.toLocaleString() }} / {{ nextVipLevel.historicalDeposit?.toLocaleString() }}</b><i><em :style="{ width: `${depositPct}%` }" /></i></div><div class="vip-progress-row"><span>當月有效投注</span><b>{{ vipUpgrade.wager.current.toLocaleString() }} / {{ nextVipLevel.monthlyWager?.toLocaleString() }}</b><i><em :style="{ width: `${wagerPct}%` }" /></i></div><small class="vip-muted">資料要求：無額外要求</small></template></article>
         <article class="vip-panel vip-maintain-panel"><div class="vip-panel-label">保級狀態・全數達成</div><div class="vip-maintain-status" :class="{ ready: maintainReady }">{{ vipUpgrade.upgradeProtection ? '本月升級保護中' : maintainReady ? '本月已達保級條件' : '本月保級進度' }}</div><div class="vip-progress-row"><span>月儲值</span><b>{{ vipUpgrade.monthlyDeposit.toLocaleString() }} / {{ currentVipLevel.monthlyDeposit?.toLocaleString() || '無條件' }}</b><i><em :style="{ width: `${maintainDepositPct}%` }" /></i></div><div class="vip-progress-row"><span>月投注</span><b>{{ vipUpgrade.monthlyWager.toLocaleString() }} / {{ currentVipLevel.monthlyWager?.toLocaleString() || '無條件' }}</b><i><em :style="{ width: `${maintainWagerPct}%` }" /></i></div><div class="vip-progress-row"><span>活躍天數</span><b>{{ vipUpgrade.activeDays }} / {{ currentVipLevel.activeDays || '無條件' }} 天</b><i><em :style="{ width: `${maintainActivePct}%` }" /></i></div></article>
       </div>
@@ -316,7 +336,37 @@ async function bindGoogle() {
       <div class="profile-confirm-card"><h2 :id="`${fieldIdPrefix}profile-confirm-title`">確認儲存一次性資料？</h2><p>以下資料儲存後將無法再次修改：</p><ul><li v-if="!userInfo.birthdayLocked && pendingProfileSave?.birthday">生日</li><li v-if="!userInfo.emailLocked && pendingProfileSave?.email">電子郵件</li></ul><div><button type="button" class="btn-outline-purple" @click="cancelProfileSave">返回修改</button><button type="button" class="btn-gold" :disabled="profileSaving" @click="commitProfileSave">{{ profileSaving ? '儲存中…' : '確認並儲存' }}</button></div></div>
     </div>
 
-    <ClientOnly><Teleport to="body"><Transition name="modal-fade"><div v-if="showVipOverviewModal" class="modal-overlay" role="dialog" aria-modal="true" :aria-labelledby="`${fieldIdPrefix}vip-overview-title`" @click.self="showVipOverviewModal = false"><div class="modal-box vip-overview-modal"><div class="modal-inner"><button class="modal-close" type="button" aria-label="關閉 VIP 等級總覽" @click="showVipOverviewModal = false">×</button><p class="member-modal-kicker">VIP LEVELS</p><h2 :id="`${fieldIdPrefix}vip-overview-title`" class="modal-title">VIP 等級總覽</h2><div ref="vipOverviewTableWrap" class="vip-overview-table-wrap"><table class="vip-overview-table"><thead><tr><th>等級</th><th>升級條件</th><th>保級條件</th><th>升級獎勵</th><th>P2P 手續費</th></tr></thead><tbody><tr v-for="vip in vipLevels" :key="vip.level" :class="{ current: vip.level === userInfo.vip }"><td><strong :style="{ color: vip.color }">VIP {{ vip.level }}</strong><small v-if="vip.level === userInfo.vip">目前等級</small></td><td>{{ vip.upgradeRequirement }}</td><td>{{ vip.maintainRequirement }}</td><td>{{ vip.upgradeReward }}</td><td>{{ vip.p2pFee }}</td></tr></tbody></table></div></div></div></div></Transition></Teleport></ClientOnly>
+    <ClientOnly>
+      <Teleport to="body">
+        <Transition name="modal-fade">
+          <div v-if="showVipOverviewModal" class="modal-overlay" role="dialog" aria-modal="true" :aria-labelledby="`${fieldIdPrefix}vip-mechanism-title`" @click.self="closeVipMechanism">
+            <div class="modal-box vip-overview-modal">
+              <div class="modal-inner">
+                <button class="modal-close" type="button" aria-label="關閉 VIP 機制說明" @click="closeVipMechanism">×</button>
+                <p class="member-modal-kicker">VIP MECHANISM</p>
+                <h2 :id="`${fieldIdPrefix}vip-mechanism-title`" class="modal-title">VIP機制說明</h2>
+                <div class="vip-mechanism-tabs" role="tablist" aria-label="VIP機制說明分頁">
+                  <button type="button" role="tab" :aria-selected="vipMechanismTab === 'overview'" :class="{ active: vipMechanismTab === 'overview' }" @click="vipMechanismTab = 'overview'">等級總覽</button>
+                  <button type="button" role="tab" :aria-selected="vipMechanismTab === 'rules'" :class="{ active: vipMechanismTab === 'rules' }" @click="vipMechanismTab = 'rules'">規則說明</button>
+                </div>
+                <div v-if="vipMechanismTab === 'overview'" ref="vipOverviewTableWrap" class="vip-overview-table-wrap" role="tabpanel">
+                  <table class="vip-overview-table">
+                    <thead><tr><th>等級</th><th>升級條件</th><th>保級條件</th><th>升級獎勵</th><th>贈禮手續費</th></tr></thead>
+                    <tbody><tr v-for="vip in vipLevels" :key="vip.level" :class="{ current: vip.level === userInfo.vip }"><td><strong :style="{ color: vip.color }">VIP {{ vip.level }}</strong><small v-if="vip.level === userInfo.vip">目前等級</small></td><td>{{ vip.upgradeRequirement }}</td><td>{{ vip.maintainRequirement }}</td><td>{{ vip.upgradeReward }}</td><td>{{ vip.p2pFee }}</td></tr></tbody>
+                  </table>
+                </div>
+                <div v-else class="vip-rules-grid" role="tabpanel">
+                  <article class="vip-rule-card"><h3>升級</h3><p>每日 00:00 判定，需同時達成已設定的升級條件；符合多個等級時直接升至最高符合等級。</p></article>
+                  <article class="vip-rule-card"><h3>保級</h3><p>每月結算判定，需同時達成已啟用的保級條件；未設定條件時視為無條件保級。</p></article>
+                  <article class="vip-rule-card"><h3>降級</h3><p>未升級且未達保級條件時，於結算後下降一級；升級保護期間不降級。</p></article>
+                  <article class="vip-rule-card"><h3>獎勵發送</h3><p>目前等級的升級獎勵可領取一次，領取後直接加入對應錢包並留下交易紀錄；VIP0 無升級獎勵。</p></article>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Transition>
+      </Teleport>
+    </ClientOnly>
   </div>
 </template>
 
@@ -361,6 +411,7 @@ async function bindGoogle() {
 .vip-progress-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }.vip-progress-grid article { padding:14px; border:1px solid rgba(255,255,255,.07); border-radius:12px; background:rgba(0,0,0,.14); }.vip-progress-grid article>div { display:flex; justify-content:space-between; font-size:10px; }.vip-progress-grid strong { color:var(--color-gold); }.vip-progress-grid i { display:block; height:7px; margin:10px 0 5px; overflow:hidden; border-radius:99px; background:rgba(168,85,247,.12); }.vip-progress-grid b { display:block; height:100%; border-radius:99px; background:linear-gradient(90deg,#a855f7,#f5c842); }.vip-progress-grid small { color:var(--color-text-muted); font-size:8px; }
 .vip-level-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:7px; margin-top:12px; }.vip-level-grid article { display:flex; flex-direction:column; gap:3px; padding:10px; border:1px solid rgba(255,255,255,.07); border-radius:10px; background:rgba(0,0,0,.12); }.vip-level-grid article.current { border-color:var(--color-gold); background:rgba(245,200,66,.08); }.vip-level-grid span { font-size:9px; font-weight:900; }.vip-level-grid strong { font-size:9px; }.vip-level-grid small { color:var(--color-text-muted); font-size:7px; }
 .vip-main-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }.vip-panel { min-height:178px; padding:16px; border:1px solid rgba(255,255,255,.22); border-radius:14px; background:rgba(18,10,43,.36); }.vip-panel-label { margin-bottom:9px; color:var(--color-text-muted); font-size:9px; font-weight:800; letter-spacing:.08em; }.vip-current-number { display:block; font-size:30px; font-weight:950; line-height:1.1; }.vip-current-panel>b { display:block; margin-top:4px; color:var(--color-text); font-size:13px; }.vip-stat-list { display:grid; gap:5px; margin-top:14px; }.vip-stat-list span { display:flex; justify-content:space-between; color:var(--color-text-muted); font-size:9px; }.vip-stat-list strong { color:var(--color-text); }.vip-muted { display:block; margin-top:10px; color:var(--color-text-muted); font-size:8px; line-height:1.6; }.vip-benefit-row { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.08); color:var(--color-text-muted); font-size:9px; }.vip-benefit-row strong { color:var(--color-gold); font-size:11px; text-align:right; }.vip-next-line { display:grid; gap:4px; margin-bottom:12px; }.vip-next-line span { color:var(--color-purple-light); font-size:10px; font-weight:900; }.vip-next-line strong { color:var(--color-text); font-size:9px; line-height:1.6; }.vip-progress-row { display:grid; grid-template-columns:1fr auto; gap:5px 8px; margin-top:9px; color:var(--color-text-muted); font-size:8px; }.vip-progress-row b { color:var(--color-text); font-size:8px; font-weight:800; }.vip-progress-row i { grid-column:1/-1; display:block; height:6px; overflow:hidden; border-radius:99px; background:rgba(168,85,247,.15); }.vip-progress-row i em { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--color-purple-glow),var(--color-gold)); }.vip-maintain-status { color:var(--color-text); font-size:12px; font-weight:900; }.vip-maintain-status.ready { color:#86efac; }.vip-max-state,.vip-undefined-state { display:grid; min-height:112px; place-items:center; color:var(--color-gold); font-size:14px; font-weight:900; text-align:center; }.vip-undefined-state { color:var(--color-purple-light); }.vip-overview-modal { max-width:min(1040px,calc(100vw - 30px)); }.vip-overview-table-wrap { max-height:60vh; overflow:auto; border:1px solid rgba(255,255,255,.15); border-radius:10px; }.vip-overview-table { width:100%; min-width:760px; border-collapse:collapse; font-size:9px; }.vip-overview-table th { position:sticky; top:0; z-index:1; padding:9px 8px; color:var(--color-gold); background:#292147; text-align:left; }.vip-overview-table td { padding:9px 8px; border-top:1px solid rgba(255,255,255,.08); color:var(--color-text-muted); vertical-align:top; line-height:1.55; }.vip-overview-table td:first-child { white-space:nowrap; }.vip-overview-table tr.current td { background:rgba(168,85,247,.18); }.vip-overview-table td strong { display:block; font-size:10px; }.vip-overview-table td small { display:block; margin-top:3px; color:var(--color-gold); font-size:7px; }
+.vip-reward-button { width:100%; justify-content:center; margin-top:10px; padding:9px 14px; font-size:10px; box-shadow:none; }.vip-reward-button:disabled { opacity:.45; cursor:not-allowed; transform:none; box-shadow:none; }.vip-mechanism-tabs { display:flex; gap:6px; margin-bottom:12px; }.vip-mechanism-tabs button { flex:1; padding:9px 12px; border:1px solid var(--color-border); border-radius:9px; color:var(--color-text-muted); background:rgba(168,85,247,.06); font-size:10px; font-weight:800; }.vip-mechanism-tabs button.active { color:#1b0a25; border-color:var(--color-gold); background:var(--color-gold); }.vip-rules-grid { display:grid; gap:9px; max-height:60vh; overflow:auto; }.vip-rule-card { padding:13px; border:1px solid rgba(255,255,255,.12); border-radius:11px; background:rgba(15,0,32,.24); }.vip-rule-card h3 { margin:0; color:var(--color-gold); font-size:11px; }.vip-rule-card p { margin:5px 0 0; color:var(--color-text-muted); font-size:10px; line-height:1.7; }
 .member-logout { width:100%; padding:11px; border:1px solid rgba(248,113,113,.24); border-radius:11px; color:#fca5a5; background:rgba(248,113,113,.07); font-size:10px; font-weight:900; }.member-modal-kicker { text-align:center; }.vip-benefits { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }.vip-benefits>div { padding:12px; border:1px solid rgba(245,200,66,.17); border-radius:11px; background:rgba(245,200,66,.05); }.vip-benefits span,.vip-benefits strong { display:block; }.vip-benefits span { color:var(--color-text-muted); font-size:8px; }.vip-benefits strong { margin-top:3px; color:var(--color-gold); font-size:14px; }.vip-condition { padding:12px; margin-top:8px; border:1px solid var(--color-border); border-radius:11px; background:rgba(168,85,247,.07); }.vip-condition span { color:var(--color-purple-light); font-size:9px; font-weight:900; }.vip-condition p { margin:5px 0 0; color:var(--color-text-muted); font-size:10px; line-height:1.7; }
 .profile-confirm-overlay { position:fixed; inset:0; z-index:1100; display:grid; place-items:center; padding:16px; background:rgba(0,0,0,.58); backdrop-filter:blur(4px); }.profile-confirm-card { width:min(420px,100%); padding:22px; border:1px solid rgba(255,255,255,.22); border-radius:17px; background:linear-gradient(160deg,#3a315d,#211a3c); box-shadow:0 16px 48px rgba(0,0,0,.5); }.profile-confirm-card h2 { margin:0 0 8px; font-size:18px; }.profile-confirm-card p { margin:0; color:var(--color-text-muted); font-size:11px; line-height:1.7; }.profile-confirm-card ul { margin:8px 0 0; padding-left:18px; color:var(--color-text); font-size:11px; line-height:1.7; }.profile-confirm-card>div { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }.profile-confirm-card button { min-width:92px; justify-content:center; }
 @media(max-width:800px){.member-identity{grid-template-columns:74px 1fr}.member-identity>.wallet-balances{grid-column:1/-1}.member-avatar{width:68px;height:68px}.avatar-grid{grid-template-columns:repeat(5,1fr)}.vip-main-grid{grid-template-columns:1fr}.vip-level-grid{grid-template-columns:repeat(3,1fr)}}

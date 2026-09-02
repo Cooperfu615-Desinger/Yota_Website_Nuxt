@@ -1,4 +1,5 @@
 import { siteContent } from '~/data/siteContent'
+import { resolveVipReward } from '~/utils/vipReward'
 
 const LS_LOGIN_KEY = 'jh_isLoggedIn'
 const LS_USER_KEY = 'jh_userInfo'
@@ -56,6 +57,8 @@ export const useAppState = () => {
   const profile = useState<UserProfile>('userProfile', () => normalizeProfile())
   const authInitialized = useState('authInitialized', () => false)
   const financial = useFinancialState()
+  // VIP 領取狀態只存在本次瀏覽工作階段；重新整理或切換帳號後重新開始。
+  const vipClaimedRewardLevels = useState<number[]>('vipClaimedRewardLevels', () => [])
 
   // 向既有畫面提供同一個 userInfo 介面；個人資料可持久化，金融欄位只取自本次工作階段。
   const userInfo = computed(() => ({
@@ -103,6 +106,7 @@ export const useAppState = () => {
     closeAfterLogin = true,
     account?: string,
   ) {
+    vipClaimedRewardLevels.value = []
     if (name) profile.value.name = name
     if (account) profile.value.account = account
     profile.value.authProvider = provider
@@ -125,10 +129,28 @@ export const useAppState = () => {
     }
   }
 
+  function claimVipReward(level: number) {
+    const rule = siteContent.member.vipLevels.find(vip => vip.level === level)
+    const reward = rule ? resolveVipReward(level, rule.upgradeReward) : null
+    if (!rule || !reward || profile.value.vip !== level || vipClaimedRewardLevels.value.includes(level)) return null
+
+    const transaction = financial.addWalletReward(
+      reward.wallet,
+      reward.amount,
+      `VIP ${level} 升級獎勵`,
+      `本級獎勵：${rule.upgradeReward}`,
+    )
+    if (!transaction) return null
+
+    vipClaimedRewardLevels.value = [...vipClaimedRewardLevels.value, level]
+    return transaction
+  }
+
   function logout() {
     isLoggedIn.value = false
     profile.value = normalizeProfile()
     financial.resetFinancialState()
+    vipClaimedRewardLevels.value = []
     useGiftState().resetGiftState()
     useSocialState().resetSocialState()
     useSupportTicketState().resetSupportTicketState()
@@ -181,6 +203,8 @@ export const useAppState = () => {
     openLobby,
     closeLobby,
     login,
+    claimVipReward,
+    vipClaimedRewardLevels,
     logout,
     updateProfile,
     setAccountBinding,
