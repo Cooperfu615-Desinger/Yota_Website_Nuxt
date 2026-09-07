@@ -23,9 +23,9 @@ function closeNotice() {
           aria-labelledby="conversion-complete-title"
           @click.self="closeNotice"
         >
-          <article class="conversion-modal" :class="notice.sourceCurrency === 'activity-gold' ? 'tone-gold' : 'tone-silver'">
+          <article class="conversion-modal tone-silver">
             <div class="conversion-burst" aria-hidden="true">
-              {{ notice.sourceCurrency === 'activity-gold' ? '金' : '銀' }}
+              銀
             </div>
             <p class="conversion-kicker">TURNOVER COMPLETE</p>
             <h2 id="conversion-complete-title">已滿足流水條件</h2>

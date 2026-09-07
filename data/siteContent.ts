@@ -13,7 +13,7 @@ export interface DailyCheckinConfig {
 }
 export type EventStatus = 'active' | 'upcoming' | 'ended'
 export type FaqCategory = 'account' | 'deposit' | 'game' | 'install'
-export type MemberTab = 'profile' | 'history' | 'vip' | 'redeem'
+export type MemberTab = 'profile' | 'bindings' | 'history' | 'vip' | 'rewards'
 
 export type PlayerStatus = '在線' | '遊戲中' | '閒置'
 
@@ -576,6 +576,7 @@ export const siteContent = {
       emailLocked: true,
       phone: '0912***888',
       authProvider: 'account' as 'account' | 'guest' | 'phone' | 'facebook' | 'line' | 'apple' | 'google',
+      invitationCode: 'YOTA7K2M',
       accountBindings: {
         phone: true,
         facebook: false,
@@ -707,21 +708,22 @@ export const siteContent = {
       { date: '2024/01/14 18:55', game: '百家樂', result: '-1,000 金幣', positive: false },
     ] satisfies HistoryItem[],
     tabs: [
-      { key: 'profile' as MemberTab, label: '個人資料', icon: '👤' },
-      { key: 'history' as MemberTab, label: '遊戲紀錄', icon: '📊' },
+      { key: 'profile' as MemberTab, label: '基本資料', icon: '👤' },
+      { key: 'bindings' as MemberTab, label: '帳號綁定', icon: '🔗' },
       { key: 'vip' as MemberTab, label: 'VIP 等級', icon: '👑' },
-      { key: 'redeem' as MemberTab, label: '兌換碼', icon: '🎁' },
+      { key: 'rewards' as MemberTab, label: '獎勵卡', icon: '🎁' },
+      { key: 'history' as MemberTab, label: '遊戲紀錄', icon: '📊' },
     ],
   },
   dailyCheckin: {
     milestones: [
-      { days: 5,  reward: '100 金幣', directGoldAmount: 100 },
-      { days: 7,  reward: '200 金幣', directGoldAmount: 200 },
-      { days: 10, reward: '銅幣 10,000,000' },
+      { days: 5,  reward: '里程碑' },
+      { days: 7,  reward: '里程碑' },
+      { days: 10, reward: '活動銀幣 10,000' },
       { days: 15, reward: '活動銀幣 10,000' },
-      { days: 20, reward: '活動金幣 5,000' },
-      { days: 25, reward: '3,500 金幣', directGoldAmount: 3_500 },
-      { days: 30, reward: '8,888 金幣', directGoldAmount: 8_888 },
+      { days: 20, reward: '活動銀幣 5,000' },
+      { days: 25, reward: '里程碑' },
+      { days: 30, reward: '里程碑' },
     ] satisfies CheckinMilestone[],
     // 每天簽到可獲得的金幣，共31天
     dailyRewards: [

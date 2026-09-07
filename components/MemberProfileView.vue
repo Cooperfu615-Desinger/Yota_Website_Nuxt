@@ -11,6 +11,8 @@ type BindingProvider = 'phone' | 'google'
 const { isLoggedIn, userInfo, openLogin, updateProfile, setAccountBinding, claimVipReward, vipClaimedRewardLevels } = useAppState()
 const { openLogoutConfirm } = useLogoutState()
 const { activeSection, sessionKey } = useMemberProfileState()
+const { activitySilverBalance } = useRewardCardState()
+const { activityGoldBalance } = usePromoCodeState()
 const fieldIdPrefix = computed(() => props.embedded ? 'member-modal-' : 'member-page-')
 const showVipOverviewModal = ref(false)
 const vipMechanismTab = ref<'overview' | 'rules'>('overview')
@@ -53,6 +55,7 @@ const sections = [
   { key: 'profile' as const, label: '基本資料', mark: '人' },
   { key: 'bindings' as const, label: '帳號綁定', mark: '鏈' },
   { key: 'vip' as const, label: 'VIP 等級', mark: 'V' },
+  { key: 'rewards' as const, label: '獎勵卡', mark: '卡' },
   { key: 'history' as const, label: '遊戲紀錄', mark: '錄' },
 ]
 const vipUpgradeSeed = siteContent.member.vipUpgrade
@@ -100,6 +103,16 @@ onUnmounted(() => { if (phoneTimer) clearInterval(phoneTimer) })
 function openVipMechanism() {
   vipMechanismTab.value = 'overview'
   showVipOverviewModal.value = true
+}
+
+async function copyInvitationCode() {
+  if (!import.meta.client || userInfo.value.authProvider === 'guest' || !userInfo.value.invitationCode) return
+  try {
+    await navigator.clipboard.writeText(userInfo.value.invitationCode)
+    profileNotice.value = '邀請碼已複製'
+  } catch {
+    profileNotice.value = '複製失敗，請手動選取邀請碼'
+  }
 }
 
 function closeVipMechanism() {
@@ -260,9 +273,24 @@ async function bindGoogle() {
       <div class="member-name">
         <p>PLAYER PROFILE</p>
         <h2>{{ userInfo.name }}</h2>
-        <div class="member-identity-meta"><span>帳號 {{ userInfo.account }}</span><span>ID #{{ userInfo.id }}</span><b>VIP {{ userInfo.vip }}</b></div>
+        <div class="member-identity-meta">
+          <span>帳號 {{ userInfo.account }}</span>
+          <span>ID #{{ userInfo.id }}</span>
+          <span v-if="userInfo.authProvider !== 'guest'" class="member-invitation-code">
+            邀請碼 {{ userInfo.invitationCode }}
+            <button type="button" aria-label="複製邀請碼" title="複製邀請碼" @click="copyInvitationCode">複製</button>
+          </span>
+          <span v-else class="member-invitation-code">邀請碼 完成註冊後取得</span>
+          <b>VIP {{ userInfo.vip }}</b>
+        </div>
       </div>
-      <WalletBalances :user="userInfo" variant="cards" />
+      <div class="member-wallet-summary">
+        <WalletBalances :user="userInfo" variant="cards" />
+        <div class="member-activity-balances" aria-label="活動餘額">
+          <div><span>活動金</span><strong>{{ activityGoldBalance.toLocaleString() }}</strong></div>
+          <div><span>活動銀</span><strong>{{ activitySilverBalance.toLocaleString() }}</strong></div>
+        </div>
+      </div>
     </header>
     <p v-if="profileNotice" class="profile-notice" role="status">{{ profileNotice }}</p>
 
@@ -329,6 +357,10 @@ async function bindGoogle() {
       </div>
     </section>
 
+    <section v-else-if="activeSection === 'rewards'" class="member-content member-rewards-content">
+      <LobbyRewardCardContent embedded />
+    </section>
+
     <section v-else class="member-content"><header><div><p>GAME HISTORY</p><h2>遊戲紀錄</h2></div></header><LobbyGameRecords :key="sessionKey" /></section>
     <button class="member-logout" type="button" @click="openLogoutConfirm">登出目前帳號</button>
 
@@ -377,13 +409,17 @@ async function bindGoogle() {
 .member-page-heading h1 { margin: 3px 0 0; font-size: 24px; font-weight: 900; }
 .section-kicker,.member-name p,.member-content header p,.avatar-picker header p,.member-modal-kicker { margin:0; color:var(--color-gold); font-size:8px; font-weight:900; letter-spacing:.17em; }
 .member-page-close { padding: 1px 9px; color:var(--color-text-muted); background:none; font-size:28px; line-height:1; }
-.member-identity { display:grid; grid-template-columns:92px 1fr minmax(300px,430px); align-items:center; gap:18px; padding:18px; margin-bottom:14px; border:1px solid rgba(245,200,66,.23); border-radius:20px; background:linear-gradient(145deg,rgba(245,200,66,.07),rgba(168,85,247,.06)); }
+.member-identity { display:grid; grid-template-columns:92px minmax(180px,1fr) minmax(300px,430px); align-items:center; gap:18px; padding:18px; margin-bottom:14px; border:1px solid rgba(245,200,66,.23); border-radius:20px; background:linear-gradient(145deg,rgba(245,200,66,.07),rgba(168,85,247,.06)); }
 .member-avatar { position:relative; width:82px; height:82px; border:3px solid var(--color-gold); border-radius:50%; background:linear-gradient(145deg,#6b21a8,#a855f7); font-size:38px; }
 .member-avatar i { position:absolute; left:50%; bottom:-7px; transform:translateX(-50%); padding:3px 8px; border-radius:99px; color:#1b0a25; background:var(--color-gold); font-size:8px; font-style:normal; font-weight:900; }
 .member-name h2 { margin:4px 0; font-size:25px; }
 .member-identity-meta { display:flex; flex-wrap:wrap; gap:7px; }
 .member-identity-meta span,.member-identity-meta b { padding:4px 7px; border-radius:7px; color:var(--color-text-muted); background:rgba(255,255,255,.05); font-size:8px; }
+.member-invitation-code { display:inline-flex; align-items:center; gap:5px; }.member-invitation-code button { padding:2px 5px; border:1px solid rgba(245,200,66,.3); border-radius:5px; color:var(--color-gold); background:rgba(245,200,66,.08); font-size:7px; font-weight:800; }
 .member-identity-meta b { color:var(--color-gold); }
+.member-wallet-summary { display:grid; gap:8px; min-width:0; }
+.member-activity-balances { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
+.member-activity-balances>div { min-width:0; padding:7px 9px; border:1px solid rgba(255,255,255,.1); border-radius:9px; background:rgba(0,0,0,.16); }.member-activity-balances span { display:block; color:var(--color-text-muted); font-size:8px; }.member-activity-balances strong { display:block; margin-top:3px; overflow:hidden; color:var(--color-text); font-size:12px; text-align:right; text-overflow:ellipsis; }
 .profile-notice { padding:9px 12px; border:1px solid rgba(74,222,128,.25); border-radius:9px; color:#86efac; background:rgba(74,222,128,.08); font-size:10px; }
 .avatar-picker { padding:16px; margin-bottom:14px; border:1px solid var(--color-border); border-radius:17px; background:rgba(15,0,32,.72); }
 .avatar-picker-overlay { position:fixed; inset:0; z-index:1050; display:grid; place-items:center; overflow-y:auto; padding:16px; background:rgba(0,0,0,.58); backdrop-filter:blur(5px); }
@@ -400,7 +436,7 @@ async function bindGoogle() {
 .avatar-picker button.active { border-color:var(--color-gold); background:rgba(245,200,66,.1); }.avatar-picker button.locked { filter:grayscale(1); opacity:.45; }
 .avatar-save { width:100%; justify-content:center; margin-top:12px; }.avatar-save:disabled { opacity:.45; cursor:not-allowed; }
 .avatar-frame-coming { display:flex; flex-direction:column; align-items:center; gap:5px; padding:24px 12px; border:1px dashed var(--color-border); border-radius:12px; color:var(--color-text-muted); }.avatar-frame-coming>span { color:var(--color-gold); font-size:30px; }.avatar-frame-coming strong { color:var(--color-text); font-size:12px; }.avatar-frame-coming small { font-size:9px; }.avatar-frame-coming button { padding:7px 12px; margin-top:6px; border:1px solid rgba(255,255,255,.1); border-radius:8px; color:var(--color-text-muted); background:rgba(255,255,255,.05); font-size:9px; }
-.member-sections { display:grid; grid-template-columns:repeat(4,1fr); gap:7px; padding:6px; margin-bottom:14px; border:1px solid var(--color-border); border-radius:15px; background:rgba(15,0,32,.58); }
+.member-sections { display:grid; grid-template-columns:repeat(5,1fr); gap:7px; padding:6px; margin-bottom:14px; border:1px solid var(--color-border); border-radius:15px; background:rgba(15,0,32,.58); }
 .member-sections button { display:flex; align-items:center; justify-content:center; gap:7px; padding:10px; border-radius:10px; color:var(--color-text-muted); font-size:10px; font-weight:800; }
 .member-sections button span { display:grid; width:23px; height:23px; place-items:center; border-radius:7px; background:rgba(168,85,247,.1); font-size:8px; }.member-sections button.active { color:#1b0a25; background:var(--color-gold); }
 .member-content { padding:20px; margin-bottom:14px; border:1px solid var(--color-border); border-radius:18px; background:rgba(26,10,46,.66); }.member-content header>span { color:var(--color-text-muted); font-size:9px; }
@@ -414,6 +450,6 @@ async function bindGoogle() {
 .vip-reward-button { width:100%; justify-content:center; margin-top:10px; padding:9px 14px; font-size:10px; box-shadow:none; }.vip-reward-button:disabled { opacity:.45; cursor:not-allowed; transform:none; box-shadow:none; }.vip-mechanism-tabs { display:flex; gap:6px; margin-bottom:12px; }.vip-mechanism-tabs button { flex:1; padding:9px 12px; border:1px solid var(--color-border); border-radius:9px; color:var(--color-text-muted); background:rgba(168,85,247,.06); font-size:10px; font-weight:800; }.vip-mechanism-tabs button.active { color:#1b0a25; border-color:var(--color-gold); background:var(--color-gold); }.vip-rules-grid { display:grid; gap:9px; max-height:60vh; overflow:auto; }.vip-rule-card { padding:13px; border:1px solid rgba(255,255,255,.12); border-radius:11px; background:rgba(15,0,32,.24); }.vip-rule-card h3 { margin:0; color:var(--color-gold); font-size:11px; }.vip-rule-card p { margin:5px 0 0; color:var(--color-text-muted); font-size:10px; line-height:1.7; }
 .member-logout { width:100%; padding:11px; border:1px solid rgba(248,113,113,.24); border-radius:11px; color:#fca5a5; background:rgba(248,113,113,.07); font-size:10px; font-weight:900; }.member-modal-kicker { text-align:center; }.vip-benefits { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }.vip-benefits>div { padding:12px; border:1px solid rgba(245,200,66,.17); border-radius:11px; background:rgba(245,200,66,.05); }.vip-benefits span,.vip-benefits strong { display:block; }.vip-benefits span { color:var(--color-text-muted); font-size:8px; }.vip-benefits strong { margin-top:3px; color:var(--color-gold); font-size:14px; }.vip-condition { padding:12px; margin-top:8px; border:1px solid var(--color-border); border-radius:11px; background:rgba(168,85,247,.07); }.vip-condition span { color:var(--color-purple-light); font-size:9px; font-weight:900; }.vip-condition p { margin:5px 0 0; color:var(--color-text-muted); font-size:10px; line-height:1.7; }
 .profile-confirm-overlay { position:fixed; inset:0; z-index:1100; display:grid; place-items:center; padding:16px; background:rgba(0,0,0,.58); backdrop-filter:blur(4px); }.profile-confirm-card { width:min(420px,100%); padding:22px; border:1px solid rgba(255,255,255,.22); border-radius:17px; background:linear-gradient(160deg,#3a315d,#211a3c); box-shadow:0 16px 48px rgba(0,0,0,.5); }.profile-confirm-card h2 { margin:0 0 8px; font-size:18px; }.profile-confirm-card p { margin:0; color:var(--color-text-muted); font-size:11px; line-height:1.7; }.profile-confirm-card ul { margin:8px 0 0; padding-left:18px; color:var(--color-text); font-size:11px; line-height:1.7; }.profile-confirm-card>div { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }.profile-confirm-card button { min-width:92px; justify-content:center; }
-@media(max-width:800px){.member-identity{grid-template-columns:74px 1fr}.member-identity>.wallet-balances{grid-column:1/-1}.member-avatar{width:68px;height:68px}.avatar-grid{grid-template-columns:repeat(5,1fr)}.vip-main-grid{grid-template-columns:1fr}.vip-level-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:800px){.member-identity{grid-template-columns:74px 1fr}.member-wallet-summary{grid-column:1/-1}.member-avatar{width:68px;height:68px}.avatar-grid{grid-template-columns:repeat(5,1fr)}.vip-main-grid{grid-template-columns:1fr}.vip-level-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:520px){.member-sections{grid-template-columns:1fr 1fr}.profile-grid,.vip-progress-grid{grid-template-columns:1fr}.binding-list article{grid-template-columns:36px 1fr auto}.binding-list article>span{display:none}.phone-binding-row{flex-direction:column}.phone-binding-row .btn-gold{width:100%;justify-content:center}.vip-level-grid{grid-template-columns:repeat(2,1fr)}}
 </style>

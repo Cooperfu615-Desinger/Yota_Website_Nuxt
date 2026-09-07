@@ -1,2 +1,6 @@
-<script setup lang="ts">definePageMeta({ layout: 'lobby' })</script>
-<template><LobbyRewardCardContent /></template>
+<script setup lang="ts">
+definePageMeta({ layout: 'lobby' })
+await navigateTo('/lobby/member?tab=rewards')
+</script>
+
+<template />

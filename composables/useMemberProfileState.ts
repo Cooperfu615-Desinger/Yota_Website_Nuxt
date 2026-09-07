@@ -1,4 +1,4 @@
-export type MemberSection = 'profile' | 'bindings' | 'vip' | 'history'
+export type MemberSection = 'profile' | 'bindings' | 'vip' | 'rewards' | 'history'
 
 /**
  * 玩家資料主彈窗的跨元件狀態。
@@ -9,8 +9,8 @@ export const useMemberProfileState = () => {
   const activeSection = useState<MemberSection>('memberProfileSection', () => 'profile')
   const sessionKey = useState('memberProfileSessionKey', () => 0)
 
-  function openProfile() {
-    activeSection.value = 'profile'
+  function openProfile(section: MemberSection = 'profile') {
+    activeSection.value = section
     sessionKey.value += 1
     isOpen.value = true
   }

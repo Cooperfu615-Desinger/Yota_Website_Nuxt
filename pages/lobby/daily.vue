@@ -5,10 +5,7 @@ import type { RewardCardDefinition } from '~/composables/useRewardCardState'
 
 const { isLoggedIn, openLogin } = useAppState()
 const { getDefinitionByMilestone, claimRewardCard } = useRewardCardState()
-const { balance, bronzeBalance, addWalletReward, spendWalletBalance } = useFinancialState()
-
-const BRONZE_REWARD_DAY = 10
-const BRONZE_REWARD_AMOUNT = 10_000_000
+const { balance, addWalletReward, spendWalletBalance } = useFinancialState()
 
 // ── 日期計算 ──────────────────────────────────────────
 const now         = new Date()
@@ -36,7 +33,6 @@ const missedDays = computed(() =>
 const { milestones, dailyRewards, makeupCostPerDay } = siteContent.dailyCheckin
 const pendingReward = ref<RewardCardDefinition | null>(null)
 const rewardClaimed = ref(false)
-const showBronzeReward = ref(false)
 
 function milestoneLeft(days: number) {
   return `calc(${(days / 30) * 100}% - 20px)`
@@ -51,9 +47,7 @@ function dailyRewardForDay(day: number) { return dailyRewards[day - 1] ?? 0 }
 function milestoneAccessibleLabel(days: number) {
   const reward = rewardCardForMilestone(days)
   const milestone = milestoneForDay(days)
-  const rewardText = days === BRONZE_REWARD_DAY
-    ? `銅幣 ${BRONZE_REWARD_AMOUNT.toLocaleString()}`
-    : reward
+  const rewardText = reward
       ? `${reward.title} ${reward.amount.toLocaleString()}`
       : milestone?.reward || `${days}天里程碑`
   const status = isMilestoneClaimed(days) ? '（已領取）' : isMilestoneReached(days) ? '（可領取）' : ''
@@ -76,10 +70,6 @@ function handleCheckin() {
 
 function claimMilestone(days: number) {
   if (!isMilestoneReached(days) || isMilestoneClaimed(days)) return
-  if (days === BRONZE_REWARD_DAY) {
-    showBronzeReward.value = true
-    return
-  }
   const reward = rewardCardForMilestone(days)
   if (reward) {
     pendingReward.value = reward
@@ -97,19 +87,6 @@ function claimMilestone(days: number) {
     if (!transaction) return
   }
   claimedMilestones.value = [...claimedMilestones.value, days]
-}
-
-function confirmBronzeReward() {
-  if (isMilestoneClaimed(BRONZE_REWARD_DAY)) return
-  const transaction = addWalletReward(
-    'bronze',
-    BRONZE_REWARD_AMOUNT,
-    '每日任務第 10 天獎勵',
-    '累積簽到第 10 天',
-  )
-  if (!transaction) return
-  claimedMilestones.value = [...claimedMilestones.value, BRONZE_REWARD_DAY].sort((a, b) => a - b)
-  showBronzeReward.value = false
 }
 
 function confirmRewardClaim() {
@@ -250,11 +227,7 @@ function getDayState(day: number): DayState {
               :class="{ 'label-reached': isMilestoneReached(m.days) }"
             >
               <div>{{ m.days }}天</div>
-              <template v-if="m.days === BRONZE_REWARD_DAY">
-                <div class="milestone-reward milestone-reward-bronze">銅幣</div>
-                <div class="milestone-amount">{{ BRONZE_REWARD_AMOUNT.toLocaleString() }}</div>
-              </template>
-              <template v-else-if="rewardCardForMilestone(m.days)">
+              <template v-if="rewardCardForMilestone(m.days)">
                 <div class="milestone-reward">{{ rewardCardForMilestone(m.days)?.title }}</div>
                 <div class="milestone-amount">{{ rewardCardForMilestone(m.days)?.amount.toLocaleString() }}</div>
               </template>
@@ -383,38 +356,6 @@ function getDayState(day: number): DayState {
     </Teleport>
     </ClientOnly>
 
-    <!-- ── 銅幣直接領取 Modal ── -->
-    <ClientOnly>
-      <Teleport to="body">
-        <Transition name="modal-fade">
-          <div
-            v-if="showBronzeReward"
-            class="modal-overlay"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="daily-bronze-reward-title"
-            @click.self="showBronzeReward = false"
-          >
-            <div class="modal-box bronze-reward-modal">
-              <div class="modal-inner text-center">
-                <div class="reward-claim-mark mark-bronze" aria-hidden="true">銅</div>
-                <p class="reward-claim-kicker">DAY 10 DIRECT REWARD</p>
-                <h2 id="daily-bronze-reward-title">恭喜獲得銅幣 10,000,000</h2>
-                <p class="reward-claim-copy">
-                  確認後將直接加入銅幣餘額，目前餘額
-                  <strong>{{ bronzeBalance.toLocaleString() }}</strong>。
-                </p>
-                <div class="reward-claim-actions">
-                  <button class="btn-outline-purple" @click="showBronzeReward = false">取消</button>
-                  <button class="btn-gold" @click="confirmBronzeReward">確認</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Transition>
-      </Teleport>
-    </ClientOnly>
-
     <!-- ── 獎勵卡領取 Modal ── -->
     <ClientOnly>
       <Teleport to="body">
@@ -430,8 +371,8 @@ function getDayState(day: number): DayState {
             <div class="modal-box reward-claim-modal">
               <div class="modal-inner text-center">
                 <template v-if="!rewardClaimed">
-                  <div class="reward-claim-mark" :class="pendingReward.currency === 'activity-gold' ? 'mark-gold' : 'mark-silver'" aria-hidden="true">
-                    {{ pendingReward.currency === 'activity-gold' ? '金' : '銀' }}
+                  <div class="reward-claim-mark mark-silver" aria-hidden="true">
+                    銀
                   </div>
                   <p class="reward-claim-kicker">DAY {{ pendingReward.milestoneDay }} REWARD CARD</p>
                   <h2 id="daily-reward-title">{{ pendingReward.title }} {{ pendingReward.amount.toLocaleString() }}</h2>
@@ -449,7 +390,7 @@ function getDayState(day: number): DayState {
                   <p class="reward-claim-copy">{{ pendingReward.title }} {{ pendingReward.amount.toLocaleString() }} 已加入獎勵卡。</p>
                   <div class="reward-claim-actions">
                     <button class="btn-outline-purple" @click="closeRewardClaim">完成</button>
-                    <NuxtLink to="/lobby/gifts" class="btn-gold" @click="closeRewardClaim">前往獎勵卡</NuxtLink>
+                    <NuxtLink to="/lobby/member?tab=rewards" class="btn-gold" @click="closeRewardClaim">前往獎勵卡</NuxtLink>
                   </div>
                 </template>
               </div>

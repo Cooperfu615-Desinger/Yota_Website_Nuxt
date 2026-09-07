@@ -21,7 +21,7 @@ const visibleTransactions = computed(() => transactions.value.filter(item =>
   (statusFilter.value === 'all' || item.status === statusFilter.value)
 ))
 const statusLabel = { success: '成功', processing: '處理中', failed: '失敗' }
-const walletLabel = { gold: '金幣', silver: '銀幣', bronze: '銅幣' }
+const walletLabel = { gold: '金幣', silver: '銀幣', bronze: '銅幣', 'activity-gold': '活動金幣', 'activity-silver': '活動銀幣' }
 </script>
 
 <template>

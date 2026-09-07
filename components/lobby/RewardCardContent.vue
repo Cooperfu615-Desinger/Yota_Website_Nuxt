@@ -1,20 +1,27 @@
 <script setup lang="ts">
 import type { RewardCard, RewardCardCurrency, RewardCardStatus } from '~/composables/useRewardCardState'
+import { createMergedRewardCard, isRewardCardExpired } from '~/utils/rewardCardMerge'
+
+const props = withDefaults(defineProps<{ embedded?: boolean }>(), { embedded: false })
 
 const route = useRoute()
 const { isLoggedIn, openLogin } = useAppState()
 const {
   rewardCards,
-  activityGoldBalance,
   activitySilverBalance,
   activateRewardCard,
   pauseRewardCard,
   deleteRewardCard,
+  canMergeRewardCard,
+  mergeRewardCards,
 } = useRewardCardState()
+const { activityGoldBalance } = usePromoCodeState()
 
 const notice = ref('')
 const deleteTarget = ref<RewardCard | null>(null)
-const ruleInfo = ref<{ title: string } | null>(null)
+const ruleInfo = ref<{ title: string; description: string } | null>(null)
+const merging = ref(false)
+const selectedIds = ref<string[]>([])
 let noticeTimer: ReturnType<typeof setTimeout> | null = null
 
 const activityWalletSummary = computed(() => [
@@ -27,6 +34,7 @@ const statusLabel: Record<RewardCardStatus, string> = {
   active: '使用中',
   paused: '已停用',
   converted: '已轉換',
+  merged: '已合併',
 }
 
 const statusDescription: Record<RewardCardStatus, string> = {
@@ -34,12 +42,16 @@ const statusDescription: Record<RewardCardStatus, string> = {
   active: '活動額度目前可使用，達成活動條件後會自動轉入儲值錢包。',
   paused: '活動額度已保留並暫停使用，可隨時重新啟用。',
   converted: '流水條件已完成，符合轉換上限的餘額已自動加入儲值錢包。',
+  merged: '此卡片已併入新的獎勵卡，不再單獨使用。',
 }
 
 const currencyMark: Record<RewardCardCurrency, string> = {
-  'activity-gold': '金',
   'activity-silver': '銀',
 }
+
+const visibleRewardCards = computed(() => rewardCards.value.filter(card => card.status !== 'merged'))
+const mergeCandidates = computed(() => visibleRewardCards.value.filter(card => canMergeRewardCard(card)))
+const mergePreview = computed(() => createMergedRewardCard(rewardCards.value, selectedIds.value, '__merge_preview__'))
 
 function showNotice(text: string) {
   notice.value = text
@@ -56,7 +68,7 @@ function pause(card: RewardCard) {
 }
 
 function requestDelete(card: RewardCard) {
-  if (card.status === 'active') return
+  if (card.status === 'active' || card.status === 'merged') return
   deleteTarget.value = card
 }
 
@@ -68,12 +80,44 @@ function confirmDelete() {
 }
 
 function showRuleInfo(title: string) {
-  ruleInfo.value = { title }
+  const descriptions: Record<string, string> = {
+    '轉換上限規則': '流水完成後，最多只能將卡片設定的轉換上限轉入儲值銀幣，超過上限的活動銀幣會由系統回收。',
+    '有效期限規則': '獎勵卡有效至標示日期當天 23:59（台北時間）；逾期後無法啟用、合併或轉換。',
+  }
+  ruleInfo.value = { title, description: descriptions[title] ?? '請依畫面上的卡片狀態與期限使用獎勵卡。' }
 }
 
 function turnoverProgress(card: RewardCard) {
   if (card.turnoverTarget <= 0) return 0
   return Math.min(100, Math.round((card.totalTurnover / card.turnoverTarget) * 100))
+}
+
+function startMerge() {
+  if (mergeCandidates.value.length < 2) return
+  merging.value = true
+  selectedIds.value = []
+}
+
+function cancelMerge() {
+  merging.value = false
+  selectedIds.value = []
+}
+
+function toggleSelected(id: string) {
+  selectedIds.value = selectedIds.value.includes(id)
+    ? selectedIds.value.filter(item => item !== id)
+    : [...selectedIds.value, id]
+}
+
+function confirmMerge() {
+  const merged = mergeRewardCards(selectedIds.value)
+  if (!merged) {
+    showNotice('卡片狀態已變更，請重新選取')
+    selectedIds.value = []
+    return
+  }
+  cancelMerge()
+  showNotice(`已建立「${merged.title}」，請啟用後使用`)
 }
 
 onUnmounted(() => {
@@ -82,7 +126,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="lobby-page reward-page px-4 py-5">
+  <div class="lobby-page reward-page" :class="{ 'reward-page-embedded': props.embedded, 'px-4 py-5': !props.embedded }">
     <template v-if="!isLoggedIn">
       <div class="card-purple p-8 text-center max-w-sm mx-auto mt-8">
         <div class="reward-login-mark" aria-hidden="true">卡</div>
@@ -93,15 +137,15 @@ onUnmounted(() => {
     </template>
 
     <template v-else>
-      <h1 class="section-title mb-4">獎勵卡</h1>
+      <h1 v-if="!props.embedded" class="section-title mb-4">獎勵卡</h1>
 
-      <section class="activity-wallet-summary" aria-labelledby="activity-wallet-title">
+      <section v-if="!props.embedded" class="activity-wallet-summary" aria-labelledby="activity-wallet-title">
         <header>
           <div>
             <p>ACTIVITY WALLET</p>
             <h2 id="activity-wallet-title">活動資產總覽</h2>
           </div>
-          <span>獎勵卡專用額度</span>
+          <span>活動資產餘額</span>
         </header>
         <div class="activity-wallet-grid">
           <article
@@ -121,28 +165,38 @@ onUnmounted(() => {
 
       <p v-if="notice" class="reward-notice" role="status" aria-live="polite">{{ notice }}</p>
 
-      <section v-if="rewardCards.length === 0" class="reward-empty card-purple">
+      <section v-if="visibleRewardCards.length === 0" class="reward-empty card-purple">
         <div class="empty-card-stack" aria-hidden="true"><span /><span /><strong>0</strong></div>
         <p>REWARD CARD WALLET</p>
         <h2>目前沒有獎勵卡</h2>
-        <span>完成每日任務第 15 天與第 20 天，即可領取活動幣獎勵卡。</span>
+        <span>完成每日任務第 10、15、20 天，即可領取活動銀幣獎勵卡。</span>
         <NuxtLink to="/lobby/daily" class="btn-gold">前往每日任務</NuxtLink>
       </section>
 
-      <section v-else class="reward-grid" aria-label="我的獎勵卡">
+      <section v-else class="reward-list-wrap" aria-label="我的獎勵卡">
+        <header class="reward-list-header">
+          <div><p>REWARD CARD WALLET</p><h2>活動銀幣獎勵卡</h2></div>
+          <div class="reward-list-actions">
+            <span v-if="merging">已選取 {{ selectedIds.length }} 張</span>
+            <button v-if="!merging" type="button" class="action-merge" :disabled="mergeCandidates.length < 2" :title="mergeCandidates.length < 2 ? '至少需要兩張可合併卡片' : '合併獎勵卡'" @click="startMerge">合併</button>
+            <button v-else type="button" class="action-cancel-merge" @click="cancelMerge">取消</button>
+          </div>
+        </header>
+        <div class="reward-grid">
         <article
-          v-for="card in rewardCards"
+          v-for="card in visibleRewardCards"
           :key="card.id"
           class="reward-card"
-          :class="[`is-${card.status}`, card.currency === 'activity-gold' ? 'card-gold' : 'card-silver']"
+          :class="['is-' + card.status, 'card-silver', { 'is-selected': selectedIds.includes(card.id) }]"
         >
-          <header>
+          <header :class="{ 'is-merging': merging }">
+            <input v-if="merging" type="checkbox" class="merge-checkbox" :checked="selectedIds.includes(card.id)" :disabled="!canMergeRewardCard(card)" :aria-label="`選取 ${card.title}`" @change="toggleSelected(card.id)" />
             <div class="currency-mark" aria-hidden="true">{{ currencyMark[card.currency] }}</div>
             <div>
-              <small>每日任務・第 {{ card.milestoneDay }} 天</small>
+              <small>{{ card.sourceCardIds ? `由 ${card.sourceCount ?? card.sourceCardIds.length} 張獎勵卡合併` : card.sourceLabel || (card.milestoneDay ? `每日任務・第 ${card.milestoneDay} 天` : '優惠碼兌換') }}</small>
               <h2>{{ card.title }}</h2>
             </div>
-            <span class="status-badge">{{ statusLabel[card.status] }}</span>
+            <span class="status-badge">{{ isRewardCardExpired(card) && card.status !== 'converted' ? '已過期' : statusLabel[card.status] }}</span>
           </header>
 
           <div class="reward-amount-summary">
@@ -207,26 +261,36 @@ onUnmounted(() => {
 
           <p class="status-description">{{ statusDescription[card.status] }}</p>
 
-          <div class="reward-actions">
+          <div v-if="!merging" class="reward-actions">
             <button
               class="action-enable"
-              :disabled="card.status === 'active' || card.status === 'converted'"
+              :disabled="card.status === 'active' || card.status === 'converted' || isRewardCardExpired(card)"
               @click="activate(card)"
             >啟用</button>
             <button
               class="action-pause"
-              :disabled="card.status !== 'active'"
+              :disabled="card.status !== 'active' || isRewardCardExpired(card)"
               @click="pause(card)"
             >停用</button>
             <button
               class="action-delete"
-              :disabled="card.status === 'active'"
+              :disabled="card.status === 'active' || card.status === 'merged'"
               :title="card.status === 'active' ? '請先停用卡片再刪除' : '刪除獎勵卡'"
               @click="requestDelete(card)"
             >刪除</button>
           </div>
+          <p v-else class="merge-card-hint">{{ canMergeRewardCard(card) ? '可選取合併' : isRewardCardExpired(card) ? '已過期，無法合併' : card.status === 'active' ? '使用中，請先停用' : '此卡片不可合併' }}</p>
           <small v-if="card.status === 'active'" class="delete-hint">如需刪除，請先停用卡片。</small>
         </article>
+        </div>
+        <div v-if="merging" class="merge-preview" aria-live="polite">
+          <div><strong>合併預覽</strong><span>至少選取 2 張未啟用／已停用且未過期卡片</span></div>
+          <template v-if="mergePreview">
+            <dl><div><dt>目前餘額</dt><dd>{{ mergePreview.currentBalance.toLocaleString() }}</dd></div><div><dt>總金額</dt><dd>{{ mergePreview.amount.toLocaleString() }}</dd></div><div><dt>流水量</dt><dd>{{ mergePreview.totalTurnover.toLocaleString() }} / {{ mergePreview.turnoverTarget.toLocaleString() }}</dd></div><div><dt>轉換上限</dt><dd>{{ mergePreview.conversionLimit.toLocaleString() }}</dd></div><div><dt>有效期限</dt><dd>{{ mergePreview.expiresAt }}</dd></div></dl>
+          </template>
+          <p v-else>請選取至少兩張符合條件的獎勵卡。</p>
+          <button type="button" class="btn-gold merge-confirm" :disabled="!mergePreview" @click="confirmMerge">確認合併</button>
+        </div>
       </section>
     </template>
 
@@ -272,7 +336,7 @@ onUnmounted(() => {
               <div class="modal-inner text-center">
                 <div class="rule-mark" aria-hidden="true">i</div>
                 <h2 id="reward-rule-title">{{ ruleInfo.title }}</h2>
-                <p>待補充</p>
+                <p>{{ ruleInfo.description }}</p>
                 <button class="btn-gold w-full justify-center" @click="ruleInfo = null">我知道了</button>
               </div>
             </div>
@@ -288,6 +352,23 @@ onUnmounted(() => {
   max-width: 1180px;
   margin: 0 auto;
 }
+
+.reward-page-embedded { max-width: none; padding: 0; }
+.reward-list-wrap { padding: 16px; border: 1px solid var(--color-border); border-radius: 16px; background: rgba(15,0,32,.24); }
+.reward-list-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.reward-list-header p { margin:0; color:var(--color-gold); font-size:8px; font-weight:900; letter-spacing:.18em; }
+.reward-list-header h2 { margin:3px 0 0; font-size:17px; }
+.reward-list-actions { display:flex; align-items:center; gap:8px; }
+.reward-list-actions>span { color:var(--color-text-muted); font-size:9px; }
+.action-merge,.action-cancel-merge { padding:8px 14px; border:1px solid rgba(245,200,66,.35); border-radius:9px; color:#1b0a25; background:var(--color-gold); font-size:10px; font-weight:900; }
+.action-merge:disabled { opacity:.4; cursor:not-allowed; }
+.action-cancel-merge { color:var(--color-purple-light); border-color:var(--color-border); background:rgba(168,85,247,.12); }
+.merge-checkbox { width:18px; height:18px; flex-shrink:0; accent-color:var(--color-purple-glow); }
+.reward-card.is-selected { border-color:var(--color-gold); box-shadow:0 0 0 2px rgba(245,200,66,.12),0 15px 34px rgba(6,1,17,.2); }
+.merge-card-hint { margin:12px 0 0; color:var(--color-text-muted); font-size:9px; }
+.merge-preview { display:grid; gap:11px; padding:13px; margin-top:14px; border:1px solid rgba(168,85,247,.3); border-radius:12px; background:rgba(37,52,121,.35); }
+.merge-preview>div:first-child { display:flex; align-items:baseline; justify-content:space-between; gap:8px; }.merge-preview>div:first-child strong { font-size:12px; }.merge-preview>div:first-child span { color:var(--color-text-muted); font-size:8px; }
+.merge-preview dl { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; margin:0; }.merge-preview dl div { min-width:0; }.merge-preview dt { color:var(--color-text-muted); font-size:8px; }.merge-preview dd { margin:3px 0 0; color:var(--color-text); font-size:11px; font-weight:900; }.merge-preview>p { margin:0; color:var(--color-text-muted); font-size:9px; }.merge-confirm { width:max-content; min-width:110px; justify-content:center; justify-self:end; }.merge-confirm:disabled { opacity:.45; cursor:not-allowed; }
 
 .reward-login-mark {
   display: grid;
@@ -580,6 +661,8 @@ onUnmounted(() => {
   align-items: center;
   gap: 12px;
 }
+
+.reward-card > header.is-merging { grid-template-columns: 20px 52px minmax(0, 1fr) auto; }
 
 .currency-mark {
   display: grid;
@@ -960,6 +1043,14 @@ onUnmounted(() => {
   .activity-wallet-grid strong { font-size: 14px; }
 }
 
+@media (max-width: 640px) {
+  .reward-list-header { align-items: flex-start; flex-direction: column; }
+  .reward-list-actions { width: 100%; justify-content: flex-end; }
+  .merge-preview dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .merge-preview dl div:last-child { grid-column: 1 / -1; }
+  .merge-preview > div:first-child { align-items: flex-start; flex-direction: column; }
+}
+
 @media (max-width: 520px) {
   .activity-wallet-summary { padding: 13px 10px; }
   .activity-wallet-summary > header > span { display: none; }
@@ -974,6 +1065,7 @@ onUnmounted(() => {
   .activity-wallet-grid em { margin-top: 2px; }
   .reward-card { padding: 16px; }
   .reward-card > header { grid-template-columns: 44px 1fr auto; }
+  .reward-card > header.is-merging { grid-template-columns: 18px 42px minmax(0, 1fr) auto; }
   .currency-mark { width: 42px; height: 42px; }
   .reward-amount-summary {
     grid-template-columns: minmax(0, .72fr) minmax(0, 1.28fr);

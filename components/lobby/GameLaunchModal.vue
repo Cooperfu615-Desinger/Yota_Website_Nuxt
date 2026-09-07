@@ -15,14 +15,13 @@ const game = computed(() => allGames.find(item => item.key === props.gameKey))
 const { resolvePublicAsset } = usePublicAssetPath()
 const selectedWallet = ref<GameWalletKey>(DEFAULT_GAME_WALLET)
 const { balance, silverBalance, bronzeBalance } = useFinancialState()
-const { activityGoldBalance, activitySilverBalance } = useRewardCardState()
+const { availableActivitySilverBalance } = useRewardCardState()
 
 const selectedWalletLabel = computed(() => getGameWalletLabel(selectedWallet.value))
 const walletOptions = computed(() => resolveGameWalletOptions({
   storedGold: balance.value,
-  activityGold: activityGoldBalance.value,
   storedSilver: silverBalance.value,
-  activitySilver: activitySilverBalance.value,
+  activitySilver: availableActivitySilverBalance.value,
   bronze: bronzeBalance.value,
 }))
 

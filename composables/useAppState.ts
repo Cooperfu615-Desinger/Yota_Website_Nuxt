@@ -1,5 +1,6 @@
 import { siteContent } from '~/data/siteContent'
 import { resolveVipReward } from '~/utils/vipReward'
+import { resolveInvitationCode } from '~/utils/invitationCode'
 
 const LS_LOGIN_KEY = 'jh_isLoggedIn'
 const LS_USER_KEY = 'jh_userInfo'
@@ -19,6 +20,7 @@ interface UserProfile {
   email: string
   emailLocked: boolean
   phone: string
+  invitationCode: string
   authProvider: AuthProvider
   accountBindings: {
     phone: boolean
@@ -44,6 +46,10 @@ function normalizeProfile(saved?: Partial<UserProfile>): UserProfile {
     email: String(saved?.email ?? base.email),
     emailLocked: Boolean(saved?.emailLocked ?? base.emailLocked),
     phone: String(saved?.phone ?? base.phone),
+    invitationCode: resolveInvitationCode(
+      saved?.authProvider === 'guest',
+      saved?.invitationCode ?? (import.meta.client ? undefined : base.invitationCode),
+    ),
     authProvider: (saved?.authProvider || base.authProvider) as AuthProvider,
     accountBindings: {
       ...base.accountBindings,
@@ -106,10 +112,16 @@ export const useAppState = () => {
     closeAfterLogin = true,
     account?: string,
   ) {
+    const previousAccount = profile.value.account
+    const previousProvider = profile.value.authProvider
+    const wasLoggedIn = isLoggedIn.value
     vipClaimedRewardLevels.value = []
     if (name) profile.value.name = name
     if (account) profile.value.account = account
     profile.value.authProvider = provider
+    if (provider !== 'guest' && (!wasLoggedIn || previousProvider === 'guest' || (account && account !== previousAccount) || provider !== previousProvider)) {
+      profile.value.invitationCode = resolveInvitationCode(false)
+    }
     // 規格中的前台 Mock：一般登入者從 VIP6 開始，訪客從 VIP0 開始。
     profile.value.vip = provider === 'guest' ? 0 : 6
     if (provider === 'guest') {
@@ -120,6 +132,9 @@ export const useAppState = () => {
       profile.value.birthday = ''
       profile.value.birthdayLocked = false
       profile.value.accountBindings = { ...profile.value.accountBindings, phone: false, google: false }
+      profile.value.invitationCode = ''
+    } else {
+      profile.value.invitationCode = resolveInvitationCode(false, profile.value.invitationCode)
     }
     isLoggedIn.value = true
     if (closeAfterLogin) closeLogin()

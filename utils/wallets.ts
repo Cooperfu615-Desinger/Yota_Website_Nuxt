@@ -1,4 +1,5 @@
 export type WalletKey = 'gold' | 'silver' | 'bronze'
+export type ActivityWalletKey = 'activity-gold' | 'activity-silver'
 
 export interface WalletDisplayItem {
   key: WalletKey

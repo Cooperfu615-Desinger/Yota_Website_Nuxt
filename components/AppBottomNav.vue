@@ -78,7 +78,7 @@ function handleShop(event: MouseEvent) {
     <button
       class="bottom-nav-item"
       type="button"
-      :class="{ active: isActive('/lobby/inbox') || isActive('/lobby/gifts') }"
+      :class="{ active: isActive('/lobby/inbox') }"
       aria-label="信箱"
       @click="pushProtected('/lobby/inbox')"
     >

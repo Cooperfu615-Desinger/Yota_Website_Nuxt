@@ -16,7 +16,6 @@ const game = computed(() => allGames.find(g => g.key === props.gameKey))
 const currentWalletLabel = computed(() => getGameWalletLabel(props.wallet))
 const { getActiveCardByCurrency, completeRewardCardConversion } = useRewardCardState()
 const selectedActivityCurrency = computed<RewardCardCurrency | null>(() => {
-  if (props.wallet === 'activity-gold') return 'activity-gold'
   if (props.wallet === 'activity-silver') return 'activity-silver'
   return null
 })
@@ -210,8 +209,7 @@ async function toggleFullscreen() {
       <div class="gv-session-controls">
         <button
           v-if="mode === 'real' && activeRewardCard"
-          class="gv-turnover-trigger"
-          :class="activeRewardCard.currency === 'activity-gold' ? 'tone-gold' : 'tone-silver'"
+          class="gv-turnover-trigger tone-silver"
           :aria-label="`模擬${activeRewardCard.title}流水達成`"
           @click="mockTurnoverComplete"
         >

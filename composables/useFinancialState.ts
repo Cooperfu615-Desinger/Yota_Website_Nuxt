@@ -4,7 +4,7 @@ import {
   canSubmitWalletExchange,
   type WalletExchangeDirection,
 } from '~/utils/walletExchange'
-import { DEFAULT_WALLET_BALANCE, type WalletKey } from '~/utils/wallets'
+import { DEFAULT_WALLET_BALANCE, type ActivityWalletKey, type WalletKey } from '~/utils/wallets'
 import { calculateWalletSpend } from '~/utils/walletSpend'
 
 export type FinancialTransactionType = 'deposit' | 'vault' | 'gift' | 'exchange' | 'reward' | 'spend'
@@ -15,7 +15,7 @@ export interface FinancialTransaction {
   type: FinancialTransactionType
   title: string
   amount: number
-  wallet: WalletKey
+  wallet: WalletKey | ActivityWalletKey
   status: FinancialTransactionStatus
   createdAt: string
   detail?: string
@@ -167,6 +167,19 @@ export const useFinancialState = () => {
     if (wallet === 'silver') financialState.value.silverBalance += normalizedAmount
     if (wallet === 'bronze') financialState.value.bronzeBalance += normalizedAmount
 
+    return addTransaction({
+      type: 'reward',
+      title,
+      amount: normalizedAmount,
+      wallet,
+      status: 'success',
+      detail,
+    })
+  }
+
+  function recordActivityReward(wallet: ActivityWalletKey, amount: number, title: string, detail?: string) {
+    const normalizedAmount = Math.max(0, Math.floor(amount))
+    if (!normalizedAmount) return null
     return addTransaction({
       type: 'reward',
       title,
@@ -357,6 +370,7 @@ export const useFinancialState = () => {
     transactions,
     addTransaction,
     addWalletReward,
+    recordActivityReward,
     spendWalletBalance,
     completeDeposit,
     depositToVault,

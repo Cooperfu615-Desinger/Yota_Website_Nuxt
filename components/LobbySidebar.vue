@@ -8,10 +8,16 @@ const { openLogoutConfirm } = useLogoutState()
 function closeMobile() { sidebarMobileOpen.value = false }
 
 function isActive(to: string) {
-  if (to === '/') return route.path === '/'
-  if (to === '/lobby') return route.path === '/lobby'
-  if (to === '/lobby/bank') return route.path === '/lobby/bank' || route.path === '/lobby/deposit'
-  return route.path === to || route.path.startsWith(`${to}/`)
+  const [path, queryString] = to.split('?')
+  const query = new URLSearchParams(queryString || '')
+  if (path === '/lobby/member') {
+    const tab = query.get('tab')
+    return route.path === path && (tab ? route.query.tab === tab : route.query.tab !== 'rewards')
+  }
+  if (path === '/') return route.path === '/'
+  if (path === '/lobby') return route.path === '/lobby'
+  if (path === '/lobby/bank') return route.path === '/lobby/bank' || route.path === '/lobby/deposit'
+  return route.path === path || route.path.startsWith(`${path}/`)
 }
 
 const navSections = [
@@ -27,7 +33,7 @@ const navSections = [
     { to: '/lobby/member', label: '個人資訊', icon: '👤' },
     { to: '/lobby/vault', label: '保險箱/贈禮', icon: '🔐' },
     { to: '/lobby/inbox', label: '信箱', icon: '📬' },
-    { to: '/lobby/gifts', label: '獎勵卡', icon: '🎁' },
+    { to: '/lobby/member?tab=rewards', label: '獎勵卡', icon: '🎁' },
     { to: '/lobby/chat', label: '聊天', icon: '💬' },
     { to: '/lobby/exchange', label: '兌換', icon: '⇄' },
     { to: '/lobby/transactions', label: '交易紀錄', icon: '📋' },
@@ -46,7 +52,8 @@ const protectedPaths = new Set([
 
 function handleNavigation(event: MouseEvent, to: string) {
   closeMobile()
-  if (!protectedPaths.has(to) || isLoggedIn.value) return
+  const [path] = to.split('?')
+  if (!protectedPaths.has(path) || isLoggedIn.value) return
   event.preventDefault()
   openLogin(to)
 }
