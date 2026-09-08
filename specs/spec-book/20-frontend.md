@@ -223,6 +223,8 @@ APP 端串接規格（本階段新增）：需要新增「贈禮申請列表」�
 
 卡片狀態機：`inactive → active → (paused) → converted`。轉換演算 `calculateRewardCardConversion`：`converted = min(現有餘額, conversionLimit)`，其餘記為 `recoveredAmount`（回收）。三方一致 ✅。
 
+獎勵卡合併規則：至少選取兩張、張數不設上限；只有未啟用或已停用且距離到期超過 72 小時的卡片可合併，最後 72 小時內不可合併但仍可啟用。起始餘額紀錄、目前餘額、目標流水、已達成流水與轉換上限直接加總，不重新換算流水倍數，因此合併後流水比例可能改變；合併後結束日期採選取卡片中的最早到期日。新卡為未啟用狀態，來源卡標記為已合併並保留來源關係，合併卡可再次參與合併。
+
 🔴 **流水累積目前是假機制**：`GameView.vue` 內有「完成流水」測試按鈕直接把某張卡的 `totalTurnover` 打滿，APP 同樣靠測試鈕。營運後台原型雖有 `AssetLog.valid_turnover`／`remain_target` 欄位，但這不代表後端機制已完成。有效流水須由 Gordan × Hulk 依獎勵卡、Provider 的 BET／Cancel／Refund／Rollback 與冪等規則共同定義，前端只顯示後端產出的累積值。
 
 ⚠️ 命名：文件稱「禮物 Gifts」、UI 稱「獎勵卡」、後台稱 `BonusCard`，路由是 `/lobby/gifts` 但元件是 `RewardCardContent.vue`。建議串接前先統一命名（不影響邏輯，純粹避免溝通成本），本冊不代做決定。

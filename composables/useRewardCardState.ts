@@ -1,5 +1,5 @@
 import { calculateRewardCardConversion } from '~/utils/rewardCardConversion'
-import { canMergeRewardCard, createMergedRewardCard, isRewardCardExpired } from '~/utils/rewardCardMerge'
+import { canActivateRewardCard, canMergeRewardCard, createMergedRewardCard, isRewardCardExpired } from '~/utils/rewardCardMerge'
 
 export type RewardCardCurrency = 'activity-silver'
 export type RewardCardStatus = 'inactive' | 'active' | 'paused' | 'converted' | 'merged'
@@ -226,9 +226,9 @@ export const useRewardCardState = () => {
     pendingConversionNotice.value.read = true
   }
 
-  function mergeRewardCards(ids: string[]) {
+  function mergeRewardCards(ids: string[], now = new Date()) {
     const newId = `merged-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-    const merged = createMergedRewardCard(rewardCards.value, ids, newId)
+    const merged = createMergedRewardCard(rewardCards.value, ids, newId, now)
     if (!merged) return null
 
     rewardCards.value = [
@@ -253,6 +253,7 @@ export const useRewardCardState = () => {
     activateRewardCard,
     pauseRewardCard,
     deleteRewardCard,
+    canActivateRewardCard,
     canMergeRewardCard,
     mergeRewardCards,
     completeRewardCardConversion,

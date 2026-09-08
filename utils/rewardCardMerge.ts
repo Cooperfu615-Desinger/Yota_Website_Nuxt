@@ -1,17 +1,38 @@
 import type { RewardCard } from '~/composables/useRewardCardState'
 
+export const REWARD_CARD_MERGE_WINDOW_HOURS = 72
+export const REWARD_CARD_MERGE_WINDOW_MS = REWARD_CARD_MERGE_WINDOW_HOURS * 60 * 60 * 1000
+
 /**
  * 獎勵卡有效至 expiresAt 當天 23:59:59；隔日 00:00 起視為過期。
  * 日期格式沿用目前 Web/APP 原型使用的 YYYY/MM/DD。
  */
-export function isRewardCardExpired(card: Pick<RewardCard, 'expiresAt'>, now = new Date()) {
+export function getRewardCardExpiryTime(card: Pick<RewardCard, 'expiresAt'>) {
   const [year, month, day] = card.expiresAt.split('/').map(Number)
-  if (!year || !month || !day) return true
-  return now.getTime() >= new Date(year, month - 1, day + 1).getTime()
+  const date = new Date(year, month - 1, day)
+  if (
+    !Number.isInteger(year) ||
+    !Number.isInteger(month) ||
+    !Number.isInteger(day) ||
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) return Number.NaN
+
+  return new Date(year, month - 1, day + 1).getTime()
+}
+
+export function isRewardCardExpired(card: Pick<RewardCard, 'expiresAt'>, now = new Date()) {
+  return !(getRewardCardExpiryTime(card) > now.getTime())
+}
+
+export function canActivateRewardCard(card: RewardCard, now = new Date()) {
+  return (card.status === 'inactive' || card.status === 'paused') && !isRewardCardExpired(card, now)
 }
 
 export function canMergeRewardCard(card: RewardCard, now = new Date()) {
-  return (card.status === 'inactive' || card.status === 'paused') && !isRewardCardExpired(card, now)
+  const expiryTime = getRewardCardExpiryTime(card)
+  return canActivateRewardCard(card, now) && expiryTime - now.getTime() > REWARD_CARD_MERGE_WINDOW_MS
 }
 
 export function createMergedRewardCard(
@@ -40,7 +61,9 @@ export function createMergedRewardCard(
     totalTurnover: sum('totalTurnover'),
     turnoverTarget: sum('turnoverTarget'),
     conversionLimit: sum('conversionLimit'),
-    expiresAt: sources.map(card => card.expiresAt).sort().slice(-1)[0],
+    expiresAt: sources.reduce((earliest, card) => (
+      getRewardCardExpiryTime(card) < getRewardCardExpiryTime(earliest) ? card : earliest
+    )).expiresAt,
     convertedAmount: 0,
     recoveredAmount: 0,
     convertedAt: '',

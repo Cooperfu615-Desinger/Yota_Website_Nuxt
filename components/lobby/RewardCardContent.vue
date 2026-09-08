@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import type { RewardCard, RewardCardCurrency, RewardCardStatus } from '~/composables/useRewardCardState'
-import { createMergedRewardCard, isRewardCardExpired } from '~/utils/rewardCardMerge'
+import {
+  canActivateRewardCard,
+  canMergeRewardCard,
+  createMergedRewardCard,
+  isRewardCardExpired,
+  REWARD_CARD_MERGE_WINDOW_HOURS,
+} from '~/utils/rewardCardMerge'
 
 const props = withDefaults(defineProps<{ embedded?: boolean }>(), { embedded: false })
 
@@ -12,7 +18,6 @@ const {
   activateRewardCard,
   pauseRewardCard,
   deleteRewardCard,
-  canMergeRewardCard,
   mergeRewardCards,
 } = useRewardCardState()
 const { activityGoldBalance } = usePromoCodeState()
@@ -22,7 +27,9 @@ const deleteTarget = ref<RewardCard | null>(null)
 const ruleInfo = ref<{ title: string; description: string } | null>(null)
 const merging = ref(false)
 const selectedIds = ref<string[]>([])
+const now = ref(new Date())
 let noticeTimer: ReturnType<typeof setTimeout> | null = null
+let clockTimer: ReturnType<typeof setInterval> | null = null
 
 const activityWalletSummary = computed(() => [
   { label: '活動金幣', mark: '金', amount: activityGoldBalance.value, tone: 'gold' },
@@ -50,8 +57,13 @@ const currencyMark: Record<RewardCardCurrency, string> = {
 }
 
 const visibleRewardCards = computed(() => rewardCards.value.filter(card => card.status !== 'merged'))
-const mergeCandidates = computed(() => visibleRewardCards.value.filter(card => canMergeRewardCard(card)))
-const mergePreview = computed(() => createMergedRewardCard(rewardCards.value, selectedIds.value, '__merge_preview__'))
+const mergeCandidates = computed(() => visibleRewardCards.value.filter(card => canMergeRewardCard(card, now.value)))
+const mergePreview = computed(() => createMergedRewardCard(
+  rewardCards.value,
+  selectedIds.value,
+  '__merge_preview__',
+  now.value,
+))
 
 function showNotice(text: string) {
   notice.value = text
@@ -82,7 +94,8 @@ function confirmDelete() {
 function showRuleInfo(title: string) {
   const descriptions: Record<string, string> = {
     '轉換上限規則': '流水完成後，最多只能將卡片設定的轉換上限轉入儲值銀幣，超過上限的活動銀幣會由系統回收。',
-    '有效期限規則': '獎勵卡有效至標示日期當天 23:59（台北時間）；逾期後無法啟用、合併或轉換。',
+    '有效期限規則': `獎勵卡有效至標示日期當天 23:59（台北時間）；剩餘 ${REWARD_CARD_MERGE_WINDOW_HOURS} 小時內不可合併，但尚未過期時仍可啟用。逾期後無法啟用、合併或轉換。`,
+    '獎勵卡合併規則': `至少選取 2 張，張數無上限。僅未啟用或已停用、且距離到期超過 ${REWARD_CARD_MERGE_WINDOW_HOURS} 小時的卡片可合併；使用中卡片須先停用。起始餘額紀錄、目前餘額、目標流水、已達成流水與轉換上限直接加總，不重新換算流水倍數，因此合併後的流水比例可能與原卡片不同。合併後結束日期採選取卡片中最早到期日，新卡會回到未啟用狀態。`,
   }
   ruleInfo.value = { title, description: descriptions[title] ?? '請依畫面上的卡片狀態與期限使用獎勵卡。' }
 }
@@ -109,8 +122,15 @@ function toggleSelected(id: string) {
     : [...selectedIds.value, id]
 }
 
+function mergeHint(card: RewardCard) {
+  if (isRewardCardExpired(card, now.value)) return '已過期，無法合併'
+  if (card.status === 'active') return '使用中，請先停用'
+  if (canActivateRewardCard(card, now.value)) return `距離到期日小於或等於 ${REWARD_CARD_MERGE_WINDOW_HOURS} 小時，不可合併`
+  return '此卡片不可合併'
+}
+
 function confirmMerge() {
-  const merged = mergeRewardCards(selectedIds.value)
+  const merged = mergeRewardCards(selectedIds.value, new Date())
   if (!merged) {
     showNotice('卡片狀態已變更，請重新選取')
     selectedIds.value = []
@@ -122,6 +142,11 @@ function confirmMerge() {
 
 onUnmounted(() => {
   if (noticeTimer) clearTimeout(noticeTimer)
+  if (clockTimer) clearInterval(clockTimer)
+})
+
+onMounted(() => {
+  clockTimer = setInterval(() => { now.value = new Date() }, 1000)
 })
 </script>
 
@@ -178,6 +203,7 @@ onUnmounted(() => {
           <div><p>REWARD CARD WALLET</p><h2>活動銀幣獎勵卡</h2></div>
           <div class="reward-list-actions">
             <span v-if="merging">已選取 {{ selectedIds.length }} 張</span>
+            <button type="button" class="action-rule" @click="showRuleInfo('獎勵卡合併規則')">規則說明</button>
             <button v-if="!merging" type="button" class="action-merge" :disabled="mergeCandidates.length < 2" :title="mergeCandidates.length < 2 ? '至少需要兩張可合併卡片' : '合併獎勵卡'" @click="startMerge">合併</button>
             <button v-else type="button" class="action-cancel-merge" @click="cancelMerge">取消</button>
           </div>
@@ -190,13 +216,13 @@ onUnmounted(() => {
           :class="['is-' + card.status, 'card-silver', { 'is-selected': selectedIds.includes(card.id) }]"
         >
           <header :class="{ 'is-merging': merging }">
-            <input v-if="merging" type="checkbox" class="merge-checkbox" :checked="selectedIds.includes(card.id)" :disabled="!canMergeRewardCard(card)" :aria-label="`選取 ${card.title}`" @change="toggleSelected(card.id)" />
+            <input v-if="merging" type="checkbox" class="merge-checkbox" :checked="selectedIds.includes(card.id)" :disabled="!canMergeRewardCard(card, now)" :aria-label="`選取 ${card.title}`" @change="toggleSelected(card.id)" />
             <div class="currency-mark" aria-hidden="true">{{ currencyMark[card.currency] }}</div>
             <div>
               <small>{{ card.sourceCardIds ? `由 ${card.sourceCount ?? card.sourceCardIds.length} 張獎勵卡合併` : card.sourceLabel || (card.milestoneDay ? `每日任務・第 ${card.milestoneDay} 天` : '優惠碼兌換') }}</small>
               <h2>{{ card.title }}</h2>
             </div>
-            <span class="status-badge">{{ isRewardCardExpired(card) && card.status !== 'converted' ? '已過期' : statusLabel[card.status] }}</span>
+            <span class="status-badge">{{ isRewardCardExpired(card, now) && card.status !== 'converted' ? '已過期' : statusLabel[card.status] }}</span>
           </header>
 
           <div class="reward-amount-summary">
@@ -205,7 +231,7 @@ onUnmounted(() => {
               <strong>{{ card.totalTurnover.toLocaleString() }}</strong>
             </div>
             <div class="reward-balance-total">
-              <small>目前餘額 / 總金額</small>
+              <small>目前餘額 / 起始餘額紀錄</small>
               <div>
                 <strong>{{ card.currentBalance.toLocaleString() }}</strong>
                 <span>/ {{ card.amount.toLocaleString() }}</span>
@@ -264,12 +290,12 @@ onUnmounted(() => {
           <div v-if="!merging" class="reward-actions">
             <button
               class="action-enable"
-              :disabled="card.status === 'active' || card.status === 'converted' || isRewardCardExpired(card)"
+              :disabled="!canActivateRewardCard(card, now)"
               @click="activate(card)"
             >啟用</button>
             <button
               class="action-pause"
-              :disabled="card.status !== 'active' || isRewardCardExpired(card)"
+              :disabled="card.status !== 'active' || isRewardCardExpired(card, now)"
               @click="pause(card)"
             >停用</button>
             <button
@@ -279,14 +305,15 @@ onUnmounted(() => {
               @click="requestDelete(card)"
             >刪除</button>
           </div>
-          <p v-else class="merge-card-hint">{{ canMergeRewardCard(card) ? '可選取合併' : isRewardCardExpired(card) ? '已過期，無法合併' : card.status === 'active' ? '使用中，請先停用' : '此卡片不可合併' }}</p>
+          <p v-else class="merge-card-hint">{{ canMergeRewardCard(card, now) ? '可選取合併' : mergeHint(card) }}</p>
           <small v-if="card.status === 'active'" class="delete-hint">如需刪除，請先停用卡片。</small>
         </article>
         </div>
         <div v-if="merging" class="merge-preview" aria-live="polite">
-          <div><strong>合併預覽</strong><span>至少選取 2 張未啟用／已停用且未過期卡片</span></div>
+          <div><strong>合併預覽</strong><span>至少 2 張、無上限；剩餘時間須超過 {{ REWARD_CARD_MERGE_WINDOW_HOURS }} 小時</span></div>
           <template v-if="mergePreview">
-            <dl><div><dt>目前餘額</dt><dd>{{ mergePreview.currentBalance.toLocaleString() }}</dd></div><div><dt>總金額</dt><dd>{{ mergePreview.amount.toLocaleString() }}</dd></div><div><dt>流水量</dt><dd>{{ mergePreview.totalTurnover.toLocaleString() }} / {{ mergePreview.turnoverTarget.toLocaleString() }}</dd></div><div><dt>轉換上限</dt><dd>{{ mergePreview.conversionLimit.toLocaleString() }}</dd></div><div><dt>有效期限</dt><dd>{{ mergePreview.expiresAt }}</dd></div></dl>
+            <dl><div><dt>目前餘額</dt><dd>{{ mergePreview.currentBalance.toLocaleString() }}</dd></div><div><dt>起始餘額紀錄</dt><dd>{{ mergePreview.amount.toLocaleString() }}</dd></div><div><dt>已達成流水 / 目標流水</dt><dd>{{ mergePreview.totalTurnover.toLocaleString() }} / {{ mergePreview.turnoverTarget.toLocaleString() }}</dd></div><div><dt>轉換上限</dt><dd>{{ mergePreview.conversionLimit.toLocaleString() }}</dd></div><div><dt>最早到期日</dt><dd>{{ mergePreview.expiresAt }}</dd></div></dl>
+            <p>各項流水直接加總，不重新換算流水倍數，合併後比例可能不同。</p>
           </template>
           <p v-else>請選取至少兩張符合條件的獎勵卡。</p>
           <button type="button" class="btn-gold merge-confirm" :disabled="!mergePreview" @click="confirmMerge">確認合併</button>
@@ -360,9 +387,10 @@ onUnmounted(() => {
 .reward-list-header h2 { margin:3px 0 0; font-size:17px; }
 .reward-list-actions { display:flex; align-items:center; gap:8px; }
 .reward-list-actions>span { color:var(--color-text-muted); font-size:9px; }
-.action-merge,.action-cancel-merge { padding:8px 14px; border:1px solid rgba(245,200,66,.35); border-radius:9px; color:#1b0a25; background:var(--color-gold); font-size:10px; font-weight:900; }
+.action-merge,.action-cancel-merge,.action-rule { padding:8px 14px; border:1px solid rgba(245,200,66,.35); border-radius:9px; color:#1b0a25; background:var(--color-gold); font-size:10px; font-weight:900; }
 .action-merge:disabled { opacity:.4; cursor:not-allowed; }
 .action-cancel-merge { color:var(--color-purple-light); border-color:var(--color-border); background:rgba(168,85,247,.12); }
+.action-rule { color:var(--color-purple-light); border-color:var(--color-border); background:rgba(168,85,247,.12); }
 .merge-checkbox { width:18px; height:18px; flex-shrink:0; accent-color:var(--color-purple-glow); }
 .reward-card.is-selected { border-color:var(--color-gold); box-shadow:0 0 0 2px rgba(245,200,66,.12),0 15px 34px rgba(6,1,17,.2); }
 .merge-card-hint { margin:12px 0 0; color:var(--color-text-muted); font-size:9px; }
@@ -998,6 +1026,8 @@ onUnmounted(() => {
   font-size: 11px;
   line-height: 1.7;
 }
+
+.reward-rule-modal p { text-align: left; white-space: pre-line; }
 
 .delete-actions {
   display: grid;
