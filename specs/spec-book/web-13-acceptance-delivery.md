@@ -75,12 +75,12 @@ QA 目前沒有獨立 Plane 父單；在確認負責人與工作流前，先由�
 文件層需要檢查：
 
 - `00-overview.md`、`WEB_SPEC_RULES.md`、`web-02`～`web-13` 的相對連結、標題、錨點、表格與工作單映射。
-- `web-02`～`web-11` 各保留 17 個編號節點，並涵蓋玩家、開發、QA、資料、驗收、待確認與交付責任。
+- `web-02`～`web-11` 各保留 APP 對應的 17 個編號節點，並涵蓋玩家、開發、QA、資料、驗收、待確認與交付責任。
 - `WEB-FLOW`、`WEB-SC`、`WEB-AC` 不與 APP 的同名 ID 混用；Plane 實際單號與規格 ID 分開。
 - 所有 `目前 Web 原型`、`已確認規則`、`待確認` 與 `驗證證據` 不得混寫。
 - 來源引用若指向舊 handoff、舊截圖或舊 API 快照，需標示日期與可能過期的範圍。
 
-目前只證明文件結構與內容初版完成；HTML 產生與連結視覺檢查仍是後續交付步驟。
+目前已完成文件結構、HTML 產生與可重跑的連結／anchor／映射檢查；瀏覽器閱讀視覺、Nuxt、部署與正式服務仍是分開的後續驗收層。
 
 ## 7. Figma 整體驗收
 
@@ -104,8 +104,9 @@ git diff --check
 PATH="/opt/homebrew/opt/node/bin:$PATH" npm run build
 PATH="/opt/homebrew/opt/node/bin:$PATH" npm run generate
 
-# 文件 HTML 產生（後續階段執行）
+# 文件 HTML 產生與文件基線驗證
 PATH="/opt/homebrew/opt/node/bin:$PATH" node specs/spec-book/build-html.mjs
+PATH="/opt/homebrew/opt/node/bin:$PATH" node specs/spec-book/validate-docs.mjs
 ```
 
 若測試或 generate 失敗，需記錄完整命令、退出碼、環境、錯誤與是否為既有問題；不能用「有執行」取代「已通過」。`docs/` 是 generated output，不應手動 commit。
@@ -189,19 +190,19 @@ Figma 交付包需包含實際檔案連結、page／frame／component／node ID�
 | `c4b8bf9` | Web 規格書 Phase 1 基線與撰寫規則 | 已推送至 `origin/main` |
 | `12f35c1` | 10 份 Web 功能分冊與總綱索引 | 已推送至 `origin/main` |
 | Phase 3 初版 | `web-12`、`web-13` 跨頁與整體驗收文件 | 已完成並納入 Web HTML 閱讀版 |
-| Phase 4 初版 | `build-html.mjs`、`index.html` | Web 規格分頁已產生；待後續工作單回填／提交 |
+| Phase 4 文件基線 | `build-html.mjs`、`index.html`、`validate-docs.mjs` 與 Web-08～11 結構修訂 | 61 項文件檢查通過；待後續工作單回填／Plane 同步 |
 
 本文件不把工作區其他既有 dirty／untracked 檔案視為 Web 規格交付內容；commit 時必須以明確檔案清單暫存，避免混入無關變更。
 
 ## 15. 開放問題與待後續階段
 
-待後續階段處理：建立完整 Markdown／HTML／anchor／link 檢查；補回 `WEB_WORK_ORDER_BATCH_v1.md` 的文件段落與證據；依確認結果回填 Plane 3 父單＋39 子單描述；必要時再補瀏覽器、SSG 與 Pages 證據。
+已完成：建立完整 Markdown／HTML／anchor／link／Plane 映射檢查，2026-09-15 通過 61 項、0 項失敗。待後續階段處理：補回 `WEB_WORK_ORDER_BATCH_v1.md` 的文件段落與證據；依確認結果回填 Plane 3 父單＋39 子單描述；必要時再補瀏覽器、SSG 與 Pages 證據。
 
 產品待確認仍集中在 auth／遊戲／財務／獎勵卡／贈禮／社交／通知等功能分冊已列出的 `WEB-Q`，不得因本文件列出驗收流程就視為已拍板。
 
 ## 16. 整體交付檢查表
 
-- [ ] `web-02`～`web-13` 的連結、標題、ID、工作單映射與來源通過文件檢查。
+- [x] `web-02`～`web-13` 的連結、標題、ID、工作單映射與來源通過文件檢查。
 - [ ] 13 個功能單元的 SPEC／DESIGN／FE 三方工作單完整回讀，沒有重複或漏單。
 - [ ] `WEB-FLOW`、`WEB-SC`、`WEB-AC` 與功能分冊互相引用，並標記目前原型／待確認邊界。
 - [ ] Figma 已補實際 page、frame、component、node 與桌機／手機狀態。

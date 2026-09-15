@@ -4,7 +4,7 @@
 - 受眾：美術、前端、後端 —— 用來搭配各自的原型做規格確認與比對
 - 本書地位：**主幹＋畫面索引總表**。三方比對的詳細內容仍以 `specs/2026-07-29-*.md` 四份文件為準，本書負責把「畫面長什麼樣」跟「文字比對結果」接起來，讓三種受眾能從同一個編號找到同一件事。
 
-> **Web 規格書重整基線（Phase 4｜2026-09-15）**：本書作為 Web 專屬規格書的總綱與既有內容入口，沿用 APP 的「總綱／功能分冊／跨頁流程／整體驗收」方法，但內容只以 Web／Nuxt 為準。撰寫規則與章節骨架見 [`WEB_SPEC_RULES.md`](WEB_SPEC_RULES.md)。10 個功能分冊、跨頁整合、整體驗收與 Web HTML 閱讀分頁均已建立初版；工作單描述回填仍待後續階段。
+> **Web 規格書重整基線（Phase 4｜2026-09-15）**：本書作為 Web 專屬規格書的總綱與既有內容入口，沿用 APP 的「總綱／功能分冊／跨頁流程／整體驗收」方法，但內容只以 Web／Nuxt 為準。撰寫規則與章節骨架見 [`WEB_SPEC_RULES.md`](WEB_SPEC_RULES.md)。10 個功能分冊、跨頁整合、整體驗收、Web HTML 閱讀分頁與可重跑文件驗證均已建立；工作單描述回填仍待後續階段。
 
 ## 0. Web 規格書重整基線
 
@@ -16,6 +16,7 @@
 | 跨頁整合 | [`web-12-cross-page-integration.md`](web-12-cross-page-integration.md) | Web FLOW、資料交接、保存、API／Mock 與狀態 | Phase 3 初版已建立 |
 | 整體交付 | [`web-13-acceptance-delivery.md`](web-13-acceptance-delivery.md) | Web AC、US／SC、文件、瀏覽器、SSG、部署與 handoff | Phase 3 初版已建立 |
 | HTML 閱讀版 | `index.html` | 總覽、Web 規格、前端技術參考、後端與美術分頁 | Phase 4 已產生 |
+| 文件驗證 | `validate-docs.mjs` | Markdown 章節／連結、Plane 映射、HTML 分頁與 anchor | Phase 4 已通過 61 項 |
 | 技術參考 | `20-frontend.md`、`30-backend.md`、`10-art.md` | 既有前端、後端與美術內容；功能分冊完成後保留作技術附錄與參照 | 既有文件 |
 
 本 Web 規格書對應既有 Plane 交付基線：規格父單 `YOTAPLATFO-444`、Figma 父單 `YOTAPLATFO-445`、Nuxt 父單 `YOTAPLATFO-446`；13 個功能單元的三條工作流維持既有 `YOTAPLATFO-447`～`YOTAPLATFO-485`，不因文件拆分新增或重開工作單。
@@ -186,3 +187,13 @@ PATH="/opt/homebrew/opt/node/bin:$PATH" node specs/spec-book/capture.mjs --viewp
 - 截圖來源為本機 dev server 的 mock 資料（`data/siteContent.ts`），非真實後端回應；財務數字、交易紀錄等為固定假資料
 - 三方原始碼行號引用以 `three-way-screen-matrix.md` 建立當下的 commit 為準（W: `aa326bd`／A: `3c3e396`／B: `06fdbbe`），本書之後若有新 commit，行號可能過期
 - APP／後台兩份 clone 位於 scratchpad，session 結束即消失，如需重新核對原始碼需重新 clone
+
+### 7.1 Web 文件驗證
+
+可在 repository root 執行以下命令，驗證 Web 規格書與 HTML 閱讀版的文件基線：
+
+```bash
+PATH="/opt/homebrew/opt/node/bin:$PATH" node specs/spec-book/validate-docs.mjs
+```
+
+2026-09-15 已通過 61 項、0 項失敗。此結果只證明文件、映射、連結與 HTML 結構，不代表 Nuxt、瀏覽器、部署、API 或正式帳務驗收完成。

@@ -1,125 +1,178 @@
-# WEB SPEC 11｜信箱、通知與設定
+# WEB-SPEC-11｜信箱、通知與設定
 
-> 文件狀態：Phase 2 初版，已依目前 Nuxt 原型整理；通知服務、偏好同步與帳戶安全仍待正式化。
-> 工作單映射：`YOTAPLATFO-457`（SPEC）／`YOTAPLATFO-470`（Figma）／`YOTAPLATFO-483`（WEB／Nuxt）
-> APP 參考：APP 12「信箱、通知與設定」；Web 以 `/lobby/inbox` 與 `/lobby/settings` 的目前實作為基準。
+巨亨ONLINE Web 規格書｜Phase 4 結構修訂｜2026-09-15
 
-## 0. 文件狀態與範圍
-
-本分冊涵蓋登入後信箱、系統／營運／帳務訊息、信件附件領取、信件刪除、音樂與音效、語言選擇、黑名單管理、法律文件入口與登出確認。推播、跨裝置同步、批次讀取與服務端通知尚未完成，需與客服、獎勵、財務及帳戶規格協同定義。
-
-## 1. 產品目標與使用情境
-
-- 玩家能集中查看平台公告、活動訊息、帳務結果與可領取附件。
-- 玩家能安全領取一次性附件，並在錢包／交易紀錄讀回結果。
-- 玩家能調整音樂、音效、主題與語言流程，管理黑名單並查看條款。
-- 玩家登出前能看懂會離開目前帳戶並返回官網首頁；未登入不可直接取得私人信件。
-
-## 2. 入口、路由與權限
-
-| 功能 | 路由 | 未登入行為 | 目前來源 |
-|---|---|---|---|
-| 信箱 | `/lobby/inbox` | 顯示登入／註冊入口並保留目的地 | `pages/lobby/inbox.vue` |
-| 設定 | `/lobby/settings` | 由 lobby layout 的登入邏輯保護 | `pages/lobby/settings.vue` |
-| 條款／隱私／服務規範 | Modal | 開啟法律文件 Modal | `useLegalState.ts`、`LegalModal.vue` |
-| 登出 | Modal | 只對目前登入帳號可用 | `useLogoutState.ts`、`LogoutConfirmModal.vue` |
-
-信箱與設定均使用 `layout: 'lobby'`；AppBottomNav、Header 與側邊導覽的入口狀態需在 `web-04-lobby-navigation.md` 統一維護。
-
-## 3. 信箱列表與分類
-
-目前信箱提供「營運公告」與「系統通知」兩個篩選；`system` 與 `deposit` 會歸在系統通知，`event` 歸在營運公告。每筆信件顯示已讀點、類型、時間、標題、預覽與附件標籤。
-
-目前 `InboxMessage` 類型為 `system | event | deposit`，種子資料包含活動公告、排行榜活動、儲值到帳確認與維護公告。正式版需補分頁／游標、排序、服務端未讀數、通知保留期限與多語內容。
-
-## 4. 閱讀、已讀與刪除流程
-
-1. 玩家切換分類並從列表選取信件。
-2. 開啟時呼叫 `markRead`，右側／手機詳情顯示完整內容。
-3. 若有附件，顯示附件幣別、數量、領取說明與一次性按鈕。
-4. 玩家可刪除目前信件；刪除後關閉詳情並顯示結果提示。
-5. 返回列表時保留目前分類，不應因讀取信件重置整個列表視圖。
-
-目前沒有批次全讀、批次刪除、封存、搜尋、釘選、撤回或跨裝置已讀同步；這些需由產品決策後再加到工作單／API。
-
-## 5. 信件附件與獎勵領取
-
-附件目前支援 `gold`／`silver`／`bronze` 錢包獎勵；領取成功後呼叫 `addWalletReward`，並將 `claimed` 設為 `true`，按鈕改為已領取。重複點擊或已領附件不得再次入帳。
-
-正式版的領取結果必須由服務端原子性消費，回傳獎勵交易 ID、實際入帳錢包、失敗原因與可重試狀態。附件可能過期、被撤回、受會員資格限制或需要從獎勵卡／活動服務取得，這些目前尚未在 Web Mock 建模。
-
-## 6. 信箱狀態與錯誤
-
-需覆蓋登入要求、載入中、空信箱、分類無資料、信件已讀／未讀、附件可領／已領、領取中、領取失敗、信件不存在、已刪除與服務中斷。手機版詳情以 overlay 呈現，關閉後回到列表。
-
-目前 `runMock` 會等待約 700ms 模擬領取，這是原型互動，不是服務端延遲或 SLA。正式訊息必須避免把 `setTimeout` 結果當成付款／獎勵完成證據。
-
-## 7. 設定資訊架構
-
-設定頁目前分四區：
-
-1. 音樂與音效：背景音樂開關、操作音效試聽與開關。
-2. 語言：繁體中文、English、日本語三個選項；目前只對齊選擇流程，文案仍為繁體中文。
-3. 黑名單管理：顯示封鎖玩家、玩家識別與解除封鎖。
-4. 條款與帳號：會員條款、隱私政策、平台服務規範與登出。
-
-主題目前由偏好狀態保存並套用 `document.documentElement.dataset.theme`；若正式提供深／淺色主題，需另補完整 token 與可讀性驗證。
-
-## 8. 偏好狀態與保存
-
-`usePreferencesState.ts` 提供 `musicEnabled`、`soundEnabled`、`theme`、`language`、`pushEnabled`。目前 localStorage key 為 `jh_preferences`，保存音樂、音效、主題、語言；`pushEnabled` 目前只在 state 中存在，未納入持久化。
-
-初始化只在 client 端讀取 localStorage，並在設定變更後更新 DOM／localStorage。正式版需決定偏好是否與會員帳戶同步、未登入是否保存、跨裝置優先序與伺服器失敗回退。
-
-## 9. 黑名單管理流程
-
-玩家從聊天玩家卡加入黑名單後，設定頁可看到清單、頭像、名稱、玩家識別與「解除封鎖」操作。解除後顯示提示；目前關係只保存在本次瀏覽 session，且與 `useSocialState.ts` 共用。
-
-正式版需定義封鎖對世界頻道、私人訊息、玩家資料、贈禮、轉帳與檢舉的影響，並在服務端同步黑名單，避免設定頁與聊天頁狀態分裂。
-
-## 10. 法律文件、帳戶與登出
-
-條款、隱私與服務規範從設定頁開啟共用 Legal Modal；內容需與登入／AgeGate 的同意流程一致。登出按鈕開啟確認 Modal，確認後清除登入狀態與受保護頁面資料，返回官網首頁。
-
-正式版需補登入 token／refresh token 撤銷、其他裝置 session、登出失敗、未保存流程、法律版本與同意紀錄。不能只把前端 `isLoggedIn` 設為 false 就視為安全登出。
-
-## 11. 通知、未讀與跨功能關聯
-
-信箱附件可能來自活動、儲值、任務、獎勵卡或客服結果；每封信需能追溯來源事件與交易。Header／AppBottomNav 若顯示未讀 badge，需以信箱服務端未讀總數為準，不能只以當前分類列表計算。
-
-目前沒有推播實作、未讀總數 composable、批次讀取、通知設定的服務端同步或 Web Push 權限流程；`pushEnabled` 僅為預留欄位，規格暫不宣稱已提供推播。
-
-## 12. API、資料保存與目前缺口
-
-目前信箱與設定都是 local／Mock 狀態：`useMailboxState.ts` 以 `useState` 種子信件，`usePreferencesState.ts` 只以瀏覽器 localStorage 保存部分偏好。API inventory 顯示尚未接實際 `$fetch`。
-
-正式化需補信件列表／詳情／已讀／刪除／附件領取、未讀彙總、通知偏好、黑名單 CRUD、法律版本與登出 session API；並定義資料保留、裝置同步、撤銷、重試、稽核與個資刪除邊界。
-
-## 13. Figma 交付內容
-
-Figma 需交付信箱桌面雙欄與手機列表／詳情 overlay、分類切換、未讀／已讀、附件可領／已領／失敗、空狀態與刪除提示；設定需交付四個區塊、開關、試聽、語言選擇、黑名單空／有資料、Legal Modal、登出確認與錯誤狀態。
-
-所有設定操作需提供鍵盤／螢幕閱讀器語意、清楚的 switch 狀態與 aria 文案；附件領取與登出等不可逆或資產相關操作需有確認／結果回饋。
-
-## 14. Nuxt 實作邊界
-
-主要來源為 `pages/lobby/inbox.vue`、`components/lobby/MailboxContent.vue`、`pages/lobby/settings.vue`、`composables/useMailboxState.ts`、`composables/usePreferencesState.ts`。涉及 Legal、Logout、Audio、Social 的共用狀態需沿用既有 composable，不在頁面另建平行真相。
-
-localStorage、document theme、音訊與 Modal 都必須在 client 安全初始化；含 Teleport 的 Modal 遵守 `ClientOnly`。SSG 產出的公開 HTML 不得嵌入會員私人信件或未驗證餘額。
-
-## 15. 驗收條件與驗證證據
-
-| ID | 驗收條件 |
+| 文件項目 | 內容 |
 |---|---|
-| `WEB-AC-11-01` | 未登入進入信箱會要求登入並保留目的地；登入後可看到分類與信件列表。 |
-| `WEB-AC-11-02` | 開信會標記已讀；附件只能領取一次，成功後錢包／交易結果可讀回。 |
-| `WEB-AC-11-03` | 信箱支援營運／系統篩選、詳情、手機 overlay、刪除與空狀態。 |
-| `WEB-AC-11-04` | 音樂／音效／主題／語言操作有正確 switch／選擇狀態與保存提示。 |
-| `WEB-AC-11-05` | 黑名單可由聊天加入並在設定解除，法律文件與登出確認可開啟。 |
-| `WEB-Q-11-01` | 推播、未讀彙總、批次操作、跨裝置同步與正式登出 session 契約需補齊。 |
+| 文件性質 | Web 前台信箱、通知與設定規格；通知服務、偏好同步與帳戶安全仍待正式化 |
+| Plane 規格單 | `YOTAPLATFO-457` |
+| Plane Figma 單 | `YOTAPLATFO-470` |
+| Plane Nuxt 單 | `YOTAPLATFO-483` |
+| APP 參考 | APP 12「信箱、通知與設定」；Web 以 `/lobby/inbox` 與 `/lobby/settings` 的目前實作為基準 |
+| 目前來源 | `pages/lobby/inbox.vue`、`pages/lobby/settings.vue`、`MailboxContent.vue`、`useMailboxState.ts`、`usePreferencesState.ts`、`useSocialState.ts` |
+| 適用範圍 | 登入後信箱、系統／營運／帳務訊息、附件領取、刪除、偏好、黑名單、法律文件與登出 |
+| 目前狀態 | local／Mock 狀態；推播、跨裝置同步、批次操作與正式 session 尚未完成 |
 
-## 16. 開放問題與參照來源
+## 1. 這個功能是什麼
 
-待確認：信件保留與刪除是否為軟刪除；附件有效期與撤回；帳務信件是否可直接領取；推播是否採 Web Push 或僅導向 APP；偏好與黑名單是否需要帳戶同步；語言切換何時正式翻譯；法律文件版本與同意紀錄如何稽核。
+本功能讓登入後玩家集中查看平台公告、活動訊息、帳務結果與可領取附件，管理音樂、音效、主題、語言與黑名單，查看法律文件，並在確認後安全登出。玩家應能區分已讀與附件已領、知道每個通知的來源與結果，以及在手機上從列表與詳情 overlay 間返回。
 
-參照：`pages/lobby/inbox.vue`、`components/lobby/MailboxContent.vue`、`pages/lobby/settings.vue`、`composables/useMailboxState.ts`、`composables/usePreferencesState.ts`、`composables/useSocialState.ts`、`composables/useLegalState.ts`、`composables/useLogoutState.ts`、`specs/2026-07-29-api-inventory.md`、`specs/2026-07-29-api-gap-analysis.md`。
+信箱與設定均使用 `layout: 'lobby'`；目前 `useState` 與 localStorage 只代表原型保存範圍，不能把畫面讀取／領取成功視為正式通知、資產或 session 已完成同步。
+
+## 2. 這個功能不做什麼
+
+| 不在本章範圍 | 負責位置 |
+|---|---|
+| 登入、註冊、Age Gate 與 token 建立 | `web-03-authentication.md` |
+| 錢包、儲值、交易與獎勵資產規則 | `web-07-finance.md`、`web-08-rewards-promotions-gifts.md` |
+| 世界／私人聊天、好友與封鎖的互動流程 | `web-10-social-support.md`；本章只承接黑名單入口 |
+| 正式推播、通知服務、帳戶 session 撤銷與個資刪除 | 後端／資安／營運契約 |
+| APP 原生通知與裝置權限流程 | APP 規格僅作差異參考 |
+
+## 3. 名詞說明
+
+| 名詞 | 定義 |
+|---|---|
+| 信箱 | 玩家登入後查看平台訊息與附件的私有功能 |
+| 未讀 | 信件或通知尚未由玩家開啟／確認的狀態；不等同附件未領 |
+| 附件 | 信件中可一次性領取的金幣、銀幣或銅幣獎勵候選 |
+| 通知來源 | 活動、儲值、任務、獎勵卡、客服或系統事件的可追溯來源 |
+| 偏好 | 音樂、音效、主題、語言與預留 push 等使用者設定 |
+| 黑名單 | 與社交頁共用的封鎖玩家關係；解除後需同步聊天與玩家卡 |
+| 法律文件 | 會員條款、隱私政策與平台服務規範及其版本／同意紀錄 |
+
+## 4. 畫面內容
+
+| 頁面／區塊 | 內容 | 目前來源 |
+|---|---|---|
+| 信箱列表 | 分類、未讀點、類型、時間、標題、預覽與附件標籤 | `/lobby/inbox`、`MailboxContent.vue` |
+| 信件詳情 | 完整內文、附件、已讀／領取結果、刪除與返回 | `useMailboxState.ts`、信箱元件 |
+| 設定 | 音樂／音效、主題、語言、黑名單、法律與登出 | `/lobby/settings`、設定元件 |
+| Legal Modal | 會員條款、隱私政策、平台服務規範 | `useLegalState.ts`、`LegalModal.vue` |
+| Logout Modal | 登出確認、清理狀態、返回官網 | `useLogoutState.ts`、`LogoutConfirmModal.vue` |
+
+目前信箱提供「營運公告」與「系統通知」篩選；`system` 與 `deposit` 歸在系統通知，`event` 歸在營運公告。手機版詳情以 overlay 呈現，關閉後返回列表與原分類。
+
+## 5. 欄位說明
+
+| 欄位 | 顯示／輸入內容 | 限制與目前狀態 |
+|---|---|---|
+| message | 信件 ID、類型、標題、預覽、內文、時間與已讀狀態 | 目前 `system | event | deposit`；正式需服務端 schema |
+| category | 營運公告／系統通知 | 分類規則需與未讀彙總及多語內容一致 |
+| attachment | 幣別、數量、說明、可領／已領／失敗 | 一次性領取由服務端原子性消費 |
+| source／reference | 活動、儲值、任務、獎勵、客服來源與交易 ID | 必須可追溯，不可只依畫面文字 |
+| preference | `musicEnabled`、`soundEnabled`、`theme`、`language`、`pushEnabled` | 目前只持久化部分欄位；正式同步規則待確認 |
+| language | 繁體中文、English、日本語 | 目前只對齊選擇流程，文案仍以繁中為主 |
+| blacklist | 玩家名稱、識別與解除封鎖操作 | 目前與社交 state 共用本次瀏覽狀態 |
+| legal／logout | 文件版本、同意、登出確認與結果 | 正式需 token／session 撤銷與稽核 |
+
+## 6. 狀態說明
+
+| 狀態 | 目前／目標行為 |
+|---|---|
+| `unread`／`read` | 開啟信件標記已讀；已讀不代表附件已領 |
+| `claimable`／`claiming`／`claimed` | 附件可領、處理中、已領；重複點擊不可再次入帳 |
+| `expired`／`revoked`／`failed` | 附件或信件需顯示失效、撤回、失敗與可重試原因 |
+| `loading`／`empty`／`service-error` | 列表、詳情、附件與偏好各自可觀察 |
+| `saved`／`save-failed` | 偏好變更顯示保存結果，不把 DOM 變更當成服務端同步 |
+| `blocked`／`legal-open`／`logout-confirm` | 黑名單、法律與登出 Modal 的狀態需可關閉／返回 |
+
+目前 `runMock` 以約 700ms 延遲模擬附件領取；這是原型互動，不是服務端延遲、付款或獎勵完成證據。
+
+## 7. 查詢、排序與分頁
+
+- 信箱需定義分類、未讀、時間排序、搜尋、批次已讀／刪除、封存與 cursor／分頁；目前只提供固定 Mock 列表與部分分類。
+- Header／AppBottomNav 的未讀 badge 應使用服務端未讀總數，不可只加總當前分類。
+- 通知需能依來源、類型、時間與狀態查詢；附件領取結果與交易 reference 不應從列表快取推算。
+- 黑名單依社交服務的玩家識別排序／分頁，法律文件依版本與有效期間查詢；目前均為前端狀態。
+
+## 8. 操作與跳轉
+
+### 8.1 信件閱讀與附件
+
+1. 玩家切換分類並選取信件，開啟時執行 `markRead`。
+2. 詳情顯示完整內容、附件幣別／數量／說明與一次性領取按鈕。
+3. 領取成功後更新 `claimed` 與對應錢包／交易結果；已領或失敗不可無聲重試。
+4. 玩家可刪除信件；刪除後關閉詳情並返回原分類，正式需定義軟刪除、封存與稽核。
+
+### 8.2 設定、黑名單與法律
+
+設定分為音樂／音效、語言、黑名單、條款與帳號四區。玩家可解除封鎖、開啟共用 Legal Modal、調整偏好；黑名單變更需與 `useSocialState.ts` 共享責任，不能只在設定頁另建一份狀態。
+
+### 8.3 登出與跨頁返回
+
+登出按鈕開啟確認 Modal，確認後清除登入、財務、贈禮、社交、客服與受保護頁面資料，返回官網首頁。正式版需處理 token／refresh token 撤銷、其他裝置 session、登出失敗與未完成流程。
+
+## 9. 頁面狀態
+
+需覆蓋未登入、登入導流、載入中、空信箱、分類無資料、信件已讀／未讀、附件可領／已領／領取中／失敗／過期、信件不存在／已刪除、服務中斷、偏好保存成功／失敗、黑名單空／有資料、法律 Modal、登出確認／取消／失敗與手機詳情 overlay。SSG 公開 HTML 不得嵌入會員私人信件或未驗證餘額。
+
+## 10. User Story — 玩家
+
+| 編號 | User Story |
+|---|---|
+| `WEB-US-U-11-001` | 身為玩家，我要查看公告、活動與帳務信件，以便掌握平台訊息與結果。 |
+| `WEB-US-U-11-002` | 身為玩家，我要安全領取一次性附件並在錢包／交易紀錄讀回結果，以便確認資產變化。 |
+| `WEB-US-U-11-003` | 身為玩家，我要調整偏好、管理黑名單、閱讀法律文件並安全登出，以便控制帳戶體驗。 |
+
+## 11. User Story — 開發人員
+
+| 編號 | User Story |
+|---|---|
+| `WEB-US-D-11-001` | 身為開發人員，我要把已讀、附件領取、錢包與交易 reference 分開，以便不把已讀誤當成入帳。 |
+| `WEB-US-D-11-002` | 身為開發人員，我要讓信箱、設定、聊天與登入共用正確的 composable 邊界，以便狀態不分裂。 |
+| `WEB-US-D-11-003` | 身為開發人員，我要在 SSG 下安全初始化 localStorage、theme、音訊與 Teleport Modal，以便不造成 hydration mismatch。 |
+
+## 12. User Story — QA 驗證者
+
+| 編號 | User Story |
+|---|---|
+| `WEB-US-Q-11-001` | 身為 QA，我要測試分類、已讀、附件一次性領取、刪除與手機 overlay，以便確認信箱流程可回歸。 |
+| `WEB-US-Q-11-002` | 身為 QA，我要測試附件失敗、過期、重複點擊、未登入與服務中斷，以便確認不會無聲入帳或遺失狀態。 |
+| `WEB-US-Q-11-003` | 身為 QA，我要測試偏好保存、黑名單同步、法律 Modal、登出清理與重新登入，以便確認跨頁帳戶邊界。 |
+
+## 13. 驗收標準
+
+| 編號 | 驗收標準 |
+|---|---|
+| `WEB-AC-11-001` | 未登入進入信箱會要求登入並保留目的地；登入後可看到分類與信件列表。 |
+| `WEB-AC-11-002` | 開信會標記已讀；附件只能領取一次，成功後錢包／交易結果可讀回。 |
+| `WEB-AC-11-003` | 信箱支援營運／系統篩選、詳情、手機 overlay、刪除與空狀態。 |
+| `WEB-AC-11-004` | 音樂／音效／主題／語言操作有正確 switch／選擇狀態與保存提示。 |
+| `WEB-AC-11-005` | 黑名單可由聊天加入並在設定解除，法律文件與登出確認可開啟。 |
+| `WEB-Q-11-001` | 推播、未讀彙總、批次操作、跨裝置同步與正式登出 session 契約需補齊。 |
+
+## 14. 這個功能需要的資料
+
+- 信件 ID、類型、分類、標題、預覽、內文、時間、已讀狀態、刪除／封存狀態與內容版本。
+- 附件 ID、幣別、數量、有效期、資格、領取狀態、交易 ID、wallet reference、失敗原因與冪等鍵。
+- 來源事件、活動／儲值／任務／獎勵／客服 reference、未讀總數、通知偏好與推播權限。
+- `musicEnabled`、`soundEnabled`、`theme`、`language`、`pushEnabled`、保存來源與跨裝置版本。
+- 黑名單玩家識別、關係變更、法律文件版本／同意紀錄、session／token 撤銷與登出結果。
+
+目前 `useMailboxState.ts` 以 `useState` 種子信件，`usePreferencesState.ts` 只以 localStorage 保存部分偏好；正式 API inventory 尚未接實際 `$fetch`。
+
+## 15. 待確認事項
+
+| 編號 | 問題 | 影響 | 負責確認 |
+|---|---|---|---|
+| `WEB-Q-11-001` | 信件保留與刪除是否為軟刪除，附件有效期與撤回如何處理？ | 列表、API、稽核與客服 | 產品／後端 |
+| `WEB-Q-11-002` | 帳務／獎勵信件是否可直接領取，結果如何與交易紀錄關聯？ | 附件、錢包、信箱與對帳 | 財務／後端 |
+| `WEB-Q-11-003` | 推播採 Web Push、Email 或僅導向 APP，未讀彙總由何處提供？ | 通知、權限與 badge | 產品／後端 |
+| `WEB-Q-11-004` | 偏好與黑名單是否需要帳戶同步，未登入 local fallback 如何處理？ | state、localStorage 與跨裝置 | 產品／資安 |
+| `WEB-Q-11-005` | 語言切換、法律文件版本與同意紀錄何時正式支援與如何稽核？ | 多語、法遵與 UI | 產品／法務 |
+
+## 16. 版本沿革
+
+| 版本 | 日期 | 內容 |
+|---|---|---|
+| v0.1 | 2026-09-15 | 依目前信箱、設定、偏好、黑名單與登出 state 建立功能分冊初版。 |
+| v0.2 | 2026-09-15 | 對齊 APP 17 節規格責任，補齊 User Story、資料、驗收、待確認與交付檢查。 |
+
+## 17. 交付檢查表
+
+- [ ] 已確認信箱分類、未讀、附件一次性領取、刪除／封存與通知來源契約。
+- [ ] Figma 已交付桌機雙欄、手機列表／詳情 overlay、附件與設定的成功／空態／錯誤狀態。
+- [ ] Nuxt 已維持 mailbox／preferences／social／auth 的單一 state 來源與 SSG client 邊界。
+- [ ] 已補 `WEB-FLOW-06`、API／事件、交易 reference、法律版本與登出 session 交叉引用。
+- [ ] 已分開記錄 Mock、文件、瀏覽器、SSG、通知服務與正式帳戶驗收證據。

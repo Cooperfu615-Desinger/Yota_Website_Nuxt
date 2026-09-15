@@ -2,7 +2,7 @@
 
 - 文件版本：v0.2
 - 建立日期：2026-09-15
-- 文件狀態：Phase 4 文件基線；10 個功能分冊、跨頁整合、整體驗收與 Web HTML 閱讀版初版已建立
+- 文件狀態：Phase 4 文件基線；10 個功能分冊、跨頁整合、整體驗收、Web HTML 閱讀版與可重跑文件驗證已建立
 - 適用專案：`巨亨ONLINE-Nuxt`
 - 對應 Plane：`YOTAPLATFO-444`（規格父單）、`YOTAPLATFO-447`～`YOTAPLATFO-459`（規格子單）
 
@@ -152,6 +152,14 @@ Plane 工作單識別碼與規格書內的流程識別碼分開管理：
 | 瀏覽器桌機／手機操作 | 本機原型在指定環境的可操作性 | 正式資料、支付、WebSocket 或 Prod 狀態 |
 | 部署／正式服務驗收 | 指定環境的實際交付結果 | 未測試的其他環境或未覆蓋情境 |
 
+可重跑的文件檢查：
+
+```bash
+PATH="/opt/homebrew/opt/node/bin:$PATH" node specs/spec-book/validate-docs.mjs
+```
+
+此檢查涵蓋 10 份功能分冊的 APP 17 節結構、三方 Plane 映射、相對連結、3 父單＋39 子單逐筆 source_key、HTML 五分頁、Web 規格來源與 anchor／TOC 對應。2026-09-15 結果為 61 項通過、0 項失敗；不把文件通過推論為產品或正式服務通過。
+
 ## 7. 階段交付狀態
 
 - [x] 確認沿用現有 `specs/spec-book/`，不建立平行 Web 規格書目錄。
@@ -161,5 +169,6 @@ Plane 工作單識別碼與規格書內的流程識別碼分開管理：
 - [x] 將 `20-frontend.md` 的功能範圍拆成 10 份 Web 功能分冊初版。
 - [x] 建立跨頁流程、玩家情境與整體驗收正文初版。
 - [x] 更新 HTML 產生器與完整索引初版。
+- [x] 建立並通過可重跑的 Markdown／Plane 映射／HTML／anchor／link 文件檢查。
 - [ ] 回填 `WEB_WORK_ORDER_BATCH_v1.md` 的實際章節位置與證據。
 - [ ] 將確認後的規格摘要同步至 Plane 頁面。
