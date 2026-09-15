@@ -130,15 +130,17 @@ tr:nth-child(even) td{background:rgba(255,255,255,0.02)}
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="brand">巨亨ONLINE 規格書<small>2026-07-30 · 美術／前端／後端</small></div>
+    <div class="brand">巨亨ONLINE 規格書<small>2026-09-15 · Web 規格／Figma／Nuxt／後端</small></div>
     <div class="tabs">
 <button class="tab-btn active" data-tab="overview">◎ 總覽</button>
+<button class="tab-btn" data-tab="webspec">◈ Web 規格</button>
 <button class="tab-btn" data-tab="frontend">⌨ 前端</button>
 <button class="tab-btn" data-tab="backend">☁ 後端</button>
 <button class="tab-btn" data-tab="art">◆ 美術</button>
     </div>
 
     <nav class="toc" data-toc="overview" style="display:block">
+      <a href="#0-web-規格書重整基線" class="toc-link">0. Web 規格書重整基線</a>
       <a href="#1-系統範圍與三方關係" class="toc-link">1. 系統範圍與三方關係</a>
       <a href="#2-名詞與主鍵" class="toc-link">2. 名詞與主鍵</a>
       <a href="#3-三分冊導覽" class="toc-link">3. 三分冊導覽</a>
@@ -146,6 +148,220 @@ tr:nth-child(even) td{background:rgba(255,255,255,0.02)}
       <a href="#5-畫面索引總表" class="toc-link">5. 畫面索引總表</a>
       <a href="#6-截圖腳本使用說明" class="toc-link">6. 截圖腳本使用說明</a>
       <a href="#7-已知限制" class="toc-link">7. 已知限制</a>
+    </nav>
+
+    <nav class="toc" data-toc="webspec" style="display:none">
+      <a href="#1-文件定位與來源優先順序" class="toc-link">1. 文件定位與來源優先順序</a>
+      <a href="#2-web-規格書層級" class="toc-link">2. Web 規格書層級</a>
+      <a href="#3-預定文件與工作單對照" class="toc-link">3. 預定文件與工作單對照</a>
+      <a href="#4-編號與追蹤原則" class="toc-link">4. 編號與追蹤原則</a>
+      <a href="#5-章節維護規則" class="toc-link">5. 章節維護規則</a>
+      <a href="#6-驗證邊界" class="toc-link">6. 驗證邊界</a>
+      <a href="#7-階段交付狀態" class="toc-link">7. 階段交付狀態</a>
+      <a href="#1-這個功能是什麼" class="toc-link">1. 這個功能是什麼</a>
+      <a href="#2-這個功能不做什麼" class="toc-link">2. 這個功能不做什麼</a>
+      <a href="#3-名詞說明" class="toc-link">3. 名詞說明</a>
+      <a href="#4-畫面內容" class="toc-link">4. 畫面內容</a>
+      <a href="#5-欄位說明" class="toc-link">5. 欄位說明</a>
+      <a href="#6-狀態說明" class="toc-link">6. 狀態說明</a>
+      <a href="#7-查詢-排序與分頁" class="toc-link">7. 查詢、排序與分頁</a>
+      <a href="#8-操作與跳轉" class="toc-link">8. 操作與跳轉</a>
+      <a href="#9-頁面狀態" class="toc-link">9. 頁面狀態</a>
+      <a href="#10-user-story-玩家" class="toc-link">10. User Story — 玩家</a>
+      <a href="#11-user-story-開發人員" class="toc-link">11. User Story — 開發人員</a>
+      <a href="#12-user-story-qa-驗證者" class="toc-link">12. User Story — QA 驗證者</a>
+      <a href="#13-驗收標準" class="toc-link">13. 驗收標準</a>
+      <a href="#14-這個功能需要的資料" class="toc-link">14. 這個功能需要的資料</a>
+      <a href="#15-待確認事項" class="toc-link">15. 待確認事項</a>
+      <a href="#16-版本沿革" class="toc-link">16. 版本沿革</a>
+      <a href="#17-交付檢查表" class="toc-link">17. 交付檢查表</a>
+      <a href="#1-這個功能是什麼-2" class="toc-link">1. 這個功能是什麼</a>
+      <a href="#2-這個功能不做什麼-2" class="toc-link">2. 這個功能不做什麼</a>
+      <a href="#3-名詞說明-2" class="toc-link">3. 名詞說明</a>
+      <a href="#4-畫面內容-2" class="toc-link">4. 畫面內容</a>
+      <a href="#5-欄位說明-2" class="toc-link">5. 欄位說明</a>
+      <a href="#6-狀態說明-2" class="toc-link">6. 狀態說明</a>
+      <a href="#7-查詢-排序與分頁-2" class="toc-link">7. 查詢、排序與分頁</a>
+      <a href="#8-操作與跳轉-2" class="toc-link">8. 操作與跳轉</a>
+      <a href="#9-頁面狀態-2" class="toc-link">9. 頁面狀態</a>
+      <a href="#10-user-story-玩家-2" class="toc-link">10. User Story — 玩家</a>
+      <a href="#11-user-story-開發人員-2" class="toc-link">11. User Story — 開發人員</a>
+      <a href="#12-user-story-qa-驗證者-2" class="toc-link">12. User Story — QA 驗證者</a>
+      <a href="#13-驗收標準-2" class="toc-link">13. 驗收標準</a>
+      <a href="#14-這個功能需要的資料-2" class="toc-link">14. 這個功能需要的資料</a>
+      <a href="#15-待確認事項-2" class="toc-link">15. 待確認事項</a>
+      <a href="#16-版本沿革-2" class="toc-link">16. 版本沿革</a>
+      <a href="#17-交付檢查表-2" class="toc-link">17. 交付檢查表</a>
+      <a href="#1-這個功能是什麼-3" class="toc-link">1. 這個功能是什麼</a>
+      <a href="#2-這個功能不做什麼-3" class="toc-link">2. 這個功能不做什麼</a>
+      <a href="#3-名詞說明-3" class="toc-link">3. 名詞說明</a>
+      <a href="#4-畫面內容-3" class="toc-link">4. 畫面內容</a>
+      <a href="#5-欄位說明-3" class="toc-link">5. 欄位說明</a>
+      <a href="#6-狀態說明-3" class="toc-link">6. 狀態說明</a>
+      <a href="#7-查詢-排序與分頁-3" class="toc-link">7. 查詢、排序與分頁</a>
+      <a href="#8-操作與跳轉-3" class="toc-link">8. 操作與跳轉</a>
+      <a href="#9-頁面狀態-3" class="toc-link">9. 頁面狀態</a>
+      <a href="#10-user-story-玩家-3" class="toc-link">10. User Story — 玩家</a>
+      <a href="#11-user-story-開發人員-3" class="toc-link">11. User Story — 開發人員</a>
+      <a href="#12-user-story-qa-驗證者-3" class="toc-link">12. User Story — QA 驗證者</a>
+      <a href="#13-驗收標準-3" class="toc-link">13. 驗收標準</a>
+      <a href="#14-這個功能需要的資料-3" class="toc-link">14. 這個功能需要的資料</a>
+      <a href="#15-待確認事項-3" class="toc-link">15. 待確認事項</a>
+      <a href="#16-版本沿革-3" class="toc-link">16. 版本沿革</a>
+      <a href="#17-交付檢查表-3" class="toc-link">17. 交付檢查表</a>
+      <a href="#1-這個功能是什麼-4" class="toc-link">1. 這個功能是什麼</a>
+      <a href="#2-這個功能不做什麼-4" class="toc-link">2. 這個功能不做什麼</a>
+      <a href="#3-名詞說明-4" class="toc-link">3. 名詞說明</a>
+      <a href="#4-畫面內容-4" class="toc-link">4. 畫面內容</a>
+      <a href="#5-欄位說明-4" class="toc-link">5. 欄位說明</a>
+      <a href="#6-狀態說明-4" class="toc-link">6. 狀態說明</a>
+      <a href="#7-查詢-排序與分頁-4" class="toc-link">7. 查詢、排序與分頁</a>
+      <a href="#8-操作與跳轉-4" class="toc-link">8. 操作與跳轉</a>
+      <a href="#9-頁面狀態-4" class="toc-link">9. 頁面狀態</a>
+      <a href="#10-user-story-玩家-4" class="toc-link">10. User Story — 玩家</a>
+      <a href="#11-user-story-開發人員-4" class="toc-link">11. User Story — 開發人員</a>
+      <a href="#12-user-story-qa-驗證者-4" class="toc-link">12. User Story — QA 驗證者</a>
+      <a href="#13-驗收標準-4" class="toc-link">13. 驗收標準</a>
+      <a href="#14-這個功能需要的資料-4" class="toc-link">14. 這個功能需要的資料</a>
+      <a href="#15-待確認事項-4" class="toc-link">15. 待確認事項</a>
+      <a href="#16-版本沿革-4" class="toc-link">16. 版本沿革</a>
+      <a href="#17-交付檢查表-4" class="toc-link">17. 交付檢查表</a>
+      <a href="#1-這個功能是什麼-5" class="toc-link">1. 這個功能是什麼</a>
+      <a href="#2-這個功能不做什麼-5" class="toc-link">2. 這個功能不做什麼</a>
+      <a href="#3-名詞說明-5" class="toc-link">3. 名詞說明</a>
+      <a href="#4-畫面內容-5" class="toc-link">4. 畫面內容</a>
+      <a href="#5-欄位說明-5" class="toc-link">5. 欄位說明</a>
+      <a href="#6-狀態說明-5" class="toc-link">6. 狀態說明</a>
+      <a href="#7-查詢-排序與分頁-5" class="toc-link">7. 查詢、排序與分頁</a>
+      <a href="#8-操作與跳轉-5" class="toc-link">8. 操作與跳轉</a>
+      <a href="#9-頁面狀態-5" class="toc-link">9. 頁面狀態</a>
+      <a href="#10-user-story-玩家-5" class="toc-link">10. User Story — 玩家</a>
+      <a href="#11-user-story-開發人員-5" class="toc-link">11. User Story — 開發人員</a>
+      <a href="#12-user-story-qa-驗證者-5" class="toc-link">12. User Story — QA 驗證者</a>
+      <a href="#13-驗收標準-5" class="toc-link">13. 驗收標準</a>
+      <a href="#14-這個功能需要的資料-5" class="toc-link">14. 這個功能需要的資料</a>
+      <a href="#15-待確認事項-5" class="toc-link">15. 待確認事項</a>
+      <a href="#16-版本沿革-5" class="toc-link">16. 版本沿革</a>
+      <a href="#17-交付檢查表-5" class="toc-link">17. 交付檢查表</a>
+      <a href="#1-這個功能是什麼-6" class="toc-link">1. 這個功能是什麼</a>
+      <a href="#2-這個功能不做什麼-6" class="toc-link">2. 這個功能不做什麼</a>
+      <a href="#3-名詞說明-6" class="toc-link">3. 名詞說明</a>
+      <a href="#4-畫面內容-6" class="toc-link">4. 畫面內容</a>
+      <a href="#5-欄位說明-6" class="toc-link">5. 欄位說明</a>
+      <a href="#6-狀態說明-6" class="toc-link">6. 狀態說明</a>
+      <a href="#7-查詢-排序與分頁-6" class="toc-link">7. 查詢、排序與分頁</a>
+      <a href="#8-操作與跳轉-6" class="toc-link">8. 操作與跳轉</a>
+      <a href="#9-頁面狀態-6" class="toc-link">9. 頁面狀態</a>
+      <a href="#10-user-story-玩家-6" class="toc-link">10. User Story — 玩家</a>
+      <a href="#11-user-story-開發人員-6" class="toc-link">11. User Story — 開發人員</a>
+      <a href="#12-user-story-qa-驗證者-6" class="toc-link">12. User Story — QA 驗證者</a>
+      <a href="#13-驗收標準-6" class="toc-link">13. 驗收標準</a>
+      <a href="#14-這個功能需要的資料-6" class="toc-link">14. 這個功能需要的資料</a>
+      <a href="#15-待確認事項-6" class="toc-link">15. 待確認事項</a>
+      <a href="#16-版本沿革-6" class="toc-link">16. 版本沿革</a>
+      <a href="#17-交付檢查表-6" class="toc-link">17. 交付檢查表</a>
+      <a href="#0-文件狀態與範圍" class="toc-link">0. 文件狀態與範圍</a>
+      <a href="#1-產品目標與使用情境" class="toc-link">1. 產品目標與使用情境</a>
+      <a href="#2-名詞-貨幣與來源優先序" class="toc-link">2. 名詞、貨幣與來源優先序</a>
+      <a href="#3-進入點-路由與導流" class="toc-link">3. 進入點、路由與導流</a>
+      <a href="#4-介面與資訊架構" class="toc-link">4. 介面與資訊架構</a>
+      <a href="#5-狀態與資料模型" class="toc-link">5. 狀態與資料模型</a>
+      <a href="#6-主要流程-獎勵卡啟用-合併與轉換" class="toc-link">6. 主要流程：獎勵卡啟用、合併與轉換</a>
+      <a href="#7-主要流程-優惠碼預覽與兌換" class="toc-link">7. 主要流程：優惠碼預覽與兌換</a>
+      <a href="#8-主要流程-玩家贈禮申請" class="toc-link">8. 主要流程：玩家贈禮申請</a>
+      <a href="#9-例外-錯誤與不可操作狀態" class="toc-link">9. 例外、錯誤與不可操作狀態</a>
+      <a href="#10-合併-費率與資產一致性規則" class="toc-link">10. 合併、費率與資產一致性規則</a>
+      <a href="#11-權限-安全與風控邊界" class="toc-link">11. 權限、安全與風控邊界</a>
+      <a href="#12-api-事件與目前缺口" class="toc-link">12. API、事件與目前缺口</a>
+      <a href="#13-figma-交付內容" class="toc-link">13. Figma 交付內容</a>
+      <a href="#14-nuxt-實作邊界" class="toc-link">14. Nuxt 實作邊界</a>
+      <a href="#15-驗收條件與驗證證據" class="toc-link">15. 驗收條件與驗證證據</a>
+      <a href="#16-開放問題與參照來源" class="toc-link">16. 開放問題與參照來源</a>
+      <a href="#0-文件狀態與範圍-2" class="toc-link">0. 文件狀態與範圍</a>
+      <a href="#1-產品目標與使用情境-2" class="toc-link">1. 產品目標與使用情境</a>
+      <a href="#2-入口-路由與頁面對照" class="toc-link">2. 入口、路由與頁面對照</a>
+      <a href="#3-每日簽到的介面結構" class="toc-link">3. 每日簽到的介面結構</a>
+      <a href="#4-每日任務資料與狀態" class="toc-link">4. 每日任務資料與狀態</a>
+      <a href="#5-每日簽到主要流程" class="toc-link">5. 每日簽到主要流程</a>
+      <a href="#6-補簽-里程碑與差異標記" class="toc-link">6. 補簽、里程碑與差異標記</a>
+      <a href="#7-活動列表與活動詳情" class="toc-link">7. 活動列表與活動詳情</a>
+      <a href="#8-排行榜資訊架構" class="toc-link">8. 排行榜資訊架構</a>
+      <a href="#9-排行榜流程與例外" class="toc-link">9. 排行榜流程與例外</a>
+      <a href="#10-教學與加入主畫面流程" class="toc-link">10. 教學與加入主畫面流程</a>
+      <a href="#11-權限-時間與資料邊界" class="toc-link">11. 權限、時間與資料邊界</a>
+      <a href="#12-api-與目前缺口" class="toc-link">12. API 與目前缺口</a>
+      <a href="#13-figma-交付內容-2" class="toc-link">13. Figma 交付內容</a>
+      <a href="#14-nuxt-實作邊界-2" class="toc-link">14. Nuxt 實作邊界</a>
+      <a href="#15-驗收條件與驗證證據-2" class="toc-link">15. 驗收條件與驗證證據</a>
+      <a href="#16-開放問題與參照來源-2" class="toc-link">16. 開放問題與參照來源</a>
+      <a href="#0-文件狀態與範圍-3" class="toc-link">0. 文件狀態與範圍</a>
+      <a href="#1-產品目標與使用情境-3" class="toc-link">1. 產品目標與使用情境</a>
+      <a href="#2-頻道與資訊架構" class="toc-link">2. 頻道與資訊架構</a>
+      <a href="#3-世界頻道流程" class="toc-link">3. 世界頻道流程</a>
+      <a href="#4-玩家清單與玩家小卡" class="toc-link">4. 玩家清單與玩家小卡</a>
+      <a href="#5-私人頻道流程" class="toc-link">5. 私人頻道流程</a>
+      <a href="#6-好友-黑名單與玩家關係" class="toc-link">6. 好友、黑名單與玩家關係</a>
+      <a href="#7-玩家檢舉流程" class="toc-link">7. 玩家檢舉流程</a>
+      <a href="#8-客服頻道與案件列表" class="toc-link">8. 客服頻道與案件列表</a>
+      <a href="#9-客服建立與對話流程" class="toc-link">9. 客服建立與對話流程</a>
+      <a href="#10-客服狀態-訊息與例外" class="toc-link">10. 客服狀態、訊息與例外</a>
+      <a href="#11-權限-內容安全與使用者保護" class="toc-link">11. 權限、內容安全與使用者保護</a>
+      <a href="#12-api-websocket-與目前缺口" class="toc-link">12. API、WebSocket 與目前缺口</a>
+      <a href="#13-figma-交付內容-3" class="toc-link">13. Figma 交付內容</a>
+      <a href="#14-nuxt-實作邊界-3" class="toc-link">14. Nuxt 實作邊界</a>
+      <a href="#15-驗收條件與驗證證據-3" class="toc-link">15. 驗收條件與驗證證據</a>
+      <a href="#16-開放問題與參照來源-3" class="toc-link">16. 開放問題與參照來源</a>
+      <a href="#0-文件狀態與範圍-4" class="toc-link">0. 文件狀態與範圍</a>
+      <a href="#1-產品目標與使用情境-4" class="toc-link">1. 產品目標與使用情境</a>
+      <a href="#2-入口-路由與權限" class="toc-link">2. 入口、路由與權限</a>
+      <a href="#3-信箱列表與分類" class="toc-link">3. 信箱列表與分類</a>
+      <a href="#4-閱讀-已讀與刪除流程" class="toc-link">4. 閱讀、已讀與刪除流程</a>
+      <a href="#5-信件附件與獎勵領取" class="toc-link">5. 信件附件與獎勵領取</a>
+      <a href="#6-信箱狀態與錯誤" class="toc-link">6. 信箱狀態與錯誤</a>
+      <a href="#7-設定資訊架構" class="toc-link">7. 設定資訊架構</a>
+      <a href="#8-偏好狀態與保存" class="toc-link">8. 偏好狀態與保存</a>
+      <a href="#9-黑名單管理流程" class="toc-link">9. 黑名單管理流程</a>
+      <a href="#10-法律文件-帳戶與登出" class="toc-link">10. 法律文件、帳戶與登出</a>
+      <a href="#11-通知-未讀與跨功能關聯" class="toc-link">11. 通知、未讀與跨功能關聯</a>
+      <a href="#12-api-資料保存與目前缺口" class="toc-link">12. API、資料保存與目前缺口</a>
+      <a href="#13-figma-交付內容-4" class="toc-link">13. Figma 交付內容</a>
+      <a href="#14-nuxt-實作邊界-4" class="toc-link">14. Nuxt 實作邊界</a>
+      <a href="#15-驗收條件與驗證證據-4" class="toc-link">15. 驗收條件與驗證證據</a>
+      <a href="#16-開放問題與參照來源-4" class="toc-link">16. 開放問題與參照來源</a>
+      <a href="#0-文件狀態與整合範圍" class="toc-link">0. 文件狀態與整合範圍</a>
+      <a href="#1-跨頁整合原則" class="toc-link">1. 跨頁整合原則</a>
+      <a href="#2-公開頁-登入與大廳邊界" class="toc-link">2. 公開頁、登入與大廳邊界</a>
+      <a href="#3-跨頁流程總表" class="toc-link">3. 跨頁流程總表</a>
+      <a href="#4-web-flow-01-公開頁-認證與受保護目的地" class="toc-link">4. WEB-FLOW-01：公開頁、認證與受保護目的地</a>
+      <a href="#5-web-flow-02-大廳-遊戲啟動與返回" class="toc-link">5. WEB-FLOW-02：大廳、遊戲啟動與返回</a>
+      <a href="#6-web-flow-03-銀行-保險箱-兌換與交易紀錄" class="toc-link">6. WEB-FLOW-03：銀行、保險箱、兌換與交易紀錄</a>
+      <a href="#7-web-flow-04-任務-活動-優惠碼-獎勵卡與信箱" class="toc-link">7. WEB-FLOW-04：任務、活動、優惠碼、獎勵卡與信箱</a>
+      <a href="#8-web-flow-05-聊天-玩家卡-贈禮-檢舉與客服" class="toc-link">8. WEB-FLOW-05：聊天、玩家卡、贈禮、檢舉與客服</a>
+      <a href="#9-web-flow-06-信箱-設定-法律與登出" class="toc-link">9. WEB-FLOW-06：信箱、設定、法律與登出</a>
+      <a href="#10-route-query-深連結與重新整理" class="toc-link">10. Route query、深連結與重新整理</a>
+      <a href="#11-跨頁狀態所有權與保存範圍" class="toc-link">11. 跨頁狀態所有權與保存範圍</a>
+      <a href="#12-跨頁錯誤-回滾與一致性" class="toc-link">12. 跨頁錯誤、回滾與一致性</a>
+      <a href="#13-api-事件與整合依賴" class="toc-link">13. API、事件與整合依賴</a>
+      <a href="#14-nuxt-ssg-與-runtime-邊界" class="toc-link">14. Nuxt、SSG 與 runtime 邊界</a>
+      <a href="#15-跨頁驗收條件" class="toc-link">15. 跨頁驗收條件</a>
+      <a href="#16-開放問題-變更與參照來源" class="toc-link">16. 開放問題、變更與參照來源</a>
+      <a href="#0-文件狀態-目標與驗收語意" class="toc-link">0. 文件狀態、目標與驗收語意</a>
+      <a href="#1-交付範圍與不在範圍" class="toc-link">1. 交付範圍與不在範圍</a>
+      <a href="#2-交付角色與責任" class="toc-link">2. 交付角色與責任</a>
+      <a href="#3-玩家-user-story-基線" class="toc-link">3. 玩家 User Story 基線</a>
+      <a href="#4-玩家情境與情境分支" class="toc-link">4. 玩家情境與情境分支</a>
+      <a href="#5-整體驗收條件" class="toc-link">5. 整體驗收條件</a>
+      <a href="#6-文件與規格驗收" class="toc-link">6. 文件與規格驗收</a>
+      <a href="#7-figma-整體驗收" class="toc-link">7. Figma 整體驗收</a>
+      <a href="#8-nuxt-focused-check-與程式驗收" class="toc-link">8. Nuxt focused check 與程式驗收</a>
+      <a href="#9-瀏覽器與響應式驗收" class="toc-link">9. 瀏覽器與響應式驗收</a>
+      <a href="#10-ssg-部署與正式服務分層" class="toc-link">10. SSG、部署與正式服務分層</a>
+      <a href="#11-3-父單-39-子單完整映射" class="toc-link">11. 3 父單＋39 子單完整映射</a>
+      <a href="#12-handoff-交付包" class="toc-link">12. Handoff 交付包</a>
+      <a href="#13-阻塞項與退出條件" class="toc-link">13. 阻塞項與退出條件</a>
+      <a href="#14-版本沿革與目前-git-基線" class="toc-link">14. 版本沿革與目前 Git 基線</a>
+      <a href="#15-開放問題與待後續階段" class="toc-link">15. 開放問題與待後續階段</a>
+      <a href="#16-整體交付檢查表" class="toc-link">16. 整體交付檢查表</a>
     </nav>
 
     <nav class="toc" data-toc="frontend" style="display:none">
@@ -184,6 +400,132 @@ tr:nth-child(even) td{background:rgba(255,255,255,0.02)}
 <li>受眾：美術、前端、後端 —— 用來搭配各自的原型做規格確認與比對</li>
 <li>本書地位：<strong>主幹＋畫面索引總表</strong>。三方比對的詳細內容仍以 <code>specs/2026-07-29-*.md</code> 四份文件為準，本書負責把「畫面長什麼樣」跟「文字比對結果」接起來，讓三種受眾能從同一個編號找到同一件事。</li>
 </ul>
+<blockquote>
+<p><strong>Web 規格書重整基線（Phase 4｜2026-09-15）</strong>：本書作為 Web 專屬規格書的總綱與既有內容入口，沿用 APP 的「總綱／功能分冊／跨頁流程／整體驗收」方法，但內容只以 Web／Nuxt 為準。撰寫規則與章節骨架見 <a href="WEB_SPEC_RULES.md"><code>WEB_SPEC_RULES.md</code></a>。10 個功能分冊、跨頁整合、整體驗收與 Web HTML 閱讀分頁均已建立初版；工作單描述回填仍待後續階段。</p>
+</blockquote>
+<h2 id="0-web-規格書重整基線">0. Web 規格書重整基線</h2>
+<table>
+<thead>
+<tr>
+<th>層級</th>
+<th>目前文件／預定文件</th>
+<th>責任</th>
+<th>狀態</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>總綱</td>
+<td><code>00-overview.md</code></td>
+<td>Web 產品範圍、共用架構、畫面索引、工作單索引與驗證邊界</td>
+<td>本階段維護入口</td>
+</tr>
+<tr>
+<td>規則</td>
+<td><a href="WEB_SPEC_RULES.md"><code>WEB_SPEC_RULES.md</code></a></td>
+<td>來源優先順序、章節格式、ID、驗收邊界與 Plane 對照</td>
+<td>Phase 4 維護中</td>
+</tr>
+<tr>
+<td>功能分冊</td>
+<td><code>web-02-*.md</code>～<code>web-11-*.md</code></td>
+<td>10 個 Web 功能單元；套用 APP 17 節格式</td>
+<td>Phase 2 初版已建立</td>
+</tr>
+<tr>
+<td>跨頁整合</td>
+<td><a href="web-12-cross-page-integration.md"><code>web-12-cross-page-integration.md</code></a></td>
+<td>Web FLOW、資料交接、保存、API／Mock 與狀態</td>
+<td>Phase 3 初版已建立</td>
+</tr>
+<tr>
+<td>整體交付</td>
+<td><a href="web-13-acceptance-delivery.md"><code>web-13-acceptance-delivery.md</code></a></td>
+<td>Web AC、US／SC、文件、瀏覽器、SSG、部署與 handoff</td>
+<td>Phase 3 初版已建立</td>
+</tr>
+<tr>
+<td>HTML 閱讀版</td>
+<td><code>index.html</code></td>
+<td>總覽、Web 規格、前端技術參考、後端與美術分頁</td>
+<td>Phase 4 已產生</td>
+</tr>
+<tr>
+<td>技術參考</td>
+<td><code>20-frontend.md</code>、<code>30-backend.md</code>、<code>10-art.md</code></td>
+<td>既有前端、後端與美術內容；功能分冊完成後保留作技術附錄與參照</td>
+<td>既有文件</td>
+</tr>
+</tbody></table>
+<p>本 Web 規格書對應既有 Plane 交付基線：規格父單 <code>YOTAPLATFO-444</code>、Figma 父單 <code>YOTAPLATFO-445</code>、Nuxt 父單 <code>YOTAPLATFO-446</code>；13 個功能單元的三條工作流維持既有 <code>YOTAPLATFO-447</code>～<code>YOTAPLATFO-485</code>，不因文件拆分新增或重開工作單。</p>
+<h3 id="0-1-phase-2-功能分冊索引">0.1 Phase 2 功能分冊索引</h3>
+<table>
+<thead>
+<tr>
+<th>規格單元</th>
+<th>文件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>WEB-SPEC-02 官網公開頁</td>
+<td><a href="web-02-public-site.md"><code>web-02-public-site.md</code></a></td>
+</tr>
+<tr>
+<td>WEB-SPEC-03 登入、註冊與年齡驗證</td>
+<td><a href="web-03-authentication.md"><code>web-03-authentication.md</code></a></td>
+</tr>
+<tr>
+<td>WEB-SPEC-04 遊戲大廳與共用導覽</td>
+<td><a href="web-04-lobby-navigation.md"><code>web-04-lobby-navigation.md</code></a></td>
+</tr>
+<tr>
+<td>WEB-SPEC-05 遊戲進入、模式與返回</td>
+<td><a href="web-05-game-session.md"><code>web-05-game-session.md</code></a></td>
+</tr>
+<tr>
+<td>WEB-SPEC-06 個人資訊、VIP 與會員</td>
+<td><a href="web-06-member.md"><code>web-06-member.md</code></a></td>
+</tr>
+<tr>
+<td>WEB-SPEC-07 錢包、銀行與交易</td>
+<td><a href="web-07-finance.md"><code>web-07-finance.md</code></a></td>
+</tr>
+<tr>
+<td>WEB-SPEC-08 獎勵卡、優惠碼與贈禮</td>
+<td><a href="web-08-rewards-promotions-gifts.md"><code>web-08-rewards-promotions-gifts.md</code></a></td>
+</tr>
+<tr>
+<td>WEB-SPEC-09 每日任務、活動、排行榜與教學</td>
+<td><a href="web-09-tasks-events-rankings-tutorial.md"><code>web-09-tasks-events-rankings-tutorial.md</code></a></td>
+</tr>
+<tr>
+<td>WEB-SPEC-10 社交互動、聊天與客服</td>
+<td><a href="web-10-social-support.md"><code>web-10-social-support.md</code></a></td>
+</tr>
+<tr>
+<td>WEB-SPEC-11 信箱、通知與設定</td>
+<td><a href="web-11-inbox-settings.md"><code>web-11-inbox-settings.md</code></a></td>
+</tr>
+</tbody></table>
+<h3 id="0-2-phase-3-整合與交付索引">0.2 Phase 3 整合與交付索引</h3>
+<table>
+<thead>
+<tr>
+<th>規格單元</th>
+<th>文件</th>
+<th>Plane SPEC</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>WEB-SPEC-12 跨頁整合與流程</td>
+<td><a href="web-12-cross-page-integration.md"><code>web-12-cross-page-integration.md</code></a></td>
+<td><code>YOTAPLATFO-458</code></td>
+</tr>
+<tr>
+<td>WEB-SPEC-13 驗收、部署與玩家情境</td>
+<td><a href="web-13-acceptance-delivery.md"><code>web-13-acceptance-delivery.md</code></a></td>
+<td><code>YOTAPLATFO-459</code></td>
+</tr>
+</tbody></table>
 <hr>
 <h2 id="1-系統範圍與三方關係">1. 系統範圍與三方關係</h2>
 <p>巨亨ONLINE 由三個獨立 repo 組成，本規格書比對的對象：</p>
@@ -304,8 +646,8 @@ tr:nth-child(even) td{background:rgba(255,255,255,0.02)}
 </tr>
 <tr>
 <td>保險箱</td>
-<td><code>vaultBalance</code>，第一階段已併入銀行，<code>pages/lobby/vault.vue</code> 只 redirect</td>
-<td>見 memory <code>chat-feature-architecture</code></td>
+<td><code>vaultBalance</code>；目前 <code>/lobby/vault</code> 實際渲染 <code>LobbyVaultContent</code>，銀行轉帳導流也會進入此頁</td>
+<td><code>pages/lobby/vault.vue</code>、<code>components/lobby/VaultContent.vue</code></td>
 </tr>
 <tr>
 <td>贈禮</td>
@@ -319,8 +661,8 @@ tr:nth-child(even) td{background:rgba(255,255,255,0.02)}
 </tr>
 <tr>
 <td>獎勵卡</td>
-<td>15 天銀 10,000／20 天金 5,000，流水目標 100,000，轉換上限 10,000，到期 2026/12/31</td>
-<td><code>utils/rewardCardConversion.ts</code>、<code>composables/useRewardCardState.ts</code></td>
+<td>目前原型含第 10／15／20 天活動銀幣卡，流水目標 100,000、轉換上限 10,000、到期 2026/12/31；舊規格曾寫第 15 天銀卡／第 20 天金卡，正式值待確認</td>
+<td><code>composables/useRewardCardState.ts</code>、<code>utils/rewardCardConversion.ts</code></td>
 </tr>
 <tr>
 <td>外部提款</td>
@@ -1009,6 +1351,4575 @@ PATH=&quot;/opt/homebrew/opt/node/bin:$PATH&quot; node specs/spec-book/capture.m
 </tr>
 </tbody></table>
 </section>
+<section class="tab-panel" data-panel="webspec"><h1>WEB 規格書拆分與撰寫規則</h1>
+<ul>
+<li>文件版本：v0.2</li>
+<li>建立日期：2026-09-15</li>
+<li>文件狀態：Phase 4 文件基線；10 個功能分冊、跨頁整合、整體驗收與 Web HTML 閱讀版初版已建立</li>
+<li>適用專案：<code>巨亨ONLINE-Nuxt</code></li>
+<li>對應 Plane：<code>YOTAPLATFO-444</code>（規格父單）、<code>YOTAPLATFO-447</code>～<code>YOTAPLATFO-459</code>（規格子單）</li>
+</ul>
+<p>本文件參考 APP 的規格拆分方法，但不把 APP 的畫面、路由、平台行為或工作單內容直接視為 Web 需求。Web 規格的正式內容必須以 Web 已確認的產品規則、目前 Nuxt 原始碼、API 依賴與實際驗證證據為準。</p>
+<h2 id="1-文件定位與來源優先順序">1. 文件定位與來源優先順序</h2>
+<h3 id="1-1-文件定位">1.1 文件定位</h3>
+<p>Web 規格書是「官網公開頁＋登入後遊戲大廳」的獨立前台規格來源，需同時描述：</p>
+<ul>
+<li>公開官網與登入後大廳的產品邊界。</li>
+<li>Nuxt route、layout、page、component 與 composable 的功能責任。</li>
+<li>玩家看得到的畫面、欄位、狀態、操作、返回及跨頁資料交接。</li>
+<li>目前 Mock／local state 與正式 API、CMS、WebSocket、支付及帳務的差異。</li>
+<li>文件、原型、瀏覽器、SSG、部署與正式服務的分開驗收證據。</li>
+</ul>
+<p>本書不取代後端 API 契約、營運後台規格、遊戲數學、正式支付規格或 Figma 視覺細節；這些內容只以依賴、參照或待確認事項方式連結。</p>
+<h3 id="1-2-來源優先順序">1.2 來源優先順序</h3>
+<table>
+<thead>
+<tr>
+<th>順序</th>
+<th>來源</th>
+<th>可確認的內容</th>
+<th>使用限制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>已確認產品決策與正式產品規則</td>
+<td>Web 目標行為、資格、限制、玩家語意</td>
+<td>未確認內容不可寫成正式承諾</td>
+</tr>
+<tr>
+<td>2</td>
+<td>目前 Nuxt 原始碼</td>
+<td>實際 route、page、layout、component、composable、Mock 行為</td>
+<td>原型行為不等於正式規則</td>
+</tr>
+<tr>
+<td>3</td>
+<td>API master／inventory／gap analysis</td>
+<td>API 依賴、資料欄位候選、缺口與風險</td>
+<td>不在 Web 規格中臆造後端契約</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Web handbook 與客服文件</td>
+<td>對外規則、錯誤語意、客服處理原則</td>
+<td>與產品規格衝突時需列待確認</td>
+</tr>
+<tr>
+<td>5</td>
+<td>APP 規格書與 Plane APP 頁面</td>
+<td>共同概念、跨平台差異、文件結構與檢查方法</td>
+<td>不直接移植 APP 路由、畫面或平台限制</td>
+</tr>
+<tr>
+<td>6</td>
+<td>舊 handoff、歷史截圖與舊快照</td>
+<td>變更溯源、歷史行為</td>
+<td>必須標註日期，不能覆蓋目前程式證據</td>
+</tr>
+</tbody></table>
+<h3 id="1-3-三種內容標記">1.3 三種內容標記</h3>
+<p>每一章正文都要明確分開以下狀態：</p>
+<table>
+<thead>
+<tr>
+<th>標記</th>
+<th>意義</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>已確認規則</code></td>
+<td>已由產品、決策或正式文件確認的目標行為</td>
+</tr>
+<tr>
+<td><code>目前 Web 原型</code></td>
+<td>目前 Nuxt 可由原始碼驗證的行為或資料</td>
+</tr>
+<tr>
+<td><code>待確認</code></td>
+<td>需要產品、設計、後端、支付或營運補充的內容</td>
+</tr>
+<tr>
+<td><code>依賴／邊界</code></td>
+<td>本章需要引用但不由 Web 自行決定的內容</td>
+</tr>
+<tr>
+<td><code>驗證證據</code></td>
+<td>文件、測試、瀏覽器、SSG、部署或正式服務的實際結果</td>
+</tr>
+</tbody></table>
+<h2 id="2-web-規格書層級">2. Web 規格書層級</h2>
+<h3 id="2-1-總綱">2.1 總綱</h3>
+<p><code>00-overview.md</code> 是 Web 規格書的總綱與索引，負責 00～02 類型的共用內容：</p>
+<ul>
+<li>Web 產品定位、讀者與適用範圍。</li>
+<li>公開官網與登入後遊戲大廳的兩面結構。</li>
+<li>default layout、lobby layout、響應式斷點與共用導覽。</li>
+<li>身份、錢包、獎勵、活動、通知及返回語意等共用名詞。</li>
+<li>SSG、GitHub Pages、baseURL、<code>.nojekyll</code>、<code>ClientOnly</code>、<code>Teleport</code> 與 hydration 約束。</li>
+<li>文件章節索引、畫面索引、工作單索引與驗證狀態。</li>
+</ul>
+<h3 id="2-2-功能分冊">2.2 功能分冊</h3>
+<p><code>WEB-SPEC-02</code>～<code>WEB-SPEC-11</code> 為 Web 功能分冊。每章保留 17 個編號節點，沿用 APP 17 節的內容責任；章名可依 Web 功能調整，但不可省略玩家、開發、QA、資料、驗收、待確認與交付等責任。若某項不適用，保留節次並說明理由，不刪除或補寫未確認內容。</p>
+<p>功能分冊固定涵蓋以下 APP 17 節責任（Web 章名可依功能改寫）：</p>
+<ol>
+<li>這個功能是什麼</li>
+<li>這個功能不做什麼</li>
+<li>名詞說明</li>
+<li>畫面內容</li>
+<li>欄位說明</li>
+<li>狀態說明</li>
+<li>查詢、排序與分頁</li>
+<li>操作與跳轉</li>
+<li>頁面狀態</li>
+<li>User Story — 玩家</li>
+<li>User Story — 開發人員</li>
+<li>User Story — QA 驗證者</li>
+<li>驗收標準</li>
+<li>這個功能需要的資料</li>
+<li>待確認事項</li>
+<li>版本沿革</li>
+<li>交付檢查表</li>
+</ol>
+<p>Web 功能分冊不直接照搬 APP 的資料值、固定畫布、APP Overlay 行為、底部導覽數量、IAP 通道或 APP 專屬流程。</p>
+<h3 id="2-3-跨頁流程與整體交付">2.3 跨頁流程與整體交付</h3>
+<p><code>WEB-SPEC-12</code>～<code>WEB-SPEC-13</code> 不強套單一功能的 17 節：</p>
+<ul>
+<li><code>WEB-SPEC-12</code>：跨頁流程、route query、protected destination、資料保存、API／Mock 邊界、狀態交接與跨功能流程。</li>
+<li><code>WEB-SPEC-13</code>：整體驗收、部署、handoff、玩家 User Story 與情境流程。若內容量需要，可拆成多個 Markdown 檔，但仍掛在同一張 <code>WEB-SPEC-13</code> 工作單下，不新增子單。</li>
+</ul>
+<h2 id="3-預定文件與工作單對照">3. 預定文件與工作單對照</h2>
+<p>下表是 Web 規格書的文件骨架。<code>WEB-SPEC-01</code> 使用總綱；10 個功能分冊、跨頁整合與整體交付已完成目前階段初版，再由 HTML 產生器統一收錄。</p>
+<table>
+<thead>
+<tr>
+<th>文件單元</th>
+<th>預定來源檔</th>
+<th>主要內容</th>
+<th>Plane SPEC</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Web 總綱與共用規則</td>
+<td><code>00-overview.md</code>、本規則文件</td>
+<td>產品範圍、共用架構、索引、驗證邊界</td>
+<td><code>YOTAPLATFO-447</code></td>
+</tr>
+<tr>
+<td>官網首頁、內容與公開頁</td>
+<td><code>web-02-public-site.md</code></td>
+<td>首頁、公開頁、CMS／SEO、共用內容元件</td>
+<td><code>YOTAPLATFO-448</code></td>
+</tr>
+<tr>
+<td>登入、註冊與年齡驗證</td>
+<td><code>web-03-authentication.md</code></td>
+<td>LoginModal、Age Gate、法律文件、登入狀態</td>
+<td><code>YOTAPLATFO-449</code></td>
+</tr>
+<tr>
+<td>遊戲大廳與導覽</td>
+<td><code>web-04-lobby-navigation.md</code></td>
+<td>lobby layout、Header、Sidebar、手機導覽、遊戲索引</td>
+<td><code>YOTAPLATFO-450</code></td>
+</tr>
+<tr>
+<td>遊戲進入、模式與返回</td>
+<td><code>web-05-game-session.md</code></td>
+<td>Demo／Real、幣別選擇、遊戲視圖、返回與最近遊玩</td>
+<td><code>YOTAPLATFO-451</code></td>
+</tr>
+<tr>
+<td>個人資訊、VIP 與會員功能</td>
+<td><code>web-06-member.md</code></td>
+<td>Profile、綁定、VIP、頭像、遊戲紀錄</td>
+<td><code>YOTAPLATFO-452</code></td>
+</tr>
+<tr>
+<td>錢包、銀行與交易</td>
+<td><code>web-07-finance.md</code></td>
+<td>儲值、錢包、保險箱、兌換、交易紀錄</td>
+<td><code>YOTAPLATFO-453</code></td>
+</tr>
+<tr>
+<td>獎勵卡、優惠碼與贈禮</td>
+<td><code>web-08-rewards-promotions-gifts.md</code></td>
+<td>獎勵卡、流水、優惠碼、贈禮狀態機</td>
+<td><code>YOTAPLATFO-454</code></td>
+</tr>
+<tr>
+<td>每日任務、活動、排行榜與教學</td>
+<td><code>web-09-tasks-events-rankings-tutorial.md</code></td>
+<td>簽到、補簽、活動、排行榜、教學</td>
+<td><code>YOTAPLATFO-455</code></td>
+</tr>
+<tr>
+<td>聊天、玩家互動與客服</td>
+<td><code>web-10-social-support.md</code></td>
+<td>世界頻道、私訊、好友、封鎖、檢舉、客服工單</td>
+<td><code>YOTAPLATFO-456</code></td>
+</tr>
+<tr>
+<td>信箱、通知與設定</td>
+<td><code>web-11-inbox-settings.md</code></td>
+<td>站內信、附件、未讀、語言、音效、登出</td>
+<td><code>YOTAPLATFO-457</code></td>
+</tr>
+<tr>
+<td>跨頁整合與流程</td>
+<td><code>web-12-cross-page-integration.md</code></td>
+<td>FLOW、資料交接、API／Mock、保存與錯誤狀態</td>
+<td><code>YOTAPLATFO-458</code></td>
+</tr>
+<tr>
+<td>驗收、部署與玩家情境</td>
+<td><code>web-13-acceptance-delivery.md</code></td>
+<td>AC、US／SC、文件、瀏覽器、SSG、部署與 handoff</td>
+<td><code>YOTAPLATFO-459</code></td>
+</tr>
+</tbody></table>
+<p>同一功能的設計與前端工作單使用相同尾碼：</p>
+<ul>
+<li><code>YOTAPLATFO-447</code> ↔ <code>YOTAPLATFO-460</code> ↔ <code>YOTAPLATFO-473</code></li>
+<li><code>YOTAPLATFO-448</code> ↔ <code>YOTAPLATFO-461</code> ↔ <code>YOTAPLATFO-474</code></li>
+<li>依此類推至 <code>YOTAPLATFO-459</code> ↔ <code>YOTAPLATFO-472</code> ↔ <code>YOTAPLATFO-485</code></li>
+</ul>
+<h2 id="4-編號與追蹤原則">4. 編號與追蹤原則</h2>
+<p>Plane 工作單識別碼與規格書內的流程識別碼分開管理：</p>
+<table>
+<thead>
+<tr>
+<th>類型</th>
+<th>Web 格式</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>工作單來源鍵</td>
+<td><code>WEB-SPEC-01</code>、<code>WEB-DESIGN-01</code>、<code>WEB-FE-01</code></td>
+<td>對應既有 Plane 工作單</td>
+</tr>
+<tr>
+<td>跨頁流程</td>
+<td><code>WEB-FLOW-01</code></td>
+<td>對應跨頁流程與交接</td>
+</tr>
+<tr>
+<td>玩家故事</td>
+<td><code>WEB-US-U-03-001</code></td>
+<td>玩家視角故事；<code>U</code> 可改為 <code>D</code> 或 <code>Q</code></td>
+</tr>
+<tr>
+<td>情境</td>
+<td><code>WEB-SC-03-001</code></td>
+<td>故事的主情境與分支</td>
+</tr>
+<tr>
+<td>驗收</td>
+<td><code>WEB-AC-03-001</code></td>
+<td>Web 專屬驗收條件</td>
+</tr>
+<tr>
+<td>待確認</td>
+<td><code>WEB-Q-03-001</code></td>
+<td>產品、設計、後端或營運問題</td>
+</tr>
+</tbody></table>
+<p>不可直接重用 APP 的 <code>FLOW-*</code>、<code>US-*</code>、<code>SC-*</code>、<code>AC-*</code>，也不可把 Plane 的實際單號當成規格章節編號。</p>
+<h2 id="5-章節維護規則">5. 章節維護規則</h2>
+<ol>
+<li>功能規則只在對應 Web 功能分冊維護；總綱只保留摘要、共用規則與索引。</li>
+<li>跨頁行為同步更新 <code>WEB-SPEC-12</code> 的流程與資料交接；涉及玩家旅程時同步 <code>WEB-SPEC-13</code>。</li>
+<li>每章保留版本沿革；總綱只做跨章變更摘要。</li>
+<li>每個功能章開頭需列出三張對應工作單、APP 參考章節、路由、元件與目前驗證狀態。</li>
+<li>共用元件若同時服務公開頁與大廳，只建立一份規格責任；兩種入口的差異寫在同一章的入口與狀態表。</li>
+<li>目前原型有通過，不得寫成正式 API、帳務、WebSocket、CMS 或 Prod 已驗收。</li>
+<li>既有 <code>20-frontend.md</code> 在內容分冊完成前保留作為遷移來源；完成後可標註為技術附錄或歷史來源，不直接刪除。</li>
+</ol>
+<h2 id="6-驗證邊界">6. 驗證邊界</h2>
+<table>
+<thead>
+<tr>
+<th>驗證層級</th>
+<th>可證明的事情</th>
+<th>不可推論的事情</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Markdown／HTML 檢查</td>
+<td>文件結構、連結、錨點、表格與引用完整</td>
+<td>原型功能可操作</td>
+</tr>
+<tr>
+<td>focused tests／typecheck</td>
+<td>純函式、型別與指定程式路徑通過</td>
+<td>正式 API 或跨服務流程通過</td>
+</tr>
+<tr>
+<td>Nuxt SSG generate</td>
+<td>靜態成品可產生</td>
+<td>GitHub Pages CDN、正式服務或帳務通過</td>
+</tr>
+<tr>
+<td>瀏覽器桌機／手機操作</td>
+<td>本機原型在指定環境的可操作性</td>
+<td>正式資料、支付、WebSocket 或 Prod 狀態</td>
+</tr>
+<tr>
+<td>部署／正式服務驗收</td>
+<td>指定環境的實際交付結果</td>
+<td>未測試的其他環境或未覆蓋情境</td>
+</tr>
+</tbody></table>
+<h2 id="7-階段交付狀態">7. 階段交付狀態</h2>
+<ul>
+<li><input checked="" disabled="" type="checkbox"> 確認沿用現有 <code>specs/spec-book/</code>，不建立平行 Web 規格書目錄。</li>
+<li><input checked="" disabled="" type="checkbox"> 確認 Web 規格維持官網公開頁與登入後遊戲大廳同一本，但明確分成兩個產品表面。</li>
+<li><input checked="" disabled="" type="checkbox"> 確認沿用目前 13 個 Web 工作單功能單元，不新增 APP 第 14、15 張對應子單。</li>
+<li><input checked="" disabled="" type="checkbox"> 建立 Web 規格來源優先順序、狀態標記、章節骨架與工作單對照規則。</li>
+<li><input checked="" disabled="" type="checkbox"> 將 <code>20-frontend.md</code> 的功能範圍拆成 10 份 Web 功能分冊初版。</li>
+<li><input checked="" disabled="" type="checkbox"> 建立跨頁流程、玩家情境與整體驗收正文初版。</li>
+<li><input checked="" disabled="" type="checkbox"> 更新 HTML 產生器與完整索引初版。</li>
+<li><input disabled="" type="checkbox"> 回填 <code>WEB_WORK_ORDER_BATCH_v1.md</code> 的實際章節位置與證據。</li>
+<li><input disabled="" type="checkbox"> 將確認後的規格摘要同步至 Plane 頁面。</li>
+</ul>
+<h1>WEB-SPEC-02｜官網首頁、內容與公開頁</h1>
+<p>巨亨ONLINE Web 規格書｜Phase 2 功能分冊初版｜2026-09-15</p>
+<table>
+<thead>
+<tr>
+<th>文件項目</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文件性質</td>
+<td>Web 前台功能規格；本章為分冊初版，操作與正式服務驗收未執行</td>
+</tr>
+<tr>
+<td>Plane 規格單</td>
+<td><code>YOTAPLATFO-448</code></td>
+</tr>
+<tr>
+<td>Plane Figma 單</td>
+<td><code>YOTAPLATFO-461</code></td>
+</tr>
+<tr>
+<td>Plane Nuxt 單</td>
+<td><code>YOTAPLATFO-474</code></td>
+</tr>
+<tr>
+<td>APP 參考</td>
+<td>APP 總綱、10. 每日簽到／活動／排行榜；平台公開頁為 Web 專屬</td>
+</tr>
+<tr>
+<td>目前來源</td>
+<td><code>00-overview.md</code>、<code>20-frontend.md</code> §10、<code>_index-table.md</code>、<code>data/siteContent.ts</code>、<code>components/shared/*</code></td>
+</tr>
+<tr>
+<td>適用範圍</td>
+<td>首頁、活動、排行榜、教學、儲值、客服與公開會員入口</td>
+</tr>
+<tr>
+<td>目前狀態</td>
+<td>公開頁與共用內容元件存在；內容以靜態資料與 Mock 為主，CMS／正式動態資料尚未完成</td>
+</tr>
+</tbody></table>
+<h2 id="1-這個功能是什麼">1. 這個功能是什麼</h2>
+<p>讓未登入玩家認識巨亨ONLINE、查看活動與排行榜、閱讀新手教學、了解儲值與客服入口，並在需要會員或大廳功能時導向登入或登入後平台。公開頁與登入後大廳部分共用 <code>Shared*Content.vue</code>，但公開頁不可直接暴露玩家私有資料。</p>
+<p>目前公開路由為 <code>/</code>、<code>/events</code>、<code>/leaderboard</code>、<code>/deposit</code>、<code>/tutorial</code>、<code>/support</code>。<code>/member</code> 目前由 <code>pages/member.vue</code> 導向 <code>/lobby/member</code>，因此現階段是公開會員入口，不是獨立的公開個人資料頁。</p>
+<h2 id="2-這個功能不做什麼">2. 這個功能不做什麼</h2>
+<table>
+<thead>
+<tr>
+<th>不在本章範圍</th>
+<th>負責位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>登入、註冊、年齡驗證與 token</td>
+<td><code>web-03-authentication.md</code></td>
+</tr>
+<tr>
+<td>登入後的玩家私有資料、錢包與紀錄</td>
+<td><code>web-06-member.md</code>、<code>web-07-finance.md</code></td>
+</tr>
+<tr>
+<td>正式 CMS、文章管理與內容審核後台</td>
+<td>後端／營運後台契約；本章只描述前台消費邊界</td>
+</tr>
+<tr>
+<td>實際支付、儲值入帳與退款</td>
+<td><code>web-07-finance.md</code> 與正式支付規格</td>
+</tr>
+<tr>
+<td>即時排行榜、活動報名與即時得獎播報的服務保證</td>
+<td>API／即時服務契約，尚待確認</td>
+</tr>
+<tr>
+<td>Figma 精細色票、字級、間距與素材製作</td>
+<td><code>YOTAPLATFO-461</code></td>
+</tr>
+</tbody></table>
+<h2 id="3-名詞說明">3. 名詞說明</h2>
+<table>
+<thead>
+<tr>
+<th>名詞</th>
+<th>定義</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>公開頁</td>
+<td>未登入即可閱讀的 Web 路由與內容頁</td>
+</tr>
+<tr>
+<td>共用內容元件</td>
+<td>官網公開頁與 <code>/lobby</code> 子頁共用的 <code>Shared*Content.vue</code></td>
+</tr>
+<tr>
+<td>CMS 內容</td>
+<td>未來由內容服務提供的 Banner、公告、活動、FAQ、文章與遊戲介紹</td>
+</tr>
+<tr>
+<td>公開資料</td>
+<td>不含登入者個資、錢包、交易、私訊或客服案件的內容</td>
+</tr>
+<tr>
+<td>導流</td>
+<td>從公開內容前往登入、遊戲大廳、活動詳情或客服入口</td>
+</tr>
+<tr>
+<td>W-01、W-11～W-17</td>
+<td>Web 畫面索引中的官網首頁、公開頁與未登入導引畫面</td>
+</tr>
+</tbody></table>
+<h2 id="4-畫面內容">4. 畫面內容</h2>
+<table>
+<thead>
+<tr>
+<th>頁面／區塊</th>
+<th>目前內容</th>
+<th>資料來源</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/</code> 首頁</td>
+<td>Header、跑馬燈、Banner、快速入口、最新消息、熱門活動、熱門遊戲、排行榜快報、Footer</td>
+<td><code>data/siteContent.ts</code>、首頁元件</td>
+</tr>
+<tr>
+<td><code>/events</code></td>
+<td>活動列表、狀態分類、活動詳情 Modal</td>
+<td><code>SharedEventsContent.vue</code>、<code>siteContent.ts</code></td>
+</tr>
+<tr>
+<td><code>/leaderboard</code></td>
+<td>排行榜頁、Top 3、後續名次與更新提示</td>
+<td><code>SharedLeaderboardContent.vue</code>、<code>siteContent.ts</code></td>
+</tr>
+<tr>
+<td><code>/tutorial</code></td>
+<td>新手教學、遊戲介紹、下載／導流、試玩入口</td>
+<td><code>SharedTutorialContent.vue</code>、<code>siteContent.ts</code></td>
+</tr>
+<tr>
+<td><code>/deposit</code></td>
+<td>儲值方案、付款方式介紹、登入後儲值導流</td>
+<td><code>SharedDepositContent.vue</code></td>
+</tr>
+<tr>
+<td><code>/support</code></td>
+<td>FAQ、客服入口、登入後客服導流</td>
+<td><code>SharedSupportContent.vue</code></td>
+</tr>
+<tr>
+<td><code>/member</code></td>
+<td>目前 redirect 至登入後會員頁</td>
+<td><code>pages/member.vue</code></td>
+</tr>
+</tbody></table>
+<p>公開頁的內容順序與畫面區塊由目前原型提供參考；正式視覺與響應式細節依 Figma 交付補充。</p>
+<h2 id="5-欄位說明">5. 欄位說明</h2>
+<table>
+<thead>
+<tr>
+<th>欄位／資料</th>
+<th>顯示內容</th>
+<th>限制與目前狀態</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Banner</td>
+<td>圖片、替代文字、目標路徑或導流行為</td>
+<td><code>imageSrc</code> 可缺省並使用背景 fallback；正式內容應由 CMS 提供</td>
+</tr>
+<tr>
+<td>跑馬燈公告</td>
+<td>公告文字或得獎提示</td>
+<td>目前 <code>siteContent.ts</code> 含 raw HTML；若改由 API 提供需防止 XSS</td>
+</tr>
+<tr>
+<td>活動卡</td>
+<td>標題、摘要、狀態、日期、獎勵、圖片</td>
+<td>目前為靜態資料；報名狀態未實作</td>
+</tr>
+<tr>
+<td>排行榜項目</td>
+<td>名次、名稱、數值、單位、更新資訊</td>
+<td>目前金額可能是含單位字串；正式 API 應使用結構化數值</td>
+</tr>
+<tr>
+<td>FAQ</td>
+<td>分類、問題、答案</td>
+<td>目前集中於 <code>siteContent.ts</code>；文章／版本來源尚待 CMS 定義</td>
+</tr>
+<tr>
+<td>遊戲卡</td>
+<td>名稱、描述、分類、供應商、圖片、試玩／正式入口</td>
+<td>遊戲 catalog 的正式來源由 <code>web-04</code>／<code>web-05</code> 與後端共同確認</td>
+</tr>
+</tbody></table>
+<h2 id="6-狀態說明">6. 狀態說明</h2>
+<table>
+<thead>
+<tr>
+<th>狀態</th>
+<th>目前 Web 行為</th>
+<th>正式規格要求</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>active</code></td>
+<td>活動目前顯示中</td>
+<td>由內容／活動服務提供有效期間與狀態</td>
+</tr>
+<tr>
+<td><code>upcoming</code></td>
+<td>活動尚未開始</td>
+<td>顯示開始時間與不可提前操作的原因</td>
+</tr>
+<tr>
+<td><code>ended</code></td>
+<td>活動已結束</td>
+<td>保留結果或結束提示，不提供過期操作</td>
+</tr>
+<tr>
+<td><code>loading</code></td>
+<td>多數內容目前沒有真正 loading 來源</td>
+<td>正式動態內容需定義載入中畫面</td>
+</tr>
+<tr>
+<td><code>empty</code></td>
+<td>主要依靜態陣列是否有資料判斷</td>
+<td>正式需針對沒有活動、沒有榜單與沒有 FAQ 定義空態</td>
+</tr>
+<tr>
+<td><code>error</code></td>
+<td>目前沒有完整服務錯誤路徑</td>
+<td>CMS／排行榜／活動讀取失敗需定義可重試或導流方式</td>
+</tr>
+</tbody></table>
+<h2 id="7-查詢-排序與分頁">7. 查詢、排序與分頁</h2>
+<ul>
+<li>活動目前依 <code>active</code>、<code>upcoming</code>、<code>ended</code> 類別顯示，不是 APP 的 <code>sale</code>、<code>tournament</code>、<code>vip</code> 類型維度。</li>
+<li>排行榜目前有 <code>multi</code>、<code>win</code>、<code>wealth</code> 三種榜單；更新提示由本地假計時產生。</li>
+<li>公開頁目前沒有真正的 server-side 分頁、關鍵字搜尋或內容版本篩選。</li>
+<li>若正式內容量需要分頁，需由 CMS／API 定義 cursor、排序、時區、快取與失敗回應；本章不自行指定。</li>
+</ul>
+<h2 id="8-操作與跳轉">8. 操作與跳轉</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>前提</th>
+<th>目前結果</th>
+<th>正式待確認</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>點擊首頁 Banner</td>
+<td>Banner 有目標設定</td>
+<td>導向指定頁或執行既有入口</td>
+<td>是否允許外部 URL、追蹤參數與開新分頁</td>
+</tr>
+<tr>
+<td>點擊活動卡</td>
+<td>活動資料存在</td>
+<td>開啟詳情 Modal 或進入內容</td>
+<td>報名、分享與登入後狀態</td>
+</tr>
+<tr>
+<td>點擊排行榜入口</td>
+<td>公開頁可直接進入</td>
+<td>進入 <code>/leaderboard</code></td>
+<td>是否顯示完整即時榜單</td>
+</tr>
+<tr>
+<td>點擊開始遊戲</td>
+<td>未登入或已登入</td>
+<td>導向登入／<code>/lobby</code></td>
+<td>年齡驗證觸發點與登入後返回路徑</td>
+</tr>
+<tr>
+<td>點擊儲值</td>
+<td>未登入或已登入</td>
+<td>公開頁介紹或導向銀行</td>
+<td>正式支付前是否必須登入</td>
+</tr>
+<tr>
+<td>點擊客服</td>
+<td>未登入或已登入</td>
+<td>FAQ 或導向客服頻道</td>
+<td>未登入是否可建立案件</td>
+</tr>
+<tr>
+<td>點擊 <code>/member</code></td>
+<td>任意身份</td>
+<td>目前 redirect 至 <code>/lobby/member</code></td>
+<td>是否保留公開會員入口</td>
+</tr>
+</tbody></table>
+<h2 id="9-頁面狀態">9. 頁面狀態</h2>
+<p>每一個公開頁至少需要在正式內容中確認以下狀態：初始載入、內容載入中、內容成功、無資料、服務失敗、內容停用、登入導流與返回原入口。現有原型主要覆蓋成功與部分無資料情境，尚不能視為完整服務驗收。</p>
+<h2 id="10-user-story-玩家">10. User Story — 玩家</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-U-02-001</code></td>
+<td>身為未登入玩家，我要從首頁閱讀品牌、活動與遊戲入口，以便決定是否進入大廳。</td>
+</tr>
+<tr>
+<td><code>WEB-US-U-02-002</code></td>
+<td>身為玩家，我要在公開頁查看活動與排行榜，以便先了解目前可參與的內容。</td>
+</tr>
+<tr>
+<td><code>WEB-US-U-02-003</code></td>
+<td>身為未登入玩家，我要從客服、儲值或遊戲入口被清楚導向登入，以便完成需要身份的操作。</td>
+</tr>
+</tbody></table>
+<h2 id="11-user-story-開發人員">11. User Story — 開發人員</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-D-02-001</code></td>
+<td>身為開發人員，我要讓公開頁與大廳共用內容元件，以便同一份內容規則不需要維護兩份。</td>
+</tr>
+<tr>
+<td><code>WEB-US-D-02-002</code></td>
+<td>身為開發人員，我要把靜態內容、動態內容與登入者資料分開，以便未來接 CMS 或 API 時不混淆權限。</td>
+</tr>
+<tr>
+<td><code>WEB-US-D-02-003</code></td>
+<td>身為開發人員，我要讓公開頁在 baseURL 與 SSG 下正確產出，以便 GitHub Pages 可正常部署。</td>
+</tr>
+</tbody></table>
+<h2 id="12-user-story-qa-驗證者">12. User Story — QA 驗證者</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-Q-02-001</code></td>
+<td>身為 QA，我要確認每一個公開路由可由 Header、Footer 或內容入口到達，以便避免死連結。</td>
+</tr>
+<tr>
+<td><code>WEB-US-Q-02-002</code></td>
+<td>身為 QA，我要分別檢查桌機與手機的公開頁、Modal、登入導流與返回，以便確認響應式流程完整。</td>
+</tr>
+<tr>
+<td><code>WEB-US-Q-02-003</code></td>
+<td>身為 QA，我要區分靜態內容成功與正式 CMS／排行榜服務成功，以便測試結果不被誤讀。</td>
+</tr>
+</tbody></table>
+<h2 id="13-驗收標準">13. 驗收標準</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>主題</th>
+<th>驗收標準</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-AC-02-001</code></td>
+<td>公開路由</td>
+<td><code>/</code>、<code>/events</code>、<code>/leaderboard</code>、<code>/deposit</code>、<code>/tutorial</code>、<code>/support</code> 可由預定入口到達；<code>/member</code> 的 redirect 行為有明確標註。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-02-002</code></td>
+<td>共用內容</td>
+<td>公開頁與大廳共用元件的資料責任清楚，沒有把玩家私有欄位輸出到未登入頁。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-02-003</code></td>
+<td>內容狀態</td>
+<td>活動、排行榜、Banner 與 FAQ 的成功、空資料、失敗與停用狀態均有規格或明確列為待確認。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-02-004</code></td>
+<td>導流</td>
+<td>需要身份的遊戲、儲值、客服與會員操作會導向正確登入／大廳入口，且保留返回目的地。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-02-005</code></td>
+<td>SSG／響應式</td>
+<td>公開頁在 Web baseURL、桌機與手機環境可產生並具可讀內容；實際執行證據另於 <code>WEB-SPEC-13</code> 記錄。</td>
+</tr>
+</tbody></table>
+<h2 id="14-這個功能需要的資料">14. 這個功能需要的資料</h2>
+<ul>
+<li><code>siteContent.ts</code> 的 Banner、公告、首頁、活動、排行榜、FAQ、遊戲與教學資料。</li>
+<li>未來 CMS 的內容 ID、版本、發布狀態、開始／結束時間、圖片、替代文字與目標路徑。</li>
+<li>排行榜的榜單類型、名次、結構化數值、單位與 <code>updatedAt</code>。</li>
+<li>活動的狀態、有效期間、獎勵、報名狀態與詳情內容。</li>
+<li>公開頁 SEO title、description、canonical 與分享圖；目前尚未形成完整資料契約。</li>
+</ul>
+<h2 id="15-待確認事項">15. 待確認事項</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>問題</th>
+<th>影響</th>
+<th>負責確認</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-Q-02-001</code></td>
+<td>公開活動是否需要玩家報名與報名後狀態？</td>
+<td>活動欄位、API、登入導流與 AC</td>
+<td>產品／後端</td>
+</tr>
+<tr>
+<td><code>WEB-Q-02-002</code></td>
+<td>排行榜正式更新頻率、時區與 <code>updatedAt</code> 來源為何？</td>
+<td>倒數、快取與跨裝置一致性</td>
+<td>產品／後端</td>
+</tr>
+<tr>
+<td><code>WEB-Q-02-003</code></td>
+<td>公開 <code>/member</code> 是否維持 redirect，或改成公開會員介紹頁？</td>
+<td>路由、SEO、登入權限與 Figma</td>
+<td>產品／設計</td>
+</tr>
+<tr>
+<td><code>WEB-Q-02-004</code></td>
+<td>公開頁 CMS 是否支援版本、排程、預覽與撤回？</td>
+<td>內容模型與營運交付</td>
+<td>營運／後端</td>
+</tr>
+<tr>
+<td><code>WEB-Q-02-005</code></td>
+<td>跑馬燈是否允許後端回傳 HTML？</td>
+<td>XSS 防護與前端渲染方式</td>
+<td>後端／資安</td>
+</tr>
+</tbody></table>
+<h2 id="16-版本沿革">16. 版本沿革</h2>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>日期</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>v0.1</td>
+<td>2026-09-15</td>
+<td>依 Web <code>00-overview</code>、<code>20-frontend</code>、現有路由與共用元件建立 17 節分冊初版；正式 CMS、排行榜與活動服務未驗收。</td>
+</tr>
+</tbody></table>
+<h2 id="17-交付檢查表">17. 交付檢查表</h2>
+<ul>
+<li><input disabled="" type="checkbox"> 已確認公開路由與 <code>/member</code> 的正式定位。</li>
+<li><input disabled="" type="checkbox"> 已確認活動、排行榜、Banner、FAQ 的正式資料來源與狀態模型。</li>
+<li><input disabled="" type="checkbox"> 已補桌機／手機與成功／空資料／失敗／停用設計狀態。</li>
+<li><input disabled="" type="checkbox"> 已補 <code>WEB-FLOW</code>、<code>WEB-SC</code> 與公開頁相關驗收交叉引用。</li>
+<li><input disabled="" type="checkbox"> 已完成 Markdown／HTML、瀏覽器、SSG 與正式 CMS 的分層驗證紀錄。</li>
+</ul>
+<h1>WEB-SPEC-03｜登入、註冊與年齡驗證</h1>
+<p>巨亨ONLINE Web 規格書｜Phase 2 功能分冊初版｜2026-09-15</p>
+<table>
+<thead>
+<tr>
+<th>文件項目</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文件性質</td>
+<td>Web 前台功能規格；本章為分冊初版，登入服務與操作驗收未執行</td>
+</tr>
+<tr>
+<td>Plane 規格單</td>
+<td><code>YOTAPLATFO-449</code></td>
+</tr>
+<tr>
+<td>Plane Figma 單</td>
+<td><code>YOTAPLATFO-462</code></td>
+</tr>
+<tr>
+<td>Plane Nuxt 單</td>
+<td><code>YOTAPLATFO-475</code></td>
+</tr>
+<tr>
+<td>APP 參考</td>
+<td>APP 第 03 章：啟動、登入與註冊</td>
+</tr>
+<tr>
+<td>目前來源</td>
+<td><code>20-frontend.md</code> §1、<code>handoff/frontend-handoff.md</code> §7、<code>components/LoginModal.vue</code>、<code>components/AgeGateModal.vue</code>、<code>composables/useAppState.ts</code></td>
+</tr>
+<tr>
+<td>適用範圍</td>
+<td>帳密登入、手機驗證碼、社群／訪客入口、註冊、忘記密碼、年齡驗證與法律文件</td>
+</tr>
+<tr>
+<td>目前狀態</td>
+<td>全部以前端 Mock 為主；沒有正式 token、公開復原 API 或完整 OAuth 交換流程</td>
+</tr>
+</tbody></table>
+<h2 id="1-這個功能是什麼-2">1. 這個功能是什麼</h2>
+<p>提供未登入玩家建立或恢復身份、登入 Web 官網／遊戲大廳，以及在需要遊戲入口時完成年齡確認。登入 Modal 由 <code>modalView</code> 管理多種畫面狀態，登入成功後應依入口返回原目的地。</p>
+<p>目前 <code>LoginModal.vue</code> 涵蓋 <code>login</code>、<code>register</code>、<code>recovery</code>、<code>social</code>、<code>success</code>；<code>AgeGateModal.vue</code> 以動作佇列方式保存待執行動作。這些是目前原型行為，不代表正式身份服務契約。</p>
+<h2 id="2-這個功能不做什麼-2">2. 這個功能不做什麼</h2>
+<table>
+<thead>
+<tr>
+<th>不在本章範圍</th>
+<th>負責位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>後端 token、refresh、session、裝置與風險控管</td>
+<td>正式 auth API／資安規格</td>
+</tr>
+<tr>
+<td>OAuth provider 的 redirect、code exchange 與帳號合併</td>
+<td>後端／第三方登入規格</td>
+</tr>
+<tr>
+<td>會員資料編輯、綁定與 VIP</td>
+<td><code>web-06-member.md</code></td>
+</tr>
+<tr>
+<td>遊戲正式啟動、錢包餘額與進場資格</td>
+<td><code>web-05-game-session.md</code>、<code>web-07-finance.md</code></td>
+</tr>
+<tr>
+<td>年齡法遵政策的法律解釋</td>
+<td>產品／法遵文件</td>
+</tr>
+</tbody></table>
+<h2 id="3-名詞說明-2">3. 名詞說明</h2>
+<table>
+<thead>
+<tr>
+<th>名詞</th>
+<th>定義</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>未登入</td>
+<td>尚未取得正式身份的瀏覽狀態</td>
+</tr>
+<tr>
+<td>會員身份</td>
+<td>可登入、保存個人資料並使用受保護功能的身份</td>
+</tr>
+<tr>
+<td>訪客</td>
+<td>目前前端有入口，但後端是否正式支援尚未確認</td>
+</tr>
+<tr>
+<td>社群登入</td>
+<td>FB、LINE、Apple、Google 等 provider 入口；目前共用假流程</td>
+</tr>
+<tr>
+<td>protected destination</td>
+<td>玩家登入前想前往的路徑或遊戲參數</td>
+</tr>
+<tr>
+<td>Age Gate</td>
+<td>進入遊戲或特定入口前的年齡確認畫面</td>
+</tr>
+<tr>
+<td>法律文件</td>
+<td>服務條款、隱私政策等需要閱讀或審閱的內容</td>
+</tr>
+</tbody></table>
+<h2 id="4-畫面內容-2">4. 畫面內容</h2>
+<table>
+<thead>
+<tr>
+<th>畫面／狀態</th>
+<th>目前內容</th>
+<th>主要元件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>帳密登入</td>
+<td>帳號、密碼、登入、切換手機登入</td>
+<td><code>LoginModal.vue</code></td>
+</tr>
+<tr>
+<td>手機登入</td>
+<td>手機輸入、驗證碼輸入、60 秒重發倒數</td>
+<td><code>LoginModal.vue</code></td>
+</tr>
+<tr>
+<td>註冊</td>
+<td>帳號、暱稱、密碼、確認密碼、推薦碼、條款審閱</td>
+<td><code>LoginModal.vue</code>、<code>LegalModal.vue</code></td>
+</tr>
+<tr>
+<td>忘記密碼</td>
+<td>身份確認、發送驗證碼、驗證與設定新密碼、成功</td>
+<td><code>LoginModal.vue</code></td>
+</tr>
+<tr>
+<td>社群／訪客</td>
+<td>provider 選擇或訪客進入</td>
+<td><code>LoginModal.vue</code></td>
+</tr>
+<tr>
+<td>年齡驗證</td>
+<td>確認／取消與待執行動作</td>
+<td><code>AgeGateModal.vue</code></td>
+</tr>
+<tr>
+<td>法律文件</td>
+<td>服務條款、隱私政策、審閱狀態</td>
+<td><code>LegalModal.vue</code>、<code>useLegalState.ts</code></td>
+</tr>
+</tbody></table>
+<h2 id="5-欄位說明-2">5. 欄位說明</h2>
+<table>
+<thead>
+<tr>
+<th>欄位</th>
+<th>目前規則／顯示</th>
+<th>正式注意事項</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>帳號</td>
+<td>4～20 個半形計數；中英文數字</td>
+<td>server 必須重驗，不能信任前端 regex</td>
+</tr>
+<tr>
+<td>密碼</td>
+<td>前端目前最少 6 碼</td>
+<td>雜湊、強度、錯誤次數與鎖定待正式規格</td>
+</tr>
+<tr>
+<td>暱稱</td>
+<td>前端目前至少 2 字</td>
+<td>字元集、最大長度與敏感詞待確認</td>
+</tr>
+<tr>
+<td>手機</td>
+<td>目前寫死 <code>^09\d{8}$</code></td>
+<td>需確認國碼、格式與手機登入是否保留</td>
+</tr>
+<tr>
+<td>驗證碼</td>
+<td>Mock 測試值 <code>123456</code>；重發等待 60 秒</td>
+<td>有效期、頻率限制與失敗次數由後端定義</td>
+</tr>
+<tr>
+<td>推薦碼</td>
+<td>空值或 6／8 碼格式</td>
+<td>存在性、類型與歸屬由正式 API 定義</td>
+</tr>
+<tr>
+<td>條款審閱</td>
+<td>需先開啟法律 Modal 才能勾選</td>
+<td>註冊需傳送條款版本與審閱時間</td>
+</tr>
+<tr>
+<td>recovery branch</td>
+<td><code>phone</code>、<code>social</code>、<code>unbound</code></td>
+<td>不可依帳號字面值推斷正式身份狀態</td>
+</tr>
+</tbody></table>
+<h2 id="6-狀態說明-2">6. 狀態說明</h2>
+<table>
+<thead>
+<tr>
+<th>狀態</th>
+<th>目前行為</th>
+<th>正式規格要求</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>login</code></td>
+<td>顯示帳密／手機登入頁籤</td>
+<td>依 auth API 回應處理成功與錯誤</td>
+</tr>
+<tr>
+<td><code>register</code></td>
+<td>顯示註冊表單</td>
+<td>建立身份、接受條款並決定是否自動登入</td>
+</tr>
+<tr>
+<td><code>recovery</code></td>
+<td>顯示四步驟假流程</td>
+<td>需正式 recovery token 與分支判定</td>
+</tr>
+<tr>
+<td><code>social</code></td>
+<td>顯示 provider 確認假畫面</td>
+<td>需 OAuth redirect、取消與錯誤回復</td>
+</tr>
+<tr>
+<td><code>success</code></td>
+<td>顯示完成並導向目的地</td>
+<td>需清除一次性資料並保存正式 session</td>
+</tr>
+<tr>
+<td><code>age pending</code></td>
+<td>保留待執行 action</td>
+<td>正式 SSR／多請求不可保存閉包函式，應改為識別碼</td>
+</tr>
+<tr>
+<td><code>cancelled</code></td>
+<td>關閉 Modal，原操作不執行</td>
+<td>明確定義是否返回、保留輸入與再次提示</td>
+</tr>
+</tbody></table>
+<h2 id="7-查詢-排序與分頁-2">7. 查詢、排序與分頁</h2>
+<ul>
+<li>本功能沒有排序與分頁。</li>
+<li>未來可能需要查詢國碼、法律文件版本、可用登入 provider 與 recovery 分支。</li>
+<li>國碼清單若由 <code>/system/dial-codes</code> 提供，應與手機欄位的格式與登入 API 一致。</li>
+</ul>
+<h2 id="8-操作與跳轉-2">8. 操作與跳轉</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>前提</th>
+<th>目前結果</th>
+<th>正式待確認</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>開啟登入</td>
+<td>由公開頁、大廳受保護頁或遊戲入口觸發</td>
+<td>打開 Login Modal 並保存目的地</td>
+<td>是否允許桌機 Header 常駐入口</td>
+</tr>
+<tr>
+<td>帳密登入</td>
+<td>帳號與密碼通過前端檢查</td>
+<td>Mock 成功後更新 <code>useAppState</code></td>
+<td>token、refresh、錯誤與鎖定</td>
+</tr>
+<tr>
+<td>手機登入</td>
+<td>手機與驗證碼欄位有效</td>
+<td>Mock 驗證</td>
+<td>是否正式保留、國碼與 SMS 供應商</td>
+</tr>
+<tr>
+<td>註冊</td>
+<td>表單有效且完成條款審閱</td>
+<td>Mock 建立身份</td>
+<td>自動登入、條款版本與推薦碼</td>
+</tr>
+<tr>
+<td>忘記密碼</td>
+<td>帳號確認</td>
+<td>Mock 分支與重設</td>
+<td>公開 recovery 四支 API 與安全政策</td>
+</tr>
+<tr>
+<td>年齡確認</td>
+<td>入口要求 Age Gate</td>
+<td>確認後執行暫存 action</td>
+<td>每次、每日或每 session 的法遵規則</td>
+</tr>
+<tr>
+<td>關閉／取消</td>
+<td>Modal 開啟</td>
+<td>關閉並保留或清除部分狀態依目前元件</td>
+<td>各步驟取消後的返回語意</td>
+</tr>
+</tbody></table>
+<h2 id="9-頁面狀態-2">9. 頁面狀態</h2>
+<p>需分別定義表單初始、輸入中、欄位錯誤、送出中、服務失敗、帳號不存在、憑證錯誤、帳號鎖定、驗證碼過期、第三方取消、年齡拒絕與成功返回。現有原型主要覆蓋前端欄位檢查與 Mock 成功，正式網路錯誤與安全錯誤尚未驗證。</p>
+<p>所有使用 <code>&lt;Teleport&gt;</code> 的登入、法律與 Age Gate Modal 必須在 layout 的 <code>&lt;ClientOnly&gt;</code> 範圍內，避免 SSG hydration mismatch。</p>
+<h2 id="10-user-story-玩家-2">10. User Story — 玩家</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-U-03-001</code></td>
+<td>身為玩家，我要使用帳號密碼登入，以便回到原本想使用的 Web 功能。</td>
+</tr>
+<tr>
+<td><code>WEB-US-U-03-002</code></td>
+<td>身為新玩家，我要完成註冊與條款審閱，以便建立可使用大廳的身份。</td>
+</tr>
+<tr>
+<td><code>WEB-US-U-03-003</code></td>
+<td>身為忘記密碼的玩家，我要依可用身份方式恢復帳號，或被導向客服，以便知道下一步。</td>
+</tr>
+<tr>
+<td><code>WEB-US-U-03-004</code></td>
+<td>身為玩家，我要在進入遊戲前完成年齡確認，以便依產品規則進入下一步。</td>
+</tr>
+</tbody></table>
+<h2 id="11-user-story-開發人員-2">11. User Story — 開發人員</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-D-03-001</code></td>
+<td>身為開發人員，我要把登入、註冊、復原與社群登入的 UI 狀態分開，以便後續替換正式 API。</td>
+</tr>
+<tr>
+<td><code>WEB-US-D-03-002</code></td>
+<td>身為開發人員，我要保存 protected destination 的路徑與必要參數，以便登入成功後返回正確入口。</td>
+</tr>
+<tr>
+<td><code>WEB-US-D-03-003</code></td>
+<td>身為開發人員，我要遵守 <code>ClientOnly</code>／<code>Teleport</code> 與 <code>useState</code> 規則，以便 SSG hydration 不破壞互動。</td>
+</tr>
+</tbody></table>
+<h2 id="12-user-story-qa-驗證者-2">12. User Story — QA 驗證者</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-Q-03-001</code></td>
+<td>身為 QA，我要檢查每一種登入 Modal 狀態與取消返回，以便避免玩家卡在中間步驟。</td>
+</tr>
+<tr>
+<td><code>WEB-US-Q-03-002</code></td>
+<td>身為 QA，我要分開驗證前端欄位檢查、Mock 成功與正式服務錯誤，以便不把 Mock 通過當成 API 通過。</td>
+</tr>
+<tr>
+<td><code>WEB-US-Q-03-003</code></td>
+<td>身為 QA，我要確認登入前後的公開頁、大廳與遊戲目的地交接，以便檢查身份導流。</td>
+</tr>
+</tbody></table>
+<h2 id="13-驗收標準-2">13. 驗收標準</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>主題</th>
+<th>驗收標準</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-AC-03-001</code></td>
+<td>Modal 狀態</td>
+<td>帳密、手機、註冊、復原、社群、成功與取消狀態的入口、返回與清理行為有明確規格。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-03-002</code></td>
+<td>表單檢查</td>
+<td>帳號、密碼、暱稱、手機、驗證碼、推薦碼與條款審閱的前端檢查與 server 重驗責任分開。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-03-003</code></td>
+<td>目的地</td>
+<td>從公開頁或大廳受保護入口登入成功後，能回到規格指定的目的地；參數不被錯誤保留或重複執行。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-03-004</code></td>
+<td>年齡驗證</td>
+<td>Age Gate 確認、取消、重複觸發與換頁生命週期均有規格；正式法遵規則未確認前不可宣稱完成。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-03-005</code></td>
+<td>SSG 互動</td>
+<td>Modal 在 SSG build 後仍能開啟、關閉、切換狀態並維持頁面其他互動。</td>
+</tr>
+</tbody></table>
+<h2 id="14-這個功能需要的資料-2">14. 這個功能需要的資料</h2>
+<ul>
+<li>登入／註冊 request 與 response、token／refresh、expires、profile。</li>
+<li>provider、國碼、驗證碼冷卻秒數、錯誤碼與安全風險狀態。</li>
+<li>protected destination 的 path、query 與一次性消費狀態。</li>
+<li>法律文件 ID、版本、語言、內容、審閱時間與同意狀態。</li>
+<li>年齡確認的觸發原因、確認範圍、保存生命週期與法遵紀錄。</li>
+</ul>
+<h2 id="15-待確認事項-2">15. 待確認事項</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>問題</th>
+<th>影響</th>
+<th>負責確認</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-Q-03-001</code></td>
+<td>手機登入是否為 Web 正式功能？</td>
+<td>SMS API、國碼、UI 與測試</td>
+<td>產品／後端</td>
+</tr>
+<tr>
+<td><code>WEB-Q-03-002</code></td>
+<td>訪客登入是否保留？可使用哪些功能？</td>
+<td>身份模型、保存期限與轉會員</td>
+<td>產品／後端</td>
+</tr>
+<tr>
+<td><code>WEB-Q-03-003</code></td>
+<td>忘記密碼分支與安全驗證由何種服務判定？</td>
+<td>recovery API、風控與客服導流</td>
+<td>後端／資安</td>
+</tr>
+<tr>
+<td><code>WEB-Q-03-004</code></td>
+<td>年齡驗證是每次進遊戲、每日一次或 session 一次？</td>
+<td>Age Gate 觸發與紀錄</td>
+<td>產品／法遵</td>
+</tr>
+<tr>
+<td><code>WEB-Q-03-005</code></td>
+<td>桌機 Header 是否增加固定登入／註冊入口？</td>
+<td>Header 版型與導流</td>
+<td>產品／設計</td>
+</tr>
+</tbody></table>
+<h2 id="16-版本沿革-2">16. 版本沿革</h2>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>日期</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>v0.1</td>
+<td>2026-09-15</td>
+<td>依目前 Nuxt LoginModal、AgeGate、法律 Modal 與 API gap 建立 17 節分冊初版；正式身份服務未驗收。</td>
+</tr>
+</tbody></table>
+<h2 id="17-交付檢查表-2">17. 交付檢查表</h2>
+<ul>
+<li><input disabled="" type="checkbox"> 已確認帳密、手機、訪客、社群與復原功能的正式範圍。</li>
+<li><input disabled="" type="checkbox"> 已確認 token、錯誤碼、session、國碼與法律版本資料契約。</li>
+<li><input disabled="" type="checkbox"> 已補所有登入／年齡／法律狀態的桌機與手機設計。</li>
+<li><input disabled="" type="checkbox"> 已補 <code>WEB-FLOW</code>、<code>WEB-SC</code> 與驗收證據交叉引用。</li>
+<li><input disabled="" type="checkbox"> 已完成 SSG hydration、瀏覽器與正式 auth 服務的分層驗證紀錄。</li>
+</ul>
+<h1>WEB-SPEC-04｜遊戲大廳與導覽</h1>
+<p>巨亨ONLINE Web 規格書｜Phase 2 功能分冊初版｜2026-09-15</p>
+<table>
+<thead>
+<tr>
+<th>文件項目</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文件性質</td>
+<td>Web 前台功能規格；本章為分冊初版，瀏覽器與正式服務驗收未執行</td>
+</tr>
+<tr>
+<td>Plane 規格單</td>
+<td><code>YOTAPLATFO-450</code></td>
+</tr>
+<tr>
+<td>Plane Figma 單</td>
+<td><code>YOTAPLATFO-463</code></td>
+</tr>
+<tr>
+<td>Plane Nuxt 單</td>
+<td><code>YOTAPLATFO-476</code></td>
+</tr>
+<tr>
+<td>APP 參考</td>
+<td>APP 第 04 章：遊戲大廳；Web 採 route／layout 平台差異</td>
+</tr>
+<tr>
+<td>目前來源</td>
+<td><code>20-frontend.md</code> §2～§3、<code>layouts/lobby.vue</code>、<code>components/LobbyHeader.vue</code>、<code>components/LobbySidebar.vue</code>、<code>components/AppBottomNav.vue</code>、<code>components/lobby/*</code></td>
+</tr>
+<tr>
+<td>適用範圍</td>
+<td><code>/lobby</code> 主入口、桌機側欄、手機導覽、Header、遊戲分類與大廳頁面入口</td>
+</tr>
+<tr>
+<td>目前狀態</td>
+<td>lobby layout 與多數 route 已存在；遊戲 catalog、登入權限與正式資料仍是 Mock／前端狀態</td>
+</tr>
+</tbody></table>
+<h2 id="1-這個功能是什麼-3">1. 這個功能是什麼</h2>
+<p>讓玩家在登入後的 Web 遊戲大廳查看遊戲分類與入口，並從桌機側欄、手機底部導覽與 Header 前往任務、活動、財務、會員、信箱、聊天、客服與設定。Web 大廳是換頁式 route／layout，不直接照搬 APP 的 Overlay 架構。</p>
+<h2 id="2-這個功能不做什麼-3">2. 這個功能不做什麼</h2>
+<table>
+<thead>
+<tr>
+<th>不在本章範圍</th>
+<th>負責位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>遊戲幣別選擇、正式啟動 URL 與遊戲室</td>
+<td><code>web-05-game-session.md</code></td>
+</tr>
+<tr>
+<td>會員資料、VIP 與遊戲紀錄</td>
+<td><code>web-06-member.md</code></td>
+</tr>
+<tr>
+<td>儲值、錢包、保險箱與交易</td>
+<td><code>web-07-finance.md</code></td>
+</tr>
+<tr>
+<td>Figma 元件與精細響應式數值</td>
+<td><code>YOTAPLATFO-463</code></td>
+</tr>
+<tr>
+<td>後端 catalog、玩家權限與即時遊戲狀態契約</td>
+<td>後端 API／遊戲服務</td>
+</tr>
+</tbody></table>
+<h2 id="3-名詞說明-3">3. 名詞說明</h2>
+<table>
+<thead>
+<tr>
+<th>名詞</th>
+<th>定義</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>lobby layout</td>
+<td><code>layouts/lobby.vue</code>，包含 LobbyHeader、Sidebar、頁腳、Web館按鈕與 ClientOnly Modal</td>
+</tr>
+<tr>
+<td>大廳主頁</td>
+<td><code>/lobby</code>，顯示遊戲首頁／分類與遊戲卡</td>
+</tr>
+<tr>
+<td>公開官網</td>
+<td>default layout 下的 <code>/</code>、<code>/events</code> 等公開路由</td>
+</tr>
+<tr>
+<td>桌機側欄</td>
+<td><code>LobbySidebar.vue</code>，可常駐或收合</td>
+</tr>
+<tr>
+<td>手機導覽</td>
+<td><code>AppBottomNav.vue</code>，依路由顯示大廳／官網入口</td>
+</tr>
+<tr>
+<td>Web館</td>
+<td>大廳內開啟 <code>/h5</code> 的浮動按鈕；目前為預覽圖頁面</td>
+</tr>
+</tbody></table>
+<h2 id="4-畫面內容-3">4. 畫面內容</h2>
+<table>
+<thead>
+<tr>
+<th>區塊</th>
+<th>內容</th>
+<th>目前實作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LobbyHeader</td>
+<td>Logo、漢堡、登入／註冊或玩家摘要、VIP、餘額、頭像</td>
+<td><code>LobbyHeader.vue</code></td>
+</tr>
+<tr>
+<td>LobbySidebar</td>
+<td>遊戲大廳、任務活動、儲值、個人與財務、信箱、聊天、設定、教學、客服</td>
+<td><code>LobbySidebar.vue</code></td>
+</tr>
+<tr>
+<td>手機底部導覽</td>
+<td>選單、儲值、進入遊戲、信箱、聊天等入口</td>
+<td><code>AppBottomNav.vue</code></td>
+</tr>
+<tr>
+<td>大廳主內容</td>
+<td>Hero／遊戲首頁、分類、遊戲列、搜尋／篩選</td>
+<td><code>GameHome.vue</code>、<code>GameGrid.vue</code>、<code>GameCategoryView.vue</code></td>
+</tr>
+<tr>
+<td>未登入導引</td>
+<td>置中登入／註冊卡片與目的地保存</td>
+<td>多數 lobby page</td>
+</tr>
+<tr>
+<td>Web館按鈕</td>
+<td>可拖曳浮動按鈕，開啟 <code>/h5</code></td>
+<td><code>layouts/lobby.vue</code></td>
+</tr>
+</tbody></table>
+<h2 id="5-欄位說明-3">5. 欄位說明</h2>
+<table>
+<thead>
+<tr>
+<th>欄位／項目</th>
+<th>顯示與限制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>路由</td>
+<td><code>/lobby</code> 與 <code>/lobby/*</code>；舊 alias 是否保留由跨頁章確認</td>
+</tr>
+<tr>
+<td>導覽 label</td>
+<td>首頁、遊戲大廳、每日任務、活動、排行榜、儲值、個人資訊、保險箱／贈禮、信箱、聊天、兌換、交易紀錄、設置、教學、客服</td>
+</tr>
+<tr>
+<td>玩家摘要</td>
+<td>名稱、VIP、餘額、頭像；未登入顯示登入／註冊</td>
+</tr>
+<tr>
+<td>遊戲分類</td>
+<td>目前 <code>slots</code>、<code>baccarat</code>、<code>fish</code>、<code>dice</code>、<code>cards</code>，仍屬 catalog 候選值</td>
+</tr>
+<tr>
+<td>active route</td>
+<td>依 <code>route.path</code> 判定；銀行含 <code>/lobby/deposit</code> alias 邏輯</td>
+</tr>
+<tr>
+<td>query</td>
+<td>遊戲、模式、tab、channel、receiverId 等交由功能章維護</td>
+</tr>
+</tbody></table>
+<h2 id="6-狀態說明-3">6. 狀態說明</h2>
+<table>
+<thead>
+<tr>
+<th>狀態</th>
+<th>目前行為</th>
+<th>正式注意事項</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>未登入</td>
+<td>受保護頁顯示導引卡或開啟登入</td>
+<td>需明確每頁是否可公開閱讀</td>
+</tr>
+<tr>
+<td>已登入</td>
+<td>顯示玩家摘要與受保護內容</td>
+<td>正式身份由 token／server profile 提供</td>
+</tr>
+<tr>
+<td>側欄展開</td>
+<td>桌機完整側欄；手機 overlay</td>
+<td>狀態使用 <code>useState</code> 跨元件共享</td>
+</tr>
+<tr>
+<td>側欄收合</td>
+<td>桌機 icon-only 或手機關閉</td>
+<td>需保留鍵盤與可及性操作</td>
+</tr>
+<tr>
+<td>route active</td>
+<td>依目前 path 顯示 active</td>
+<td>query tab 的 active 規則需一致</td>
+</tr>
+<tr>
+<td>Web館開啟中</td>
+<td><code>AgeGate</code> 通過後另開 <code>/h5</code></td>
+<td>正式遊戲頁與預覽頁的關係待確認</td>
+</tr>
+</tbody></table>
+<h2 id="7-查詢-排序與分頁-3">7. 查詢、排序與分頁</h2>
+<ul>
+<li>導覽本身沒有查詢、排序與分頁。</li>
+<li>遊戲分類與搜尋由 <code>useGameFilter</code>、<code>GameFilterBar</code>、<code>GameCategoryView</code> 等功能處理，詳細規則在 <code>web-05</code>。</li>
+<li>側欄不應因玩家資料尚未載入而產生錯誤 route；若功能權限由後端控制，需定義隱藏、停用或導引行為。</li>
+</ul>
+<h2 id="8-操作與跳轉-3">8. 操作與跳轉</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>目前結果</th>
+<th>正式要求／待確認</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>點擊 Logo</td>
+<td>回 <code>/lobby</code></td>
+<td>是否保留 query、正在進行的遊戲與未送出表單</td>
+</tr>
+<tr>
+<td>點擊側欄項目</td>
+<td>導向對應 <code>/lobby/*</code></td>
+<td>需定義未登入、權限不足與未保存資料提示</td>
+</tr>
+<tr>
+<td>點擊手機選單</td>
+<td>開／關 sidebar 或導向功能</td>
+<td>不得因 Teleport hydration 造成全站失效</td>
+</tr>
+<tr>
+<td>點擊玩家摘要</td>
+<td>導向 <code>/lobby/member</code></td>
+<td>正式是否需要 profile loading 與權限檢查</td>
+</tr>
+<tr>
+<td>點擊遊戲大廳</td>
+<td>回 <code>/lobby</code></td>
+<td>遊戲卡操作由 <code>web-05</code> 維護</td>
+</tr>
+<tr>
+<td>點擊 Web館</td>
+<td>Age Gate 後另開 <code>/h5</code></td>
+<td>正式 Web 遊戲入口、target 與 session 待確認</td>
+</tr>
+<tr>
+<td>登出</td>
+<td>由 sidebar／設定觸發</td>
+<td>清理 token、私有 state、返回公開頁的規則待確認</td>
+</tr>
+</tbody></table>
+<h2 id="9-頁面狀態-3">9. 頁面狀態</h2>
+<p>需涵蓋 layout 初始、玩家資料 loading、未登入、登入失敗、玩家資料失敗、側欄展開／收合、沒有可用遊戲、遊戲 catalog 失敗、路由不存在、權限不足、頁面返回與小螢幕溢位。現有原型主要覆蓋成功畫面與部分未登入導引。</p>
+<h2 id="10-user-story-玩家-3">10. User Story — 玩家</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-U-04-001</code></td>
+<td>身為玩家，我要從大廳看到清楚的遊戲與功能導覽，以便快速找到想使用的功能。</td>
+</tr>
+<tr>
+<td><code>WEB-US-U-04-002</code></td>
+<td>身為手機玩家，我要使用底部導覽或側邊抽屜切換功能，以便在小螢幕上完成導航。</td>
+</tr>
+<tr>
+<td><code>WEB-US-U-04-003</code></td>
+<td>身為未登入玩家，我要看到登入／註冊導引，而不是無法理解的空白頁。</td>
+</tr>
+</tbody></table>
+<h2 id="11-user-story-開發人員-3">11. User Story — 開發人員</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-D-04-001</code></td>
+<td>身為開發人員，我要讓 default layout 與 lobby layout 的責任清楚，以便不把公開頁與大廳狀態混在一起。</td>
+</tr>
+<tr>
+<td><code>WEB-US-D-04-002</code></td>
+<td>身為開發人員，我要用 <code>useState</code> 管理跨元件導覽狀態，以便 Header、Sidebar 與手機導覽保持一致。</td>
+</tr>
+<tr>
+<td><code>WEB-US-D-04-003</code></td>
+<td>身為開發人員，我要讓 route active、query alias 與 protected destination 有單一規則，以便深連結與返回不失效。</td>
+</tr>
+</tbody></table>
+<h2 id="12-user-story-qa-驗證者-3">12. User Story — QA 驗證者</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-Q-04-001</code></td>
+<td>身為 QA，我要在桌機與手機逐一檢查所有導覽入口，以便找出死連結與錯誤 active 狀態。</td>
+</tr>
+<tr>
+<td><code>WEB-US-Q-04-002</code></td>
+<td>身為 QA，我要驗證 Sidebar、Header、BottomNav 與 Modal 同時存在時的互動，以便避免 overlay 互相遮蔽。</td>
+</tr>
+<tr>
+<td><code>WEB-US-Q-04-003</code></td>
+<td>身為 QA，我要區分未登入導引、route 可到達與正式權限驗證，以便不誤判原型狀態。</td>
+</tr>
+</tbody></table>
+<h2 id="13-驗收標準-3">13. 驗收標準</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>主題</th>
+<th>驗收標準</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-AC-04-001</code></td>
+<td>Layout</td>
+<td>所有 <code>/lobby/*</code> 頁面使用 lobby layout；公開路由不意外帶入大廳私有狀態。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-04-002</code></td>
+<td>導覽</td>
+<td>桌機側欄、手機導覽與 Header 的入口、active、返回與未登入行為一致。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-04-003</code></td>
+<td>響應式</td>
+<td>桌機、手機與側欄收合狀態不造成內容溢位或無法操作。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-04-004</code></td>
+<td>SSG／Modal</td>
+<td>layout 中的 ClientOnly、Teleport 與 useState 使用符合專案 SSG 約束。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-04-005</code></td>
+<td>路由</td>
+<td>大廳 route、query alias、Web館與登入導流的實際結果與規格相符。</td>
+</tr>
+</tbody></table>
+<h2 id="14-這個功能需要的資料-3">14. 這個功能需要的資料</h2>
+<ul>
+<li>導覽節點、label、icon、route、active 規則與登入要求。</li>
+<li>玩家摘要與登入狀態；正式資料不可由 localStorage 假旗標取代。</li>
+<li>遊戲 catalog 摘要與功能可用性；詳細資料由 <code>web-05</code> 維護。</li>
+<li>layout／sidebar 的視窗尺寸、展開狀態與可及性設定。</li>
+<li>登入後返回位置、登出後公開入口與 Web館目標資訊。</li>
+</ul>
+<h2 id="15-待確認事項-3">15. 待確認事項</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>問題</th>
+<th>影響</th>
+<th>負責確認</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-Q-04-001</code></td>
+<td>Web 官網與遊戲大廳是否維持兩種 layout 與兩套入口？</td>
+<td>IA、Figma、route 與狀態</td>
+<td>產品／設計</td>
+</tr>
+<tr>
+<td><code>WEB-Q-04-002</code></td>
+<td>手機 BottomNav 最終項目與桌機 Sidebar 是否完全同構？</td>
+<td>導覽與響應式設計</td>
+<td>產品／設計</td>
+</tr>
+<tr>
+<td><code>WEB-Q-04-003</code></td>
+<td>Web館 <code>/h5</code> 是預覽頁、正式遊戲入口或淘汰項目？</td>
+<td>Web館按鈕、Age Gate、遊戲 session</td>
+<td>產品／前端</td>
+</tr>
+<tr>
+<td><code>WEB-Q-04-004</code></td>
+<td>route alias 與舊連結的保留期限為何？</td>
+<td>SEO、deep link、redirect</td>
+<td>產品／前端</td>
+</tr>
+</tbody></table>
+<h2 id="16-版本沿革-3">16. 版本沿革</h2>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>日期</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>v0.1</td>
+<td>2026-09-15</td>
+<td>依目前 Nuxt layout、route、Header、Sidebar、BottomNav 與 Web館行為建立 17 節分冊初版。</td>
+</tr>
+</tbody></table>
+<h2 id="17-交付檢查表-3">17. 交付檢查表</h2>
+<ul>
+<li><input disabled="" type="checkbox"> 已確認公開官網與登入後大廳的 layout、導覽與權限邊界。</li>
+<li><input disabled="" type="checkbox"> 已確認桌機／手機導覽項目、active 與 query alias。</li>
+<li><input disabled="" type="checkbox"> 已補導覽 loading、空態、錯誤、權限與返回設計。</li>
+<li><input disabled="" type="checkbox"> 已補 <code>WEB-FLOW</code>、<code>WEB-SC</code> 與 route／畫面索引交叉引用。</li>
+<li><input disabled="" type="checkbox"> 已完成瀏覽器響應式、SSG hydration 與正式身份服務的分層驗證紀錄。</li>
+</ul>
+<h1>WEB-SPEC-05｜遊戲進入、模式與返回</h1>
+<p>巨亨ONLINE Web 規格書｜Phase 2 功能分冊初版｜2026-09-15</p>
+<table>
+<thead>
+<tr>
+<th>文件項目</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文件性質</td>
+<td>Web 前台功能規格；目前遊戲服務為佔位／Mock，正式遊戲驗收未執行</td>
+</tr>
+<tr>
+<td>Plane 規格單</td>
+<td><code>YOTAPLATFO-451</code></td>
+</tr>
+<tr>
+<td>Plane Figma 單</td>
+<td><code>YOTAPLATFO-464</code></td>
+</tr>
+<tr>
+<td>Plane Nuxt 單</td>
+<td><code>YOTAPLATFO-477</code></td>
+</tr>
+<tr>
+<td>APP 參考</td>
+<td>APP 第 05 章：遊戲進入與離開</td>
+</tr>
+<tr>
+<td>目前來源</td>
+<td><code>20-frontend.md</code> §3、<code>pages/lobby/index.vue</code>、<code>components/lobby/GameCard.vue</code>、<code>GameLaunchModal.vue</code>、<code>GameView.vue</code>、<code>utils/gameWallets.ts</code></td>
+</tr>
+<tr>
+<td>適用範圍</td>
+<td>遊戲卡操作、試玩／正式模式、幣別選擇、遊戲視圖、返回與最近遊玩</td>
+</tr>
+<tr>
+<td>目前狀態</td>
+<td>Demo／Real 的前端流程已存在；遊戲 iframe、launch token、正式餘額與機台服務尚未完成</td>
+</tr>
+</tbody></table>
+<h2 id="1-這個功能是什麼-4">1. 這個功能是什麼</h2>
+<p>讓玩家從 Web 大廳選擇遊戲，先決定試玩或正式模式；正式模式再選擇遊戲使用的錢包，之後進入遊戲視圖，並能返回大廳。登入、年齡驗證、錢包資格與正式遊戲服務是相鄰依賴，不在前端自行假定完成。</p>
+<p>目前 <code>/lobby</code> 由 <code>pages/lobby/index.vue</code> 管理 <code>currentGameKey</code>、<code>currentGameMode</code>、<code>currentGameWallet</code> 與 launch modal 狀態。<code>GameView.vue</code> 的 iframe URL 目前是 <code>example.com</code> 佔位。</p>
+<h2 id="2-這個功能不做什麼-4">2. 這個功能不做什麼</h2>
+<table>
+<thead>
+<tr>
+<th>不在本章範圍</th>
+<th>負責位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>遊戲 catalog 與大廳導覽的完整責任</td>
+<td><code>web-04-lobby-navigation.md</code></td>
+</tr>
+<tr>
+<td>登入、註冊與年齡法遵政策</td>
+<td><code>web-03-authentication.md</code></td>
+</tr>
+<tr>
+<td>錢包餘額、交易入帳與支付</td>
+<td><code>web-07-finance.md</code></td>
+</tr>
+<tr>
+<td>有效流水、獎勵卡資格與活動獎勵</td>
+<td><code>web-08-rewards-promotions-gifts.md</code>、<code>web-09-*</code></td>
+</tr>
+<tr>
+<td>遊戲供應商、機台、launch token 與正式結算契約</td>
+<td>遊戲／後端服務</td>
+</tr>
+<tr>
+<td>遊戲畫面本身的視覺設計</td>
+<td><code>YOTAPLATFO-464</code> 與供應商交付</td>
+</tr>
+</tbody></table>
+<h2 id="3-名詞說明-4">3. 名詞說明</h2>
+<table>
+<thead>
+<tr>
+<th>名詞</th>
+<th>定義</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Demo</td>
+<td>不使用玩家正式資產的試玩模式；目前可由未登入玩家進入</td>
+</tr>
+<tr>
+<td>Real</td>
+<td>需要玩家身份與正式遊戲資格的模式</td>
+</tr>
+<tr>
+<td>GameWalletKey</td>
+<td><code>stored-gold</code>、<code>activity-gold</code>、<code>stored-silver</code>、<code>activity-silver</code>、<code>bronze</code></td>
+</tr>
+<tr>
+<td>GameLaunchModal</td>
+<td>正式模式進入前選擇遊戲錢包的 Modal</td>
+</tr>
+<tr>
+<td>GameView</td>
+<td>顯示遊戲 iframe、控制列與遊戲資訊的頁面區塊</td>
+</tr>
+<tr>
+<td>machine／seat</td>
+<td>遊戲機台或座位資訊；目前 <code>SeatSelectionModal.vue</code> 沒有被實際引用</td>
+</tr>
+<tr>
+<td>launch token</td>
+<td>正式服務用的一次性啟動資訊；目前尚未實作</td>
+</tr>
+</tbody></table>
+<h2 id="4-畫面內容-4">4. 畫面內容</h2>
+<table>
+<thead>
+<tr>
+<th>畫面／區塊</th>
+<th>內容</th>
+<th>主要元件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>遊戲卡</td>
+<td>名稱、描述、分類、供應商、badge、試玩／正式入口</td>
+<td><code>GameCard.vue</code></td>
+</tr>
+<tr>
+<td>啟動 Modal</td>
+<td>遊戲摘要、錢包選擇、關閉與進入</td>
+<td><code>GameLaunchModal.vue</code></td>
+</tr>
+<tr>
+<td>遊戲視圖</td>
+<td>iframe 佔位、模式切換、關閉、遊戲資訊與規格表</td>
+<td><code>GameView.vue</code></td>
+</tr>
+<tr>
+<td>返回大廳</td>
+<td>關閉遊戲視圖、清除啟動狀態</td>
+<td><code>pages/lobby/index.vue</code></td>
+</tr>
+<tr>
+<td>機台／座位</td>
+<td>目前只有孤立元件與未接入資料</td>
+<td><code>SeatSelectionModal.vue</code></td>
+</tr>
+</tbody></table>
+<h2 id="5-欄位說明-4">5. 欄位說明</h2>
+<table>
+<thead>
+<tr>
+<th>欄位</th>
+<th>目前內容／限制</th>
+<th>正式注意事項</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>gameKey</code></td>
+<td>遊戲唯一 key；目前由 catalog 取得</td>
+<td>不應只保存中文遊戲名稱</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td><code>demo</code> 或 <code>real</code></td>
+<td>正式服務需有明確身份與資格檢查</td>
+</tr>
+<tr>
+<td><code>wallet</code></td>
+<td>五種 <code>GameWalletKey</code>；預設 <code>stored-gold</code></td>
+<td>後端 Wallet 模型需有轉換層</td>
+</tr>
+<tr>
+<td><code>provider</code></td>
+<td>遊戲供應商名稱</td>
+<td>正式 catalog／launch service 提供</td>
+</tr>
+<tr>
+<td><code>rtp</code>／規格</td>
+<td>目前顯示於遊戲資訊</td>
+<td>不等同正式遊戲數學或營運承諾</td>
+</tr>
+<tr>
+<td><code>iframe URL</code></td>
+<td>目前為 <code>example.com</code> 佔位</td>
+<td>正式需一次性 URL、token、origin 與失敗處理</td>
+</tr>
+<tr>
+<td><code>machineId</code></td>
+<td><code>GameView</code> 有 prop，但目前沒有實際傳入</td>
+<td>是否選機台／座位需產品確認</td>
+</tr>
+</tbody></table>
+<h2 id="6-狀態說明-4">6. 狀態說明</h2>
+<table>
+<thead>
+<tr>
+<th>狀態</th>
+<th>目前行為</th>
+<th>正式規格要求</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>catalog ready</code></td>
+<td>顯示遊戲卡</td>
+<td>正式 catalog 需含可用性與維護狀態</td>
+</tr>
+<tr>
+<td><code>demo selected</code></td>
+<td>直接顯示 GameView</td>
+<td>是否需 Age Gate 依產品／法遵確認</td>
+</tr>
+<tr>
+<td><code>real unauthenticated</code></td>
+<td>開啟登入並保存遊戲參數</td>
+<td>登入成功後不可重複啟動或遺失參數</td>
+</tr>
+<tr>
+<td><code>launch pending</code></td>
+<td>顯示錢包選擇 Modal</td>
+<td>需載入餘額、資格與遊戲可用性</td>
+</tr>
+<tr>
+<td><code>launching</code></td>
+<td>目前沒有正式 loading service</td>
+<td>需處理 timeout、重試與取消</td>
+</tr>
+<tr>
+<td><code>in game</code></td>
+<td>顯示 iframe 佔位</td>
+<td>需定義啟動成功、載入失敗與回傳事件</td>
+</tr>
+<tr>
+<td><code>closed</code></td>
+<td>清除 current game 與 launch 狀態</td>
+<td>需保存必要的最近遊玩與結算交接</td>
+</tr>
+</tbody></table>
+<h2 id="7-查詢-排序與分頁-4">7. 查詢、排序與分頁</h2>
+<ul>
+<li>遊戲分類、搜尋、排序與目前頁面大小由大廳相關元件處理，本章只引用其結果。</li>
+<li><code>GameBrowser</code>／<code>GameCategoryView</code> 目前支援分類、關鍵字與排序候選；正式 catalog 量大時可能改由 server 查詢。</li>
+<li>遊戲進入本身沒有分頁，但正式遊戲清單、機台清單與最近遊玩可能需要 cursor／page。</li>
+<li>遊戲可用性、維護、VIP 限制與餘額不足不可由前端篩選結果推論，需正式服務回應。</li>
+</ul>
+<h2 id="8-操作與跳轉-4">8. 操作與跳轉</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>前提</th>
+<th>目前結果</th>
+<th>正式待確認</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>點擊試玩</td>
+<td>遊戲卡存在</td>
+<td>直接進入 Demo GameView</td>
+<td>是否需年齡確認或服務 token</td>
+</tr>
+<tr>
+<td>點擊正式遊玩</td>
+<td>未登入／已登入</td>
+<td>未登入開 Login；已登入開 launch modal</td>
+<td>年齡、VIP、餘額與遊戲資格</td>
+</tr>
+<tr>
+<td>選擇錢包</td>
+<td>launch modal 開啟</td>
+<td>設定 current game wallet</td>
+<td>是否顯示餘額、不可用原因與排序</td>
+</tr>
+<tr>
+<td>開始正式遊戲</td>
+<td>已選 wallet</td>
+<td>顯示 iframe 佔位</td>
+<td>launch token、冪等與啟動失敗</td>
+</tr>
+<tr>
+<td>切換 Demo／Real</td>
+<td>GameView 開啟</td>
+<td>Demo 可切換；Real 需重新走登入／launch</td>
+<td>是否允許遊戲中切換模式</td>
+</tr>
+<tr>
+<td>關閉遊戲</td>
+<td>GameView 開啟</td>
+<td>清除遊戲與 launch 狀態</td>
+<td>結算、未完成局、離開確認與最近遊玩</td>
+</tr>
+<tr>
+<td>選機台／座位</td>
+<td>目前未由 UI 觸發</td>
+<td>無實際流程</td>
+<td>是否納入 Web 正式範圍</td>
+</tr>
+</tbody></table>
+<h2 id="9-頁面狀態-4">9. 頁面狀態</h2>
+<p>需定義遊戲 catalog loading、無遊戲、遊戲不存在、遊戲維護、未登入、年齡未確認、錢包餘額不足、錢包不可用、launch timeout、iframe 失敗、玩家取消、遊戲中返回、結算中與重複點擊。現有原型主要覆蓋 Demo／Real 入口與 iframe 佔位，未覆蓋正式服務錯誤。</p>
+<h2 id="10-user-story-玩家-4">10. User Story — 玩家</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-U-05-001</code></td>
+<td>身為玩家，我要先試玩遊戲，以便在不使用正式資產的情況下了解遊戲。</td>
+</tr>
+<tr>
+<td><code>WEB-US-U-05-002</code></td>
+<td>身為已登入玩家，我要選擇遊戲使用的錢包後進入正式遊戲，以便使用正確資產。</td>
+</tr>
+<tr>
+<td><code>WEB-US-U-05-003</code></td>
+<td>身為遊戲中的玩家，我要能安全返回大廳，以便繼續選擇其他功能。</td>
+</tr>
+</tbody></table>
+<h2 id="11-user-story-開發人員-4">11. User Story — 開發人員</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-D-05-001</code></td>
+<td>身為開發人員，我要把遊戲 key、模式、錢包與 launch 狀態分開，以便後續串接正式服務。</td>
+</tr>
+<tr>
+<td><code>WEB-US-D-05-002</code></td>
+<td>身為開發人員，我要透過後端回應判斷遊戲可用性與餘額資格，以便前端不自行假定可進入。</td>
+</tr>
+<tr>
+<td><code>WEB-US-D-05-003</code></td>
+<td>身為開發人員，我要讓遊戲返回、query 清理與最近遊玩保存有明確邊界，以便不重複啟動遊戲。</td>
+</tr>
+</tbody></table>
+<h2 id="12-user-story-qa-驗證者-4">12. User Story — QA 驗證者</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-Q-05-001</code></td>
+<td>身為 QA，我要分別測試 Demo、未登入 Real、已登入 Real、取消與返回，以便確認狀態轉換。</td>
+</tr>
+<tr>
+<td><code>WEB-US-Q-05-002</code></td>
+<td>身為 QA，我要檢查五種錢包的顯示、不可用與錯誤狀態，以便避免玩家誤用資產。</td>
+</tr>
+<tr>
+<td><code>WEB-US-Q-05-003</code></td>
+<td>身為 QA，我要分開記錄 iframe 佔位成功與正式遊戲服務成功，以便驗收結果可追溯。</td>
+</tr>
+</tbody></table>
+<h2 id="13-驗收標準-4">13. 驗收標準</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>主題</th>
+<th>驗收標準</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-AC-05-001</code></td>
+<td>模式分流</td>
+<td>Demo 不誤用正式資產；Real 未登入時導向登入並保留必要目的地。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-05-002</code></td>
+<td>錢包選擇</td>
+<td>正式遊戲的錢包選擇、預設、不可用、餘額與資格訊息有明確規格。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-05-003</code></td>
+<td>啟動</td>
+<td>launch loading、成功、取消、timeout、失敗與重複送出有可觀察結果。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-05-004</code></td>
+<td>返回</td>
+<td>關閉遊戲後回到正確大廳狀態，query、launch 狀態與最近遊玩不錯亂。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-05-005</code></td>
+<td>機台／座位</td>
+<td><code>SeatSelectionModal.vue</code> 是否正式納入已有產品決策；未確認前不可列為完成。</td>
+</tr>
+</tbody></table>
+<h2 id="14-這個功能需要的資料-4">14. 這個功能需要的資料</h2>
+<ul>
+<li>Game catalog、遊戲 key、provider、分類、badge、可用性與維護狀態。</li>
+<li>Demo／Real 模式、玩家身份、年齡確認、VIP 與遊戲進場資格。</li>
+<li>五種遊戲錢包、餘額、獎勵卡限制與正式遊戲啟動參數。</li>
+<li>launch token／一次性 URL、session、origin、錯誤碼與遊戲回傳事件。</li>
+<li>最近遊玩記錄、遊戲局／結算關聯與必要的離開狀態。</li>
+</ul>
+<h2 id="15-待確認事項-4">15. 待確認事項</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>問題</th>
+<th>影響</th>
+<th>負責確認</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-Q-05-001</code></td>
+<td>正式遊戲是否需要一次性 launch token 或 session URL？</td>
+<td>API、iframe 安全與啟動流程</td>
+<td>後端／遊戲服務</td>
+</tr>
+<tr>
+<td><code>WEB-Q-05-002</code></td>
+<td>進入遊戲前是否檢查餘額、VIP、活動卡與年齡？</td>
+<td>launch modal、錯誤狀態與法遵</td>
+<td>產品／後端</td>
+</tr>
+<tr>
+<td><code>WEB-Q-05-003</code></td>
+<td><code>SeatSelectionModal.vue</code> 是否納入正式 Web 流程？</td>
+<td>route、資料模型、Figma 與 API</td>
+<td>產品／設計</td>
+</tr>
+<tr>
+<td><code>WEB-Q-05-004</code></td>
+<td>遊戲中離開、未完成局與結算事件如何保存？</td>
+<td>financial record、recent games 與返回</td>
+<td>遊戲／後端</td>
+</tr>
+</tbody></table>
+<h2 id="16-版本沿革-4">16. 版本沿革</h2>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>日期</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>v0.1</td>
+<td>2026-09-15</td>
+<td>依目前 GameCard、GameLaunchModal、GameView 與 game wallet 行為建立 17 節分冊初版；正式遊戲服務未驗收。</td>
+</tr>
+</tbody></table>
+<h2 id="17-交付檢查表-4">17. 交付檢查表</h2>
+<ul>
+<li><input disabled="" type="checkbox"> 已確認 Demo／Real、Age Gate、登入與正式遊戲資格的範圍。</li>
+<li><input disabled="" type="checkbox"> 已確認 launch token、iframe、機台／座位與返回／結算契約。</li>
+<li><input disabled="" type="checkbox"> 已補遊戲啟動與返回的桌機／手機狀態設計。</li>
+<li><input disabled="" type="checkbox"> 已補 <code>WEB-FLOW</code>、<code>WEB-SC</code> 與遊戲畫面索引交叉引用。</li>
+<li><input disabled="" type="checkbox"> 已完成原型、瀏覽器、SSG 與正式遊戲服務的分層驗證紀錄。</li>
+</ul>
+<h1>WEB-SPEC-06｜個人資訊、VIP 與會員功能</h1>
+<p>巨亨ONLINE Web 規格書｜Phase 2 功能分冊初版｜2026-09-15</p>
+<table>
+<thead>
+<tr>
+<th>文件項目</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文件性質</td>
+<td>Web 前台功能規格；會員資料與 VIP 正式 API 尚未驗收</td>
+</tr>
+<tr>
+<td>Plane 規格單</td>
+<td><code>YOTAPLATFO-452</code></td>
+</tr>
+<tr>
+<td>Plane Figma 單</td>
+<td><code>YOTAPLATFO-465</code></td>
+</tr>
+<tr>
+<td>Plane Nuxt 單</td>
+<td><code>YOTAPLATFO-478</code></td>
+</tr>
+<tr>
+<td>APP 參考</td>
+<td>APP 第 06 章：個人資訊與會員功能</td>
+</tr>
+<tr>
+<td>目前來源</td>
+<td><code>20-frontend.md</code> §9、<code>pages/lobby/member.vue</code>、<code>MemberProfileView.vue</code>、<code>MemberProfileModal.vue</code>、<code>useMemberProfileState.ts</code>、<code>GameRecords.vue</code></td>
+</tr>
+<tr>
+<td>適用範圍</td>
+<td>個人資料、帳號綁定、VIP、頭像、遊戲紀錄與會員入口</td>
+</tr>
+<tr>
+<td>目前狀態</td>
+<td>Profile、綁定、VIP 顯示與紀錄畫面存在；資料多為 local state／Mock，正式安全規則仍需補齊</td>
+</tr>
+</tbody></table>
+<h2 id="1-這個功能是什麼-5">1. 這個功能是什麼</h2>
+<p>讓已登入玩家查看與管理自己的身份資料、帳號綁定、VIP 資訊、頭像與遊戲紀錄，並從大廳 Header 或導覽進入會員頁。會員頁只處理自己的資料，不等同於聊天中的其他玩家公開資料卡。</p>
+<p>目前 <code>/lobby/member</code> 使用 <code>MemberProfileView.vue</code>；<code>MemberTab</code> 類型包含 <code>profile</code>、<code>bindings</code>、<code>history</code>、<code>vip</code>、<code>rewards</code>。獎勵卡的詳細規則由 <code>web-08</code> 維護，會員頁只負責入口與頁籤交接。</p>
+<h2 id="2-這個功能不做什麼-5">2. 這個功能不做什麼</h2>
+<table>
+<thead>
+<tr>
+<th>不在本章範圍</th>
+<th>負責位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>登入、token、忘記密碼與年齡驗證</td>
+<td><code>web-03-authentication.md</code></td>
+</tr>
+<tr>
+<td>玩家間公開資料卡、好友、封鎖與檢舉</td>
+<td><code>web-10-social-support.md</code></td>
+</tr>
+<tr>
+<td>錢包餘額、儲值與交易</td>
+<td><code>web-07-finance.md</code></td>
+</tr>
+<tr>
+<td>獎勵卡、優惠碼與贈禮規則</td>
+<td><code>web-08-rewards-promotions-gifts.md</code></td>
+</tr>
+<tr>
+<td>VIP 後台配置、排程與正式等級決策</td>
+<td>VIP／營運後台規格</td>
+</tr>
+</tbody></table>
+<h2 id="3-名詞說明-5">3. 名詞說明</h2>
+<table>
+<thead>
+<tr>
+<th>名詞</th>
+<th>定義</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>個人資料</td>
+<td>玩家自己的暱稱、Email、生日、簡介等可編輯欄位</td>
+</tr>
+<tr>
+<td>帳號綁定</td>
+<td>手機、FB、LINE、Apple、Google 等身份 provider 的綁定狀態</td>
+</tr>
+<tr>
+<td>VIP</td>
+<td>玩家等級、升級門檻、權益與保級資訊</td>
+</tr>
+<tr>
+<td>遊戲紀錄</td>
+<td>玩家自己的遊戲時間、遊戲、投注、贏分與餘額等歷史資料</td>
+</tr>
+<tr>
+<td>公開玩家卡</td>
+<td>聊天與社交功能中查看其他玩家的有限資料，不由本章維護</td>
+</tr>
+<tr>
+<td>會員入口</td>
+<td><code>/lobby/member</code>、Header 玩家卡與未登入導引</td>
+</tr>
+</tbody></table>
+<h2 id="4-畫面內容-5">4. 畫面內容</h2>
+<table>
+<thead>
+<tr>
+<th>頁籤／區塊</th>
+<th>內容</th>
+<th>目前元件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>個人資料</td>
+<td>頭像、帳號、暱稱、Email、生日、簡介、身份摘要</td>
+<td><code>MemberProfileView.vue</code></td>
+</tr>
+<tr>
+<td>帳號綁定</td>
+<td>provider 綁定／解綁狀態與操作</td>
+<td><code>MemberProfileView.vue</code>、<code>useAppState.ts</code></td>
+</tr>
+<tr>
+<td>VIP</td>
+<td>等級、稱號、升級／保級文案與進度</td>
+<td><code>MemberProfileView.vue</code>、<code>siteContent.ts</code></td>
+</tr>
+<tr>
+<td>遊戲紀錄</td>
+<td>歷史記錄列表與欄位</td>
+<td><code>GameRecords.vue</code></td>
+</tr>
+<tr>
+<td>獎勵卡入口</td>
+<td>會員頁 reward tab 或 <code>/lobby/gifts</code> redirect</td>
+<td><code>RewardCardContent.vue</code>、<code>pages/lobby/gifts.vue</code></td>
+</tr>
+<tr>
+<td>登入導引</td>
+<td>未登入時顯示登入／註冊按鈕</td>
+<td><code>MemberProfileView.vue</code></td>
+</tr>
+</tbody></table>
+<h2 id="5-欄位說明-5">5. 欄位說明</h2>
+<table>
+<thead>
+<tr>
+<th>欄位</th>
+<th>目前內容／限制</th>
+<th>正式注意事項</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>account</td>
+<td>帳號識別；通常不可由玩家任意修改</td>
+<td>以正式身份 API 為準</td>
+</tr>
+<tr>
+<td>name</td>
+<td>暱稱</td>
+<td>長度、敏感詞與修改頻率需確認</td>
+</tr>
+<tr>
+<td>email</td>
+<td>目前可編輯</td>
+<td>後端規則指出有值後應鎖定，前端需補一致行為</td>
+</tr>
+<tr>
+<td>birthday</td>
+<td><code>YYYY-MM-DD</code> 候選格式</td>
+<td>合法日期與修改限制尚未完整定義</td>
+</tr>
+<tr>
+<td>bio</td>
+<td>玩家簡介；目前有長度候選</td>
+<td>正式限制與敏感內容規則待確認</td>
+</tr>
+<tr>
+<td>avatar／avatarId</td>
+<td>目前 12 個 emoji，部分依 VIP5 解鎖</td>
+<td>正式 default avatar、上傳與 ID 模型待確認</td>
+</tr>
+<tr>
+<td>VIP</td>
+<td>等級、稱號、升級／保級資訊</td>
+<td>需結構化門檻與權益，不能只顯示文案</td>
+</tr>
+<tr>
+<td>game record</td>
+<td>目前 100 筆隨機 Mock</td>
+<td>正式以 server id、時間與 gameKey 關聯</td>
+</tr>
+</tbody></table>
+<h2 id="6-狀態說明-5">6. 狀態說明</h2>
+<table>
+<thead>
+<tr>
+<th>狀態</th>
+<th>目前行為</th>
+<th>正式規格要求</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>未登入</td>
+<td>顯示登入／註冊導引</td>
+<td>不可讀取玩家私有資料</td>
+</tr>
+<tr>
+<td>profile loading</td>
+<td>目前沒有正式 API loading</td>
+<td>需處理讀取中、失敗與重新載入</td>
+</tr>
+<tr>
+<td>profile editable</td>
+<td>暱稱等欄位可編輯</td>
+<td>Email 有值後鎖定規則需落實</td>
+</tr>
+<tr>
+<td>binding connected</td>
+<td>顯示已綁定</td>
+<td>解綁需安全驗證與最後登入方式保護</td>
+</tr>
+<tr>
+<td>binding unavailable</td>
+<td>目前缺少完整錯誤路徑</td>
+<td>需明確 provider 失敗、取消與重試</td>
+</tr>
+<tr>
+<td>VIP progress</td>
+<td>目前主要是文案／Mock 數值</td>
+<td>儲值 AND 投注雙條件與保級規則需結構化</td>
+</tr>
+<tr>
+<td>records empty／error</td>
+<td>目前以假資料為主</td>
+<td>正式需無資料、失敗、分頁與時間範圍狀態</td>
+</tr>
+</tbody></table>
+<h2 id="7-查詢-排序與分頁-5">7. 查詢、排序與分頁</h2>
+<ul>
+<li>會員頁本身以頁籤切換，沒有一般排序。</li>
+<li>遊戲紀錄目前由前端產生 100 筆資料，尚未提供正式日期範圍、排序、分頁與 server cursor。</li>
+<li>VIP 進度是玩家當前身份的摘要，不應由前端自行計算正式升級結果。</li>
+<li>綁定列表以 provider 固定順序顯示；正式是否依後端可用 provider 動態排序待確認。</li>
+</ul>
+<h2 id="8-操作與跳轉-5">8. 操作與跳轉</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>前提</th>
+<th>目前結果</th>
+<th>正式待確認</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>開啟會員頁</td>
+<td>已登入或從受保護入口進入</td>
+<td>顯示會員頁或登入導引</td>
+<td>token、profile loading 與權限</td>
+</tr>
+<tr>
+<td>編輯資料</td>
+<td>欄位可編輯</td>
+<td>更新前端狀態／localStorage</td>
+<td>PATCH API、錯誤、版本衝突與鎖定</td>
+</tr>
+<tr>
+<td>綁定 provider</td>
+<td>provider 可用</td>
+<td>目前為 Mock 綁定</td>
+<td>OAuth、驗證與重複綁定</td>
+</tr>
+<tr>
+<td>解綁 provider</td>
+<td>已綁定</td>
+<td>目前缺少完整安全檢查</td>
+<td>最後一個登入方式與密碼保護</td>
+</tr>
+<tr>
+<td>切換 VIP</td>
+<td>點擊 VIP 頁籤</td>
+<td>顯示進度／文案</td>
+<td>兩條進度、等級規則與保級</td>
+</tr>
+<tr>
+<td>查看紀錄</td>
+<td>點擊 history</td>
+<td>顯示 Mock 列表</td>
+<td>API、分頁、時間與 gameKey</td>
+</tr>
+<tr>
+<td>開啟獎勵卡</td>
+<td>點擊 rewards／gifts</td>
+<td>進入獎勵卡內容</td>
+<td>入口名稱與頁籤保存</td>
+</tr>
+</tbody></table>
+<h2 id="9-頁面狀態-5">9. 頁面狀態</h2>
+<p>需定義 profile 初次 loading、未登入、資料讀取失敗、資料編輯中、送出中、欄位錯誤、Email 鎖定、provider 綁定中／失敗／取消、VIP 無資料、紀錄無資料／失敗、頭像被鎖定與登出後返回。現有原型主要覆蓋成功顯示與部分鎖定狀態。</p>
+<h2 id="10-user-story-玩家-5">10. User Story — 玩家</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-U-06-001</code></td>
+<td>身為玩家，我要查看並更新自己的會員資料，以便維持正確身份資訊。</td>
+</tr>
+<tr>
+<td><code>WEB-US-U-06-002</code></td>
+<td>身為玩家，我要查看綁定狀態與 VIP 進度，以便理解可用的身份與權益。</td>
+</tr>
+<tr>
+<td><code>WEB-US-U-06-003</code></td>
+<td>身為玩家，我要查看自己的遊戲紀錄，以便回顧過往遊戲活動。</td>
+</tr>
+</tbody></table>
+<h2 id="11-user-story-開發人員-5">11. User Story — 開發人員</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-D-06-001</code></td>
+<td>身為開發人員，我要把 profile、wallet 與 VIP 資料分開，以便避免玩家摘要混入未同步資產。</td>
+</tr>
+<tr>
+<td><code>WEB-US-D-06-002</code></td>
+<td>身為開發人員，我要讓綁定與 Email 鎖定由正式服務回應決定，以便前端不自行繞過安全規則。</td>
+</tr>
+<tr>
+<td><code>WEB-US-D-06-003</code></td>
+<td>身為開發人員，我要保留會員頁頁籤與 route query 的交接，以便從 Header 或獎勵卡入口返回正確狀態。</td>
+</tr>
+</tbody></table>
+<h2 id="12-user-story-qa-驗證者-5">12. User Story — QA 驗證者</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-Q-06-001</code></td>
+<td>身為 QA，我要測試未登入、讀取失敗、編輯成功／失敗與返回，以便確認私有資料邊界。</td>
+</tr>
+<tr>
+<td><code>WEB-US-Q-06-002</code></td>
+<td>身為 QA，我要驗證 Email 鎖定、綁定／解綁與最後登入方式限制，以便避免帳號被鎖在不可登入狀態。</td>
+</tr>
+<tr>
+<td><code>WEB-US-Q-06-003</code></td>
+<td>身為 QA，我要分開檢查 VIP Mock 文案、結構化 API 與正式權益，以便避免錯誤宣稱已完成。</td>
+</tr>
+</tbody></table>
+<h2 id="13-驗收標準-5">13. 驗收標準</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>主題</th>
+<th>驗收標準</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-AC-06-001</code></td>
+<td>私有資料</td>
+<td>未登入不可讀取或保存其他玩家的私有 profile、VIP、紀錄與綁定資料。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-06-002</code></td>
+<td>編輯資料</td>
+<td>可編輯欄位、Email 鎖定、欄位錯誤、送出中、成功與失敗結果有明確可觀察狀態。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-06-003</code></td>
+<td>綁定安全</td>
+<td>綁定、解綁、重複綁定與最後可用登入方式限制由正式規則與 API 共同驗證。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-06-004</code></td>
+<td>VIP</td>
+<td>VIP 等級、儲值／投注雙門檻、權益與保級規則使用結構化資料，非純文案替代。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-06-005</code></td>
+<td>紀錄</td>
+<td>遊戲紀錄的資料欄位、時間、空態、錯誤、分頁與 gameKey 關聯有完整規格。</td>
+</tr>
+</tbody></table>
+<h2 id="14-這個功能需要的資料-5">14. 這個功能需要的資料</h2>
+<ul>
+<li>玩家 profile、account、name、email、birthday、bio、avatar、avatarId。</li>
+<li>provider 綁定狀態、可用登入方式、解綁驗證與帳號安全資訊。</li>
+<li>VIP level、升級／保級門檻、累積儲值、累積投注與權益。</li>
+<li>遊戲紀錄 id、時間、gameKey、投注、贏分、餘額與查詢分頁。</li>
+<li>會員頁的 tab、入口來源、返回路徑與獎勵卡交接參數。</li>
+</ul>
+<h2 id="15-待確認事項-5">15. 待確認事項</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>問題</th>
+<th>影響</th>
+<th>負責確認</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-Q-06-001</code></td>
+<td>Email 是否一旦有值就鎖定，首次設定與修改流程如何區分？</td>
+<td>欄位狀態、API 與錯誤文案</td>
+<td>產品／後端</td>
+</tr>
+<tr>
+<td><code>WEB-Q-06-002</code></td>
+<td>VIP 每級儲值、投注與保級數值為何？</td>
+<td>進度條、權益與 API schema</td>
+<td>產品／營運</td>
+</tr>
+<tr>
+<td><code>WEB-Q-06-003</code></td>
+<td>頭像採預設素材、emoji、上傳或混合模式？</td>
+<td>資產、avatar ID、VIP 解鎖</td>
+<td>產品／設計／後端</td>
+</tr>
+<tr>
+<td><code>WEB-Q-06-004</code></td>
+<td>解綁最後一個登入方式需要何種驗證？</td>
+<td>安全流程與前後端責任</td>
+<td>資安／後端</td>
+</tr>
+<tr>
+<td><code>WEB-Q-06-005</code></td>
+<td>公開 <code>/member</code> 是否維持 redirect 至登入後會員頁？</td>
+<td>SEO、route 與未登入入口</td>
+<td>產品／設計</td>
+</tr>
+</tbody></table>
+<h2 id="16-版本沿革-5">16. 版本沿革</h2>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>日期</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>v0.1</td>
+<td>2026-09-15</td>
+<td>依目前會員頁、profile state、VIP、綁定與遊戲紀錄建立 17 節分冊初版；正式會員服務未驗收。</td>
+</tr>
+</tbody></table>
+<h2 id="17-交付檢查表-5">17. 交付檢查表</h2>
+<ul>
+<li><input disabled="" type="checkbox"> 已確認會員頁各頁籤、公開入口與登入後路由。</li>
+<li><input disabled="" type="checkbox"> 已確認 profile、VIP、綁定、頭像與 game records 的正式資料契約。</li>
+<li><input disabled="" type="checkbox"> 已補會員頁所有資料與安全狀態的桌機／手機設計。</li>
+<li><input disabled="" type="checkbox"> 已補 <code>WEB-FLOW</code>、<code>WEB-SC</code> 與會員相關驗收交叉引用。</li>
+<li><input disabled="" type="checkbox"> 已完成 Mock、瀏覽器、API 與正式會員服務的分層驗證紀錄。</li>
+</ul>
+<h1>WEB-SPEC-07｜錢包、銀行與交易</h1>
+<p>巨亨ONLINE Web 規格書｜Phase 2 功能分冊初版｜2026-09-15</p>
+<table>
+<thead>
+<tr>
+<th>文件項目</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文件性質</td>
+<td>Web 前台財務功能規格；正式支付、帳務與 API 驗收未執行</td>
+</tr>
+<tr>
+<td>Plane 規格單</td>
+<td><code>YOTAPLATFO-453</code></td>
+</tr>
+<tr>
+<td>Plane Figma 單</td>
+<td><code>YOTAPLATFO-466</code></td>
+</tr>
+<tr>
+<td>Plane Nuxt 單</td>
+<td><code>YOTAPLATFO-479</code></td>
+</tr>
+<tr>
+<td>APP 參考</td>
+<td>APP 第 08、09 章：銀行、儲值與優惠碼；保險箱、贈禮與兌換</td>
+</tr>
+<tr>
+<td>目前來源</td>
+<td><code>20-frontend.md</code> §4、<code>pages/lobby/bank.vue</code>、<code>VaultContent.vue</code>、<code>ExchangeContent.vue</code>、<code>TransactionRecords.vue</code>、<code>useFinancialState.ts</code>、API inventory §5</td>
+</tr>
+<tr>
+<td>適用範圍</td>
+<td>錢包顯示、儲值、保險箱存取、金銀兌換與交易紀錄</td>
+</tr>
+<tr>
+<td>目前狀態</td>
+<td>前端財務 state、Mock 交易與畫面已存在；支付、帳務冪等、非同步入帳與正式服務尚未完成</td>
+</tr>
+</tbody></table>
+<h2 id="1-這個功能是什麼-6">1. 這個功能是什麼</h2>
+<p>讓已登入玩家查看可用資產、選擇 Web 儲值方案、管理保險箱、兌換金銀幣，以及查看自己的交易紀錄。Web 儲值通道保留平台差異，不直接套用 APP 的 USD／IAP；財務資料必須以正式帳務服務為最終依據。</p>
+<p>目前路由包含 <code>/lobby/bank</code>、<code>/lobby/vault</code>、<code>/lobby/exchange</code>、<code>/lobby/transactions</code>；<code>/lobby/deposit</code> 目前 redirect 至銀行頁。<code>VaultContent.vue</code> 目前整合保險箱、贈禮與兌換入口，但贈禮狀態機的詳細規格由 <code>web-08</code> 維護。</p>
+<h2 id="2-這個功能不做什麼-6">2. 這個功能不做什麼</h2>
+<table>
+<thead>
+<tr>
+<th>不在本章範圍</th>
+<th>負責位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>獎勵卡、優惠碼與贈禮申請狀態機</td>
+<td><code>web-08-rewards-promotions-gifts.md</code></td>
+</tr>
+<tr>
+<td>玩家資料、VIP 費率來源與會員安全</td>
+<td><code>web-06-member.md</code></td>
+</tr>
+<tr>
+<td>後台支付通道配置、帳務審核與退款人工流程</td>
+<td>營運後台／支付／帳務規格</td>
+</tr>
+<tr>
+<td>遊戲局結算與有效流水認列</td>
+<td>遊戲／後端／獎勵卡契約</td>
+</tr>
+<tr>
+<td>APP USD／IAP 的平台流程</td>
+<td>APP 規格僅作差異參考</td>
+</tr>
+</tbody></table>
+<h2 id="3-名詞說明-6">3. 名詞說明</h2>
+<table>
+<thead>
+<tr>
+<th>名詞</th>
+<th>定義</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>金幣</td>
+<td>Web 主要儲值／遊戲資產；正式價值為 NT$1＝金幣1</td>
+</tr>
+<tr>
+<td>銀幣</td>
+<td>可與金幣兌換的資產；正式關係為金幣1＝銀幣100</td>
+</tr>
+<tr>
+<td>銅幣</td>
+<td>無價值試玩幣，不可視為現金或可兌換資產</td>
+</tr>
+<tr>
+<td>保險箱</td>
+<td>玩家資產的內部保管位置，不是外部提款帳戶</td>
+</tr>
+<tr>
+<td>儲值</td>
+<td>透過 Web 支付通道建立訂單並等待入帳</td>
+</tr>
+<tr>
+<td>兌換</td>
+<td>金幣與銀幣之間的內部轉換，手續費目前規格為 0</td>
+</tr>
+<tr>
+<td>交易紀錄</td>
+<td>玩家可查看的儲值、保險箱、贈禮、兌換、獎勵與消費紀錄</td>
+</tr>
+</tbody></table>
+<h2 id="4-畫面內容-6">4. 畫面內容</h2>
+<table>
+<thead>
+<tr>
+<th>頁面／區塊</th>
+<th>內容</th>
+<th>主要元件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>錢包摘要</td>
+<td>金幣、銀幣、銅幣、保險箱餘額</td>
+<td><code>WalletBalances.vue</code>、<code>useFinancialState.ts</code></td>
+</tr>
+<tr>
+<td>銀行</td>
+<td>儲值方案、支付方式、優惠入口</td>
+<td><code>BankContent.vue</code>、<code>SharedDepositContent.vue</code></td>
+</tr>
+<tr>
+<td>儲值確認</td>
+<td>方案、金額、付款欄位、處理結果</td>
+<td><code>DepositContent.vue</code></td>
+</tr>
+<tr>
+<td>保險箱</td>
+<td>存入、取回、贈禮與相關入口</td>
+<td><code>VaultContent.vue</code></td>
+</tr>
+<tr>
+<td>兌換</td>
+<td>金→銀、銀→金、金額與預覽</td>
+<td><code>ExchangeContent.vue</code>、<code>VaultContent.vue</code></td>
+</tr>
+<tr>
+<td>交易紀錄</td>
+<td>類型、金額、錢包、狀態、時間與說明</td>
+<td><code>TransactionRecords.vue</code></td>
+</tr>
+</tbody></table>
+<h2 id="5-欄位說明-6">5. 欄位說明</h2>
+<table>
+<thead>
+<tr>
+<th>欄位</th>
+<th>目前內容／規則</th>
+<th>正式注意事項</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>balance</code></td>
+<td>金幣餘額</td>
+<td>正式由 <code>/me/wallets</code> 或契約提供</td>
+</tr>
+<tr>
+<td><code>silverBalance</code></td>
+<td>銀幣餘額</td>
+<td>兌換與精度由 server 重驗</td>
+</tr>
+<tr>
+<td><code>bronzeBalance</code></td>
+<td>銅幣餘額</td>
+<td>只能作試玩資產，不得當作現金價值</td>
+</tr>
+<tr>
+<td><code>vaultBalance</code></td>
+<td>保險箱金幣</td>
+<td><code>/vault/withdraw</code> 是取回主錢包，不是外部提款</td>
+</tr>
+<tr>
+<td>deposit plan</td>
+<td>目前有 NT$ 300～10,000 方案候選</td>
+<td>優惠、付款通道與實際點數需正式契約</td>
+</tr>
+<tr>
+<td>amount</td>
+<td>前端輸入金額</td>
+<td>所有小數無條件捨去，server 必須重驗</td>
+</tr>
+<tr>
+<td>transaction type</td>
+<td>目前 <code>deposit</code>、<code>vault</code>、<code>gift</code>、<code>exchange</code>、<code>reward</code>、<code>spend</code></td>
+<td>三方 enum 需建立對照表</td>
+</tr>
+<tr>
+<td>transaction status</td>
+<td>目前 <code>success</code>、<code>processing</code>、<code>failed</code> 候選</td>
+<td>正式非同步入帳與失敗回滾需定義</td>
+</tr>
+</tbody></table>
+<h2 id="6-狀態說明-6">6. 狀態說明</h2>
+<table>
+<thead>
+<tr>
+<th>狀態</th>
+<th>目前行為</th>
+<th>正式規格要求</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>未登入</td>
+<td>財務頁顯示登入導引</td>
+<td>不得讀取或修改財務資料</td>
+</tr>
+<tr>
+<td>balance loaded</td>
+<td>顯示前端 state 餘額</td>
+<td>正式需 server snapshot／更新時間</td>
+</tr>
+<tr>
+<td>deposit pending</td>
+<td>目前付款 Modal 以延遲模擬</td>
+<td>需訂單 ID、processing、輪詢／推送與超時</td>
+</tr>
+<tr>
+<td>deposit success</td>
+<td>Mock 後寫入餘額／紀錄</td>
+<td>正式需支付確認與帳務入帳一致</td>
+</tr>
+<tr>
+<td>deposit failed</td>
+<td>目前路徑不完整</td>
+<td>需失敗原因、重試、取消與退款語意</td>
+</tr>
+<tr>
+<td>vault transfer</td>
+<td>目前前端直接更新 state</td>
+<td>正式需交易原子性、權限與冪等</td>
+</tr>
+<tr>
+<td>exchange</td>
+<td>金銀換算並檢查倍數</td>
+<td>server 需依匯率、餘額與併發重驗</td>
+</tr>
+<tr>
+<td>transaction list</td>
+<td>顯示 Mock 列表</td>
+<td>正式需分頁、時間、狀態與查詢失敗</td>
+</tr>
+</tbody></table>
+<h2 id="7-查詢-排序與分頁-6">7. 查詢、排序與分頁</h2>
+<ul>
+<li>交易紀錄需要正式的 type、status、時間範圍、排序與分頁規格；目前前端僅提供固定 Mock 資料。</li>
+<li>銀行方案目前以靜態資料呈現，正式需依地區、幣別、會員資格與支付通道查詢。</li>
+<li>保險箱與兌換是操作型功能，不以前端列表分頁替代帳務查詢。</li>
+<li>交易排序、時間與時區必須由 API／帳務契約統一，不能混用格式化本地字串與 epoch。</li>
+</ul>
+<h2 id="8-操作與跳轉-6">8. 操作與跳轉</h2>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>前提</th>
+<th>目前結果</th>
+<th>正式待確認</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>查看錢包</td>
+<td>已登入</td>
+<td>顯示四種餘額</td>
+<td>snapshot、更新與 stale 資料</td>
+</tr>
+<tr>
+<td>選儲值方案</td>
+<td>已登入／銀行頁</td>
+<td>開啟付款確認</td>
+<td>可用通道、優惠與限制</td>
+</tr>
+<tr>
+<td>建立儲值</td>
+<td>方案與欄位有效</td>
+<td>Mock 延遲後成功</td>
+<td>order、支付、processing、失敗與退款</td>
+</tr>
+<tr>
+<td>存入保險箱</td>
+<td>主錢包餘額足夠</td>
+<td>更新 vault／主錢包 state</td>
+<td>原子交易、手續費與錯誤提示</td>
+</tr>
+<tr>
+<td>取回保險箱</td>
+<td>保險箱餘額足夠</td>
+<td>更新主錢包</td>
+<td>明確 <code>VAULT_OUT</code>，不可顯示成現金提款</td>
+</tr>
+<tr>
+<td>金銀兌換</td>
+<td>金額大於 0、銀→金為 100 倍數</td>
+<td>前端計算並更新 state</td>
+<td>匯率版本、併發與 server 重驗</td>
+</tr>
+<tr>
+<td>查看交易紀錄</td>
+<td>已登入</td>
+<td>顯示交易列表</td>
+<td>query、分頁、狀態與資料一致性</td>
+</tr>
+</tbody></table>
+<h2 id="9-頁面狀態-6">9. 頁面狀態</h2>
+<p>需定義未登入、餘額 loading、餘額失敗、無交易、交易查詢失敗、方案 loading、方案無資料、付款欄位錯誤、支付處理中、支付失敗、支付取消、餘額不足、兌換倍數錯誤、保險箱操作失敗、重複送出與返回。現有原型對成功路徑覆蓋較多，正式帳務例外尚未驗收。</p>
+<h2 id="10-user-story-玩家-6">10. User Story — 玩家</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-U-07-001</code></td>
+<td>身為玩家，我要查看不同錢包的餘額，以便知道可使用的資產。</td>
+</tr>
+<tr>
+<td><code>WEB-US-U-07-002</code></td>
+<td>身為玩家，我要使用 Web 支援的支付方式儲值，以便取得可用金幣。</td>
+</tr>
+<tr>
+<td><code>WEB-US-U-07-003</code></td>
+<td>身為玩家，我要管理保險箱、兌換金銀幣並查看交易紀錄，以便追蹤資產變化。</td>
+</tr>
+</tbody></table>
+<h2 id="11-user-story-開發人員-6">11. User Story — 開發人員</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-D-07-001</code></td>
+<td>身為開發人員，我要將顯示餘額、帳務寫入與交易紀錄分開，以便不把前端 state 當成帳務真相。</td>
+</tr>
+<tr>
+<td><code>WEB-US-D-07-002</code></td>
+<td>身為開發人員，我要以整數與明確匯率處理金額，以便避免小數與幣別換算誤差。</td>
+</tr>
+<tr>
+<td><code>WEB-US-D-07-003</code></td>
+<td>身為開發人員，我要為儲值、保險箱與兌換保留 idempotency 與失敗回復邊界，以便處理重複點擊與併發。</td>
+</tr>
+</tbody></table>
+<h2 id="12-user-story-qa-驗證者-6">12. User Story — QA 驗證者</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>User Story</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-Q-07-001</code></td>
+<td>身為 QA，我要分別檢查顯示餘額、操作結果與交易紀錄，以便確認跨頁資料一致性。</td>
+</tr>
+<tr>
+<td><code>WEB-US-Q-07-002</code></td>
+<td>身為 QA，我要測試小數、零、負數、餘額不足、銀幣非倍數與重複送出，以便確認財務邊界。</td>
+</tr>
+<tr>
+<td><code>WEB-US-Q-07-003</code></td>
+<td>身為 QA，我要分開記錄 Mock 儲值成功、SSG 成功與正式支付／帳務結果，以便不混淆驗收層級。</td>
+</tr>
+</tbody></table>
+<h2 id="13-驗收標準-6">13. 驗收標準</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>主題</th>
+<th>驗收標準</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-AC-07-001</code></td>
+<td>幣別規則</td>
+<td><code>NT$1＝金幣1＝銀幣100</code>、銅幣無價值、金額無條件捨去的責任與測試方式明確。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-07-002</code></td>
+<td>儲值</td>
+<td>方案、付款、processing、success、failed、取消與重試狀態可觀察且與訂單一致。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-07-003</code></td>
+<td>保險箱</td>
+<td>存入／取回是內部資產轉移，具有權限、餘額、原子性、錯誤與 <code>VAULT_IN／VAULT_OUT</code> 語意。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-07-004</code></td>
+<td>兌換</td>
+<td>金→銀與銀→金的匯率、倍數、餘額、精度與手續費均由正式規則驗證。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-07-005</code></td>
+<td>交易紀錄</td>
+<td>交易 type、status、時間、金額、錢包與 reference 可查詢，並能處理空態與服務失敗。</td>
+</tr>
+</tbody></table>
+<h2 id="14-這個功能需要的資料-6">14. 這個功能需要的資料</h2>
+<ul>
+<li>玩家四類錢包餘額、資產更新時間與可用資產狀態。</li>
+<li>Web 儲值方案、NT$ 金額、點數、支付通道、優惠、訂單與支付狀態。</li>
+<li>保險箱轉移、兌換匯率、手續費、整數運算與交易 reference。</li>
+<li>交易紀錄 id、type、status、amount、wallet、createdAt、detail 與 referenceId。</li>
+<li>idempotency key、併發版本、失敗原因、退款／回滾與帳務對帳資訊。</li>
+</ul>
+<h2 id="15-待確認事項-6">15. 待確認事項</h2>
+<table>
+<thead>
+<tr>
+<th>編號</th>
+<th>問題</th>
+<th>影響</th>
+<th>負責確認</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-Q-07-001</code></td>
+<td>Web 正式支付通道與各通道的 processing／failed／退款流程為何？</td>
+<td>儲值 UI、API、訂單與驗收</td>
+<td>支付／後端</td>
+</tr>
+<tr>
+<td><code>WEB-Q-07-002</code></td>
+<td>交易 type／status 的 Web、APP、後台正式對照表為何？</td>
+<td>前端欄位、查詢與客服</td>
+<td>產品／後端</td>
+</tr>
+<tr>
+<td><code>WEB-Q-07-003</code></td>
+<td>保險箱存取的手續費、限額與併發規則為何？</td>
+<td>財務操作與帳務契約</td>
+<td>產品／帳務</td>
+</tr>
+<tr>
+<td><code>WEB-Q-07-004</code></td>
+<td>儲值優惠是否可疊加，優惠額如何入帳與顯示？</td>
+<td>方案、交易、通知與客服</td>
+<td>產品／營運</td>
+</tr>
+<tr>
+<td><code>WEB-Q-07-005</code></td>
+<td>交易紀錄的正式時區、排序、分頁與保存期限為何？</td>
+<td>查詢、跨裝置與法遵</td>
+<td>後端／產品</td>
+</tr>
+</tbody></table>
+<h2 id="16-版本沿革-6">16. 版本沿革</h2>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>日期</th>
+<th>內容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>v0.1</td>
+<td>2026-09-15</td>
+<td>依目前 Web 財務元件、state、純函式與 API inventory 建立 17 節分冊初版；正式支付與帳務未驗收。</td>
+</tr>
+</tbody></table>
+<h2 id="17-交付檢查表-6">17. 交付檢查表</h2>
+<ul>
+<li><input disabled="" type="checkbox"> 已確認 Web 儲值通道、幣別價值、支付狀態與退款邊界。</li>
+<li><input disabled="" type="checkbox"> 已確認保險箱、兌換、交易紀錄與贈禮的責任分界。</li>
+<li><input disabled="" type="checkbox"> 已補財務操作的 loading、空態、錯誤、取消與重複操作設計。</li>
+<li><input disabled="" type="checkbox"> 已補 <code>WEB-FLOW</code>、<code>WEB-SC</code> 與交易／帳務驗收交叉引用。</li>
+<li><input disabled="" type="checkbox"> 已完成純函式、瀏覽器、SSG、API 與正式帳務的分層驗證紀錄。</li>
+</ul>
+<h1>WEB SPEC 08｜獎勵卡、優惠碼與玩家贈禮</h1>
+<blockquote>
+<p>文件狀態：Phase 2 初版，已依目前 Nuxt 原型整理；正式 API、營運規則與最終視覺仍待確認。
+工作單映射：<code>YOTAPLATFO-454</code>（SPEC）／<code>YOTAPLATFO-467</code>（Figma）／<code>YOTAPLATFO-480</code>（WEB／Nuxt）
+APP 參考：APP 07「獎勵卡」、APP 08「優惠碼」、APP 09「贈禮」；APP 文件只作為結構與產品語意參考，不直接覆蓋 Web 現況。</p>
+</blockquote>
+<h2 id="0-文件狀態與範圍">0. 文件狀態與範圍</h2>
+<p>本分冊統一描述 Web 登入後的獎勵與玩家對玩家資產互動：獎勵卡、優惠碼兌換、保險箱贈禮申請，以及從玩家小卡進入贈禮／轉帳的導流。公共活動頁只保留入口與文案關聯，詳細頁面規格放在 <code>web-02-public-site.md</code> 與 <code>web-09-tasks-events-rankings-tutorial.md</code>。</p>
+<p>目前是前端 Mock 規格，不宣稱已具備可上線的錢包、反作弊、訂單、風控或後端兌換能力。</p>
+<h2 id="1-產品目標與使用情境">1. 產品目標與使用情境</h2>
+<table>
+<thead>
+<tr>
+<th>目標</th>
+<th>Web 行為</th>
+<th>正式化待辦</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>讓玩家查看可用獎勵</td>
+<td>會員中心獎勵卡分頁顯示活動銀幣卡、狀態、餘額與門檻</td>
+<td>由服務端提供玩家可見範圍與即時狀態</td>
+</tr>
+<tr>
+<td>讓玩家兌換活動碼</td>
+<td>輸入碼後先預覽，再確認領取</td>
+<td>兌換鎖、風控、重複提交與稽核</td>
+</tr>
+<tr>
+<td>讓玩家向其他玩家贈禮</td>
+<td>從保險箱提出金幣／銀幣贈禮申請</td>
+<td>收款人解析、費率快照、通知與交易一致性</td>
+</tr>
+</tbody></table>
+<p>使用者故事：<code>WEB-US-U-08-01</code> 玩家能找到自己的獎勵；<code>WEB-US-U-08-02</code> 玩家能在確認前看懂優惠碼結果；<code>WEB-US-U-08-03</code> 玩家能對指定玩家提出贈禮並知道處理狀態。</p>
+<h2 id="2-名詞-貨幣與來源優先序">2. 名詞、貨幣與來源優先序</h2>
+<ul>
+<li><code>gold</code>：金幣；<code>silver</code>：銀幣；<code>bronze</code>：銅幣；<code>activity-silver</code>：獎勵卡使用的活動銀幣單位。</li>
+<li>目前 Web 財務基準為 <code>NT$1 = 金幣 1 = 銀幣 100</code>；銅幣僅供試玩，不具儲值價值。</li>
+<li>錢包與轉帳狀態以 <code>useFinancialState.ts</code>、<code>useGiftState.ts</code> 為目前原型來源；獎勵卡以 <code>useRewardCardState.ts</code> 與 <code>utils/rewardCardMerge.ts</code> 為目前原型來源。</li>
+<li>若 APP、舊 handoff、營運文案與現行程式不一致，需在規格中標註差異，不以默認值覆蓋現行 Web 行為。</li>
+</ul>
+<h2 id="3-進入點-路由與導流">3. 進入點、路由與導流</h2>
+<table>
+<thead>
+<tr>
+<th>入口</th>
+<th>目前路由／行為</th>
+<th>規格備註</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>會員中心獎勵卡</td>
+<td><code>/lobby/member?tab=rewards</code></td>
+<td>主要獎勵卡檢視與操作入口</td>
+</tr>
+<tr>
+<td>優惠碼</td>
+<td><code>/lobby/member?tab=rewards</code> 內的 <code>PromoCodePanel</code></td>
+<td>不另設公開兌換頁</td>
+</tr>
+<tr>
+<td>保險箱贈禮</td>
+<td><code>/lobby/vault?tab=transfer</code></td>
+<td>轉帳分頁承接玩家導流</td>
+</tr>
+<tr>
+<td>舊贈禮路由</td>
+<td><code>/lobby/gifts</code> → <code>/lobby/member?tab=rewards</code></td>
+<td>目前相容導流，正式路由需決定是否保留</td>
+</tr>
+<tr>
+<td>玩家小卡</td>
+<td><code>/lobby/chat</code> 內的玩家卡</td>
+<td><code>gift</code> 與 <code>transfer</code> 都帶 <code>receiverId</code> 至保險箱</td>
+</tr>
+</tbody></table>
+<h2 id="4-介面與資訊架構">4. 介面與資訊架構</h2>
+<p>獎勵卡區需能區分「可啟用」「已暫停」「已轉換」「已合併」等狀態，並提供餘額、流水門檻、轉換上限、到期時間與可用操作。優惠碼區需依序呈現輸入、預覽、確認、成功／失敗訊息。贈禮區需區分可輸入對象、金額、預覽手續費、送出後的待處理案件與處理結果。</p>
+<p><code>RewardCardContent.vue</code>、<code>PromoCodePanel.vue</code>、<code>GiftRequestList.vue</code> 與 <code>VaultContent.vue</code> 是目前視覺與互動基準；正式 Figma 需補上空狀態、錯誤、過期、不可操作與手機版布局。</p>
+<h2 id="5-狀態與資料模型">5. 狀態與資料模型</h2>
+<h3 id="5-1-獎勵卡">5.1 獎勵卡</h3>
+<p>卡片狀態為 <code>inactive | active | paused | converted | merged</code>。目前資料包含卡片 ID、來源、面額／餘額、流水目標、轉換上限、到期日、狀態與合併來源。卡片以 <code>useState</code> 保持跨元件狀態，但目前未接玩家帳戶服務端。</p>
+<h3 id="5-2-優惠碼">5.2 優惠碼</h3>
+<p><code>usePromoCodeState.ts</code> 以會員識別（目前由 auth provider／account 組合）維持已兌換紀錄與活動金幣餘額。預覽與兌換分為兩步；成功後可能產生錢包獎勵、活動金幣或獎勵卡。</p>
+<h3 id="5-3-贈禮申請">5.3 贈禮申請</h3>
+<p><code>GiftRequest</code> 至少包含申請人、收件人、幣別、申請金額、手續費、實收金額、狀態、建立／到期時間與處理方向。案件狀態需可表達 <code>pending</code>、<code>accepted</code>、<code>rejected</code>、<code>cancelled</code>、<code>expired</code>；目前狀態與餘額皆為前端 Mock。</p>
+<h2 id="6-主要流程-獎勵卡啟用-合併與轉換">6. 主要流程：獎勵卡啟用、合併與轉換</h2>
+<ol>
+<li>玩家進入會員中心的獎勵卡分頁。</li>
+<li>系統列出目前可見卡片與每張卡的狀態、餘額、門檻及期限。</li>
+<li>玩家可啟用卡片；已啟用卡片依遊戲／財務規則累積活動餘額。</li>
+<li>符合條件時可選取至少兩張卡進行合併；合併後來源卡標為 <code>merged</code>，新卡為 <code>inactive</code>。</li>
+<li>玩家完成流水後進行轉換，系統以 <code>min(currentBalance, conversionLimit)</code> 計算可轉換額度，剩餘額度依規則回收。</li>
+</ol>
+<h2 id="7-主要流程-優惠碼預覽與兌換">7. 主要流程：優惠碼預覽與兌換</h2>
+<ol>
+<li>未登入玩家點擊兌換區，應開啟登入／註冊並保留原目的地。</li>
+<li>已登入玩家輸入最多 8 碼的大寫英數字串；前端先正規化並顯示預覽。</li>
+<li>預覽需指出活動名稱、獎勵類型、數量、有效期限與是否已兌換。</li>
+<li>玩家確認後才呼叫兌換動作；成功後更新對應活動餘額、錢包或獎勵卡。</li>
+<li>成功、格式錯誤、無效、過期、已使用、不可兌換與處理失敗均需可辨識，且不能因重複點擊重複發獎。</li>
+</ol>
+<h2 id="8-主要流程-玩家贈禮申請">8. 主要流程：玩家贈禮申請</h2>
+<ol>
+<li>玩家從保險箱轉帳分頁或聊天玩家小卡選取收件人。</li>
+<li>輸入贈禮幣別與金額；前端先驗證收件人、金額正數、可用餘額與每日上限。</li>
+<li>預覽頁顯示原額、手續費、收件人實收額與目前 VIP 費率快照。</li>
+<li>確認後從送禮者保險箱保留資產，建立待處理申請。</li>
+<li>收件人接受、拒絕，或送禮者取消；逾期案件進入 <code>expired</code>，應依規則退回保留額。</li>
+</ol>
+<p>目前原型：單一玩家每日最多 10 筆、單筆上限 1,000,000，申請有效期 168 小時；這些值需在後端契約與營運設定確認後才可視為正式規則。</p>
+<h2 id="9-例外-錯誤與不可操作狀態">9. 例外、錯誤與不可操作狀態</h2>
+<ul>
+<li>優惠碼為空、長度超過 8、包含非英數字、無效、已使用或已過期時，不進入確認狀態。</li>
+<li>Guest 不得兌換優惠碼，也不應在未識別會員的情況下建立可領取贈禮。</li>
+<li>餘額不足、金額低於最小單位、收件人不存在、自己送給自己、達到每日上限時，送出按鈕應阻擋並提供原因。</li>
+<li>到期前最後 72 小時的獎勵卡不可合併但仍可啟用；不可操作卡片需保留原因說明。</li>
+<li>任一錢包更新失敗時，兌換／贈禮應回滾或進入可查詢的待處理狀態，不可只更新畫面。</li>
+</ul>
+<h2 id="10-合併-費率與資產一致性規則">10. 合併、費率與資產一致性規則</h2>
+<p>目前 Web 合併規則為至少兩張、無固定張數上限，僅允許 <code>inactive</code> 或距離到期超過 72 小時的 <code>paused</code> 卡片；新卡取最早到期日，餘額、流水門檻與轉換上限依目前工具相加，來源卡標記為 <code>merged</code>，新卡仍可再合併。</p>
+<p>贈禮手續費依送禮者 VIP 等級計算，預覽需固定本次費率快照；服務端應以交易建立時的快照為準。所有資產變更都需要交易 ID、來源、時間與可追溯的前後餘額。</p>
+<h2 id="11-權限-安全與風控邊界">11. 權限、安全與風控邊界</h2>
+<ul>
+<li>只有已驗證登入會員能兌換優惠碼、啟用／轉換獎勵與建立贈禮。</li>
+<li>會員只能讀取自己的卡片、兌換紀錄、錢包與贈禮案件；只能在授權狀態下讀取收件人公開識別。</li>
+<li>優惠碼兌換必須由服務端做原子性的一次性消費，前端 <code>claimsByMember</code> 僅是 Mock。</li>
+<li>贈禮需有防刷、速率限制、黑名單／停權檢查、重複請求去重與客服稽核能力。</li>
+<li>金額不可由前端決定；前端顯示的 VIP 費率、餘額與到期日都不是授權依據。</li>
+</ul>
+<h2 id="12-api-事件與目前缺口">12. API、事件與目前缺口</h2>
+<p>目前 <code>2026-07-29-api-inventory.md</code> 顯示前端沒有實際 <code>$fetch</code> 交易呼叫，相關功能仍以 composable 與 local state 模擬。正式化至少需要：優惠碼預覽／兌換、獎勵卡清單／狀態／合併／轉換、贈禮建立／查詢／接受／拒絕／取消／到期，以及錢包與交易紀錄事件。</p>
+<p>需要補定的事件：<code>reward.claimed</code>、<code>reward-card.activated</code>、<code>reward-card.merged</code>、<code>reward-card.converted</code>、<code>gift-request.created</code>、<code>gift-request.resolved</code>。所有事件需可與信箱、通知、客服查詢與財務對帳關聯。</p>
+<h2 id="13-figma-交付內容">13. Figma 交付內容</h2>
+<p>Figma 需交付桌面與手機版：獎勵卡清單、卡片詳情／啟用、合併選擇、轉換確認、優惠碼輸入／預覽／成功／錯誤、贈禮輸入／預覽／待處理清單／案件詳情，以及登入、餘額不足、空狀態、過期和權限不足等狀態。</p>
+<p>每個操作需標示幣別、數字格式、不可操作原因、確認前後差異與返回路徑。動線需能從玩家小卡進入轉帳後回到原聊天脈絡，並覆蓋深連結 <code>receiverId</code>。</p>
+<h2 id="14-nuxt-實作邊界">14. Nuxt 實作邊界</h2>
+<p>現行元件與 composable 應維持單一狀態來源：<code>RewardCardContent.vue</code>／<code>useRewardCardState.ts</code>、<code>PromoCodePanel.vue</code>／<code>usePromoCodeState.ts</code>、<code>GiftRequestList.vue</code>／<code>useGiftState.ts</code>、<code>VaultContent.vue</code>／<code>useFinancialState.ts</code>。登入、頁面導流與 Modal 需遵守 <code>ClientOnly</code>／<code>Teleport</code> 的 SSG 規則。</p>
+<p>正式 API 接入前不得把 local state 當成跨裝置持久資料；正式接入後需處理 hydration、重試、交易結果與離開頁面的未完成確認。瀏覽器階段測試碼只能存在於測試環境，不得成為正式兌換規則。</p>
+<h2 id="15-驗收條件與驗證證據">15. 驗收條件與驗證證據</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>驗收條件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-AC-08-01</code></td>
+<td>未登入兌換會保留目的地並要求登入；登入後不會遺失流程上下文。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-08-02</code></td>
+<td>優惠碼需先預覽再確認，重複兌換不重複發獎，成功後可在對應位置讀回結果。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-08-03</code></td>
+<td>獎勵卡狀態、合併條件、72 小時限制與轉換上限顯示一致。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-08-04</code></td>
+<td>贈禮預覽清楚呈現手續費與實收額；成功／拒絕／取消／逾期均有明確狀態。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-08-05</code></td>
+<td>餘額不足、上限、無效收件人與 guest 等錯誤不可造成資產變更。</td>
+</tr>
+<tr>
+<td><code>WEB-Q-08-01</code></td>
+<td>獎勵卡第 10／15／20 天的幣別與數值，需由單一正式規則確認後再封存。</td>
+</tr>
+<tr>
+<td><code>WEB-Q-08-02</code></td>
+<td>贈禮費率、最小單位、日限額、單筆上限與 168 小時期限需由後端契約確認。</td>
+</tr>
+</tbody></table>
+<h2 id="16-開放問題與參照來源">16. 開放問題與參照來源</h2>
+<p>待確認：獎勵卡第 10／15／20 天的正式幣別目前在 <code>useRewardCardState.ts</code> 與舊前端規格敘述不完全一致；是否允許跨幣別合併、轉換後活動銀幣的去向、贈禮是否需要收件人登入驗證，以及活動碼與信箱附件的稽核關聯。</p>
+<p>參照：<code>pages/lobby/member.vue</code>、<code>pages/lobby/vault.vue</code>、<code>pages/lobby/chat.vue</code>、<code>components/lobby/RewardCardContent.vue</code>、<code>components/lobby/PromoCodePanel.vue</code>、<code>components/lobby/GiftRequestList.vue</code>、<code>composables/useRewardCardState.ts</code>、<code>composables/usePromoCodeState.ts</code>、<code>composables/useGiftState.ts</code>、<code>composables/useFinancialState.ts</code>、<code>specs/2026-07-29-api-inventory.md</code>、<code>specs/2026-07-29-api-gap-analysis.md</code>。</p>
+<h1>WEB SPEC 09｜每日任務、活動、排行榜與教學</h1>
+<blockquote>
+<p>文件狀態：Phase 2 初版，已依目前 Nuxt 原型整理；正式活動服務與數據來源仍待確認。
+工作單映射：<code>YOTAPLATFO-455</code>（SPEC）／<code>YOTAPLATFO-468</code>（Figma）／<code>YOTAPLATFO-481</code>（WEB／Nuxt）
+APP 參考：APP 10「每日任務、活動、排行榜與教學」；公共頁與登入後大廳採 Web 分流描述。</p>
+</blockquote>
+<h2 id="0-文件狀態與範圍-2">0. 文件狀態與範圍</h2>
+<p>本分冊涵蓋每日簽到／里程碑、活動列表與詳情、排行榜，以及新手教學／APP 下載引導。公共入口在 <code>web-02-public-site.md</code> 有摘要，本文件補充登入後 <code>/lobby/*</code> 的頁面布局、導流與狀態。</p>
+<p>目前資料集中於 <code>siteContent.ts</code>，簽到互動由 <code>pages/lobby/daily.vue</code> 與相關 composable 模擬，不代表正式活動服務已完成。</p>
+<h2 id="1-產品目標與使用情境-2">1. 產品目標與使用情境</h2>
+<ul>
+<li>玩家可快速知道今天是否完成任務、錯過哪幾天、可否補簽與下一個里程碑。</li>
+<li>玩家可依活動狀態與類型找到活動，讀取獎勵與截止時間，再導向儲值、遊戲或登入流程。</li>
+<li>玩家可查看不同榜單與個人排名脈絡，理解榜單用途、更新狀態與活動期間。</li>
+<li>新玩家能在 Web 中取得遊戲、平台與加入主畫面的基本教學，並知道 Web 與 APP 的功能邊界。</li>
+</ul>
+<h2 id="2-入口-路由與頁面對照">2. 入口、路由與頁面對照</h2>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>公開頁</th>
+<th>登入後大廳頁</th>
+<th>主要來源</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>每日簽到</td>
+<td>活動入口／活動詳情</td>
+<td><code>/lobby/daily</code></td>
+<td><code>pages/lobby/daily.vue</code></td>
+</tr>
+<tr>
+<td>活動</td>
+<td><code>/events</code></td>
+<td><code>/lobby/events</code></td>
+<td><code>siteContent.events</code>、活動頁元件</td>
+</tr>
+<tr>
+<td>排行榜</td>
+<td><code>/leaderboard</code></td>
+<td><code>/lobby/leaderboard</code></td>
+<td><code>siteContent.leaderboard</code></td>
+</tr>
+<tr>
+<td>教學</td>
+<td><code>/tutorial</code></td>
+<td><code>/lobby/tutorial</code></td>
+<td><code>siteContent.shortcutGuides</code>、教學頁元件</td>
+</tr>
+</tbody></table>
+<p>未登入進入受保護的每日簽到或大廳活動頁時，應依 Web 導覽規則開啟登入並保留原目的地；公共活動／排行榜／教學可先讀取公開內容。</p>
+<h2 id="3-每日簽到的介面結構">3. 每日簽到的介面結構</h2>
+<p>每日任務頁以 31 天日曆／進度視覺為核心，需呈現當日日期、連續進度、每日獎勵、里程碑標記、今日操作與補簽入口。已完成、今日可簽、今日待處理、漏簽、未開始等狀態要有不同視覺與可操作性。</p>
+<p>里程碑卡需連結獎勵卡規格；活動金幣、活動銀幣與獎勵卡不能只以相同色彩區分，必須顯示完整幣別與領取結果。</p>
+<h2 id="4-每日任務資料與狀態">4. 每日任務資料與狀態</h2>
+<p>目前每日獎勵由 <code>siteContent.dailyCheckin.dailyRewards</code> 提供，共 31 天；里程碑為第 5、7、10、15、20、25、30 天；補簽成本為每日 100。頁面目前以 <code>useState</code> 保存已簽天數與已領里程碑，重新整理／換裝置不代表正式持久化。</p>
+<p>狀態模型至少包含：日期序號、日曆日期、是否已簽、是否為今天、是否可補簽、是否已領里程碑、獎勵內容與處理狀態。正式服務需另提供伺服器時間、連續簽到計算與不可竄改的領取紀錄。</p>
+<h2 id="5-每日簽到主要流程">5. 每日簽到主要流程</h2>
+<ol>
+<li>玩家進入 <code>/lobby/daily</code>，系統取得伺服器時間與本期簽到資料。</li>
+<li>玩家點擊今日簽到；未登入時先要求登入。</li>
+<li>成功後更新今日狀態、金幣／獎勵卡餘額與里程碑進度。</li>
+<li>若有可領里程碑，玩家可逐項領取並看到成功提示；不可重複領取。</li>
+<li>玩家可查看漏簽日，選取符合條件的日期進行補簽；補簽前需顯示成本與確認。</li>
+</ol>
+<h2 id="6-補簽-里程碑與差異標記">6. 補簽、里程碑與差異標記</h2>
+<p>補簽必須驗證玩家餘額、可補日期、活動期間、每日／整期限制與重複請求。扣除成本與補發獎勵需是同一筆可追蹤交易。</p>
+<p>目前 <code>siteContent.ts</code> 的第 10／15／20 天標示為活動銀幣獎勵，而 <code>useRewardCardState.ts</code> 另以活動銀幣獎勵卡定義；舊的前端敘述曾出現不同幣別說法。Web 規格暫以現行程式來源標為「待正式規則封存」，不可在 Figma 或 API 任一側自行定案。</p>
+<h2 id="7-活動列表與活動詳情">7. 活動列表與活動詳情</h2>
+<p>活動列表需提供進行中、即將開始、已結束等狀態分組或篩選，活動卡顯示主視覺、標題、副標、獎勵、截止時間與是否為儲值相關活動。活動詳情需列出資格、玩法、期間、獎勵發放、導流按鈕與注意事項。</p>
+<p>目前 <code>siteContent.events</code> 是靜態資料，含 <code>active</code>、<code>upcoming</code>、<code>ended</code> 與 <code>deposit</code> 標記；未來需由 CMS／活動服務提供時間與資格，不應以瀏覽器時鐘單獨判定活動狀態。</p>
+<h2 id="8-排行榜資訊架構">8. 排行榜資訊架構</h2>
+<p>排行榜提供「倍數榜」「贏分榜」「富豪榜」三個 Tab。每個榜單至少有前三名視覺、後續列表、玩家名稱／識別、成績、遊戲或來源與更新／活動期間說明。若登入，應提供「我的排名」或清楚說明目前未提供該功能。</p>
+<p>目前 <code>siteContent.leaderboard</code> 提供 preview、top3 與 rest 靜態資料；Web 版需明確標示這是原型資料，不能讓玩家誤認為即時獎金或結算結果。</p>
+<h2 id="9-排行榜流程與例外">9. 排行榜流程與例外</h2>
+<p>玩家可切換榜單、查看排名內容、由活動卡導向榜單。載入中、暫無資料、活動未開始、活動已結束、服務錯誤與玩家未上榜需各有狀態。榜單數字需固定千分位、正負號與幣別／倍率格式。</p>
+<p>若服務端回傳排名版本或更新時間，頁面需顯示時間；若跨頁切換，不應沿用另一榜單的 Tab 狀態或舊資料。</p>
+<h2 id="10-教學與加入主畫面流程">10. 教學與加入主畫面流程</h2>
+<p>教學頁提供平台介紹、遊戲使用方式、Web／APP 差異與 iOS／Android 加入主畫面的步驟。<code>siteContent.shortcutGuides</code> 目前包含 iOS 與 Android 的瀏覽器、說明與步驟；安裝／信任企業開發者等文案需標示作業系統版本差異。</p>
+<p>教學導流按鈕應能回到首頁、登入或遊戲大廳；若是外部下載連結，需在正式規格補上版本、檔案完整性、風險提示與失效 fallback。</p>
+<h2 id="11-權限-時間與資料邊界">11. 權限、時間與資料邊界</h2>
+<ul>
+<li>公開活動、排行榜與教學可以讀取公開內容；每日簽到、個人任務與領取操作必須登入。</li>
+<li>簽到／活動資格／榜單結算均以伺服器時間與伺服器資格為準，瀏覽器時間只作顯示輔助。</li>
+<li>玩家不得從 URL query 或前端 state 自行改寫日期、獎勵、榜單分數或領取狀態。</li>
+<li>活動獎勵發放要與錢包、獎勵卡、信箱和交易紀錄具備可追溯關聯。</li>
+</ul>
+<h2 id="12-api-與目前缺口">12. API 與目前缺口</h2>
+<p>目前未見實際 <code>$fetch</code> 活動／任務／榜單呼叫；API inventory 與 gap analysis 已列出活動資格、排行榜即時資料、簽到持久化與獎勵發放等候補缺口。正式化需補：活動列表／詳情、任務進度、簽到、補簽、里程碑領取、榜單查詢、我的排名、活動版本與伺服器時間。</p>
+<p>需要定義重複請求與離線重試、活動切換時的資料快取、排行榜分頁／游標、獎勵發放失敗補償與客服查詢依據。</p>
+<h2 id="13-figma-交付內容-2">13. Figma 交付內容</h2>
+<p>Figma 需交付四個功能頁的桌面／手機布局，以及所有主要狀態：載入、空資料、未登入、已簽／可簽／漏簽／補簽確認、里程碑可領／已領、活動分組、活動詳情、榜單 Tab、未上榜、活動結束與教學步驟。</p>
+<p>每日頁需特別標示幣別與獎勵卡入口；活動／榜單卡片需可追溯至公共頁與大廳頁的共用元件，避免兩套視覺規則分裂。</p>
+<h2 id="14-nuxt-實作邊界-2">14. Nuxt 實作邊界</h2>
+<p>頁面使用 <code>layout: &#39;lobby&#39;</code> 的大廳框架；公開頁沿用 default layout。每日簽到狀態目前在頁面與 composable 間以 <code>useState</code> 傳遞，正式接 API 後不得以 local state 作為最終權威。公共與大廳相同內容應由資料層重用，不應複製兩套硬編碼文案。</p>
+<p>倒數與活動狀態需避免 SSG hydration 差異；所有會讀取瀏覽器時間、localStorage 或產生互動 Modal 的邏輯應在 client 端安全初始化。</p>
+<h2 id="15-驗收條件與驗證證據-2">15. 驗收條件與驗證證據</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>驗收條件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-AC-09-01</code></td>
+<td>每日簽到能呈現 31 天狀態、今日操作、里程碑與補簽入口；未登入會保留目的地。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-09-02</code></td>
+<td>今日簽到與里程碑不可重複領取，成功結果可在錢包／獎勵卡或信箱讀回。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-09-03</code></td>
+<td>活動列表可辨識進行中、即將開始、已結束與儲值相關活動，詳情不缺資格與期限。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-09-04</code></td>
+<td>三種排行榜可獨立切換，榜單空資料、未上榜與結束狀態清楚。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-09-05</code></td>
+<td>iOS／Android 教學在手機版可讀，步驟與 Web／APP 邊界一致。</td>
+</tr>
+<tr>
+<td><code>WEB-Q-09-01</code></td>
+<td>第 10／15／20 天獎勵的正式幣別、面額與是否為獎勵卡需封存單一來源。</td>
+</tr>
+<tr>
+<td><code>WEB-Q-09-02</code></td>
+<td>活動、簽到與榜單的正式 API、伺服器時間、結算與補償規則需補齊。</td>
+</tr>
+</tbody></table>
+<h2 id="16-開放問題與參照來源-2">16. 開放問題與參照來源</h2>
+<p>待確認：每日簽到是否需要連續天數中斷規則、補簽可回補範圍與每日上限；活動資格與獎勵是否由 CMS 或活動服務管理；排行榜更新頻率、結算時間、獎勵發放與玩家未上榜的顯示方式；教學中的下載連結與 Web／APP 功能差異是否仍維持現行文案。</p>
+<p>參照：<code>pages/lobby/daily.vue</code>、<code>pages/lobby/events.vue</code>、<code>pages/lobby/leaderboard.vue</code>、<code>pages/lobby/tutorial.vue</code>、<code>pages/events.vue</code>、<code>pages/leaderboard.vue</code>、<code>pages/tutorial.vue</code>、<code>data/siteContent.ts</code>、<code>composables/useRewardCardState.ts</code>、<code>specs/2026-07-29-api-inventory.md</code>、<code>specs/2026-07-29-api-gap-analysis.md</code>。</p>
+<h1>WEB SPEC 10｜社交互動、聊天與客服</h1>
+<blockquote>
+<p>文件狀態：Phase 2 初版，已依目前 Nuxt 原型整理；即時通訊、客服後台與風控仍待正式化。
+工作單映射：<code>YOTAPLATFO-456</code>（SPEC）／<code>YOTAPLATFO-469</code>（Figma）／<code>YOTAPLATFO-482</code>（WEB／Nuxt）
+APP 參考：APP 11「社交互動與客服」；本文件以 Web 聊天頁的三頻道與客服案件模型為準。</p>
+</blockquote>
+<h2 id="0-文件狀態與範圍-3">0. 文件狀態與範圍</h2>
+<p>本分冊描述 <code>/lobby/chat</code> 的世界頻道、私人頻道、客服頻道，以及玩家清單、玩家小卡、加好友、黑名單、贈禮導流、檢舉與客服案件對話。社交功能目前為前端 Mock；客服狀態雖已抽成共用 <code>useState</code>，仍未與客服後台或 WebSocket 連接。</p>
+<h2 id="1-產品目標與使用情境-3">1. 產品目標與使用情境</h2>
+<ul>
+<li>玩家可在世界頻道閱讀與發送訊息，從在線玩家清單查看公開資訊。</li>
+<li>玩家可從公開玩家資訊發起私人對話、加好友、封鎖、檢舉或前往贈禮／轉帳。</li>
+<li>玩家可在客服頻道建立問題、查看案件、繼續對話、讀取未讀回覆。</li>
+<li>所有社交與客服操作都要有清楚的可見範圍、權限與失敗原因，不能把 Mock 成功誤認為服務端已受理。</li>
+</ul>
+<h2 id="2-頻道與資訊架構">2. 頻道與資訊架構</h2>
+<p>聊天頁提供三個 Tab：</p>
+<table>
+<thead>
+<tr>
+<th>頻道</th>
+<th>目前來源</th>
+<th>主要功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>世界頻道</td>
+<td><code>siteContent.chat.worldMessages</code>，頁面區域 Mock</td>
+<td>公開聊天、點擊訊息中的玩家名稱查看玩家卡</td>
+</tr>
+<tr>
+<td>私人頻道</td>
+<td><code>siteContent.chat.privateConversations</code>，頁面區域 Mock</td>
+<td>對話列表、主從導覽、私人訊息、封鎖提示</td>
+</tr>
+<tr>
+<td>客服頻道</td>
+<td><code>useSupportTicketState</code>，跨元件 <code>useState</code></td>
+<td>提問紀錄、類別選擇、案件對話、未讀與結案</td>
+</tr>
+</tbody></table>
+<p>目前頻道可由 <code>?channel=world|private|support</code> 深連結，世界頻道會移除 query；切換頻道需同步 URL 且不應遺失各頻道草稿／清單上下文。</p>
+<h2 id="3-世界頻道流程">3. 世界頻道流程</h2>
+<p>玩家進入頁面後可閱讀世界訊息，輸入訊息並送出；點擊可識別玩家名稱會開啟玩家小卡。世界訊息與線上玩家清單目前為 seed data，送出只更新當前頁面的 <code>ref</code>，重新整理即回到初始資料。</p>
+<p>世界頻道需預留載入、連線中斷、慢速、訊息發送失敗、禁言、頻率限制、內容審核與歷史訊息載入狀態。正式版不可只依賴瀏覽器 push 來視為成功。</p>
+<h2 id="4-玩家清單與玩家小卡">4. 玩家清單與玩家小卡</h2>
+<p>世界頻道可開啟玩家清單抽屜。玩家小卡顯示名稱、帳號／玩家識別、VIP、等級、在線狀態、簡介與近期遊戲；目前名單取自 <code>siteContent.chat.onlinePlayers</code> 與私人對話對象。</p>
+<p>玩家小卡操作包含：發起私人訊息、加好友、加入黑名單、檢舉、贈禮與轉帳。被封鎖玩家不能查看小卡、私訊或繼續社交操作；封鎖後要關閉目前小卡與清單並顯示結果。</p>
+<h2 id="5-私人頻道流程">5. 私人頻道流程</h2>
+<ol>
+<li>玩家從私人頻道清單選取對話，進入主從對話畫面。</li>
+<li>若由玩家小卡發起且沒有既有對話，建立當前頁面的新對話。</li>
+<li>未封鎖對象可送出訊息；封鎖對象顯示唯讀提示。</li>
+<li>開啟對話時清除該對話的頁面內未讀數；返回後保留對話清單。</li>
+</ol>
+<p>正式版需要定義對話建立、訊息送達／已讀、撤回、刪除、封鎖同步、多裝置與離線重連。現行私人對話不是服務端持久化資料。</p>
+<h2 id="6-好友-黑名單與玩家關係">6. 好友、黑名單與玩家關係</h2>
+<p><code>useSocialState.ts</code> 目前以 <code>useState</code> 保存好友與黑名單；初始好友來自 <code>onlinePlayers.isFriend</code>，新增／移除好友與封鎖／解除封鎖只在本次瀏覽工作階段有效。封鎖玩家會同步移除好友關係。</p>
+<p>正式規格需補上好友請求或直接加好友的產品決策、關係狀態、雙向／單向可見性、黑名單同步、解除封鎖後能否恢復好友與關係變更通知。</p>
+<h2 id="7-玩家檢舉流程">7. 玩家檢舉流程</h2>
+<p>玩家可從玩家小卡開啟檢舉 Modal，填寫原因與補充說明。送出後目前會建立客服 <code>report</code> 類別案件，第一則訊息包含檢舉對象、帳號、原因與補充內容，並切換至客服頻道的案件對話。</p>
+<p>檢舉對象必須具有有效 <code>playerId</code>、account、name；空原因、無效對象或已達進行中客服案件上限時不得建立案件。正式版需加上內容證據、時間戳、重複檢舉合併、申訴與後台處理結果。</p>
+<h2 id="8-客服頻道與案件列表">8. 客服頻道與案件列表</h2>
+<p>客服頻道採「案件清單 → 類別選擇／草稿 → 案件對話」主從流程。清單可顯示全部、進行中、已結案篩選、案件 ID、類別、最後訊息、更新時間與未讀數。點開案件會先清除未讀。</p>
+<p>目前 <code>useSupportTicketState.ts</code> 限制同時最多 1 筆進行中的案件；種子案件為 <code>CS-000001</code>，類別資料由 <code>supportQuestionCategories</code> 提供，共 7 類。</p>
+<h2 id="9-客服建立與對話流程">9. 客服建立與對話流程</h2>
+<ol>
+<li>玩家按「新增提問」，若已有進行中案件，顯示上限提示。</li>
+<li>從 7 個類別中選取帳號、儲值／付款、帳務／訂單、遊戲／結算、活動／獎勵、保險箱／贈禮或檢舉玩家等類別。</li>
+<li>草稿頁只在送出第一則非空訊息後建立案件；離開草稿不留下紀錄。</li>
+<li>進行中案件可繼續發訊息；已結案案件唯讀，並可建立新提問。</li>
+<li>客服回覆會增加未讀數；正式服務收到回覆時需透過即時事件或重新整理同步。</li>
+</ol>
+<h2 id="10-客服狀態-訊息與例外">10. 客服狀態、訊息與例外</h2>
+<p>案件目前至少有 <code>ongoing</code>／<code>closed</code> 狀態；訊息有玩家／客服發送者、時間、文字與未讀計數。空訊息、無效類別、找不到案件、已結案、超過案件上限等錯誤需可轉換為使用者可理解的提示。</p>
+<p>已結案案件不得再送訊息；客服頻道本身的未讀 badge 要顯示總未讀，超過 99 顯示 <code>99+</code>。刪除、封存、附件、圖片、敏感資料遮罩與案件 SLA 尚未在目前 Web 原型中定義。</p>
+<h2 id="11-權限-內容安全與使用者保護">11. 權限、內容安全與使用者保護</h2>
+<ul>
+<li>世界頻道發言需有登入、年齡門檻、禁言／封鎖／頻率限制與內容審核策略。</li>
+<li>私人訊息只對發送者與收件者可見；封鎖關係需在服務端生效，不能只靠前端 <code>isBlockedPlayer</code>。</li>
+<li>檢舉內容與客服案件可能含個資或敏感資料，須限定客服角色、保存期限、稽核與遮罩範圍。</li>
+<li>贈禮與轉帳只提供導流，不得因聊天頁操作繞過財務權限與交易確認。</li>
+</ul>
+<h2 id="12-api-websocket-與目前缺口">12. API、WebSocket 與目前缺口</h2>
+<p>API gap analysis 已列出 WebSocket、好友、世界頻道、玩家目錄、私訊與檢舉／客服後台等缺口。目前世界／私人頻道仍是頁面 Mock，客服的 <code>receiveSupportMessage</code> 只是為未來 API／WebSocket 預留的本地函式。</p>
+<p>正式化需定義連線認證、頻道訂閱、訊息序號、重連與去重、已讀游標、案件事件、推播通知、內容審核結果與客服後台回覆格式。</p>
+<h2 id="13-figma-交付內容-3">13. Figma 交付內容</h2>
+<p>Figma 需交付三頻道 Tab、世界訊息串、在線玩家抽屜、玩家小卡、私人對話列表／內容、封鎖後狀態、檢舉 Modal、客服案件列表／篩選、類別選擇、草稿、進行中／結案對話、未讀 badge、空狀態與錯誤提示的桌面／手機版。</p>
+<p>需特別標示從玩家小卡進入轉帳與客服檢舉後的導流脈絡，並定義訊息可點擊名稱、玩家身份顯示與敏感資料遮罩。</p>
+<h2 id="14-nuxt-實作邊界-3">14. Nuxt 實作邊界</h2>
+<p><code>pages/lobby/chat.vue</code> 管理頻道、世界訊息、私人對話與頁面通知；<code>useSocialState.ts</code> 管理好友／黑名單；<code>useSupportTicketState.ts</code> 管理客服案件。使用 <code>ClientOnly</code> 的玩家卡與檢舉 Modal 需繼續遵守 SSG hydration 規則。</p>
+<p>不應把頁面 <code>ref</code> 的訊息清單直接升級為跨裝置資料；接入 WebSocket 後需把服務端訊息作為唯一來源，並保留連線中、發送中、失敗與重試狀態。URL channel query 只代表視圖，不代表授權。</p>
+<h2 id="15-驗收條件與驗證證據-3">15. 驗收條件與驗證證據</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>驗收條件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-AC-10-01</code></td>
+<td>三個頻道可切換，<code>channel</code> query 可深連結，切換不遺失清單與對話上下文。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-10-02</code></td>
+<td>玩家清單／玩家卡可查看公開資料；加好友、封鎖、解除封鎖與導流結果可辨識。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-10-03</code></td>
+<td>被封鎖玩家不可查看資料或傳送私人訊息，頁面會顯示原因。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-10-04</code></td>
+<td>客服可從類別建立案件，空草稿不成案，進行中上限為 1，結案案件唯讀。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-10-05</code></td>
+<td>客服未讀、案件篩選、檢舉導流與客服回覆狀態可被驗證。</td>
+</tr>
+<tr>
+<td><code>WEB-Q-10-01</code></td>
+<td>WebSocket、好友、玩家目錄、檢舉後台與客服 SLA 的正式契約需補齊。</td>
+</tr>
+</tbody></table>
+<h2 id="16-開放問題與參照來源-3">16. 開放問題與參照來源</h2>
+<p>待確認：世界頻道是否所有登入會員可見、訊息保留與審核週期；私人頻道能否對非好友發訊息；好友是否需要雙向同意；檢舉案件是否受一般客服案件上限限制；客服是否支援附件、圖片、關閉／重開與推播通知。</p>
+<p>參照：<code>pages/lobby/chat.vue</code>、<code>components/lobby/SupportTicketList.vue</code>、<code>components/lobby/SupportQuestionStart.vue</code>、<code>composables/useSocialState.ts</code>、<code>composables/useSupportTicketState.ts</code>、<code>data/siteContent.ts</code>、<code>specs/2026-07-29-api-gap-analysis.md</code>、<code>specs/2026-07-29-api-inventory.md</code>。</p>
+<h1>WEB SPEC 11｜信箱、通知與設定</h1>
+<blockquote>
+<p>文件狀態：Phase 2 初版，已依目前 Nuxt 原型整理；通知服務、偏好同步與帳戶安全仍待正式化。
+工作單映射：<code>YOTAPLATFO-457</code>（SPEC）／<code>YOTAPLATFO-470</code>（Figma）／<code>YOTAPLATFO-483</code>（WEB／Nuxt）
+APP 參考：APP 12「信箱、通知與設定」；Web 以 <code>/lobby/inbox</code> 與 <code>/lobby/settings</code> 的目前實作為基準。</p>
+</blockquote>
+<h2 id="0-文件狀態與範圍-4">0. 文件狀態與範圍</h2>
+<p>本分冊涵蓋登入後信箱、系統／營運／帳務訊息、信件附件領取、信件刪除、音樂與音效、語言選擇、黑名單管理、法律文件入口與登出確認。推播、跨裝置同步、批次讀取與服務端通知尚未完成，需與客服、獎勵、財務及帳戶規格協同定義。</p>
+<h2 id="1-產品目標與使用情境-4">1. 產品目標與使用情境</h2>
+<ul>
+<li>玩家能集中查看平台公告、活動訊息、帳務結果與可領取附件。</li>
+<li>玩家能安全領取一次性附件，並在錢包／交易紀錄讀回結果。</li>
+<li>玩家能調整音樂、音效、主題與語言流程，管理黑名單並查看條款。</li>
+<li>玩家登出前能看懂會離開目前帳戶並返回官網首頁；未登入不可直接取得私人信件。</li>
+</ul>
+<h2 id="2-入口-路由與權限">2. 入口、路由與權限</h2>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>路由</th>
+<th>未登入行為</th>
+<th>目前來源</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>信箱</td>
+<td><code>/lobby/inbox</code></td>
+<td>顯示登入／註冊入口並保留目的地</td>
+<td><code>pages/lobby/inbox.vue</code></td>
+</tr>
+<tr>
+<td>設定</td>
+<td><code>/lobby/settings</code></td>
+<td>由 lobby layout 的登入邏輯保護</td>
+<td><code>pages/lobby/settings.vue</code></td>
+</tr>
+<tr>
+<td>條款／隱私／服務規範</td>
+<td>Modal</td>
+<td>開啟法律文件 Modal</td>
+<td><code>useLegalState.ts</code>、<code>LegalModal.vue</code></td>
+</tr>
+<tr>
+<td>登出</td>
+<td>Modal</td>
+<td>只對目前登入帳號可用</td>
+<td><code>useLogoutState.ts</code>、<code>LogoutConfirmModal.vue</code></td>
+</tr>
+</tbody></table>
+<p>信箱與設定均使用 <code>layout: &#39;lobby&#39;</code>；AppBottomNav、Header 與側邊導覽的入口狀態需在 <code>web-04-lobby-navigation.md</code> 統一維護。</p>
+<h2 id="3-信箱列表與分類">3. 信箱列表與分類</h2>
+<p>目前信箱提供「營運公告」與「系統通知」兩個篩選；<code>system</code> 與 <code>deposit</code> 會歸在系統通知，<code>event</code> 歸在營運公告。每筆信件顯示已讀點、類型、時間、標題、預覽與附件標籤。</p>
+<p>目前 <code>InboxMessage</code> 類型為 <code>system | event | deposit</code>，種子資料包含活動公告、排行榜活動、儲值到帳確認與維護公告。正式版需補分頁／游標、排序、服務端未讀數、通知保留期限與多語內容。</p>
+<h2 id="4-閱讀-已讀與刪除流程">4. 閱讀、已讀與刪除流程</h2>
+<ol>
+<li>玩家切換分類並從列表選取信件。</li>
+<li>開啟時呼叫 <code>markRead</code>，右側／手機詳情顯示完整內容。</li>
+<li>若有附件，顯示附件幣別、數量、領取說明與一次性按鈕。</li>
+<li>玩家可刪除目前信件；刪除後關閉詳情並顯示結果提示。</li>
+<li>返回列表時保留目前分類，不應因讀取信件重置整個列表視圖。</li>
+</ol>
+<p>目前沒有批次全讀、批次刪除、封存、搜尋、釘選、撤回或跨裝置已讀同步；這些需由產品決策後再加到工作單／API。</p>
+<h2 id="5-信件附件與獎勵領取">5. 信件附件與獎勵領取</h2>
+<p>附件目前支援 <code>gold</code>／<code>silver</code>／<code>bronze</code> 錢包獎勵；領取成功後呼叫 <code>addWalletReward</code>，並將 <code>claimed</code> 設為 <code>true</code>，按鈕改為已領取。重複點擊或已領附件不得再次入帳。</p>
+<p>正式版的領取結果必須由服務端原子性消費，回傳獎勵交易 ID、實際入帳錢包、失敗原因與可重試狀態。附件可能過期、被撤回、受會員資格限制或需要從獎勵卡／活動服務取得，這些目前尚未在 Web Mock 建模。</p>
+<h2 id="6-信箱狀態與錯誤">6. 信箱狀態與錯誤</h2>
+<p>需覆蓋登入要求、載入中、空信箱、分類無資料、信件已讀／未讀、附件可領／已領、領取中、領取失敗、信件不存在、已刪除與服務中斷。手機版詳情以 overlay 呈現，關閉後回到列表。</p>
+<p>目前 <code>runMock</code> 會等待約 700ms 模擬領取，這是原型互動，不是服務端延遲或 SLA。正式訊息必須避免把 <code>setTimeout</code> 結果當成付款／獎勵完成證據。</p>
+<h2 id="7-設定資訊架構">7. 設定資訊架構</h2>
+<p>設定頁目前分四區：</p>
+<ol>
+<li>音樂與音效：背景音樂開關、操作音效試聽與開關。</li>
+<li>語言：繁體中文、English、日本語三個選項；目前只對齊選擇流程，文案仍為繁體中文。</li>
+<li>黑名單管理：顯示封鎖玩家、玩家識別與解除封鎖。</li>
+<li>條款與帳號：會員條款、隱私政策、平台服務規範與登出。</li>
+</ol>
+<p>主題目前由偏好狀態保存並套用 <code>document.documentElement.dataset.theme</code>；若正式提供深／淺色主題，需另補完整 token 與可讀性驗證。</p>
+<h2 id="8-偏好狀態與保存">8. 偏好狀態與保存</h2>
+<p><code>usePreferencesState.ts</code> 提供 <code>musicEnabled</code>、<code>soundEnabled</code>、<code>theme</code>、<code>language</code>、<code>pushEnabled</code>。目前 localStorage key 為 <code>jh_preferences</code>，保存音樂、音效、主題、語言；<code>pushEnabled</code> 目前只在 state 中存在，未納入持久化。</p>
+<p>初始化只在 client 端讀取 localStorage，並在設定變更後更新 DOM／localStorage。正式版需決定偏好是否與會員帳戶同步、未登入是否保存、跨裝置優先序與伺服器失敗回退。</p>
+<h2 id="9-黑名單管理流程">9. 黑名單管理流程</h2>
+<p>玩家從聊天玩家卡加入黑名單後，設定頁可看到清單、頭像、名稱、玩家識別與「解除封鎖」操作。解除後顯示提示；目前關係只保存在本次瀏覽 session，且與 <code>useSocialState.ts</code> 共用。</p>
+<p>正式版需定義封鎖對世界頻道、私人訊息、玩家資料、贈禮、轉帳與檢舉的影響，並在服務端同步黑名單，避免設定頁與聊天頁狀態分裂。</p>
+<h2 id="10-法律文件-帳戶與登出">10. 法律文件、帳戶與登出</h2>
+<p>條款、隱私與服務規範從設定頁開啟共用 Legal Modal；內容需與登入／AgeGate 的同意流程一致。登出按鈕開啟確認 Modal，確認後清除登入狀態與受保護頁面資料，返回官網首頁。</p>
+<p>正式版需補登入 token／refresh token 撤銷、其他裝置 session、登出失敗、未保存流程、法律版本與同意紀錄。不能只把前端 <code>isLoggedIn</code> 設為 false 就視為安全登出。</p>
+<h2 id="11-通知-未讀與跨功能關聯">11. 通知、未讀與跨功能關聯</h2>
+<p>信箱附件可能來自活動、儲值、任務、獎勵卡或客服結果；每封信需能追溯來源事件與交易。Header／AppBottomNav 若顯示未讀 badge，需以信箱服務端未讀總數為準，不能只以當前分類列表計算。</p>
+<p>目前沒有推播實作、未讀總數 composable、批次讀取、通知設定的服務端同步或 Web Push 權限流程；<code>pushEnabled</code> 僅為預留欄位，規格暫不宣稱已提供推播。</p>
+<h2 id="12-api-資料保存與目前缺口">12. API、資料保存與目前缺口</h2>
+<p>目前信箱與設定都是 local／Mock 狀態：<code>useMailboxState.ts</code> 以 <code>useState</code> 種子信件，<code>usePreferencesState.ts</code> 只以瀏覽器 localStorage 保存部分偏好。API inventory 顯示尚未接實際 <code>$fetch</code>。</p>
+<p>正式化需補信件列表／詳情／已讀／刪除／附件領取、未讀彙總、通知偏好、黑名單 CRUD、法律版本與登出 session API；並定義資料保留、裝置同步、撤銷、重試、稽核與個資刪除邊界。</p>
+<h2 id="13-figma-交付內容-4">13. Figma 交付內容</h2>
+<p>Figma 需交付信箱桌面雙欄與手機列表／詳情 overlay、分類切換、未讀／已讀、附件可領／已領／失敗、空狀態與刪除提示；設定需交付四個區塊、開關、試聽、語言選擇、黑名單空／有資料、Legal Modal、登出確認與錯誤狀態。</p>
+<p>所有設定操作需提供鍵盤／螢幕閱讀器語意、清楚的 switch 狀態與 aria 文案；附件領取與登出等不可逆或資產相關操作需有確認／結果回饋。</p>
+<h2 id="14-nuxt-實作邊界-4">14. Nuxt 實作邊界</h2>
+<p>主要來源為 <code>pages/lobby/inbox.vue</code>、<code>components/lobby/MailboxContent.vue</code>、<code>pages/lobby/settings.vue</code>、<code>composables/useMailboxState.ts</code>、<code>composables/usePreferencesState.ts</code>。涉及 Legal、Logout、Audio、Social 的共用狀態需沿用既有 composable，不在頁面另建平行真相。</p>
+<p>localStorage、document theme、音訊與 Modal 都必須在 client 安全初始化；含 Teleport 的 Modal 遵守 <code>ClientOnly</code>。SSG 產出的公開 HTML 不得嵌入會員私人信件或未驗證餘額。</p>
+<h2 id="15-驗收條件與驗證證據-4">15. 驗收條件與驗證證據</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>驗收條件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-AC-11-01</code></td>
+<td>未登入進入信箱會要求登入並保留目的地；登入後可看到分類與信件列表。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-11-02</code></td>
+<td>開信會標記已讀；附件只能領取一次，成功後錢包／交易結果可讀回。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-11-03</code></td>
+<td>信箱支援營運／系統篩選、詳情、手機 overlay、刪除與空狀態。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-11-04</code></td>
+<td>音樂／音效／主題／語言操作有正確 switch／選擇狀態與保存提示。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-11-05</code></td>
+<td>黑名單可由聊天加入並在設定解除，法律文件與登出確認可開啟。</td>
+</tr>
+<tr>
+<td><code>WEB-Q-11-01</code></td>
+<td>推播、未讀彙總、批次操作、跨裝置同步與正式登出 session 契約需補齊。</td>
+</tr>
+</tbody></table>
+<h2 id="16-開放問題與參照來源-4">16. 開放問題與參照來源</h2>
+<p>待確認：信件保留與刪除是否為軟刪除；附件有效期與撤回；帳務信件是否可直接領取；推播是否採 Web Push 或僅導向 APP；偏好與黑名單是否需要帳戶同步；語言切換何時正式翻譯；法律文件版本與同意紀錄如何稽核。</p>
+<p>參照：<code>pages/lobby/inbox.vue</code>、<code>components/lobby/MailboxContent.vue</code>、<code>pages/lobby/settings.vue</code>、<code>composables/useMailboxState.ts</code>、<code>composables/usePreferencesState.ts</code>、<code>composables/useSocialState.ts</code>、<code>composables/useLegalState.ts</code>、<code>composables/useLogoutState.ts</code>、<code>specs/2026-07-29-api-inventory.md</code>、<code>specs/2026-07-29-api-gap-analysis.md</code>。</p>
+<h1>WEB SPEC 12｜跨頁流程、資料交接與整合邊界</h1>
+<blockquote>
+<p>文件狀態：Phase 3 初版，已把 <code>WEB-SPEC-02</code>～<code>WEB-SPEC-11</code> 串成 Web 跨頁流程；正式 API、即時服務與帳務一致性仍待確認。
+工作單映射：<code>YOTAPLATFO-458</code>（SPEC）／<code>YOTAPLATFO-471</code>（Figma）／<code>YOTAPLATFO-484</code>（WEB／Nuxt）
+文件定位：本分冊描述跨頁流程與狀態交接，不重複取代各功能分冊的畫面細節，也不取代後端 API 契約。</p>
+</blockquote>
+<h2 id="0-文件狀態與整合範圍">0. 文件狀態與整合範圍</h2>
+<p>本分冊是 Web 官網公開頁、登入後遊戲大廳、財務、獎勵、社交、信箱與設定之間的整合規格。內容分成三種證據：<code>目前 Web 原型</code>、<code>已確認規則</code>、<code>待確認</code>。目前可由 Nuxt 原始碼確認的 route／query／composable 行為，不等於正式跨服務交易已完成。</p>
+<p>本章的主要交付結果是 <code>WEB-FLOW</code>、<code>WEB-SC</code>、跨頁資料交接表、狀態與錯誤邊界，以及可供 <code>WEB-SPEC-13</code> 與 Plane 子單回填的驗收索引。</p>
+<h2 id="1-跨頁整合原則">1. 跨頁整合原則</h2>
+<ol>
+<li>導流要保留玩家的原始目的地與必要 query；登入、年齡驗證或權限檢查完成後才能回到目的頁。</li>
+<li>URL query 只描述目前視圖或導流意圖，不是權限或資產的可信來源。</li>
+<li>錢包、獎勵、贈禮、信箱附件與交易紀錄的正式結果必須來自同一個可追溯的服務端事件。</li>
+<li>頁面 local state、<code>useState</code>、localStorage、Mock 與正式資料庫的保存範圍要分開標示。</li>
+<li>跨頁錯誤不可只顯示「成功」或直接跳頁；需要保留可理解的失敗原因、可重試入口與返回路徑。</li>
+</ol>
+<h2 id="2-公開頁-登入與大廳邊界">2. 公開頁、登入與大廳邊界</h2>
+<table>
+<thead>
+<tr>
+<th>表面</th>
+<th>layout／路由</th>
+<th>可公開內容</th>
+<th>受保護內容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>官網公開頁</td>
+<td><code>default</code> layout；<code>/</code>、<code>/events</code>、<code>/leaderboard</code>、<code>/deposit</code>、<code>/tutorial</code>、<code>/support</code>、<code>/member</code></td>
+<td>品牌、活動、排行榜、教學、FAQ、儲值說明</td>
+<td>儲值操作、個人資料與會員資料</td>
+</tr>
+<tr>
+<td>遊戲大廳</td>
+<td><code>lobby</code> layout；<code>/lobby/*</code></td>
+<td>未登入時可看到登入導引卡</td>
+<td>遊戲啟動、財務、會員、任務、聊天、信箱與設定</td>
+</tr>
+<tr>
+<td>Web 館導流</td>
+<td><code>/h5</code> 新分頁</td>
+<td>年齡驗證前不直接開啟</td>
+<td>由 <code>AgeGateModal</code> 驗證後呼叫 <code>window.open</code></td>
+</tr>
+</tbody></table>
+<p><code>/member</code> 目前導向 <code>/lobby/member</code>；<code>/lobby/deposit</code> 目前導向 <code>/lobby/bank</code>。這些相容路由要保留目的地語意，正式路由是否永久保留列為 <code>WEB-Q-12-01</code>。</p>
+<h2 id="3-跨頁流程總表">3. 跨頁流程總表</h2>
+<table>
+<thead>
+<tr>
+<th>Flow ID</th>
+<th>流程名稱</th>
+<th>起點</th>
+<th>主要交接</th>
+<th>終點／結果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-FLOW-01</code></td>
+<td>公開頁 → 登入 → 大廳</td>
+<td>公開頁 CTA／手機導覽</td>
+<td>protected destination、登入狀態</td>
+<td>回到原目的頁或 <code>/lobby</code></td>
+</tr>
+<tr>
+<td><code>WEB-FLOW-02</code></td>
+<td>大廳 → 遊戲 → 返回</td>
+<td><code>/lobby</code> 遊戲卡</td>
+<td>game、mode、wallet、Age Gate</td>
+<td>遊戲視圖或返回大廳</td>
+</tr>
+<tr>
+<td><code>WEB-FLOW-03</code></td>
+<td>銀行 → 保險箱／兌換／交易</td>
+<td><code>/lobby/bank</code></td>
+<td>tab、receiver、錢包與交易結果</td>
+<td><code>/lobby/vault</code>、<code>/exchange</code> 或 <code>/transactions</code></td>
+</tr>
+<tr>
+<td><code>WEB-FLOW-04</code></td>
+<td>任務／活動／優惠 → 獎勵</td>
+<td><code>/lobby/daily</code>、<code>/events</code>、會員獎勵</td>
+<td>claim、reward card、wallet、mail</td>
+<td>錢包／獎勵卡／信箱可讀回</td>
+</tr>
+<tr>
+<td><code>WEB-FLOW-05</code></td>
+<td>玩家互動 → 贈禮／檢舉／客服</td>
+<td><code>/lobby/chat</code> 玩家卡</td>
+<td>player、receiver、ticket</td>
+<td>保險箱轉帳、客服案件或回到聊天</td>
+</tr>
+<tr>
+<td><code>WEB-FLOW-06</code></td>
+<td>信箱／設定 → 帳戶狀態</td>
+<td><code>/lobby/inbox</code>、<code>/settings</code></td>
+<td>read、claim、preference、logout</td>
+<td>更新狀態或回到官網</td>
+</tr>
+<tr>
+<td><code>WEB-FLOW-07</code></td>
+<td>深連結／重新整理／權限邊界</td>
+<td>任一帶 query 路由</td>
+<td>URL、session、初始化順序</td>
+<td>保留、阻擋或清理 query</td>
+</tr>
+</tbody></table>
+<h2 id="4-web-flow-01-公開頁-認證與受保護目的地">4. WEB-FLOW-01：公開頁、認證與受保護目的地</h2>
+<h3 id="目前-web-原型">目前 Web 原型</h3>
+<p><code>useAppState.openLogin(destination)</code> 會將目的地存入 <code>protectedDestination</code> 並開啟 <code>LoginModal</code>。登入完成後，<code>LoginModal</code> 呼叫 <code>consumeProtectedDestination()</code>，若存在目的地便 <code>router.push(destination)</code>；沒有目的地時維持目前頁面或依入口導向。</p>
+<p>受保護入口包括儲值、會員、遊戲 Real 模式、每日簽到、聊天、信箱與部分大廳功能。公開活動／排行榜／教學可先瀏覽，但 CTA 進入玩家操作時要補上登入檢查。</p>
+<h3 id="web-sc-12-01">WEB-SC-12-01</h3>
+<p>未登入玩家從 <code>/deposit</code> 點擊儲值，應被導向登入；登入成功後回到原儲值路徑，而非無條件回首頁。若目的地 query 含 <code>tab</code>、<code>game</code> 或 <code>mode</code>，需完整保留並驗證允許值。</p>
+<h3 id="待確認">待確認</h3>
+<p>社群登入、手機登入、訪客模式與普通帳號登入是否共用相同目的地恢復規則；登入失敗、關閉 Modal、Age Gate 未同意或 session 逾期時是否清除目的地。</p>
+<h2 id="5-web-flow-02-大廳-遊戲啟動與返回">5. WEB-FLOW-02：大廳、遊戲啟動與返回</h2>
+<h3 id="目前-web-原型-2">目前 Web 原型</h3>
+<p><code>/lobby</code> 以 query <code>game</code> 與 <code>mode</code> 表示選取的遊戲與 Demo／Real 模式。點選 Real 未登入時會開啟登入並保留 <code>/lobby?game=...&amp;mode=real</code>；遊戲啟動前還需要依入口觸發 Age Gate。<code>GameView</code> 目前是 iframe／<code>example.com</code> 佔位，並非正式遊戲服務。</p>
+<p>返回流程需清除遊戲 query、保留玩家在大廳的分類／位置語意，且不得把 iframe 的載入成功推論為遊戲 session 或扣款成功。<code>SeatSelectionModal</code> 目前是 dead code，不納入可驗收流程。</p>
+<h3 id="web-sc-12-02">WEB-SC-12-02</h3>
+<p>玩家從遊戲卡進入 Demo，可直接看到遊戲佔位；進入 Real 需登入與年齡／資格檢查；若啟動失敗，仍留在大廳並顯示可理解原因，不應扣除錢包。</p>
+<h3 id="待確認-2">待確認</h3>
+<p>正式 launch token、遊戲供應商 iframe／SDK、餘額檢查、斷線恢復、結算事件、遊戲返回策略與遊戲房／座位是否重新納入 Web 範圍。</p>
+<h2 id="6-web-flow-03-銀行-保險箱-兌換與交易紀錄">6. WEB-FLOW-03：銀行、保險箱、兌換與交易紀錄</h2>
+<h3 id="目前-web-原型-3">目前 Web 原型</h3>
+<p><code>/lobby/bank</code> 以 query <code>tab</code> 管理銀行分頁；轉帳導流會保留 <code>tab=transfer</code> 與 <code>receiverId</code> 至 <code>/lobby/vault</code>。銀行中的兌換與交易紀錄入口分別導向 <code>/lobby/exchange</code> 與 <code>/lobby/transactions</code>。<code>/lobby/vault</code> 目前實際渲染 <code>LobbyVaultContent</code>，不是只做 redirect；總綱的舊敘述已在本 Phase 3 基線同步修正。</p>
+<p><code>useFinancialState</code> 目前管理主錢包、銀幣、銅幣、保險箱與交易 Mock。存入／取出、兌換、贈禮保留、退款與獎勵入帳都會更新本次瀏覽的 state；這些結果尚未接正式帳務服務。</p>
+<h3 id="web-sc-12-03">WEB-SC-12-03</h3>
+<p>玩家從聊天玩家卡按贈禮／轉帳進入 <code>/lobby/vault?tab=transfer&amp;receiverId=...</code>，頁面需選取指定收件人；若 query 無效、玩家不存在、餘額不足或登入狀態失效，需阻擋送出並保留可返回聊天的路徑。</p>
+<h3 id="已確認規則-待正式化">已確認規則／待正式化</h3>
+<p><code>NT$1 = 金幣 1 = 銀幣 100</code>、銅幣無價值、金額採整數與小數捨去、無外部提款等產品規則已列在既有決策；正式服務仍需補交易原子性、冪等、對帳、支付狀態與退款契約。</p>
+<h2 id="7-web-flow-04-任務-活動-優惠碼-獎勵卡與信箱">7. WEB-FLOW-04：任務、活動、優惠碼、獎勵卡與信箱</h2>
+<p>每日簽到、活動 CTA、優惠碼與信箱附件可能產生不同類型的獎勵。跨頁的共同要求是：領取前顯示完整獎勵與限制，成功後讓玩家在正確的錢包／獎勵卡／交易紀錄／信箱位置讀回，且不因重整或重複點擊重複發放。</p>
+<p>目前 <code>useRewardCardState</code>、<code>usePromoCodeState</code>、<code>useMailboxState</code> 與 <code>useFinancialState</code> 都在前端保存 Mock 結果。獎勵卡第 10／15／20 天的幣別與型態在來源間仍有差異，需以正式規則封存前的 <code>WEB-Q-12-02</code> 狀態處理。</p>
+<h3 id="web-sc-12-04">WEB-SC-12-04</h3>
+<p>玩家完成簽到或輸入優惠碼後，若獎勵為活動銀幣、獎勵卡或錢包獎勵，頁面要清楚顯示下一個查看位置；信箱附件領取後，錢包與交易紀錄需使用同一個結果，不可出現畫面顯示已領但資產未變更的狀況。</p>
+<h2 id="8-web-flow-05-聊天-玩家卡-贈禮-檢舉與客服">8. WEB-FLOW-05：聊天、玩家卡、贈禮、檢舉與客服</h2>
+<p><code>/lobby/chat</code> 的玩家小卡可以導向：</p>
+<ul>
+<li>贈禮／轉帳：<code>/lobby/vault?tab=transfer&amp;receiverId=&lt;playerId&gt;</code>。</li>
+<li>檢舉：建立客服 <code>report</code> 類別案件，再切換到 <code>?channel=support</code> 的案件對話。</li>
+<li>私人訊息：在頁面內建立或開啟既有私人對話。</li>
+<li>封鎖：更新 <code>useSocialState</code>，並同步關閉小卡／清單；設定頁可解除封鎖。</li>
+</ul>
+<h3 id="web-sc-12-05">WEB-SC-12-05</h3>
+<p>玩家檢舉後，客服案件建立失敗或已達同時 1 筆進行中案件上限時，不得留下半成品案件；成功時需回到該客服案件並顯示檢舉對象與原因。玩家被封鎖後不能再透過私訊或玩家卡繞過限制。</p>
+<h3 id="待確認-3">待確認</h3>
+<p>世界頻道／私人頻道的正式即時服務、好友關係、訊息已讀、檢舉證據、客服附件、案件 SLA 與封鎖的後端同步規則。</p>
+<h2 id="9-web-flow-06-信箱-設定-法律與登出">9. WEB-FLOW-06：信箱、設定、法律與登出</h2>
+<p>信箱附件會連結財務結果；設定中的黑名單會連結社交狀態；Legal Modal 同時服務登入與設定；Logout Modal 會清除登入、財務、贈禮、社交與客服狀態並回到 <code>/</code>。這些共用狀態清理是跨頁交付的一部分。</p>
+<h3 id="web-sc-12-06">WEB-SC-12-06</h3>
+<p>玩家在信箱讀取附件或設定調整偏好後登出，再重新登入時，正式服務應依帳戶資料恢復正確結果；目前原型只保留部分 auth／profile 與偏好 localStorage，其餘狀態會重置，不能當成正式持久化證據。</p>
+<h2 id="10-route-query-深連結與重新整理">10. Route query、深連結與重新整理</h2>
+<table>
+<thead>
+<tr>
+<th>Query／路徑</th>
+<th>用途</th>
+<th>目前行為</th>
+<th>風險／正式要求</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>protectedDestination</code></td>
+<td>登入後回到原目的地</td>
+<td><code>useState</code> 暫存</td>
+<td>需防開放 redirect、過期與重複消費</td>
+</tr>
+<tr>
+<td><code>/lobby?game=&amp;mode=</code></td>
+<td>遊戲選取與模式</td>
+<td>大廳頁讀取並切換狀態</td>
+<td>需驗證遊戲與模式白名單</td>
+</tr>
+<tr>
+<td><code>/lobby/member?tab=</code></td>
+<td>會員分頁</td>
+<td><code>profile</code>／<code>bindings</code>／<code>vip</code>／<code>rewards</code>／<code>history</code></td>
+<td>需保留合法 tab，非法值回預設</td>
+</tr>
+<tr>
+<td><code>/lobby/bank?tab=</code></td>
+<td>銀行分頁</td>
+<td>轉帳／兌換／交易會導向專頁</td>
+<td>query 不能繞過權限或狀態檢查</td>
+</tr>
+<tr>
+<td><code>/lobby/vault?tab=transfer&amp;receiverId=</code></td>
+<td>玩家贈禮導流</td>
+<td>讀取收件人並進入轉帳 tab</td>
+<td>收件人、登入與黑名單需服務端驗證</td>
+</tr>
+<tr>
+<td><code>/lobby/chat?channel=</code></td>
+<td>聊天頻道</td>
+<td><code>world</code>／<code>private</code>／<code>support</code></td>
+<td>query 只切換視圖，不代表權限</td>
+</tr>
+</tbody></table>
+<p>重新整理時，auth 初始化、偏好初始化與頁面 query 解析的順序要固定；若必要資料尚未載入，不應短暫呈現錯誤帳戶、錯誤錢包或錯誤收件人。</p>
+<h2 id="11-跨頁狀態所有權與保存範圍">11. 跨頁狀態所有權與保存範圍</h2>
+<table>
+<thead>
+<tr>
+<th>狀態</th>
+<th>目前所有者</th>
+<th>目前保存</th>
+<th>正式來源候選</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>登入／profile／目的地</td>
+<td><code>useAppState</code></td>
+<td>login flag／profile 部分 localStorage；目的地 session</td>
+<td>Auth／Account service</td>
+</tr>
+<tr>
+<td>錢包／交易</td>
+<td><code>useFinancialState</code></td>
+<td><code>useState</code>，本次瀏覽</td>
+<td>Wallet／Ledger service</td>
+</tr>
+<tr>
+<td>獎勵卡／優惠碼</td>
+<td>對應 composable</td>
+<td><code>useState</code>，本次瀏覽</td>
+<td>Reward／Promotion service</td>
+</tr>
+<tr>
+<td>贈禮案件</td>
+<td><code>useGiftState</code></td>
+<td><code>useState</code>，本次瀏覽</td>
+<td>Gift／P2P service</td>
+</tr>
+<tr>
+<td>好友／黑名單</td>
+<td><code>useSocialState</code></td>
+<td><code>useState</code>，本次瀏覽</td>
+<td>Social／Safety service</td>
+</tr>
+<tr>
+<td>客服案件</td>
+<td><code>useSupportTicketState</code></td>
+<td><code>useState</code>，跨元件但非跨裝置</td>
+<td>Support service</td>
+</tr>
+<tr>
+<td>信箱</td>
+<td><code>useMailboxState</code></td>
+<td><code>useState</code>，本次瀏覽</td>
+<td>Notification／Mailbox service</td>
+</tr>
+<tr>
+<td>偏好</td>
+<td><code>usePreferencesState</code></td>
+<td>localStorage 部分欄位</td>
+<td>Account preference service＋local fallback</td>
+</tr>
+<tr>
+<td>頁面草稿／私人對話／世界訊息</td>
+<td>page-local <code>ref</code></td>
+<td>不保存</td>
+<td>WebSocket／draft service（待定）</td>
+</tr>
+</tbody></table>
+<h2 id="12-跨頁錯誤-回滾與一致性">12. 跨頁錯誤、回滾與一致性</h2>
+<ul>
+<li>認證失敗：保留可安全恢復的目的地，清除無效 token，不能把受保護頁面當成已登入。</li>
+<li>query 無效：以安全預設或清除 query，不能透過 URL 直接變更會員、遊戲、收件人或資產。</li>
+<li>領取／兌換失敗：不更新成功 UI；可重試時保留輸入，並使用冪等鍵避免重複發獎。</li>
+<li>贈禮建立／接受／拒絕／取消／逾期：保留案件狀態與保留資產的對應交易；退款不可只更新畫面。</li>
+<li>信箱附件：已讀與已領要分開；已讀不代表附件已入帳。</li>
+<li>登出：清除本次登入可見的受保護資料，但不應刪除正式帳戶服務上已完成的交易或案件。</li>
+</ul>
+<h2 id="13-api-事件與整合依賴">13. API、事件與整合依賴</h2>
+<p>目前 API inventory 顯示前端沒有實際 <code>$fetch</code> 交易呼叫；gap analysis 已列出認證復原、遊戲啟動、支付／錢包、好友、WebSocket、檢舉、客服、信箱與活動等缺口。正式整合需要至少定義：</p>
+<table>
+<thead>
+<tr>
+<th>領域</th>
+<th>需要的跨頁事件／結果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Auth</td>
+<td><code>session.created</code>、<code>session.expired</code>、<code>profile.updated</code></td>
+</tr>
+<tr>
+<td>Game</td>
+<td><code>game.launch.created</code>、<code>game.session.closed</code>、<code>game.settlement.completed</code></td>
+</tr>
+<tr>
+<td>Finance</td>
+<td><code>deposit.completed</code>、<code>wallet.changed</code>、<code>transaction.created</code></td>
+</tr>
+<tr>
+<td>Reward</td>
+<td><code>reward.claimed</code>、<code>reward-card.converted</code>、<code>promo.redeemed</code></td>
+</tr>
+<tr>
+<td>Gift</td>
+<td><code>gift-request.created</code>、<code>gift-request.resolved</code>、<code>gift-request.expired</code></td>
+</tr>
+<tr>
+<td>Social／Support</td>
+<td><code>friend.changed</code>、<code>player.blocked</code>、<code>support-ticket.updated</code></td>
+</tr>
+<tr>
+<td>Mail</td>
+<td><code>mail.received</code>、<code>mail.read</code>、<code>mail-attachment.claimed</code></td>
+</tr>
+</tbody></table>
+<p>事件至少要含會員識別、事件 ID、來源功能、發生時間、冪等鍵與可追溯 reference ID；不以頁面跳轉成功當作服務端交易成功。</p>
+<h2 id="14-nuxt-ssg-與-runtime-邊界">14. Nuxt、SSG 與 runtime 邊界</h2>
+<p>公開頁與 lobby layout 均參與 SSG。<code>ClientOnly</code>／<code>Teleport</code>、localStorage、document theme、音訊、計時器與 Modal 必須在 client 安全初始化；否則可能造成 hydration mismatch 或互動事件失效。<code>nuxt.config.ts</code> 的 <code>experimental.appManifest=false</code>、baseURL <code>/Yota_Website_Nuxt/</code>、<code>docs/.nojekyll</code> 與 <code>nitro.watchOptions</code> 是部署基線，不得在跨頁重構時移除。</p>
+<p>SSG 只能證明靜態輸出可產生，不能證明登入、支付、WebSocket、帳務或正式遊戲 session。跨頁驗證需分開記錄文件、純前端原型、瀏覽器、SSG、部署與正式服務結果。</p>
+<h2 id="15-跨頁驗收條件">15. 跨頁驗收條件</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>驗收條件</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-AC-12-01</code></td>
+<td>公開頁進入受保護功能時能保留目的地；登入／Age Gate 取消或失敗不會誤放行。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-12-02</code></td>
+<td>大廳遊戲 query、會員 tab、銀行／聊天 query 均只接受合法值，重新整理後視圖一致。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-12-03</code></td>
+<td>聊天玩家卡導向贈禮、檢舉與私訊時，收件人／案件／頻道上下文不遺失。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-12-04</code></td>
+<td>獎勵、信箱附件與財務結果能以同一 reference 追溯；失敗不產生假成功。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-12-05</code></td>
+<td>登出會清理受保護前端狀態並返回官網；重新登入不讀取上一個帳戶的 session Mock。</td>
+</tr>
+<tr>
+<td><code>WEB-AC-12-06</code></td>
+<td>桌機／手機、SSG hydration 與路由深連結的驗證證據能與流程 ID 對應。</td>
+</tr>
+</tbody></table>
+<h2 id="16-開放問題-變更與參照來源">16. 開放問題、變更與參照來源</h2>
+<p>待確認：<code>/lobby/vault</code> 的正式路由定位；每日獎勵卡幣別；登入目的地的安全白名單；遊戲 launch／結算；錢包與贈禮的正式交易邊界；客服與 WebSocket；信箱未讀／推播；偏好與黑名單的帳戶同步。</p>
+<p>需同步修正的既有文件：<code>_index-table.md</code> 的 W-08 檢舉截圖狀態、每日任務舊版獎勵文字，以及任何把 Mock 成功寫成正式服務完成的 handoff 敘述。</p>
+<p>參照：<code>specs/spec-book/WEB_SPEC_RULES.md</code>、<code>specs/spec-book/web-02-public-site.md</code>～<code>web-11-inbox-settings.md</code>、<code>layouts/default.vue</code>、<code>layouts/lobby.vue</code>、<code>composables/useAppState.ts</code>、<code>composables/useFinancialState.ts</code>、<code>composables/useGiftState.ts</code>、<code>pages/lobby/index.vue</code>、<code>pages/lobby/chat.vue</code>、<code>components/lobby/VaultContent.vue</code>、<code>specs/2026-07-29-api-inventory.md</code>、<code>specs/2026-07-29-api-gap-analysis.md</code>。</p>
+<h1>WEB SPEC 13｜整體驗收、交付與玩家情境</h1>
+<blockquote>
+<p>文件狀態：Phase 3 初版，建立 Web 版完整交付基線；各層驗收尚未全部執行，未將文件完成誤判為產品完成。
+工作單映射：<code>YOTAPLATFO-459</code>（SPEC）／<code>YOTAPLATFO-472</code>（Figma）／<code>YOTAPLATFO-485</code>（WEB／Nuxt）
+交付基線：3 張父單＋39 張子單；本文件只補整體驗收與 handoff，不新增第 40 張工作單。</p>
+</blockquote>
+<h2 id="0-文件狀態-目標與驗收語意">0. 文件狀態、目標與驗收語意</h2>
+<p>本分冊把 Web 規格書、Figma、Nuxt 原型、文件 HTML、瀏覽器操作、Nuxt SSG、Git、Plane 與正式服務拆成不同驗收層級。每個「通過」都必須說明它證明的是哪一層，不得用 Markdown 通過推論瀏覽器可操作，也不得用本機 Mock 通過推論正式帳務完成。</p>
+<p>目前已完成：Web 規格總綱、10 份功能分冊、跨頁整合初版、Web HTML 閱讀分頁與既有 Plane 3＋39 工作單映射。待後續完成：工作單描述回填、Plane 頁面同步與實際各環境驗收。</p>
+<h2 id="1-交付範圍與不在範圍">1. 交付範圍與不在範圍</h2>
+<h3 id="本次-web-交付範圍">本次 Web 交付範圍</h3>
+<ul>
+<li>官網公開頁與登入後遊戲大廳的資訊架構、路由、layout、共用導覽與響應式行為。</li>
+<li>登入／註冊／Age Gate／法律文件、會員、遊戲、財務、獎勵、任務、社交、客服、信箱與設定的功能規格。</li>
+<li><code>WEB-FLOW</code> 跨頁流程、<code>WEB-SC</code> 玩家情境、<code>WEB-AC</code> 驗收條件與資料／API 邊界。</li>
+<li>Nuxt SSG、GitHub Pages baseURL、<code>.nojekyll</code>、<code>ClientOnly</code>／<code>Teleport</code> 與工作樹交付證據。</li>
+</ul>
+<h3 id="不在本文件直接承諾">不在本文件直接承諾</h3>
+<p>正式支付、銀行／帳務 ledger、遊戲供應商 session、WebSocket、CMS 後台、客服後台、反作弊、風控、APP 專屬功能與後端 API 實作。這些只能以依賴、缺口或獨立契約引用。</p>
+<h2 id="2-交付角色與責任">2. 交付角色與責任</h2>
+<table>
+<thead>
+<tr>
+<th>工作流</th>
+<th>負責人</th>
+<th>交付責任</th>
+<th>需要提供的證據</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>規格／SPEC</td>
+<td>Arthur</td>
+<td>需求、流程、資料、驗收、待確認與版本沿革</td>
+<td>Markdown、來源、決策、AC／SC 對照</td>
+</tr>
+<tr>
+<td>Figma／DESIGN</td>
+<td>Nini</td>
+<td>桌機／手機畫面、狀態、流程、元件與 handoff</td>
+<td>Figma page／frame／node、狀態截圖、設計檢查</td>
+</tr>
+<tr>
+<td>Web／Nuxt</td>
+<td>David</td>
+<td>route、page、component、composable、SSG、Mock／API 邊界</td>
+<td>commit、focused check、瀏覽器、generate、部署結果</td>
+</tr>
+<tr>
+<td>QA</td>
+<td>待指定</td>
+<td>獨立驗收、回歸、缺陷分級與環境紀錄</td>
+<td>測試案例、重現步驟、結果與阻塞清單</td>
+</tr>
+</tbody></table>
+<p>QA 目前沒有獨立 Plane 父單；在確認負責人與工作流前，先由各子單的驗收區段與本文件承接 QA 需求。</p>
+<h2 id="3-玩家-user-story-基線">3. 玩家 User Story 基線</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>玩家故事</th>
+<th>主要分冊／流程</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-US-U-13-01</code></td>
+<td>作為訪客，我想先瀏覽官網活動、排行榜與教學，再決定是否登入。</td>
+<td><code>WEB-SPEC-02</code>、<code>WEB-SPEC-09</code></td>
+</tr>
+<tr>
+<td><code>WEB-US-U-13-02</code></td>
+<td>作為玩家，我想登入後回到原本想使用的功能，而不是失去導流脈絡。</td>
+<td><code>WEB-SPEC-03</code>、<code>WEB-FLOW-01</code></td>
+</tr>
+<tr>
+<td><code>WEB-US-U-13-03</code></td>
+<td>作為玩家，我想從大廳選擇遊戲與模式，知道遊戲啟動或失敗的原因。</td>
+<td><code>WEB-SPEC-04</code>、<code>WEB-SPEC-05</code>、<code>WEB-FLOW-02</code></td>
+</tr>
+<tr>
+<td><code>WEB-US-U-13-04</code></td>
+<td>作為玩家，我想安全查看錢包、儲值、兌換、贈禮與交易結果。</td>
+<td><code>WEB-SPEC-07</code>、<code>WEB-SPEC-08</code>、<code>WEB-FLOW-03</code></td>
+</tr>
+<tr>
+<td><code>WEB-US-U-13-05</code></td>
+<td>作為玩家，我想完成任務、領取獎勵並在信箱或錢包找到結果。</td>
+<td><code>WEB-SPEC-08</code>、<code>WEB-SPEC-09</code>、<code>WEB-SPEC-11</code>、<code>WEB-FLOW-04</code></td>
+</tr>
+<tr>
+<td><code>WEB-US-U-13-06</code></td>
+<td>作為玩家，我想與其他玩家互動，並能封鎖、檢舉或尋求客服協助。</td>
+<td><code>WEB-SPEC-10</code>、<code>WEB-FLOW-05</code></td>
+</tr>
+<tr>
+<td><code>WEB-US-U-13-07</code></td>
+<td>作為玩家，我想在手機與桌機使用相同核心流程，並安全登出。</td>
+<td><code>WEB-SPEC-04</code>、<code>WEB-SPEC-11</code>、<code>WEB-FLOW-06</code></td>
+</tr>
+</tbody></table>
+<h2 id="4-玩家情境與情境分支">4. 玩家情境與情境分支</h2>
+<table>
+<thead>
+<tr>
+<th>SC ID</th>
+<th>情境</th>
+<th>成功分支</th>
+<th>失敗／邊界分支</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-SC-13-01</code></td>
+<td>公開頁進入受保護功能</td>
+<td>登入後返回原目的地</td>
+<td>關閉登入、登入失敗、session 過期</td>
+</tr>
+<tr>
+<td><code>WEB-SC-13-02</code></td>
+<td>大廳啟動遊戲</td>
+<td>Demo／Real 進入合法遊戲視圖</td>
+<td>未登入、Age Gate、無效遊戲、啟動失敗</td>
+</tr>
+<tr>
+<td><code>WEB-SC-13-03</code></td>
+<td>財務與贈禮</td>
+<td>預覽、確認、結果、交易紀錄</td>
+<td>餘額不足、超額、重複、取消、逾期</td>
+</tr>
+<tr>
+<td><code>WEB-SC-13-04</code></td>
+<td>任務／獎勵／信箱</td>
+<td>領取一次並可讀回</td>
+<td>過期、已領、API 失敗、部分資料未載入</td>
+</tr>
+<tr>
+<td><code>WEB-SC-13-05</code></td>
+<td>聊天／檢舉／客服</td>
+<td>案件或對話可追蹤</td>
+<td>封鎖、案件上限、空訊息、案件結案</td>
+</tr>
+<tr>
+<td><code>WEB-SC-13-06</code></td>
+<td>深連結與響應式</td>
+<td>query／layout／狀態一致</td>
+<td>非法 query、重新整理、手機 overlay</td>
+</tr>
+<tr>
+<td><code>WEB-SC-13-07</code></td>
+<td>登出與再次登入</td>
+<td>前端 session 清除並回官網</td>
+<td>未確認登出、清理不完整、錯誤帳戶殘留</td>
+</tr>
+</tbody></table>
+<h2 id="5-整體驗收條件">5. 整體驗收條件</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>整體條件</th>
+<th>證據層級</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>WEB-AC-13-01</code></td>
+<td>13 個 Web 功能單元均有對應規格、設計與 Nuxt 工作單，且三組尾碼映射一致。</td>
+<td>文件／Plane readback</td>
+</tr>
+<tr>
+<td><code>WEB-AC-13-02</code></td>
+<td>公開頁與大廳的 route、layout、登入邊界、返回與 query 行為有可追溯流程。</td>
+<td>文件／原型／瀏覽器</td>
+</tr>
+<tr>
+<td><code>WEB-AC-13-03</code></td>
+<td>玩家核心流程具備成功、空資料、載入、失敗、停用、權限不足與取消狀態。</td>
+<td>Figma／瀏覽器</td>
+</tr>
+<tr>
+<td><code>WEB-AC-13-04</code></td>
+<td>錢包、獎勵、贈禮、信箱附件與交易紀錄的 Mock 互動不產生無聲假成功；正式服務缺口明確標記。</td>
+<td>原型／API gap</td>
+</tr>
+<tr>
+<td><code>WEB-AC-13-05</code></td>
+<td>桌機與手機版的主要流程可操作，且沒有已知的 SSG hydration 破壞互動。</td>
+<td>瀏覽器／SSG</td>
+</tr>
+<tr>
+<td><code>WEB-AC-13-06</code></td>
+<td>Nuxt 靜態輸出可產生、<code>docs/.nojekyll</code> 存在、baseURL 正確，部署證據與本機 generate 分開記錄。</td>
+<td>SSG／部署</td>
+</tr>
+<tr>
+<td><code>WEB-AC-13-07</code></td>
+<td>工作單、規格、Figma、Nuxt、截圖、API 缺口與版本 commit 可以互相追溯。</td>
+<td>Handoff／Git／Plane</td>
+</tr>
+</tbody></table>
+<h2 id="6-文件與規格驗收">6. 文件與規格驗收</h2>
+<p>文件層需要檢查：</p>
+<ul>
+<li><code>00-overview.md</code>、<code>WEB_SPEC_RULES.md</code>、<code>web-02</code>～<code>web-13</code> 的相對連結、標題、錨點、表格與工作單映射。</li>
+<li><code>web-02</code>～<code>web-11</code> 各保留 17 個編號節點，並涵蓋玩家、開發、QA、資料、驗收、待確認與交付責任。</li>
+<li><code>WEB-FLOW</code>、<code>WEB-SC</code>、<code>WEB-AC</code> 不與 APP 的同名 ID 混用；Plane 實際單號與規格 ID 分開。</li>
+<li>所有 <code>目前 Web 原型</code>、<code>已確認規則</code>、<code>待確認</code> 與 <code>驗證證據</code> 不得混寫。</li>
+<li>來源引用若指向舊 handoff、舊截圖或舊 API 快照，需標示日期與可能過期的範圍。</li>
+</ul>
+<p>目前只證明文件結構與內容初版完成；HTML 產生與連結視覺檢查仍是後續交付步驟。</p>
+<h2 id="7-figma-整體驗收">7. Figma 整體驗收</h2>
+<p>Figma 交付需確認：</p>
+<ol>
+<li>官網公開頁與 lobby layout 的桌機／手機 frame 均可定位。</li>
+<li>13 個功能單元至少有入口、主要成功流程與關鍵錯誤／空狀態；跨頁 flow 有起點、目的地與返回。</li>
+<li>會員、財務、獎勵、贈禮、客服、信箱等資產／敏感功能明確標示登入、資格與不可操作狀態。</li>
+<li>所有元件與 token 能交給 Nuxt 實作，並記錄 page、frame、component、node ID；目前尚未填正式 Figma node。</li>
+<li>Figma 顯示的幣別、獎勵卡、贈禮費率與活動值須先通過規則確認，不以舊 APP 數值自行定案。</li>
+</ol>
+<h2 id="8-nuxt-focused-check-與程式驗收">8. Nuxt focused check 與程式驗收</h2>
+<p>目前 <code>package.json</code> 沒有獨立 <code>test</code> 或 <code>typecheck</code> script，因此不能把不存在的命令回報為通過。可依實際變更範圍執行並記錄：</p>
+<pre><code class="language-bash"># 文件／工作樹格式
+git diff --check
+
+# Nuxt 編譯與 SSG（依 AGENTS.md 使用完整 npm PATH）
+PATH=&quot;/opt/homebrew/opt/node/bin:$PATH&quot; npm run build
+PATH=&quot;/opt/homebrew/opt/node/bin:$PATH&quot; npm run generate
+
+# 文件 HTML 產生（後續階段執行）
+PATH=&quot;/opt/homebrew/opt/node/bin:$PATH&quot; node specs/spec-book/build-html.mjs
+</code></pre>
+<p>若測試或 generate 失敗，需記錄完整命令、退出碼、環境、錯誤與是否為既有問題；不能用「有執行」取代「已通過」。<code>docs/</code> 是 generated output，不應手動 commit。</p>
+<h2 id="9-瀏覽器與響應式驗收">9. 瀏覽器與響應式驗收</h2>
+<table>
+<thead>
+<tr>
+<th>視角</th>
+<th>最少覆蓋</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>桌機</td>
+<td>公開首頁、登入／註冊、lobby、遊戲啟動、銀行／贈禮、會員、聊天／客服、信箱／設定</td>
+</tr>
+<tr>
+<td>手機</td>
+<td>公開首頁、底部導覽、Age Gate、登入、遊戲啟動、會員 tab、財務表單、聊天頻道、信箱詳情 overlay</td>
+</tr>
+<tr>
+<td>深連結</td>
+<td><code>/lobby?game=&amp;mode=</code>、<code>member?tab=</code>、<code>vault?tab=transfer&amp;receiverId=</code>、<code>chat?channel=</code></td>
+</tr>
+<tr>
+<td>回歸</td>
+<td>Modal 開關、Teleport、hydration、localStorage 初始化、登出後狀態清理</td>
+</tr>
+</tbody></table>
+<p>瀏覽器證據需包含 viewport、路由、操作步驟、預期／實際結果、console error、截圖與是否使用 Mock。既有 <code>capture.mjs</code> 的 84 張畫面是畫面索引證據，不自動等同完整跨頁流程驗收。</p>
+<h2 id="10-ssg-部署與正式服務分層">10. SSG、部署與正式服務分層</h2>
+<table>
+<thead>
+<tr>
+<th>層級</th>
+<th>通過代表</th>
+<th>不代表</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Markdown</td>
+<td>文件結構與內容可讀</td>
+<td>UI 或服務可操作</td>
+</tr>
+<tr>
+<td>HTML</td>
+<td>文件可被產生與閱讀</td>
+<td>Nuxt route、API 或 Figma 完成</td>
+</tr>
+<tr>
+<td>Nuxt build／generate</td>
+<td>靜態 bundle／HTML 可產生</td>
+<td>GitHub Pages CDN 已更新、帳務完成</td>
+</tr>
+<tr>
+<td>本機瀏覽器</td>
+<td>指定環境的 Mock 互動可操作</td>
+<td>正式資料、支付、WebSocket 或跨裝置</td>
+</tr>
+<tr>
+<td>GitHub Pages</td>
+<td>指定 commit 的部署可讀</td>
+<td>未覆蓋瀏覽器、API、支付與帳務情境</td>
+</tr>
+<tr>
+<td>正式服務</td>
+<td>指定 API／環境的實際結果</td>
+<td>未測試環境、回歸範圍與其他平台</td>
+</tr>
+</tbody></table>
+<p>GitHub Actions 由 push to <code>main</code> 觸發 generate 與 Pages 部署；部署 URL 為 <code>https://cooperfu615-desinger.github.io/Yota_Website_Nuxt/</code>。本機 generate 成功與 Actions／Pages 完成必須分開回報。</p>
+<h2 id="11-3-父單-39-子單完整映射">11. 3 父單＋39 子單完整映射</h2>
+<h3 id="父單">父單</h3>
+<table>
+<thead>
+<tr>
+<th>工作流</th>
+<th>Plane 父單</th>
+<th>負責人</th>
+<th>子單範圍</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>規格</td>
+<td><code>YOTAPLATFO-444</code></td>
+<td>Arthur</td>
+<td><code>YOTAPLATFO-447</code>～<code>YOTAPLATFO-459</code></td>
+</tr>
+<tr>
+<td>Figma</td>
+<td><code>YOTAPLATFO-445</code></td>
+<td>Nini</td>
+<td><code>YOTAPLATFO-460</code>～<code>YOTAPLATFO-472</code></td>
+</tr>
+<tr>
+<td>Nuxt</td>
+<td><code>YOTAPLATFO-446</code></td>
+<td>David</td>
+<td><code>YOTAPLATFO-473</code>～<code>YOTAPLATFO-485</code></td>
+</tr>
+</tbody></table>
+<h3 id="子單三方映射">子單三方映射</h3>
+<table>
+<thead>
+<tr>
+<th>WEB 功能</th>
+<th>SPEC</th>
+<th>DESIGN</th>
+<th>FE／Nuxt</th>
+<th>規格來源</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>01 核心架構、SSG 與共用導覽</td>
+<td><code>447</code></td>
+<td><code>460</code></td>
+<td><code>473</code></td>
+<td><code>00-overview.md</code>、<code>20-frontend.md</code></td>
+</tr>
+<tr>
+<td>02 官網首頁、內容與公開頁</td>
+<td><code>448</code></td>
+<td><code>461</code></td>
+<td><code>474</code></td>
+<td><code>web-02-public-site.md</code></td>
+</tr>
+<tr>
+<td>03 登入、註冊與年齡驗證</td>
+<td><code>449</code></td>
+<td><code>462</code></td>
+<td><code>475</code></td>
+<td><code>web-03-authentication.md</code></td>
+</tr>
+<tr>
+<td>04 遊戲大廳與導覽</td>
+<td><code>450</code></td>
+<td><code>463</code></td>
+<td><code>476</code></td>
+<td><code>web-04-lobby-navigation.md</code></td>
+</tr>
+<tr>
+<td>05 遊戲進入、模式與返回</td>
+<td><code>451</code></td>
+<td><code>464</code></td>
+<td><code>477</code></td>
+<td><code>web-05-game-session.md</code></td>
+</tr>
+<tr>
+<td>06 個人資訊、VIP 與會員功能</td>
+<td><code>452</code></td>
+<td><code>465</code></td>
+<td><code>478</code></td>
+<td><code>web-06-member.md</code></td>
+</tr>
+<tr>
+<td>07 錢包、銀行與交易</td>
+<td><code>453</code></td>
+<td><code>466</code></td>
+<td><code>479</code></td>
+<td><code>web-07-finance.md</code></td>
+</tr>
+<tr>
+<td>08 獎勵卡、優惠碼與贈禮</td>
+<td><code>454</code></td>
+<td><code>467</code></td>
+<td><code>480</code></td>
+<td><code>web-08-rewards-promotions-gifts.md</code></td>
+</tr>
+<tr>
+<td>09 每日任務、活動、排行榜與教學</td>
+<td><code>455</code></td>
+<td><code>468</code></td>
+<td><code>481</code></td>
+<td><code>web-09-tasks-events-rankings-tutorial.md</code></td>
+</tr>
+<tr>
+<td>10 社交互動、聊天與客服</td>
+<td><code>456</code></td>
+<td><code>469</code></td>
+<td><code>482</code></td>
+<td><code>web-10-social-support.md</code></td>
+</tr>
+<tr>
+<td>11 信箱、通知與設定</td>
+<td><code>457</code></td>
+<td><code>470</code></td>
+<td><code>483</code></td>
+<td><code>web-11-inbox-settings.md</code></td>
+</tr>
+<tr>
+<td>12 跨頁整合與流程</td>
+<td><code>458</code></td>
+<td><code>471</code></td>
+<td><code>484</code></td>
+<td><code>web-12-cross-page-integration.md</code></td>
+</tr>
+<tr>
+<td>13 驗收、部署與玩家情境</td>
+<td><code>459</code></td>
+<td><code>472</code></td>
+<td><code>485</code></td>
+<td><code>web-13-acceptance-delivery.md</code></td>
+</tr>
+</tbody></table>
+<p>完整 Plane identifier 為 <code>YOTAPLATFO-</code> 加上表內數字；三組子單使用同一功能尾碼，不新增或重複建立工作單。</p>
+<h2 id="12-handoff-交付包">12. Handoff 交付包</h2>
+<p>規格交付包至少包含：<code>specs/spec-book/</code> Markdown、HTML 產物、畫面索引與截圖 manifest、API inventory／gap、決策／待確認清單、Plane 工作單回讀結果與版本 commit。</p>
+<p>Figma 交付包需包含實際檔案連結、page／frame／component／node ID、桌機／手機狀態與設計 token。Nuxt 交付包需包含 source commit、變更檔案、focused check、build／generate、瀏覽器／部署結果與已知限制。</p>
+<p>每次 handoff 都要列出：實際讀過的來源、已完成範圍、未完成範圍、目前工作樹／分支、驗證命令與退出碼、外部服務狀態，以及明確停止點。</p>
+<h2 id="13-阻塞項與退出條件">13. 阻塞項與退出條件</h2>
+<p>以下任一項未解決時，只能標為「文件／原型交付」，不可標為「正式完成」：</p>
+<ul>
+<li>獎勵卡第 10／15／20 天正式幣別與型態未封存。</li>
+<li>Real 遊戲 launch、餘額、結算與斷線契約未定義。</li>
+<li>儲值、錢包、贈禮、獎勵與信箱附件未有正式原子性／冪等／稽核來源。</li>
+<li>WebSocket、客服後台、檢舉、好友與黑名單正式服務未完成。</li>
+<li>Plane 描述回填、Figma node 與部署驗證尚未提供證據。</li>
+</ul>
+<h2 id="14-版本沿革與目前-git-基線">14. 版本沿革與目前 Git 基線</h2>
+<table>
+<thead>
+<tr>
+<th>版本／commit</th>
+<th>內容</th>
+<th>狀態</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>c4b8bf9</code></td>
+<td>Web 規格書 Phase 1 基線與撰寫規則</td>
+<td>已推送至 <code>origin/main</code></td>
+</tr>
+<tr>
+<td><code>12f35c1</code></td>
+<td>10 份 Web 功能分冊與總綱索引</td>
+<td>已推送至 <code>origin/main</code></td>
+</tr>
+<tr>
+<td>Phase 3 初版</td>
+<td><code>web-12</code>、<code>web-13</code> 跨頁與整體驗收文件</td>
+<td>已完成並納入 Web HTML 閱讀版</td>
+</tr>
+<tr>
+<td>Phase 4 初版</td>
+<td><code>build-html.mjs</code>、<code>index.html</code></td>
+<td>Web 規格分頁已產生；待後續工作單回填／提交</td>
+</tr>
+</tbody></table>
+<p>本文件不把工作區其他既有 dirty／untracked 檔案視為 Web 規格交付內容；commit 時必須以明確檔案清單暫存，避免混入無關變更。</p>
+<h2 id="15-開放問題與待後續階段">15. 開放問題與待後續階段</h2>
+<p>待後續階段處理：建立完整 Markdown／HTML／anchor／link 檢查；補回 <code>WEB_WORK_ORDER_BATCH_v1.md</code> 的文件段落與證據；依確認結果回填 Plane 3 父單＋39 子單描述；必要時再補瀏覽器、SSG 與 Pages 證據。</p>
+<p>產品待確認仍集中在 auth／遊戲／財務／獎勵卡／贈禮／社交／通知等功能分冊已列出的 <code>WEB-Q</code>，不得因本文件列出驗收流程就視為已拍板。</p>
+<h2 id="16-整體交付檢查表">16. 整體交付檢查表</h2>
+<ul>
+<li><input disabled="" type="checkbox"> <code>web-02</code>～<code>web-13</code> 的連結、標題、ID、工作單映射與來源通過文件檢查。</li>
+<li><input disabled="" type="checkbox"> 13 個功能單元的 SPEC／DESIGN／FE 三方工作單完整回讀，沒有重複或漏單。</li>
+<li><input disabled="" type="checkbox"> <code>WEB-FLOW</code>、<code>WEB-SC</code>、<code>WEB-AC</code> 與功能分冊互相引用，並標記目前原型／待確認邊界。</li>
+<li><input disabled="" type="checkbox"> Figma 已補實際 page、frame、component、node 與桌機／手機狀態。</li>
+<li><input disabled="" type="checkbox"> Nuxt focused checks、build、generate、瀏覽器與響應式證據已記錄退出碼與環境。</li>
+<li><input disabled="" type="checkbox"> HTML／索引／截圖／API／Plane 回寫完成後，才進入正式交付審核。</li>
+</ul>
+</section>
 <section class="tab-panel" data-panel="frontend"><h1>巨亨ONLINE 規格書 — 前端冊</h1>
 <ul>
 <li>建立日期：2026-07-30</li>
@@ -1343,6 +6254,7 @@ expireGiftRequests(currentPlayerId, now) → 主動掃描 pending 且逾時的�
 </tr>
 </tbody></table>
 <p>卡片狀態機：<code>inactive → active → (paused) → converted</code>。轉換演算 <code>calculateRewardCardConversion</code>：<code>converted = min(現有餘額, conversionLimit)</code>，其餘記為 <code>recoveredAmount</code>（回收）。三方一致 ✅。</p>
+<p>獎勵卡合併規則：至少選取兩張、張數不設上限；只有未啟用或已停用且距離到期超過 72 小時的卡片可合併，最後 72 小時內不可合併但仍可啟用。起始餘額紀錄、目前餘額、目標流水、已達成流水與轉換上限直接加總，不重新換算流水倍數，因此合併後流水比例可能改變；合併後結束日期採選取卡片中的最早到期日。新卡為未啟用狀態，來源卡標記為已合併並保留來源關係，合併卡可再次參與合併。</p>
 <p>🔴 <strong>流水累積目前是假機制</strong>：<code>GameView.vue</code> 內有「完成流水」測試按鈕直接把某張卡的 <code>totalTurnover</code> 打滿，APP 同樣靠測試鈕。營運後台原型雖有 <code>AssetLog.valid_turnover</code>／<code>remain_target</code> 欄位，但這不代表後端機制已完成。有效流水須由 Gordan × Hulk 依獎勵卡、Provider 的 BET／Cancel／Refund／Rollback 與冪等規則共同定義，前端只顯示後端產出的累積值。</p>
 <p>⚠️ 命名：文件稱「禮物 Gifts」、UI 稱「獎勵卡」、後台稱 <code>BonusCard</code>，路由是 <code>/lobby/gifts</code> 但元件是 <code>RewardCardContent.vue</code>。建議串接前先統一命名（不影響邏輯，純粹避免溝通成本），本冊不代做決定。</p>
 <hr>

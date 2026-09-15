@@ -8,7 +8,7 @@
 
 本分冊把 Web 規格書、Figma、Nuxt 原型、文件 HTML、瀏覽器操作、Nuxt SSG、Git、Plane 與正式服務拆成不同驗收層級。每個「通過」都必須說明它證明的是哪一層，不得用 Markdown 通過推論瀏覽器可操作，也不得用本機 Mock 通過推論正式帳務完成。
 
-目前已完成：Web 規格總綱、10 份功能分冊、跨頁整合初版與既有 Plane 3＋39 工作單映射。待後續完成：HTML 索引同步、工作單描述回填、Plane 頁面同步與實際各環境驗收。
+目前已完成：Web 規格總綱、10 份功能分冊、跨頁整合初版、Web HTML 閱讀分頁與既有 Plane 3＋39 工作單映射。待後續完成：工作單描述回填、Plane 頁面同步與實際各環境驗收。
 
 ## 1. 交付範圍與不在範圍
 
@@ -180,7 +180,7 @@ Figma 交付包需包含實際檔案連結、page／frame／component／node ID�
 - Real 遊戲 launch、餘額、結算與斷線契約未定義。
 - 儲值、錢包、贈禮、獎勵與信箱附件未有正式原子性／冪等／稽核來源。
 - WebSocket、客服後台、檢舉、好友與黑名單正式服務未完成。
-- HTML 索引、Plane 描述回填、Figma node 與部署驗證尚未提供證據。
+- Plane 描述回填、Figma node 與部署驗證尚未提供證據。
 
 ## 14. 版本沿革與目前 Git 基線
 
@@ -188,13 +188,14 @@ Figma 交付包需包含實際檔案連結、page／frame／component／node ID�
 |---|---|---|
 | `c4b8bf9` | Web 規格書 Phase 1 基線與撰寫規則 | 已推送至 `origin/main` |
 | `12f35c1` | 10 份 Web 功能分冊與總綱索引 | 已推送至 `origin/main` |
-| Phase 3 初版 | `web-12`、`web-13` 跨頁與整體驗收文件 | 本階段文件變更，待後續檢查／提交 |
+| Phase 3 初版 | `web-12`、`web-13` 跨頁與整體驗收文件 | 已完成並納入 Web HTML 閱讀版 |
+| Phase 4 初版 | `build-html.mjs`、`index.html` | Web 規格分頁已產生；待後續工作單回填／提交 |
 
 本文件不把工作區其他既有 dirty／untracked 檔案視為 Web 規格交付內容；commit 時必須以明確檔案清單暫存，避免混入無關變更。
 
 ## 15. 開放問題與待後續階段
 
-待後續階段處理：更新 `specs/spec-book/build-html.mjs` 與 `index.html` 以納入 Web 功能分冊；建立完整 Markdown／HTML／anchor／link 檢查；補回 `WEB_WORK_ORDER_BATCH_v1.md` 的文件段落與證據；依確認結果回填 Plane 3 父單＋39 子單描述；必要時再補瀏覽器、SSG 與 Pages 證據。
+待後續階段處理：建立完整 Markdown／HTML／anchor／link 檢查；補回 `WEB_WORK_ORDER_BATCH_v1.md` 的文件段落與證據；依確認結果回填 Plane 3 父單＋39 子單描述；必要時再補瀏覽器、SSG 與 Pages 證據。
 
 產品待確認仍集中在 auth／遊戲／財務／獎勵卡／贈禮／社交／通知等功能分冊已列出的 `WEB-Q`，不得因本文件列出驗收流程就視為已拍板。
 
