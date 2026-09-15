@@ -4,6 +4,21 @@
 - 受眾：美術、前端、後端 —— 用來搭配各自的原型做規格確認與比對
 - 本書地位：**主幹＋畫面索引總表**。三方比對的詳細內容仍以 `specs/2026-07-29-*.md` 四份文件為準，本書負責把「畫面長什麼樣」跟「文字比對結果」接起來，讓三種受眾能從同一個編號找到同一件事。
 
+> **Web 規格書重整基線（Phase 1｜2026-09-15）**：本書現階段作為 Web 專屬規格書的總綱與既有內容入口，後續將沿用 APP 的「總綱／功能分冊／跨頁流程／整體驗收」方法，但內容只以 Web／Nuxt 為準。撰寫規則與章節骨架見 [`WEB_SPEC_RULES.md`](WEB_SPEC_RULES.md)。目前 `20-frontend.md` 尚未拆成實際功能分冊；本段不代表分冊已完成。
+
+## 0. Web 規格書重整基線
+
+| 層級 | 目前文件／預定文件 | 責任 | 狀態 |
+|---|---|---|---|
+| 總綱 | `00-overview.md` | Web 產品範圍、共用架構、畫面索引、工作單索引與驗證邊界 | 本階段維護入口 |
+| 規則 | [`WEB_SPEC_RULES.md`](WEB_SPEC_RULES.md) | 來源優先順序、章節格式、ID、驗收邊界與 Plane 對照 | Phase 1 已建立 |
+| 功能分冊 | `web-02-*.md`～`web-11-*.md` | 10 個 Web 功能單元；套用 APP 17 節格式 | 下一階段建立 |
+| 跨頁整合 | `web-12-cross-page-integration.md` | Web FLOW、資料交接、保存、API／Mock 與狀態 | 下一階段建立 |
+| 整體交付 | `web-13-acceptance-delivery.md` | Web AC、US／SC、文件、瀏覽器、SSG、部署與 handoff | 下一階段建立 |
+| 技術參考 | `20-frontend.md`、`30-backend.md`、`10-art.md` | 既有前端、後端與美術內容；分冊完成前保留作遷移與參照 | 既有文件 |
+
+本 Web 規格書對應既有 Plane 交付基線：規格父單 `YOTAPLATFO-444`、Figma 父單 `YOTAPLATFO-445`、Nuxt 父單 `YOTAPLATFO-446`；13 個功能單元的三條工作流維持既有 `YOTAPLATFO-447`～`YOTAPLATFO-485`，不因文件拆分新增或重開工作單。
+
 ---
 
 ## 1. 系統範圍與三方關係
