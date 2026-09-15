@@ -4,7 +4,7 @@
 - 受眾：美術、前端、後端 —— 用來搭配各自的原型做規格確認與比對
 - 本書地位：**主幹＋畫面索引總表**。三方比對的詳細內容仍以 `specs/2026-07-29-*.md` 四份文件為準，本書負責把「畫面長什麼樣」跟「文字比對結果」接起來，讓三種受眾能從同一個編號找到同一件事。
 
-> **Web 規格書重整基線（Phase 1｜2026-09-15）**：本書現階段作為 Web 專屬規格書的總綱與既有內容入口，後續將沿用 APP 的「總綱／功能分冊／跨頁流程／整體驗收」方法，但內容只以 Web／Nuxt 為準。撰寫規則與章節骨架見 [`WEB_SPEC_RULES.md`](WEB_SPEC_RULES.md)。目前 `20-frontend.md` 尚未拆成實際功能分冊；本段不代表分冊已完成。
+> **Web 規格書重整基線（Phase 2｜2026-09-15）**：本書作為 Web 專屬規格書的總綱與既有內容入口，沿用 APP 的「總綱／功能分冊／跨頁流程／整體驗收」方法，但內容只以 Web／Nuxt 為準。撰寫規則與章節骨架見 [`WEB_SPEC_RULES.md`](WEB_SPEC_RULES.md)。10 個功能分冊已建立 Phase 2 初版；跨頁整合、整體驗收與 HTML 索引仍待後續階段。
 
 ## 0. Web 規格書重整基線
 
@@ -12,12 +12,27 @@
 |---|---|---|---|
 | 總綱 | `00-overview.md` | Web 產品範圍、共用架構、畫面索引、工作單索引與驗證邊界 | 本階段維護入口 |
 | 規則 | [`WEB_SPEC_RULES.md`](WEB_SPEC_RULES.md) | 來源優先順序、章節格式、ID、驗收邊界與 Plane 對照 | Phase 1 已建立 |
-| 功能分冊 | `web-02-*.md`～`web-11-*.md` | 10 個 Web 功能單元；套用 APP 17 節格式 | 下一階段建立 |
-| 跨頁整合 | `web-12-cross-page-integration.md` | Web FLOW、資料交接、保存、API／Mock 與狀態 | 下一階段建立 |
-| 整體交付 | `web-13-acceptance-delivery.md` | Web AC、US／SC、文件、瀏覽器、SSG、部署與 handoff | 下一階段建立 |
+| 功能分冊 | `web-02-*.md`～`web-11-*.md` | 10 個 Web 功能單元；套用 APP 17 節格式 | Phase 2 初版已建立 |
+| 跨頁整合 | `web-12-cross-page-integration.md` | Web FLOW、資料交接、保存、API／Mock 與狀態 | 後續階段 |
+| 整體交付 | `web-13-acceptance-delivery.md` | Web AC、US／SC、文件、瀏覽器、SSG、部署與 handoff | 後續階段 |
 | 技術參考 | `20-frontend.md`、`30-backend.md`、`10-art.md` | 既有前端、後端與美術內容；分冊完成前保留作遷移與參照 | 既有文件 |
 
 本 Web 規格書對應既有 Plane 交付基線：規格父單 `YOTAPLATFO-444`、Figma 父單 `YOTAPLATFO-445`、Nuxt 父單 `YOTAPLATFO-446`；13 個功能單元的三條工作流維持既有 `YOTAPLATFO-447`～`YOTAPLATFO-485`，不因文件拆分新增或重開工作單。
+
+### 0.1 Phase 2 功能分冊索引
+
+| 規格單元 | 文件 |
+|---|---|
+| WEB-SPEC-02 官網公開頁 | [`web-02-public-site.md`](web-02-public-site.md) |
+| WEB-SPEC-03 登入、註冊與年齡驗證 | [`web-03-authentication.md`](web-03-authentication.md) |
+| WEB-SPEC-04 遊戲大廳與共用導覽 | [`web-04-lobby-navigation.md`](web-04-lobby-navigation.md) |
+| WEB-SPEC-05 遊戲進入、模式與返回 | [`web-05-game-session.md`](web-05-game-session.md) |
+| WEB-SPEC-06 個人資訊、VIP 與會員 | [`web-06-member.md`](web-06-member.md) |
+| WEB-SPEC-07 錢包、銀行與交易 | [`web-07-finance.md`](web-07-finance.md) |
+| WEB-SPEC-08 獎勵卡、優惠碼與贈禮 | [`web-08-rewards-promotions-gifts.md`](web-08-rewards-promotions-gifts.md) |
+| WEB-SPEC-09 每日任務、活動、排行榜與教學 | [`web-09-tasks-events-rankings-tutorial.md`](web-09-tasks-events-rankings-tutorial.md) |
+| WEB-SPEC-10 社交互動、聊天與客服 | [`web-10-social-support.md`](web-10-social-support.md) |
+| WEB-SPEC-11 信箱、通知與設定 | [`web-11-inbox-settings.md`](web-11-inbox-settings.md) |
 
 ---
 
