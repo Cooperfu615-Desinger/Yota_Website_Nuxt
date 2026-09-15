@@ -1,0 +1,29 @@
+stages:
+  - deploy
+
+default:
+  image: node:22-alpine
+  interruptible: true
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - .npm/
+  before_script:
+    - npm ci --cache .npm --prefer-offline
+
+variables:
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+
+pages:
+  stage: deploy
+  script:
+    - npm run generate
+    - mv docs public
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - when: never

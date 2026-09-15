@@ -1,3 +1,9 @@
+import process from 'node:process'
+
+const siteBaseURL = process.env.GITLAB_CI === 'true'
+  ? '/'
+  : '/Yota_Website_Nuxt/'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
@@ -31,8 +37,8 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   app: {
-    // GitHub Pages 子路徑：https://xxx.github.io/Yota_Website_Nuxt/
-    baseURL: '/Yota_Website_Nuxt/',
+    // GitLab Pages uses a unique root domain; GitHub Pages uses a subpath.
+    baseURL: siteBaseURL,
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no',
@@ -45,9 +51,6 @@ export default defineNuxtConfig({
         { name: 'format-detection', content: 'telephone=no' },
         // Robots — update to index, follow when ready for production
         { name: 'robots', content: 'noindex, nofollow' },
-      ],
-      link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       ],
     },
   },
