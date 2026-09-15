@@ -20,10 +20,8 @@ pages:
   stage: deploy
   script:
     - npm run generate
-    - mv docs public
-  artifacts:
-    paths:
-      - public
+  pages:
+    publish: docs
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
     - when: never
