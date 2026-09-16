@@ -10,14 +10,14 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "nuxt": "^3.13.0",
-    "vue": "^3.4.0",
-    "vue-router": "^4.3.0"
+    "nuxt": "^3.21.11",
+    "vue": "^3.5.42",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@nuxtjs/google-fonts": "^3.2.0",
-    "@nuxtjs/tailwindcss": "^6.12.0",
-    "marked": "^18.0.7",
-    "playwright": "^1.62.0"
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "marked": "^18.0.13",
+    "playwright": "^1.63.0"
   }
 }
