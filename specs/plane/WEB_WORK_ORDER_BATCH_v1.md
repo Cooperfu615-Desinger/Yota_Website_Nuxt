@@ -613,3 +613,12 @@ Nuxt：
 
 - Plane Pages 與 Page attachment 已完成，但屬外部 Plane 狀態；本次新增的 Page UUID／mapping 紀錄已回寫本檔。
 - 本節回寫尚未自動 stage、commit 或 push；既有 working tree 修改與未追蹤檔案仍保留，後續需另行確認 Git 交付範圍。
+
+### 14.6 原有 `relates to` 最終 readback（2026-09-16）
+
+- 以 `list_work_item_relations` 唯讀回讀本批 42 張 Web 工作單，42/42 成功，沒有 relation API 錯誤。
+- Plane 回傳的 `relates_to` 項目共 90 筆；將雙向回傳正規化為唯一工作單邊後為 51 個關聯，與原批次紀錄一致。
+- Web 內部三方關聯為 39 個：每個 WEB-01～WEB-13 均完整具備 SPEC↔DESIGN、SPEC↔FE、DESIGN↔FE；預期 39、實際 39，遺漏 0、非預期 0。
+- 既有外部參照為 12 個，保留原有前台 API 與已確認 APP 設計參照；未新增或移除外部工作單關聯。
+- `blocking`、`blocked_by`、`duplicate`、`start_after`、`start_before`、`finish_after`、`finish_before` 均為 0。
+- 本次只做 relation readback，未呼叫建立或移除 relation 的操作；Pages 建立與 Page attachment 沒有改動原有 51 個 `relates to`。
