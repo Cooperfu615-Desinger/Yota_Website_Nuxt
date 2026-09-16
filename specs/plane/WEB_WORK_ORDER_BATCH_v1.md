@@ -543,7 +543,7 @@ Nuxt：
 - 3 張父單與 39 張子單的標題、父單 UUID、指派者、標籤、狀態、優先級、描述與 `is_draft=false` 均驗證通過。
 - 9 個模組的總數與本批新增掛載數均符合預期。
 - 本批未修改 APP `YOTAPLATFO-402`～`YOTAPLATFO-443` 的工作單內容；只對已確認範圍的 APP 設計單建立 `relates to`。
-- 本次只更新本檔的批次紀錄，未 commit／push；專案既有 working tree 修改與未追蹤檔案均保留。
+- 截至建立結果紀錄撰寫時，本批次紀錄尚未 commit／push；後續 Git 交付狀態以本檔最新章節為準。
 
 ### 13.5 Plane 描述回填與二次 Full readback（2026-09-15）
 
@@ -558,4 +558,58 @@ Nuxt：
 - Plane 回傳 42 張，序號連續 `YOTAPLATFO-444`～`YOTAPLATFO-485`；遺漏 0、重複 0。
 - 標題正確 42/42、父子關係正確 42/42、回填標記恰好一次 42/42、`source_key` 正確 42/42。
 - canonical `specs/spec-book/` 與 `specs/plane/WEB_WORK_ORDER_BATCH_v1.md` 路徑存在 42/42；舊 Web `docs/plane` 路徑 0 處；驗證失敗 0。
-- 本次 Plane 描述／標題更新已完成，但尚未因此變更 Git；本檔仍屬目前 working tree 的未追蹤批次紀錄，未自動 stage、commit 或 push。
+- 本次 Plane 描述／標題回填記錄已納入 commit `4832261` 並推送至 `origin/main`；後續 Pages 實作與 Page mapping 另於第 14 節記錄。
+
+## 14. Plane Pages 完整規格書實作與連結（2026-09-16）
+
+### 14.1 Page 結構與內容來源
+
+- 已依 APP Pages 的實際粒度建立 Web 完整文件：1 張規範頁、1 張總綱索引頁、13 張功能規格頁，共 15 張 Web Pages。
+- Page 內文不是工作單摘要；每張 Page 均由本 repository 的完整 Markdown 轉為 HTML 後寫入 Plane，保留原有章節、表格、流程、User Story、驗收與交付內容。
+- WEB-01 使用 `specs/spec-book/20-frontend.md` 作為核心架構／Nuxt／SSG／共用導覽完整內容；總綱頁使用 `00-overview.md` 與 `_index-table.md`；規範頁使用 `WEB_SPEC_RULES.md`。
+- WEB-02～WEB-13 分別使用 `specs/spec-book/web-02-*.md`～`web-13-*.md`；本地 `.md` 仍是 canonical source，Plane Page 是閱讀與工作單連結層。
+- 所有新 Web Pages 使用公開 access、未封存、未鎖定；頁面維持 APP 同樣的頂層 Page 形式，未臆造未確認的巢狀頁面關係。
+
+### 14.2 Web Page 對照表
+
+| Page key | Plane Page 名稱 | Page UUID | repository source | 對應工作單 |
+|---|---|---|---|---|
+| WEB-RULES | `【WEB】【規範】規格書撰寫規範` | `98713d26-853f-4b13-8132-7da0cfc5ff1a` | `WEB_SPEC_RULES.md` | `YOTAPLATFO-444` |
+| WEB-OVERVIEW-00 | `【規格】【WEB】00.官網_總綱與索引` | `7353802e-0466-4cf4-afa8-635453a6fc9a` | `00-overview.md`、`_index-table.md` | `YOTAPLATFO-444`／`445`／`446` |
+| WEB-SPEC-01 | `【WEB】【規格】01.核心架構、SSG 與共用導覽` | `ac23f910-cfbd-4bbc-bb01-2abb5d636ea0` | `20-frontend.md` | `YOTAPLATFO-447`／`460`／`473` |
+| WEB-SPEC-02 | `【WEB】【規格】02.官網首頁、內容與公開頁` | `e77a8edc-4cfb-4eb9-bd1e-da9957b07982` | `web-02-public-site.md` | `YOTAPLATFO-448`／`461`／`474` |
+| WEB-SPEC-03 | `【WEB】【規格】03.登入、註冊與年齡驗證` | `a918bf34-388d-43fa-8a5c-e0eec839c93f` | `web-03-authentication.md` | `YOTAPLATFO-449`／`462`／`475` |
+| WEB-SPEC-04 | `【WEB】【規格】04.遊戲大廳與導覽` | `3b022e1f-9ea1-401f-824f-66334f1d1337` | `web-04-lobby-navigation.md` | `YOTAPLATFO-450`／`463`／`476` |
+| WEB-SPEC-05 | `【WEB】【規格】05.遊戲進入、模式與返回` | `dfb143e2-7b16-4a9f-870b-0bfb768fe8f1` | `web-05-game-session.md` | `YOTAPLATFO-451`／`464`／`477` |
+| WEB-SPEC-06 | `【WEB】【規格】06.個人資訊、VIP 與會員功能` | `e9ed426d-77d0-4551-96df-8240e120304e` | `web-06-member.md` | `YOTAPLATFO-452`／`465`／`478` |
+| WEB-SPEC-07 | `【WEB】【規格】07.錢包、銀行與交易` | `5c3f3d74-ad41-470a-8257-4e0f8ac8db2d` | `web-07-finance.md` | `YOTAPLATFO-453`／`466`／`479` |
+| WEB-SPEC-08 | `【WEB】【規格】08.獎勵卡、優惠碼與贈禮` | `8dde94a1-7ff3-4957-bc6c-9cb0f148e48e` | `web-08-rewards-promotions-gifts.md` | `YOTAPLATFO-454`／`467`／`480` |
+| WEB-SPEC-09 | `【WEB】【規格】09.每日任務、活動、排行榜與教學` | `fd94d80b-e856-47ad-b214-3e76196ab9de` | `web-09-tasks-events-rankings-tutorial.md` | `YOTAPLATFO-455`／`468`／`481` |
+| WEB-SPEC-10 | `【WEB】【規格】10.聊天、玩家互動與客服` | `9206954b-edd1-46b0-9e57-4d107f7e50de` | `web-10-social-support.md` | `YOTAPLATFO-456`／`469`／`482` |
+| WEB-SPEC-11 | `【WEB】【規格】11.信箱、通知與設定` | `00e026ba-565f-418e-9050-241319f1f4a7` | `web-11-inbox-settings.md` | `YOTAPLATFO-457`／`470`／`483` |
+| WEB-SPEC-12 | `【WEB】【規格】12.API 串接、資料狀態與跨頁整合` | `5d481239-36cc-4f25-b556-b23bfbd709b6` | `web-12-cross-page-integration.md` | `YOTAPLATFO-458`／`471`／`484` |
+| WEB-SPEC-13 | `【WEB】【規格】13.驗收、部署與 handoff` | `458336b9-43d4-4356-b09d-3971ce9b0ffe` | `web-13-acceptance-delivery.md` | `YOTAPLATFO-459`／`472`／`485` |
+
+### 14.3 Page ↔ Work Item 連結
+
+- 規範 Page `98713d26-853f-4b13-8132-7da0cfc5ff1a` → `YOTAPLATFO-444`。
+- 總綱 Page `7353802e-0466-4cf4-afa8-635453a6fc9a` → `YOTAPLATFO-444`、`445`、`446`。
+- WEB-01～WEB-13 的各功能 Page，分別連到同功能的 SPEC、DESIGN、FE 三張子單；共 13 × 3 = 39 個連結。
+- Page attachment 合計 43 個：父單／規範 4 個，加上功能子單 39 個。
+- 既有 51 個 `relates to` 工作關聯未修改；Page attachment 是文件連結層，與工作流關聯並存。
+
+### 14.4 Page 與連結 Full readback 證據
+
+- Plane Project Pages 總數由 24 張增加為 39 張；Web Pages 15/15 張均可由精確名稱回讀。
+- 15/15 張 Page 使用正確名稱、`WEB_PAGE_SYNC_20260916` marker、repository source path 與非空完整 HTML 內容；沒有建立重複 Web Page。
+- Page 內容 readback：15/15 成功；內容長度約 9,220～31,173 字元，依頁面完整內容不同而異。
+- 父單與規範 attachment readback：16/16 工作單的預期 Page 集合完全吻合。
+- DESIGN／FE attachment readback：26/26 工作單的預期 Page 集合完全吻合。
+- 合計 42/42 張 Web 工作單均可回讀正確 Page；遺漏 0、錯誤 0、mapping mismatch 0。
+- 本次使用 `list_pages({ project_id })` 的無 `params` 形式；帶入 plain object `params` 會觸發 Plane MCP 的 `model_dump` 錯誤，後續查詢需先檢查 `isError`，不可將錯誤回應 fallback 成空清單。
+- 本階段未修改 APP Pages 內容、APP 工作單內容或既有 `relates to` 關聯。
+
+### 14.5 Git 同步狀態
+
+- Plane Pages 與 Page attachment 已完成，但屬外部 Plane 狀態；本次新增的 Page UUID／mapping 紀錄已回寫本檔。
+- 本節回寫尚未自動 stage、commit 或 push；既有 working tree 修改與未追蹤檔案仍保留，後續需另行確認 Git 交付範圍。
