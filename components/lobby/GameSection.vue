@@ -4,10 +4,12 @@ import type { GameItem } from '~/data/siteContent'
 defineProps<{
   title: string
   games: GameItem[]
+  favoriteKeys?: string[]
 }>()
 
 const emit = defineEmits<{
   viewAll: []
+  toggleFavorite: [key: string]
   play: [key: string, mode: 'real' | 'demo']
 }>()
 </script>
@@ -24,7 +26,10 @@ const emit = defineEmits<{
         v-for="game in games"
         :key="game.key"
         :game="game"
+        :is-favorite="favoriteKeys?.includes(game.key)"
+        show-favorite
         class="lobby-game-row-card"
+        @toggle-favorite="emit('toggleFavorite', $event)"
         @play="(key, mode) => emit('play', key, mode)"
       />
     </div>

@@ -200,7 +200,16 @@ export interface GameItem {
   volatility?: string      // '低' | '中' | '高' | '極高'
   paylines?: string        // '20 線' | 'Megaways' | 'N/A'
   maxMultiplier?: string   // '5,000x' 等
+  /** 遊戲大廳篩選用的標準類別；未提供時由 category 推導。 */
+  filterCategory?: LobbyFilterCategoryKey
+  /** 後端／營運資料可直接提供的供應商代碼。 */
+  providerKey?: string
+  /** 遊戲支援的篩選幣別；未提供時由既有 category 推導。 */
+  supportedCurrencies?: LobbyCurrencyKey[]
 }
+
+export type LobbyFilterCategoryKey = 'slots' | 'board' | 'live' | 'fish' | 'mini' | 'lottery'
+export type LobbyCurrencyKey = 'gold' | 'silver' | 'bronze'
 
 export interface ShortcutGuide {
   key: 'ios' | 'android' | 'chrome' | 'safari'

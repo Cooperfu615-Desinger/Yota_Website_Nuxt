@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import type { GameItem, LobbyGameCategory } from '~/data/siteContent'
+import type { GameItem } from '~/data/siteContent'
+import type { LobbyFilterCounts, LobbyFilterState } from '~/utils/lobbyFilters'
 
 const props = defineProps<{
-  category: string
+  filter: LobbyFilterState
   search: string
-  categories: LobbyGameCategory[]
+  counts: LobbyFilterCounts
   games: GameItem[]
-  providers: string[]
+  favoriteKeys: string[]
   sortMode: string
-  selectedProviders: string[]
   page: number
   pageSize: number
 }>()
 
 const emit = defineEmits<{
-  'update:category': [value: string]
+  'update:filter': [value: LobbyFilterState]
   'update:search': [value: string]
   'update:sortMode': [value: string]
-  'update:selectedProviders': [value: string[]]
   'update:page': [value: number]
+  toggleFavorite: [value: string]
   play: [key: string, mode: 'real' | 'demo']
 }>()
 
@@ -36,11 +36,11 @@ function goPage(nextPage: number) {
 <template>
   <div class="lobby-category-view">
     <SharedGameFilterBar
-      :category="category"
+      :filter="filter"
       :search="search"
-      :categories="categories"
+      :counts="counts"
       search-first
-      @update:category="emit('update:category', $event)"
+      @update:filter="emit('update:filter', $event)"
       @update:search="emit('update:search', $event)"
     />
 
@@ -54,12 +54,6 @@ function goPage(nextPage: number) {
           <option value="latest">最新</option>
         </select>
       </label>
-
-      <LobbyProviderFilter
-        :providers="providers"
-        :selected-providers="selectedProviders"
-        @update:selected-providers="emit('update:selectedProviders', $event)"
-      />
     </div>
 
     <div class="game-count">共 {{ games.length }} 款遊戲</div>
@@ -69,11 +63,14 @@ function goPage(nextPage: number) {
         v-for="game in pagedGames"
         :key="game.key"
         :game="game"
+        :is-favorite="favoriteKeys.includes(game.key)"
+        show-favorite
+        @toggle-favorite="emit('toggleFavorite', $event)"
         @play="(key, mode) => emit('play', key, mode)"
       />
     </div>
     <div v-else class="game-grid-empty">
-      <p>找不到相符的遊戲</p>
+      <p>{{ filter.group === 'all' && filter.option === 'favorites' ? '尚無我的最愛' : '找不到相符的遊戲' }}</p>
     </div>
 
     <div class="lobby-pagination" aria-label="遊戲列表分頁">
