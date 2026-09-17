@@ -114,6 +114,26 @@ body {
   -webkit-backdrop-filter: blur(12px);
 }
 
+/* 未登入時所有一般頁面都保留一致的註冊／登入入口。 */
+.app-header-login-btn {
+  flex-shrink: 0;
+  padding: 7px 16px;
+  border: 0;
+  border-radius: 20px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-purple-mid), var(--color-purple));
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity .2s, transform .1s;
+}
+
+.app-header-login-btn:hover {
+  opacity: .9;
+  transform: translateY(-1px);
+}
+
 /* ── Logo 文字光暈 ── */
 .logo-text {
   background: linear-gradient(135deg, #F5C842 0%, #A855F7 50%, #F5C842 100%);
@@ -1476,6 +1496,17 @@ body {
   right: 0;
 }
 
+/* Lobby 右上角另有 Web館 浮動鈕，將立即玩往左錯開避免重疊。 */
+@media (max-width: 1023px) {
+  .lobby-root .fp-mobile-img-btn {
+    top: calc(var(--lobby-header-h) + 8px);
+  }
+
+  .lobby-root .fp-mobile-img-right {
+    right: 104px;
+  }
+}
+
 .fp-left {
   left: 20px;
   background: linear-gradient(180deg,
@@ -1838,6 +1869,11 @@ body {
 
   .fp-right {
     right: 24px;
+  }
+
+  /* Lobby 左側另有固定導覽列，面板從導覽列右側開始，避免覆蓋主選單。 */
+  .lobby-root .fp-left {
+    left: calc(var(--lobby-sidebar-w) + 24px);
   }
 }
 

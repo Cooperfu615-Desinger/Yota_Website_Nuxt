@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { isLoggedIn, userInfo } = useAppState()
+const { isLoggedIn, userInfo, openLogin } = useAppState()
 const route = useRoute()
 const { drawerOpen, closeDrawer } = useMobileMenuState()
 
@@ -74,8 +74,16 @@ watch(() => route.path, () => closeDrawer())
         </div>
       </NuxtLink>
     </template>
+    <button
+      v-else
+      type="button"
+      class="app-header-login-btn"
+      @click="openLogin()"
+    >
+      註冊 / 登入
+    </button>
 
-    <div class="hidden lg:block w-24 flex-shrink-0" aria-hidden="true" />
+    <div v-if="isLoggedIn" class="hidden lg:block w-24 flex-shrink-0" aria-hidden="true" />
   </header>
 
   <!-- 手機抽屜（ClientOnly 避免 SSG Teleport hydration mismatch） -->

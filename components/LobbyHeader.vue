@@ -27,7 +27,7 @@ const { openProfile } = useMemberProfileState()
         </button>
       </template>
       <template v-else>
-        <button class="lobby-header-login-btn" @click="openLogin">登入 / 註冊</button>
+        <button class="lobby-header-login-btn" @click="openLogin">註冊 / 登入</button>
       </template>
     </div>
   </header>
