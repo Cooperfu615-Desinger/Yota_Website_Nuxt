@@ -105,6 +105,8 @@ function onClick() {
     </button>
 
     <ClientOnly>
+      <!-- 全站共用立即儲／立即玩入口；遊戲大廳也維持與首頁一致。 -->
+      <FloatingPanels />
       <AgeGateModal />
       <LoginModal />
       <LegalModal />
