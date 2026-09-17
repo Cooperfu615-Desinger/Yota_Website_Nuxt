@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { siteContent, type GameItem, type ShortcutGuide } from '~/data/siteContent'
+import { useLobbyGameFilter } from '~/composables/useLobbyGameFilter'
 
 type TutorialTab = 'games' | 'features' | 'install' | 'shortcut'
 type ShortcutGuideKey = ShortcutGuide['key']
@@ -11,10 +12,12 @@ const downloadNotice = ref('')
 
 const games: GameItem[] = [...siteContent.lobbyGames] as GameItem[]
 const {
-  activeCategory: gameCategory,
+  filter: gameFilter,
   searchQuery: gameSearch,
   filteredGames,
-} = useGameFilter(games)
+  filterCounts: gameFilterCounts,
+  initFavoriteGames,
+} = useLobbyGameFilter(games, { includeFavorites: false })
 const shortcutGuides: ShortcutGuide[] = [...siteContent.shortcutGuides] as ShortcutGuide[]
 const currentShortcutGuide = computed(
   () => shortcutGuides.find((guide) => guide.key === activeShortcutGuide.value) ?? shortcutGuides[0]
@@ -53,6 +56,8 @@ function handlePlay(gameKey: string, mode: 'real' | 'demo') {
 function mockDownload(platform: string) {
   downloadNotice.value = `${platform} 下載流程已啟動（原型不會下載真實安裝檔）`
 }
+
+onMounted(initFavoriteGames)
 </script>
 
 <template>
@@ -76,8 +81,12 @@ function mockDownload(platform: string) {
       <!-- 遊戲介紹 -->
       <div v-if="activeTab === 'games'" key="games" class="px-4">
         <SharedGameFilterBar
-          v-model:category="gameCategory"
-          v-model:search="gameSearch"
+          :filter="gameFilter"
+          :search="gameSearch"
+          :counts="gameFilterCounts"
+          :show-favorites="false"
+          @update:filter="gameFilter = $event"
+          @update:search="gameSearch = $event"
         />
         <div class="game-count">共 {{ filteredGames.length }} 款遊戲</div>
 

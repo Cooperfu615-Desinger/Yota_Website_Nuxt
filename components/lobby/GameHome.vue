@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import { siteContent, type GameItem, type LobbyGameCategory } from '~/data/siteContent'
+import { siteContent, type GameItem } from '~/data/siteContent'
+import type { LobbyFilterCounts, LobbyFilterState } from '~/utils/lobbyFilters'
 
 defineProps<{
-  category: string
+  filter: LobbyFilterState
   search: string
-  categories: LobbyGameCategory[]
+  counts: LobbyFilterCounts
   sections: Array<{ key: string; title: string; games: GameItem[] }>
+  favoriteKeys: string[]
 }>()
 
 const emit = defineEmits<{
-  'update:category': [value: string]
+  'update:filter': [value: LobbyFilterState]
   'update:search': [value: string]
   viewCategory: [value: string]
+  toggleFavorite: [value: string]
   play: [key: string, mode: 'real' | 'demo']
 }>()
 
@@ -33,11 +36,11 @@ const heroBanner = computed(() => siteContent.bannerSlides.find((slide) => slide
     </section>
 
     <SharedGameFilterBar
-      :category="category"
+      :filter="filter"
       :search="search"
-      :categories="categories"
+      :counts="counts"
       search-first
-      @update:category="emit('update:category', $event)"
+      @update:filter="emit('update:filter', $event)"
       @update:search="emit('update:search', $event)"
     />
 
@@ -46,7 +49,9 @@ const heroBanner = computed(() => siteContent.bannerSlides.find((slide) => slide
       :key="section.key"
       :title="section.title"
       :games="section.games"
+      :favorite-keys="favoriteKeys"
       @view-all="emit('viewCategory', section.key)"
+      @toggle-favorite="emit('toggleFavorite', $event)"
       @play="(key, mode) => emit('play', key, mode)"
     />
   </div>

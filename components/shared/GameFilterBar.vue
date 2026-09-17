@@ -1,39 +1,105 @@
 <script setup lang="ts">
-import { siteContent, type GameCategory, type LobbyGameCategory } from '~/data/siteContent'
+import type { LobbyFilterState, LobbyFilterCounts, LobbyFilterOption } from '~/utils/lobbyFilters'
+import {
+  LOBBY_CATEGORY_OPTIONS,
+  LOBBY_CURRENCY_OPTIONS,
+  LOBBY_PROVIDER_OPTIONS,
+} from '~/utils/lobbyFilters'
 
 const props = withDefaults(defineProps<{
-  category: string
+  filter: LobbyFilterState
+  counts: LobbyFilterCounts
   search: string
-  categories?: Array<GameCategory | LobbyGameCategory>
-  placeholder?: string
   searchFirst?: boolean
+  showFavorites?: boolean
 }>(), {
-  placeholder: '搜尋遊戲...',
   searchFirst: false,
+  showFavorites: true,
 })
 
 const emit = defineEmits<{
-  'update:category': [value: string]
+  'update:filter': [value: LobbyFilterState]
   'update:search': [value: string]
 }>()
 
-const filterCategories = computed(() => props.categories ?? siteContent.gameCategories)
+const primaryOptions: LobbyFilterOption[] = [
+  { key: 'all', label: '全部', icon: '▦' },
+  { key: 'category', label: '類別', icon: '🎰' },
+  { key: 'currency', label: '幣別', icon: '金' },
+  { key: 'provider', label: '供應商', icon: '▤' },
+]
+
+const allSecondaryOptions: LobbyFilterOption[] = [
+  { key: 'latest', label: '最新', icon: '★' },
+  { key: 'popular', label: '熱門', icon: '🔥' },
+  { key: 'favorites', label: '最愛', icon: '♥' },
+]
+
+const secondaryOptions = computed(() => {
+  if (props.filter.group === 'all') {
+    return props.showFavorites
+      ? allSecondaryOptions
+      : allSecondaryOptions.filter(option => option.key !== 'favorites')
+  }
+  if (props.filter.group === 'category') return LOBBY_CATEGORY_OPTIONS
+  if (props.filter.group === 'currency') return LOBBY_CURRENCY_OPTIONS
+  return LOBBY_PROVIDER_OPTIONS
+})
+
+function countFor(option: LobbyFilterOption) {
+  if (props.filter.group === 'all') return props.counts[option.key as 'latest' | 'popular' | 'favorites']
+  if (props.filter.group === 'category') return props.counts.category[option.key as keyof typeof props.counts.category] ?? 0
+  if (props.filter.group === 'currency') return props.counts.currency[option.key as keyof typeof props.counts.currency] ?? 0
+  return props.counts.provider[option.key] ?? 0
+}
+
+function selectGroup(group: LobbyFilterState['group']) {
+  emit('update:filter', { group, option: null })
+}
+
+function selectOption(option: LobbyFilterOption) {
+  emit('update:filter', { group: props.filter.group, option: option.key })
+}
+
+function isOptionActive(option: LobbyFilterOption) {
+  return props.filter.option === option.key
+}
 </script>
 
 <template>
   <div class="game-filter-bar" :class="{ 'game-filter-bar-search-first': searchFirst }">
-    <div class="game-categories" role="tablist" aria-label="遊戲分類">
+    <div class="game-filter-primary" role="tablist" aria-label="遊戲篩選類型">
       <button
-        v-for="cat in filterCategories"
-        :key="cat.key"
-        class="game-cat-btn"
-        :class="{ 'game-cat-active': category === cat.key }"
+        v-for="item in primaryOptions"
+        :key="item.key"
         type="button"
+        class="game-filter-primary-btn"
+        :class="{ active: filter.group === item.key }"
         role="tab"
-        :aria-selected="category === cat.key"
-        @click="emit('update:category', cat.key)"
+        :aria-selected="filter.group === item.key"
+        @click="selectGroup(item.key as LobbyFilterState['group'])"
       >
-        {{ cat.label }}
+        <span class="game-filter-primary-icon" aria-hidden="true">{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
+        <strong v-if="item.key === 'all'">{{ counts.all }}</strong>
+      </button>
+    </div>
+
+    <div class="game-filter-secondary" role="tablist" :aria-label="`${filter.group}篩選選項`">
+      <button
+        v-for="item in secondaryOptions"
+        :key="item.key"
+        type="button"
+        class="game-filter-secondary-btn"
+        :class="{ active: isOptionActive(item), disabled: countFor(item) === 0 && item.key !== 'all' }"
+        :disabled="countFor(item) === 0 && item.key !== 'all'"
+        role="tab"
+        :aria-selected="isOptionActive(item)"
+        @click="selectOption(item)"
+      >
+        <span class="game-filter-secondary-icon" aria-hidden="true">{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
+        <strong>{{ countFor(item) }}</strong>
       </button>
     </div>
 
@@ -44,7 +110,7 @@ const filterCategories = computed(() => props.categories ?? siteContent.gameCate
       <input
         :value="search"
         type="search"
-        :placeholder="placeholder"
+        placeholder="搜尋遊戲..."
         class="game-search-input"
         @input="emit('update:search', ($event.target as HTMLInputElement).value)"
       />

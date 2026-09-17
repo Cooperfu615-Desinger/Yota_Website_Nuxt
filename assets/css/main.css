@@ -2255,7 +2255,7 @@ body {
   }
 }
 
-/* ── Game Filter Bar（分類 + 搜尋同排） ── */
+/* ── Game Filter Bar（第一層群組 + 第二層選項） ── */
 .game-grid-wrap {
   padding: 16px 16px 24px;
   max-width: 1600px;
@@ -2264,8 +2264,9 @@ body {
 
 .game-filter-bar {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 8px;
   margin-bottom: 14px;
   min-width: 0;
 }
@@ -2281,54 +2282,129 @@ body {
   width: 100%;
 }
 
-.game-filter-bar-search-first .game-categories {
-  flex: none;
+.game-filter-bar-search-first .game-filter-primary,
+.game-filter-bar-search-first .game-filter-secondary {
+  flex: 1 1 100%;
 }
 
-.game-categories {
+.game-filter-primary,
+.game-filter-secondary {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
   overflow-x: auto;
-  padding-bottom: 2px;
-  flex: 1;
   min-width: 0;
   scrollbar-width: none;
 }
 
-.game-categories::-webkit-scrollbar {
+.game-filter-primary::-webkit-scrollbar,
+.game-filter-secondary::-webkit-scrollbar {
   display: none;
 }
 
-.game-cat-btn {
+.game-filter-primary-btn,
+.game-filter-secondary-btn {
   flex-shrink: 0;
-  padding: 7px 14px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   cursor: pointer;
-  border: 2px solid #475D9366;
+  transition: color .2s, border-color .2s, background .2s, transform .2s;
+}
+
+.game-filter-primary-btn {
+  min-height: 38px;
+  padding: 6px 12px;
+  border: 1px solid rgba(168, 85, 247, .24);
+  border-radius: 12px;
+  color: var(--color-text-muted);
+  background: rgba(22, 8, 48, .62);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.game-filter-primary-btn:hover,
+.game-filter-primary-btn.active {
+  color: var(--color-text);
+  border-color: rgba(192, 132, 252, .74);
+  background: rgba(124, 58, 237, .46);
+  box-shadow: 0 0 18px rgba(168, 85, 247, .16);
+}
+
+.game-filter-primary-btn:active,
+.game-filter-secondary-btn:active {
+  transform: scale(.97);
+}
+
+.game-filter-primary-icon,
+.game-filter-secondary-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  color: var(--color-gold);
+  font-size: 13px;
+  line-height: 1;
+}
+
+.game-filter-primary-btn strong,
+.game-filter-secondary-btn strong {
+  min-width: 18px;
+  padding: 2px 4px;
+  border-radius: 999px;
+  color: #1a0a00;
+  background: var(--color-gold);
+  font-size: 9px;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.game-filter-secondary {
+  padding: 5px;
+  border: 1px solid rgba(168, 85, 247, .16);
+  border-radius: 13px;
+  background: rgba(10, 4, 28, .38);
+}
+
+.game-filter-secondary-btn {
+  min-height: 30px;
+  padding: 4px 9px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: rgba(243, 232, 255, .68);
   background: transparent;
-  color: #475D93;
-  transition: all 0.2s;
+  font-size: 11px;
+  font-weight: 700;
 }
 
-.game-cat-btn:hover {
-  color: #fff;
-  border-color: #5B71C966;
+.game-filter-secondary-btn:hover,
+.game-filter-secondary-btn.active {
+  color: var(--color-text);
+  border-color: rgba(245, 200, 66, .42);
+  background: rgba(245, 200, 66, .1);
 }
 
-.game-cat-active {
-  background: #5B71C9;
-  border-color: #5B71C966;
-  color: #fff;
-  box-shadow: 0 2px 10px rgba(91, 113, 201, 0.35);
+.game-filter-secondary-btn strong {
+  color: var(--color-text-muted);
+  background: rgba(255, 255, 255, .1);
+}
+
+.game-filter-secondary-btn.active strong {
+  color: #1a0a00;
+  background: var(--color-gold);
+}
+
+.game-filter-secondary-btn.disabled {
+  opacity: .36;
+  cursor: not-allowed;
 }
 
 /* ── Game Search ── */
 .game-search-wrap {
   position: relative;
   flex-shrink: 0;
-  width: 180px;
+  width: min(240px, 100%);
 }
 
 .game-search-icon {
@@ -2814,6 +2890,34 @@ body {
   font-weight: 700;
   background: linear-gradient(135deg, var(--color-gold-dark), var(--color-gold));
   color: #1a0a00;
+}
+
+.game-card-favorite {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, .24);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, .78);
+  background: rgba(15, 0, 32, .62);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform .2s, color .2s, border-color .2s, background .2s;
+}
+
+.game-card-favorite:hover,
+.game-card-favorite.active {
+  color: #1a0a00;
+  border-color: var(--color-gold);
+  background: var(--color-gold);
+  transform: scale(1.08);
 }
 
 /* 資訊區：名稱+簡述（左）｜RTP（右） */

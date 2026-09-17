@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { type GameItem } from '~/data/siteContent'
 
-const props = defineProps<{ game: GameItem }>()
-const emit = defineEmits<{ play: [key: string, mode: 'real' | 'demo'] }>()
+const props = defineProps<{
+  game: GameItem
+  isFavorite?: boolean
+  showFavorite?: boolean
+}>()
+const emit = defineEmits<{
+  play: [key: string, mode: 'real' | 'demo']
+  toggleFavorite: [key: string]
+}>()
 
 const { isLoggedIn, openLogin } = useAppState()
 const { resolvePublicAsset } = usePublicAssetPath()
@@ -37,6 +44,17 @@ function handlePlay(mode: 'real' | 'demo') {
       </div>
       <!-- 徽章 -->
       <div v-if="game.badge" class="game-card-badge">{{ game.badge }}</div>
+      <button
+        v-if="showFavorite"
+        type="button"
+        class="game-card-favorite"
+        :class="{ active: isFavorite }"
+        :aria-label="isFavorite ? `移除我的最愛：${game.name}` : `加入我的最愛：${game.name}`"
+        :aria-pressed="isFavorite"
+        @click.stop="isLoggedIn ? emit('toggleFavorite', game.key) : openLogin()"
+      >
+        <span aria-hidden="true">{{ isFavorite ? '♥' : '♡' }}</span>
+      </button>
     </div>
 
     <!-- 資訊區：名稱+簡述｜RTP -->

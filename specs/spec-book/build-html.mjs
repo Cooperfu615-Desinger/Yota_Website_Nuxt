@@ -12,7 +12,8 @@
  *
  * 內容來源（改這些檔案，不要手改 index.html）：
  *   00-overview.md ＋ _index-table.md（總覽 tab）
- *   20-frontend.md（前端 tab）
+ *   WEB_SPEC_RULES.md ＋ web-02-*.md～web-13-*.md（Web 規格 tab）
+ *   20-frontend.md（前端技術參考 tab）
  *   30-backend.md（後端 tab）
  *   10-art.md（美術 tab）
  */
@@ -24,6 +25,22 @@ import { fileURLToPath } from 'node:url'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 
+const WEB_SPEC_FILES = [
+  'WEB_SPEC_RULES.md',
+  'web-02-public-site.md',
+  'web-03-authentication.md',
+  'web-04-lobby-navigation.md',
+  'web-05-game-session.md',
+  'web-06-member.md',
+  'web-07-finance.md',
+  'web-08-rewards-promotions-gifts.md',
+  'web-09-tasks-events-rankings-tutorial.md',
+  'web-10-social-support.md',
+  'web-11-inbox-settings.md',
+  'web-12-cross-page-integration.md',
+  'web-13-acceptance-delivery.md',
+]
+
 marked.setOptions({ gfm: true, breaks: false })
 
 async function read(name) {
@@ -33,11 +50,12 @@ async function read(name) {
 /** 從 markdown 抽出 H2 標題當作該 tab 的側欄小節導覽 */
 function extractH2(md) {
   const items = []
+  const seen = new Map()
   for (const line of md.split('\n')) {
     const m = line.match(/^##\s+(.+)$/)
     if (m) {
       const text = m[1].trim()
-      const slug = slugify(text)
+      const slug = uniqueHeadingSlug(text, seen)
       items.push({ text, slug })
     }
   }
@@ -53,11 +71,19 @@ function slugify(text) {
     .replace(/^-+|-+$/g, '')
 }
 
+function uniqueHeadingSlug(text, seen) {
+  const base = slugify(text)
+  const next = (seen.get(base) ?? 0) + 1
+  seen.set(base, next)
+  return next === 1 ? base : `${base}-${next}`
+}
+
 /** marked 預設不會給標題加 id，這裡手動幫 h2/h3 補上（與 extractH2 用同一套 slugify） */
 function addHeadingIds(html) {
+  const seen = { 2: new Map(), 3: new Map() }
   return html.replace(/<h([23])>(.*?)<\/h\1>/g, (whole, level, inner) => {
     const plain = inner.replace(/<[^>]+>/g, '')
-    const id = slugify(plain)
+    const id = uniqueHeadingSlug(plain, seen[level])
     return `<h${level} id="${id}">${inner}</h${level}>`
   })
 }
@@ -74,6 +100,7 @@ async function main() {
   const overviewMd = (await read('00-overview.md')) + '\n\n' + (await read('_index-table.md'))
   const tabs = [
     { key: 'overview', label: '總覽', icon: '◎', ...(await renderTabFromString('overview', overviewMd)) },
+    { key: 'webspec', label: 'Web 規格', icon: '◈', ...(await renderTab('webspec', WEB_SPEC_FILES)) },
     { key: 'frontend', label: '前端', icon: '⌨', ...(await renderTab('frontend', ['20-frontend.md'])) },
     { key: 'backend', label: '後端', icon: '☁', ...(await renderTab('backend', ['30-backend.md'])) },
     { key: 'art', label: '美術', icon: '◆', ...(await renderTab('art', ['10-art.md'])) },
@@ -240,7 +267,7 @@ tr:nth-child(even) td{background:rgba(255,255,255,0.02)}
 <body>
 <div class="app">
   <aside class="sidebar">
-    <div class="brand">巨亨ONLINE 規格書<small>2026-07-30 · 美術／前端／後端</small></div>
+    <div class="brand">巨亨ONLINE 規格書<small>2026-09-15 · Web 規格／Figma／Nuxt／後端</small></div>
     <div class="tabs">
 ${tabButtons}
     </div>

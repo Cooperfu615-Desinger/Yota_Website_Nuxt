@@ -4,6 +4,45 @@
 - 受眾：美術、前端、後端 —— 用來搭配各自的原型做規格確認與比對
 - 本書地位：**主幹＋畫面索引總表**。三方比對的詳細內容仍以 `specs/2026-07-29-*.md` 四份文件為準，本書負責把「畫面長什麼樣」跟「文字比對結果」接起來，讓三種受眾能從同一個編號找到同一件事。
 
+> **Web 規格書重整基線（Phase 4｜2026-09-15）**：本書作為 Web 專屬規格書的總綱與既有內容入口，沿用 APP 的「總綱／功能分冊／跨頁流程／整體驗收」方法，但內容只以 Web／Nuxt 為準。撰寫規則與章節骨架見 [`WEB_SPEC_RULES.md`](WEB_SPEC_RULES.md)。10 個功能分冊、跨頁整合、整體驗收、Web HTML 閱讀分頁與可重跑文件驗證均已建立；工作單描述回填仍待後續階段。
+
+## 0. Web 規格書重整基線
+
+| 層級 | 目前文件／預定文件 | 責任 | 狀態 |
+|---|---|---|---|
+| 總綱 | `00-overview.md` | Web 產品範圍、共用架構、畫面索引、工作單索引與驗證邊界 | 本階段維護入口 |
+| 規則 | [`WEB_SPEC_RULES.md`](WEB_SPEC_RULES.md) | 來源優先順序、章節格式、ID、驗收邊界與 Plane 對照 | Phase 4 維護中 |
+| 功能分冊 | `web-02-*.md`～`web-11-*.md` | 10 個 Web 功能單元；套用 APP 17 節格式 | Phase 2 初版已建立 |
+| 跨頁整合 | [`web-12-cross-page-integration.md`](web-12-cross-page-integration.md) | Web FLOW、資料交接、保存、API／Mock 與狀態 | Phase 3 初版已建立 |
+| 整體交付 | [`web-13-acceptance-delivery.md`](web-13-acceptance-delivery.md) | Web AC、US／SC、文件、瀏覽器、SSG、部署與 handoff | Phase 3 初版已建立 |
+| HTML 閱讀版 | `index.html` | 總覽、Web 規格、前端技術參考、後端與美術分頁 | Phase 4 已產生 |
+| 文件驗證 | `validate-docs.mjs` | Markdown 章節／連結、Plane 映射、HTML 分頁與 anchor | Phase 4 已通過 61 項 |
+| 技術參考 | `20-frontend.md`、`30-backend.md`、`10-art.md` | 既有前端、後端與美術內容；功能分冊完成後保留作技術附錄與參照 | 既有文件 |
+
+本 Web 規格書對應既有 Plane 交付基線：規格父單 `YOTAPLATFO-444`、Figma 父單 `YOTAPLATFO-445`、Nuxt 父單 `YOTAPLATFO-446`；13 個功能單元的三條工作流維持既有 `YOTAPLATFO-447`～`YOTAPLATFO-485`，不因文件拆分新增或重開工作單。
+
+### 0.1 Phase 2 功能分冊索引
+
+| 規格單元 | 文件 |
+|---|---|
+| WEB-SPEC-02 官網公開頁 | [`web-02-public-site.md`](web-02-public-site.md) |
+| WEB-SPEC-03 登入、註冊與年齡驗證 | [`web-03-authentication.md`](web-03-authentication.md) |
+| WEB-SPEC-04 遊戲大廳與共用導覽 | [`web-04-lobby-navigation.md`](web-04-lobby-navigation.md) |
+| WEB-SPEC-05 遊戲進入、模式與返回 | [`web-05-game-session.md`](web-05-game-session.md) |
+| WEB-SPEC-06 個人資訊、VIP 與會員 | [`web-06-member.md`](web-06-member.md) |
+| WEB-SPEC-07 錢包、銀行與交易 | [`web-07-finance.md`](web-07-finance.md) |
+| WEB-SPEC-08 獎勵卡、優惠碼與贈禮 | [`web-08-rewards-promotions-gifts.md`](web-08-rewards-promotions-gifts.md) |
+| WEB-SPEC-09 每日任務、活動、排行榜與教學 | [`web-09-tasks-events-rankings-tutorial.md`](web-09-tasks-events-rankings-tutorial.md) |
+| WEB-SPEC-10 社交互動、聊天與客服 | [`web-10-social-support.md`](web-10-social-support.md) |
+| WEB-SPEC-11 信箱、通知與設定 | [`web-11-inbox-settings.md`](web-11-inbox-settings.md) |
+
+### 0.2 Phase 3 整合與交付索引
+
+| 規格單元 | 文件 | Plane SPEC |
+|---|---|---|
+| WEB-SPEC-12 跨頁整合與流程 | [`web-12-cross-page-integration.md`](web-12-cross-page-integration.md) | `YOTAPLATFO-458` |
+| WEB-SPEC-13 驗收、部署與玩家情境 | [`web-13-acceptance-delivery.md`](web-13-acceptance-delivery.md) | `YOTAPLATFO-459` |
+
 ---
 
 ## 1. 系統範圍與三方關係
@@ -53,10 +92,10 @@
 | 名詞 | 定義 | 來源 |
 |---|---|---|
 | 點數與價值 | `NT$1＝金幣1＝銀幣100`；銅幣為無價值試玩幣；金額小數無條件捨去 | [決策 §5](../decisions/2026-07-30-first-phase-alignment-decisions.md#5-金額匯率與點數價值--整數運算小數無條件捨去) |
-| 保險箱 | `vaultBalance`，第一階段已併入銀行，`pages/lobby/vault.vue` 只 redirect | 見 memory `chat-feature-architecture` |
+| 保險箱 | `vaultBalance`；目前 `/lobby/vault` 實際渲染 `LobbyVaultContent`，銀行轉帳導流也會進入此頁 | `pages/lobby/vault.vue`、`components/lobby/VaultContent.vue` |
 | 贈禮 | 玩家間雙向確認（申請→接受/拒絕/取消/168h 逾期）；手續費依 VIP 分級，建立時保存快照 | [決策 §1、§6](../decisions/2026-07-30-first-phase-alignment-decisions.md) |
 | 兌換 | 金↔銀，1:100，銀換金需 100 倍數，手續費 0 | `utils/walletExchange.ts` |
-| 獎勵卡 | 15 天銀 10,000／20 天金 5,000，流水目標 100,000，轉換上限 10,000，到期 2026/12/31 | `utils/rewardCardConversion.ts`、`composables/useRewardCardState.ts` |
+| 獎勵卡 | 目前原型含第 10／15／20 天活動銀幣卡，流水目標 100,000、轉換上限 10,000、到期 2026/12/31；舊規格曾寫第 15 天銀卡／第 20 天金卡，正式值待確認 | `composables/useRewardCardState.ts`、`utils/rewardCardConversion.ts` |
 | 外部提款 | 第一階段不提供；`/vault/withdraw` 只代表保險箱取回主錢包（`VAULT_OUT`） | [決策 §5](../decisions/2026-07-30-first-phase-alignment-decisions.md#5-金額匯率與點數價值--整數運算小數無條件捨去) |
 
 > 原型固定值只用來重現現有畫面；正式實作以決策紀錄與 API 契約為準。尤其固定 5% 與初始 mock 餘額不可直接搬入正式環境。
@@ -148,3 +187,13 @@ PATH="/opt/homebrew/opt/node/bin:$PATH" node specs/spec-book/capture.mjs --viewp
 - 截圖來源為本機 dev server 的 mock 資料（`data/siteContent.ts`），非真實後端回應；財務數字、交易紀錄等為固定假資料
 - 三方原始碼行號引用以 `three-way-screen-matrix.md` 建立當下的 commit 為準（W: `aa326bd`／A: `3c3e396`／B: `06fdbbe`），本書之後若有新 commit，行號可能過期
 - APP／後台兩份 clone 位於 scratchpad，session 結束即消失，如需重新核對原始碼需重新 clone
+
+### 7.1 Web 文件驗證
+
+可在 repository root 執行以下命令，驗證 Web 規格書與 HTML 閱讀版的文件基線：
+
+```bash
+PATH="/opt/homebrew/opt/node/bin:$PATH" node specs/spec-book/validate-docs.mjs
+```
+
+2026-09-15 已通過 61 項、0 項失敗。此結果只證明文件、映射、連結與 HTML 結構，不代表 Nuxt、瀏覽器、部署、API 或正式帳務驗收完成。
