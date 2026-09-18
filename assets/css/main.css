@@ -1459,15 +1459,12 @@ body {
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  /*
-   * 兩張新版素材的寬高比不同（btn_002 200x240、btn_001 282x285）。
-   * 以既有左側素材在 150px 面板中的 270px 視覺高度為基準，
-   * 讓右側新版圖片維持原始比例並與左側圖片對齊上下位置。
-   */
+  /* 固定為舊版 btn_001 在 150px 面板中的實際顯示框（225x270）。 */
+  width: 225px;
   height: 270px;
-  width: auto;
   max-width: none;
   object-fit: contain;
+  object-position: center bottom;
   pointer-events: none;
   z-index: 10;
   display: block;
@@ -1478,9 +1475,9 @@ body {
   position: fixed;
   top: calc(var(--nav-h) + 32px);
   z-index: 220;
-  /* 與桌面版共用相同的視覺高度，避免素材比例不同造成位置偏移。 */
+  /* 固定為舊版圖片按鈕的實際顯示框（90x108）。 */
+  width: 90px;
   height: 108px;
-  width: auto;
   padding: 0;
   border: none;
   background: transparent;
@@ -1493,10 +1490,10 @@ body {
 }
 
 .fp-mobile-img-btn img {
-  width: auto;
+  width: 100%;
   height: 100%;
-  max-width: none;
   object-fit: contain;
+  object-position: center top;
   display: block;
 }
 
