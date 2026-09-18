@@ -30,9 +30,9 @@ const primaryOptions: LobbyFilterOption[] = [
 ]
 
 const allSecondaryOptions: LobbyFilterOption[] = [
+  { key: 'favorites', label: '最愛', icon: '♥' },
   { key: 'latest', label: '最新', icon: '★' },
   { key: 'popular', label: '熱門', icon: '🔥' },
-  { key: 'favorites', label: '最愛', icon: '♥' },
 ]
 
 const secondaryOptions = computed(() => {
