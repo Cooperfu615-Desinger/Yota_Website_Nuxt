@@ -93,6 +93,13 @@ let exchangeNoticeTimer: ReturnType<typeof setTimeout> | null = null
 let giftClockTimer: ReturnType<typeof setInterval> | null = null
 
 const maxAmount = computed(() => mode.value === 'deposit' ? userInfo.value.balance : userInfo.value.vaultBalance)
+const amountProgress = computed(() => maxAmount.value > 0 ? Math.min(100, Math.round((amount.value / maxAmount.value) * 100)) : 0)
+const afterWalletBalance = computed(() => mode.value === 'deposit'
+  ? userInfo.value.balance - amount.value
+  : userInfo.value.balance + amount.value)
+const afterVaultBalance = computed(() => mode.value === 'deposit'
+  ? userInfo.value.vaultBalance + amount.value
+  : userInfo.value.vaultBalance - amount.value)
 const maxTransferAmount = computed(() => Math.min(userInfo.value.vaultBalance, MAX_GIFT_AMOUNT))
 const transferSummary = computed(() => calculateVaultTransfer(transferAmount.value))
 const canConfirmTransfer = computed(() =>
@@ -217,6 +224,9 @@ function onAmountInput(e: Event) {
   amount.value = v
 }
 function setMax() { amount.value = maxAmount.value }
+function setAmountPercent(percent: number) {
+  amount.value = Math.floor(maxAmount.value * percent)
+}
 
 const canConfirm = computed(() => amount.value > 0 && amount.value <= maxAmount.value)
 
@@ -440,36 +450,50 @@ function confirmExchange() {
       <Transition name="tab-fade" mode="out-in">
         <div v-if="activeTab === 'vault'" key="vault" class="lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start flex flex-col gap-4">
           <!-- 左欄：餘額 -->
-          <div class="card-purple p-5">
-            <div class="rounded-xl p-4 mb-1" style="background:rgba(0,0,0,0.25);">
-              <div class="text-sm mb-1" style="color:var(--color-text-muted);">金幣 (可用)</div>
-              <div class="text-3xl font-black" style="color:var(--color-gold);">{{ userInfo.balance.toLocaleString() }}</div>
+          <div class="card-purple p-5 vault-balance-panel">
+            <div class="vault-panel-heading">
+              <div>
+                <p class="vault-kicker">VAULT CONTROL</p>
+                <h2>保險箱</h2>
+              </div>
+              <span class="vault-lock-badge" aria-hidden="true">▣</span>
             </div>
-            <div class="text-center text-2xl my-2" style="color:var(--color-text-muted);">↓</div>
-            <div class="rounded-xl p-4" style="background:rgba(0,0,0,0.25);">
-              <div class="text-sm mb-1" style="color:var(--color-text-muted);">保險箱金幣 (凍結)</div>
-              <div class="text-3xl font-black" style="color:var(--color-text);">{{ userInfo.vaultBalance.toLocaleString() }}</div>
+            <div class="vault-balance-stack">
+              <div class="vault-balance-card wallet">
+                <span>金幣錢包・可用</span>
+                <strong>{{ userInfo.balance.toLocaleString() }}</strong>
+                <small>可用於遊戲與存入保險箱</small>
+              </div>
+              <div class="vault-transfer-arrow" aria-hidden="true">⇅</div>
+              <div class="vault-balance-card safe">
+                <span>保險箱・可贈禮</span>
+                <strong>{{ userInfo.vaultBalance.toLocaleString() }}</strong>
+                <small>保管中的金幣不會直接參與遊戲</small>
+              </div>
             </div>
-            <ul class="mt-4 text-xs space-y-1" style="color:var(--color-text-muted);">
-              <li>・存入保險箱的金幣可用於贈禮。</li>
-              <li>・存入可避免誤觸遊玩時消耗。</li>
-            </ul>
+            <div class="vault-balance-note">
+              <span>目前可操作</span>
+              <strong>{{ maxAmount.toLocaleString() }} 金幣</strong>
+            </div>
           </div>
 
           <!-- 右欄：操作 -->
-          <div class="card-purple p-5">
+          <div class="card-purple p-5 vault-action-panel">
             <!-- 模式切換 -->
-            <div class="tab-bar mb-4" role="group" aria-label="保險箱操作">
+            <div class="vault-mode-tabs mb-4" role="group" aria-label="保險箱操作">
               <button class="tab-btn" :class="{ active: mode === 'deposit' }" :aria-pressed="mode === 'deposit'" @click="mode = 'deposit'">存入</button>
               <button class="tab-btn" :class="{ active: mode === 'withdraw' }" :aria-pressed="mode === 'withdraw'" @click="mode = 'withdraw'">取出</button>
             </div>
 
-            <h2 class="text-lg font-black text-center mb-1">{{ mode === 'deposit' ? '存入保險箱' : '取出至金幣' }}</h2>
-            <p class="text-sm text-center mb-4" style="color:var(--color-text-muted);">
+            <div class="vault-action-heading">
+              <p class="vault-kicker">{{ mode === 'deposit' ? 'DEPOSIT TO VAULT' : 'WITHDRAW FROM VAULT' }}</p>
+              <h2>{{ mode === 'deposit' ? '存入保險箱' : '取出至金幣錢包' }}</h2>
+              <p>
               {{ mode === 'deposit' ? '請輸入欲從金幣餘額轉入保險箱的金額' : '請輸入欲從保險箱轉回金幣餘額的金額' }}
-            </p>
+              </p>
+            </div>
 
-            <div class="flex items-center gap-2 rounded-xl px-4 py-3 mb-4" style="background:rgba(0,0,0,0.3); border:1px solid var(--color-border);">
+            <div class="vault-amount-control">
               <input
                 :value="amount"
                 type="text"
@@ -479,14 +503,46 @@ function confirmExchange() {
                 aria-label="金額"
                 @input="onAmountInput"
               />
-              <button class="text-xs font-bold px-3 py-1.5 rounded-lg flex-shrink-0" style="background:rgba(168,85,247,0.2); color:var(--color-text-muted); border:1px solid var(--color-border);" @click="setMax">MAX</button>
+              <span>金幣</span>
+              <button type="button" class="vault-max-button" @click="setMax">MAX</button>
+            </div>
+
+            <div class="vault-slider-wrap">
+              <input
+                :value="amount"
+                type="range"
+                min="0"
+                :max="maxAmount"
+                step="1"
+                class="vault-slider"
+                aria-label="保險箱金額拉桿"
+                @input="onAmountInput"
+              />
+              <div class="vault-slider-meta"><span>0</span><span>{{ amountProgress }}%</span><span>{{ maxAmount.toLocaleString() }}</span></div>
+            </div>
+
+            <div class="vault-quick-picks" role="group" aria-label="快速選擇保險箱金額比例">
+              <button type="button" @click="setAmountPercent(.25)">25%</button>
+              <button type="button" @click="setAmountPercent(.5)">50%</button>
+              <button type="button" @click="setAmountPercent(.75)">75%</button>
+              <button type="button" class="max" @click="setAmountPercent(1)">MAX</button>
+            </div>
+
+            <div class="vault-preview-grid">
+              <div>
+                <span>錢包操作後</span>
+                <strong>{{ afterWalletBalance.toLocaleString() }}</strong>
+              </div>
+              <div>
+                <span>保險箱操作後</span>
+                <strong>{{ afterVaultBalance.toLocaleString() }}</strong>
+              </div>
             </div>
 
             <button
               class="btn-gold w-full justify-center text-lg py-3"
-              style="border-radius:14px;"
               :disabled="!canConfirm"
-              :style="!canConfirm ? 'opacity:0.5;cursor:not-allowed;' : ''"
+              :class="{ 'vault-submit-disabled': !canConfirm }"
               @click="confirm"
             >
               🛡️ {{ mode === 'deposit' ? '確認存入' : '確認取出' }}
@@ -629,9 +685,9 @@ function confirmExchange() {
           />
         </div>
 
-        <div v-else key="exchange" class="lg:grid lg:grid-cols-[300px_1fr] lg:gap-6 flex flex-col gap-4">
+        <div v-else key="exchange" class="exchange-tab-content lg:grid lg:grid-cols-[300px_1fr] lg:gap-6 flex flex-col gap-4">
           <!-- 左欄：匯率與餘額 -->
-          <aside class="card-purple p-5 flex flex-col gap-4">
+          <aside class="card-purple p-5 flex flex-col gap-4 exchange-summary-panel">
             <div class="rounded-xl p-4" style="background:rgba(0,0,0,0.25);">
               <div class="text-xs mb-1" style="color:var(--color-text-muted);">金幣</div>
               <div class="text-2xl font-black" style="color:var(--color-gold);">{{ userInfo.balance.toLocaleString() }}</div>
@@ -648,11 +704,11 @@ function confirmExchange() {
           </aside>
 
           <!-- 右欄：兌換表單 -->
-          <section class="card-purple p-5">
-            <h2 class="text-lg font-black mb-1">金銀幣兌換</h2>
-            <p class="text-sm mb-4" style="color:var(--color-text-muted);">選擇兌換方向後輸入金額，系統會依 1:100 比值立即試算。</p>
+          <section class="card-purple p-5 exchange-form-panel">
+            <h2 class="text-lg font-black mb-1">金銀幣交換</h2>
+            <p class="text-sm mb-4" style="color:var(--color-text-muted);">選擇交換方向後輸入金額，系統會依 1:100 比值即時換算。</p>
 
-            <div class="tab-bar mb-4" role="tablist" aria-label="金銀幣兌換方向">
+            <div class="exchange-direction-tabs tab-bar mb-4" role="tablist" aria-label="金銀幣交換方向">
               <button
                 class="tab-btn"
                 :class="{ active: exchangeDirection === 'gold-to-silver' }"
@@ -660,7 +716,7 @@ function confirmExchange() {
                 :aria-selected="exchangeDirection === 'gold-to-silver'"
                 @click="setExchangeDirection('gold-to-silver')"
               >
-                金幣兌換
+                金幣換銀幣
               </button>
               <button
                 class="tab-btn"
@@ -669,7 +725,7 @@ function confirmExchange() {
                 :aria-selected="exchangeDirection === 'silver-to-gold'"
                 @click="setExchangeDirection('silver-to-gold')"
               >
-                銀幣兌換
+                銀幣換金幣
               </button>
             </div>
 
@@ -686,7 +742,7 @@ function confirmExchange() {
             <div class="grid gap-4">
               <div>
                 <label class="input-label" for="exchange-amount">
-                  {{ exchangeDirection === 'gold-to-silver' ? '兌換金幣' : '兌換銀幣' }}
+                  {{ exchangeDirection === 'gold-to-silver' ? '交換金幣' : '交換銀幣' }}
                 </label>
                 <div class="rounded-xl p-4" style="background:rgba(0,0,0,0.3); border:1px solid var(--color-border);">
                   <input
@@ -754,7 +810,7 @@ function confirmExchange() {
                 :style="!canConfirmExchange ? 'opacity:0.5;cursor:not-allowed;' : ''"
                 @click="confirmExchange"
               >
-                確認兌換
+                確認交換
               </button>
             </div>
           </section>
@@ -831,6 +887,68 @@ function confirmExchange() {
 .tab-fade-leave-active { transition: opacity 0.18s; }
 .tab-fade-enter-from,
 .tab-fade-leave-to { opacity: 0; }
+
+.vault-balance-panel,
+.vault-action-panel { min-width: 0; }
+
+.vault-panel-heading,
+.vault-action-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+
+.vault-panel-heading h2,
+.vault-action-heading h2 { margin: 0; color: var(--color-text); font-size: 19px; font-weight: 900; }
+
+.vault-kicker { margin: 0 0 4px; color: var(--color-gold); font-size: 9px; font-weight: 900; letter-spacing: .18em; }
+
+.vault-lock-badge { display: grid; width: 32px; height: 32px; place-items: center; border: 1px solid rgba(192,132,252,.38); border-radius: 10px; color: #c084fc; background: rgba(168,85,247,.12); }
+
+.vault-balance-stack { display: grid; gap: 8px; margin-top: 19px; }
+
+.vault-balance-card { padding: 15px; border: 1px solid rgba(255,255,255,.1); border-radius: 13px; background: rgba(0,0,0,.2); }
+.vault-balance-card.wallet { border-color: rgba(245,200,66,.34); }
+.vault-balance-card.safe { border-color: rgba(192,132,252,.32); }
+.vault-balance-card span,
+.vault-balance-card small { display: block; color: var(--color-text-muted); font-size: 10px; }
+.vault-balance-card strong { display: block; margin: 7px 0 5px; color: var(--color-gold); font-size: 28px; line-height: 1; }
+.vault-balance-card.safe strong { color: #e9d5ff; }
+.vault-transfer-arrow { display: grid; height: 18px; place-items: center; color: var(--color-purple-light); font-size: 18px; }
+
+.vault-balance-note { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 15px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.1); color: var(--color-text-muted); font-size: 10px; }
+.vault-balance-note strong { color: var(--color-gold); font-size: 12px; }
+
+.vault-mode-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding: 5px; border: 1px solid rgba(168,85,247,.2); border-radius: 13px; background: rgba(0,0,0,.18); }
+.vault-mode-tabs .tab-btn { min-height: 38px; border-radius: 9px; font-size: 12px; }
+.vault-action-heading { display: block; text-align: center; }
+.vault-action-heading h2 { font-size: 18px; }
+.vault-action-heading p:last-child { margin: 6px 0 0; color: var(--color-text-muted); font-size: 11px; line-height: 1.6; }
+
+.vault-amount-control { display: flex; align-items: center; gap: 8px; margin-top: 18px; padding: 10px 12px 10px 16px; border: 1px solid var(--color-border); border-radius: 13px; background: rgba(0,0,0,.3); }
+.vault-amount-control input { min-width: 0; flex: 1; background: transparent; color: var(--color-gold); outline: none; font-size: 27px; font-weight: 900; text-align: center; }
+.vault-amount-control > span { color: var(--color-text-muted); font-size: 10px; white-space: nowrap; }
+.vault-max-button { padding: 8px 10px; border: 1px solid rgba(192,132,252,.27); border-radius: 8px; color: var(--color-text-muted); background: rgba(168,85,247,.13); font-size: 10px; font-weight: 900; }
+.vault-max-button:hover { border-color: rgba(245,200,66,.52); color: var(--color-gold); }
+
+.vault-slider-wrap { margin-top: 14px; }
+.vault-slider { width: 100%; accent-color: var(--color-gold); }
+.vault-slider-meta { display: flex; justify-content: space-between; gap: 8px; margin-top: 5px; color: var(--color-text-muted); font-size: 9px; }
+.vault-quick-picks { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.vault-quick-picks button { min-height: 33px; border: 1px solid rgba(192,132,252,.25); border-radius: 8px; color: var(--color-text-muted); background: rgba(168,85,247,.08); font-size: 10px; font-weight: 800; }
+.vault-quick-picks button:hover { border-color: rgba(245,200,66,.46); color: var(--color-gold); background: rgba(245,200,66,.08); }
+.vault-quick-picks button.max { border-color: rgba(245,200,66,.35); color: var(--color-gold); background: rgba(245,200,66,.08); }
+
+.vault-preview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
+.vault-preview-grid > div { padding: 11px 12px; border: 1px solid rgba(255,255,255,.1); border-radius: 10px; background: rgba(0,0,0,.17); }
+.vault-preview-grid span { display: block; color: var(--color-text-muted); font-size: 10px; }
+.vault-preview-grid strong { display: block; margin-top: 5px; color: var(--color-text); font-size: 15px; }
+.vault-submit-disabled { opacity: .5; cursor: not-allowed; }
+
+.exchange-tab-content { width: 100%; max-width: 1180px; margin: 0 auto; }
+.exchange-summary-panel,
+.exchange-form-panel { min-width: 0; }
+.exchange-summary-panel > div { border: 1px solid rgba(255,255,255,.1) !important; background: linear-gradient(145deg, rgba(0,0,0,.26), rgba(168,85,247,.06)) !important; }
+.exchange-summary-panel > div:last-child { border-color: rgba(245,200,66,.28) !important; background: linear-gradient(145deg, rgba(245,200,66,.12), rgba(168,85,247,.08)) !important; }
+.exchange-direction-tabs { padding: 5px; border: 1px solid rgba(168,85,247,.22); border-radius: 13px; background: rgba(0,0,0,.18); }
+.exchange-direction-tabs .tab-btn { min-height: 42px; border-radius: 9px; font-size: 12px; }
+.exchange-form-panel .btn-gold { border-radius: 14px; }
 
 .gift-tab-content {
   display: flex;

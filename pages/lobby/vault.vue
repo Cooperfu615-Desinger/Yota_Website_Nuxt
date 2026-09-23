@@ -3,5 +3,5 @@ definePageMeta({ layout: 'lobby' })
 </script>
 
 <template>
-  <LobbyVaultContent />
+  <LobbyBankHubContent />
 </template>

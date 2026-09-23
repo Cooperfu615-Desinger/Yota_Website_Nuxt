@@ -17,6 +17,16 @@ function isActive(to: string) {
   if (path === '/') return route.path === '/'
   if (path === '/lobby') return route.path === '/lobby'
   if (path === '/lobby/bank') return route.path === '/lobby/bank' || route.path === '/lobby/deposit'
+  if (path === '/lobby/vault') {
+    const expectedTab = query.get('tab')
+    const currentTab = route.query.tab === 'transfer'
+      ? 'gifts'
+      : route.query.tab === 'wallet'
+        ? 'overview'
+        : route.query.tab
+    if (!expectedTab) return route.path === path && !currentTab
+    return route.path === path && (currentTab === expectedTab || (expectedTab === 'overview' && !currentTab))
+  }
   return route.path === path || route.path.startsWith(`${path}/`)
 }
 
@@ -31,12 +41,14 @@ const navSections = [
   ],
   [
     { to: '/lobby/member', label: '個人資訊', icon: '👤' },
-    { to: '/lobby/vault', label: '保險箱/贈禮', icon: '🔐' },
+    { to: '/lobby/vault?tab=overview', label: '錢包總覽', icon: '◈' },
+    { to: '/lobby/vault?tab=vault', label: '保險箱', icon: '🔐' },
+    { to: '/lobby/vault?tab=exchange', label: '交換', icon: '⇄' },
+    { to: '/lobby/vault?tab=gifts', label: '贈禮', icon: '🎁' },
+    { to: '/lobby/vault?tab=records', label: '紀錄', icon: '📋' },
     { to: '/lobby/inbox', label: '信箱', icon: '📬' },
     { to: '/lobby/member?tab=rewards', label: '獎勵卡', icon: '🎁' },
     { to: '/lobby/chat', label: '聊天', icon: '💬' },
-    { to: '/lobby/exchange', label: '兌換', icon: '⇄' },
-    { to: '/lobby/transactions', label: '交易紀錄', icon: '📋' },
     { to: '/lobby/settings', label: '設置', icon: '⚙️' },
   ],
   [
