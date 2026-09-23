@@ -9,45 +9,40 @@ import {
   resolveGameWalletOptions,
 } from '../utils/gameWallets.ts'
 
-test('provides the four supported real-money game wallets', () => {
+test('provides the three supported real-money game wallets', () => {
   assert.deepEqual(GAME_WALLET_OPTIONS.map(wallet => wallet.key), [
-    'stored-gold',
-    'stored-silver',
-    'activity-silver',
+    'gold',
+    'silver',
     'bronze',
   ])
   assert.deepEqual(GAME_WALLET_OPTIONS.map(wallet => wallet.label), [
-    '儲值金幣',
-    '儲值銀幣',
-    '活動銀幣',
+    '金幣',
+    '銀幣',
     '銅幣',
   ])
 })
 
-test('defaults real-money games to stored gold and resolves its label', () => {
-  assert.equal(DEFAULT_GAME_WALLET, 'stored-gold')
-  assert.equal(getGameWalletLabel(DEFAULT_GAME_WALLET), '儲值金幣')
+test('defaults real-money games to gold and resolves its label', () => {
+  assert.equal(DEFAULT_GAME_WALLET, 'gold')
+  assert.equal(getGameWalletLabel(DEFAULT_GAME_WALLET), '金幣')
 })
 
 test('shows the mock balance after every wallet option', () => {
   assert.deepEqual(GAME_WALLET_OPTIONS.map(getGameWalletDisplayLabel), [
-    '儲值金幣 — 10,000,000',
-    '儲值銀幣 — 10,000,000',
-    '活動銀幣 — 250,000',
+    '金幣 — 10,000,000',
+    '銀幣 — 10,000,000',
     '銅幣 — 10,000,000',
   ])
 })
 
-test('resolves live stored and activity wallet balances', () => {
+test('resolves live wallet balances', () => {
   assert.deepEqual(resolveGameWalletOptions({
-    storedGold: 10_005_000,
-    storedSilver: 10_010_000,
-    activitySilver: 40_000,
+    gold: 10_005_000,
+    silver: 10_010_000,
     bronze: 20_000_000,
   }).map(getGameWalletDisplayLabel), [
-    '儲值金幣 — 10,005,000',
-    '儲值銀幣 — 10,010,000',
-    '活動銀幣 — 40,000',
+    '金幣 — 10,005,000',
+    '銀幣 — 10,010,000',
     '銅幣 — 20,000,000',
   ])
 })

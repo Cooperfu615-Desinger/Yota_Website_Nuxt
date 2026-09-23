@@ -30,7 +30,7 @@ function enterSelected() { if (selectedId.value) emit('enter', selectedId.value)
   <Teleport to="body">
     <Transition name="seat-fade" appear><div class="seat-overlay" role="dialog" aria-modal="true" aria-label="選擇機台" @click.self="emit('close')"><article class="seat-panel">
       <header class="seat-header"><button class="seat-back" @click="emit('back')">← 返回</button><div><p>LIVE MACHINE MAP</p><h2>{{ game?.name }}・選擇機台</h2></div><button class="seat-close" aria-label="關閉" @click="emit('close')">×</button></header>
-      <div class="seat-toolbar"><div class="seat-status-tabs"><button v-for="filter in ([['all','全部'],['available','空閒'],['occupied','使用中'],['maintenance','維護']] as const)" :key="filter[0]" :class="{ active: statusFilter === filter[0] }" @click="statusFilter = filter[0]">{{ filter[1] }}</button></div><span>{{ mode === 'real' ? '真錢模式' : '試玩模式' }}・共 {{ filteredMachines.length }} 台</span></div>
+      <div class="seat-toolbar"><div class="seat-status-tabs"><button v-for="filter in ([['all','全部'],['available','空閒'],['occupied','使用中'],['maintenance','維護']] as const)" :key="filter[0]" :class="{ active: statusFilter === filter[0] }" @click="statusFilter = filter[0]">{{ filter[1] }}</button></div><span>{{ mode === 'real' ? '立即玩' : '試玩模式' }}・共 {{ filteredMachines.length }} 台</span></div>
       <p v-if="notice" class="seat-notice">{{ notice }}</p>
       <div class="seat-body">
         <div class="machine-grid">

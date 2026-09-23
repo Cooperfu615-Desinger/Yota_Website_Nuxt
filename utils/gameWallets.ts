@@ -1,9 +1,8 @@
-import { DEFAULT_WALLET_BALANCE } from './wallets'
+import { DEFAULT_WALLET_BALANCE } from './wallets.ts'
 
 export type GameWalletKey =
-  | 'stored-gold'
-  | 'stored-silver'
-  | 'activity-silver'
+  | 'gold'
+  | 'silver'
   | 'bronze'
 
 export interface GameWalletOption {
@@ -13,27 +12,23 @@ export interface GameWalletOption {
 }
 
 export interface GameWalletBalances {
-  storedGold: number
-  storedSilver: number
-  activitySilver: number
+  gold: number
+  silver: number
   bronze: number
 }
 
-export const DEFAULT_GAME_WALLET: GameWalletKey = 'stored-gold'
-export const DEFAULT_ACTIVITY_WALLET_BALANCE = 250_000
+export const DEFAULT_GAME_WALLET: GameWalletKey = 'gold'
 
 export const GAME_WALLET_OPTIONS: GameWalletOption[] = [
-  { key: 'stored-gold', label: '儲值金幣', amount: DEFAULT_WALLET_BALANCE },
-  { key: 'stored-silver', label: '儲值銀幣', amount: DEFAULT_WALLET_BALANCE },
-  { key: 'activity-silver', label: '活動銀幣', amount: DEFAULT_ACTIVITY_WALLET_BALANCE },
+  { key: 'gold', label: '金幣', amount: DEFAULT_WALLET_BALANCE },
+  { key: 'silver', label: '銀幣', amount: DEFAULT_WALLET_BALANCE },
   { key: 'bronze', label: '銅幣', amount: DEFAULT_WALLET_BALANCE },
 ]
 
 export function resolveGameWalletOptions(balances: GameWalletBalances): GameWalletOption[] {
   const amountByKey: Record<GameWalletKey, number> = {
-    'stored-gold': balances.storedGold,
-    'stored-silver': balances.storedSilver,
-    'activity-silver': balances.activitySilver,
+    gold: balances.gold,
+    silver: balances.silver,
     bronze: balances.bronze,
   }
 

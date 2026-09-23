@@ -198,6 +198,8 @@ export interface GameItem {
   provider: string
   imageSrc?: string
   volatility?: string      // '低' | '中' | '高' | '極高'
+  /** 可選的前次 RTP 比較文案；缺少正式比較資料時顯示「尚無比較資料」。 */
+  rtpComparison?: string
   paylines?: string        // '20 線' | 'Megaways' | 'N/A'
   maxMultiplier?: string   // '5,000x' 等
   /** 遊戲大廳篩選用的標準類別；未提供時由 category 推導。 */
