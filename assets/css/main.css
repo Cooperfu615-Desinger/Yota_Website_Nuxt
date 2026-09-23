@@ -1446,12 +1446,9 @@ body {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   overflow: visible;
-  cursor: grab;
-  touch-action: none;
-  user-select: none;
 }
 
-.fp.is-dragging,
+.fp-hero-img.is-dragging,
 .fp-mobile-img-btn.is-dragging {
   cursor: grabbing;
 }
@@ -1468,7 +1465,10 @@ body {
   left: 50%;
   transform: translateX(-50%);
   width: 150%;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
   z-index: 10;
   display: block;
 }
