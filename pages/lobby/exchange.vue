@@ -1,7 +1,9 @@
 <script setup lang="ts">
 definePageMeta({ layout: 'lobby' })
+
+await navigateTo('/lobby/vault?tab=exchange', { replace: true })
 </script>
 
 <template>
-  <LobbyExchangeContent />
+  <span aria-hidden="true" />
 </template>

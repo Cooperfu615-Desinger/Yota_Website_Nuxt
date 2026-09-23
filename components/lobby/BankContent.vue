@@ -9,19 +9,12 @@ const tabs: { key: BankTab; label: string; icon: string }[] = [
 const activeTab = ref<BankTab>('deposit')
 function applyQuery() {
   const tab = route.query.tab
-  if (tab === 'vault' || tab === 'transfer') {
-    const query = tab === 'transfer' && typeof route.query.receiverId === 'string'
-      ? { tab, receiverId: route.query.receiverId }
-      : { tab }
+  if (tab === 'overview' || tab === 'wallet' || tab === 'vault' || tab === 'transfer' || tab === 'gifts' || tab === 'exchange' || tab === 'records') {
+    const normalizedTab = tab === 'wallet' ? 'overview' : tab === 'transfer' ? 'gifts' : tab
+    const query = normalizedTab === 'gifts' && typeof route.query.receiverId === 'string'
+      ? { tab: normalizedTab, receiverId: route.query.receiverId }
+      : { tab: normalizedTab }
     router.replace({ path: '/lobby/vault', query })
-    return
-  }
-  if (tab === 'exchange') {
-    router.replace('/lobby/exchange')
-    return
-  }
-  if (tab === 'records') {
-    router.replace('/lobby/transactions')
     return
   }
   activeTab.value = tab === 'offers' ? 'offers' : 'deposit'
