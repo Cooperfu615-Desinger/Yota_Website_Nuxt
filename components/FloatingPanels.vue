@@ -5,6 +5,7 @@ const router = useRouter()
 const { openAgeGate } = useAgeGateState()
 
 const base = baseURL.replace(/\/$/, '')
+const APP_LOBBY_URL = 'https://yota-lub-new-391ec6.git-pages.elitepro.ltd/'
 
 type FloatingPanelKey = 'deposit-mobile' | 'play-mobile' | 'deposit-desktop' | 'play-desktop'
 type FloatingPanelPosition = { active: boolean; left: number; top: number }
@@ -108,12 +109,12 @@ function handlePanelAction(key: FloatingPanelKey, action: () => void) {
   action()
 }
 
-function handlePlay() {
-  if (isLoggedIn.value) {
-    openAgeGate(() => router.push('/lobby'))
-  } else {
-    openLogin()
-  }
+function openAppVersion() {
+  window.open(APP_LOBBY_URL, '_blank', 'noopener,noreferrer')
+}
+
+function handleAppPlay() {
+  openAgeGate(openAppVersion)
 }
 
 function handleDeposit() {
@@ -151,8 +152,8 @@ function handleDeposit() {
     @pointermove="movePanelDrag('play-mobile', $event)"
     @pointerup="finishPanelDrag('play-mobile', $event)"
     @pointercancel="finishPanelDrag('play-mobile', $event)"
-    @click="handlePanelAction('play-mobile', handlePlay)"
-    aria-label="立即玩（可拖曳）"
+    @click="handlePanelAction('play-mobile', handleAppPlay)"
+    aria-label="立即玩（開啟 APP，可拖曳）"
   >
     <img :src="`${base}/btn_001.png`" alt="立即玩" />
   </button>
@@ -262,7 +263,7 @@ function handleDeposit() {
           </div>
           <WalletBalances :user="userInfo" variant="compact" class="fp-wallet-list" />
         </div>
-        <button class="fp-btn-primary fp-btn-play" @click="handlePlay">
+        <button class="fp-btn-primary fp-btn-play" @click="handleAppPlay">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true">
             <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
           </svg>
