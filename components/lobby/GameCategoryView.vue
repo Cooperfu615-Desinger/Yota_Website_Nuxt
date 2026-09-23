@@ -44,7 +44,7 @@ function goPage(nextPage: number) {
       @update:search="emit('update:search', $event)"
     />
 
-    <div class="lobby-list-tools">
+    <div v-if="filter.group === 'all'" class="lobby-list-tools">
       <label class="lobby-filter-select">
         <span>排序方式：</span>
         <select :value="sortMode" @change="emit('update:sortMode', ($event.target as HTMLSelectElement).value)">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { siteContent, type GameItem } from '~/data/siteContent'
+import type { GameItem } from '~/data/siteContent'
 import type { LobbyFilterCounts, LobbyFilterState } from '~/utils/lobbyFilters'
 
 defineProps<{
@@ -18,23 +18,10 @@ const emit = defineEmits<{
   play: [key: string, mode: 'real' | 'demo']
 }>()
 
-const { resolvePublicAsset } = usePublicAssetPath()
-const heroBanner = computed(() => siteContent.bannerSlides.find((slide) => slide.imageSrc) ?? siteContent.bannerSlides[0])
 </script>
 
 <template>
   <div class="lobby-game-home">
-    <section class="lobby-game-hero" aria-label="遊戲大廳活動 Banner">
-      <img
-        v-if="heroBanner.imageSrc"
-        :src="resolvePublicAsset(heroBanner.imageSrc)"
-        :alt="heroBanner.imageAlt"
-      />
-      <div v-else class="lobby-game-hero-fallback" :style="{ background: heroBanner.background }">
-        {{ heroBanner.imageAlt }}
-      </div>
-    </section>
-
     <SharedGameFilterBar
       :filter="filter"
       :search="search"

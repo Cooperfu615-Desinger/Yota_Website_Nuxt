@@ -21,6 +21,9 @@ const allGames: GameItem[] = siteContent.lobbyGames.map((game, index) => ({
   imageSrc: game.imageSrc ?? (gameImagePool.length ? gameImagePool[index % gameImagePool.length] : undefined),
 })) as GameItem[]
 
+const { resolvePublicAsset } = usePublicAssetPath()
+const heroBanner = computed(() => siteContent.bannerSlides.find((slide) => slide.imageSrc) ?? siteContent.bannerSlides[0])
+
 const filter = ref<LobbyFilterState>({ ...DEFAULT_LOBBY_FILTER })
 const searchQuery = ref('')
 const sortMode = ref('hot')
@@ -113,6 +116,17 @@ function sortGames(games: GameItem[], mode: string) {
 
 <template>
   <div class="game-grid-wrap">
+    <section class="lobby-game-hero" aria-label="遊戲大廳活動 Banner">
+      <img
+        v-if="heroBanner.imageSrc"
+        :src="resolvePublicAsset(heroBanner.imageSrc)"
+        :alt="heroBanner.imageAlt"
+      />
+      <div v-else class="lobby-game-hero-fallback" :style="{ background: heroBanner.background }">
+        {{ heroBanner.imageAlt }}
+      </div>
+    </section>
+
     <LobbyGameHome
       v-if="showHome"
       :filter="filter"
