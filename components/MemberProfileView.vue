@@ -11,8 +11,6 @@ type BindingProvider = 'phone' | 'google'
 const { isLoggedIn, userInfo, openLogin, updateProfile, setAccountBinding, claimVipReward, vipClaimedRewardLevels } = useAppState()
 const { openLogoutConfirm } = useLogoutState()
 const { activeSection, sessionKey } = useMemberProfileState()
-const { activitySilverBalance } = useRewardCardState()
-const { activityGoldBalance } = usePromoCodeState()
 const fieldIdPrefix = computed(() => props.embedded ? 'member-modal-' : 'member-page-')
 const showVipOverviewModal = ref(false)
 const vipMechanismTab = ref<'overview' | 'rules'>('overview')
@@ -35,6 +33,12 @@ const phoneVerifying = ref(false)
 let phoneTimer: ReturnType<typeof setInterval> | null = null
 
 const profileForm = reactive({ name: '', email: '', birthday: '', bio: '' })
+const loginRecords = [
+  { time: '2026/09/21 14:32:08', channel: 'APP', ip: '192.0.2.18', device: 'iPhone 15 Pro · iOS 18' },
+  { time: '2026/09/20 20:15:36', channel: '官網', ip: '198.51.100.24', device: 'Windows 11 · Chrome' },
+  { time: '2026/09/19 09:48:12', channel: 'APP', ip: '203.0.113.42', device: 'Samsung Galaxy S24 · Android 14' },
+  { time: '2026/09/18 18:06:51', channel: '官網', ip: '192.0.2.36', device: 'macOS · Safari' },
+]
 const avatars = [
   { id: 1, emoji: '🐯', name: '猛虎' }, { id: 2, emoji: '🦁', name: '雄獅' },
   { id: 3, emoji: '🐉', name: '神龍' }, { id: 4, emoji: '🦊', name: '狐狸' },
@@ -55,7 +59,7 @@ const sections = [
   { key: 'profile' as const, label: '基本資料', mark: '人' },
   { key: 'bindings' as const, label: '帳號綁定', mark: '鏈' },
   { key: 'vip' as const, label: 'VIP 等級', mark: 'V' },
-  { key: 'rewards' as const, label: '獎勵卡', mark: '卡' },
+  { key: 'login' as const, label: '登入紀錄', mark: '錄' },
   { key: 'history' as const, label: '遊戲紀錄', mark: '錄' },
 ]
 const vipUpgradeSeed = siteContent.member.vipUpgrade
@@ -268,30 +272,6 @@ async function bindGoogle() {
       <button v-if="props.embedded" class="member-page-close" type="button" aria-label="關閉玩家資料" @click="emit('close')">×</button>
     </header>
 
-    <header class="member-identity">
-      <button class="member-avatar" aria-label="更換頭像" type="button" @click="openAvatarPicker"><span>{{ userInfo.avatar }}</span><i>編輯</i></button>
-      <div class="member-name">
-        <p>PLAYER PROFILE</p>
-        <h2>{{ userInfo.name }}</h2>
-        <div class="member-identity-meta">
-          <span>帳號 {{ userInfo.account }}</span>
-          <span>ID #{{ userInfo.id }}</span>
-          <span v-if="userInfo.authProvider !== 'guest'" class="member-invitation-code">
-            邀請碼 {{ userInfo.invitationCode }}
-            <button type="button" aria-label="複製邀請碼" title="複製邀請碼" @click="copyInvitationCode">複製</button>
-          </span>
-          <span v-else class="member-invitation-code">邀請碼 完成註冊後取得</span>
-          <b>VIP {{ userInfo.vip }}</b>
-        </div>
-      </div>
-      <div class="member-wallet-summary">
-        <WalletBalances :user="userInfo" variant="cards" />
-        <div class="member-activity-balances" aria-label="活動餘額">
-          <div><span>活動金</span><strong>{{ activityGoldBalance.toLocaleString() }}</strong></div>
-          <div><span>活動銀</span><strong>{{ activitySilverBalance.toLocaleString() }}</strong></div>
-        </div>
-      </div>
-    </header>
     <p v-if="profileNotice" class="profile-notice" role="status">{{ profileNotice }}</p>
 
     <div v-if="showAvatarPicker" class="avatar-picker-overlay" role="dialog" aria-modal="true" :aria-labelledby="`${fieldIdPrefix}avatar-picker-title`">
@@ -304,65 +284,110 @@ async function bindGoogle() {
       </section>
     </div>
 
-    <div class="member-sections" role="tablist" aria-label="玩家資料分頁">
-      <button v-for="section in sections" :key="section.key" type="button" role="tab" :aria-selected="activeSection === section.key" :class="{ active: activeSection === section.key }" @click="activeSection = section.key"><span aria-hidden="true">{{ section.mark }}</span>{{ section.label }}</button>
+    <div class="member-profile-shell">
+      <aside class="member-profile-sidebar" aria-label="玩家摘要">
+        <div class="member-sidebar-identity">
+          <button class="member-avatar" aria-label="更換頭像" type="button" @click="openAvatarPicker"><span>{{ userInfo.avatar }}</span><i>編輯</i></button>
+          <p class="member-sidebar-kicker">PLAYER PROFILE</p>
+          <h2 class="member-sidebar-name">{{ userInfo.name }}</h2>
+          <span class="member-sidebar-vip"><span aria-hidden="true">♛</span> VIP {{ userInfo.vip }}</span>
+        </div>
+
+        <div class="member-sidebar-details" aria-label="玩家身份資訊">
+          <div class="member-sidebar-row"><span>帳號</span><strong>{{ userInfo.account }}</strong></div>
+          <div class="member-sidebar-row"><span>ID</span><strong>#{{ userInfo.id }}</strong></div>
+          <div class="member-sidebar-row member-sidebar-invitation">
+            <span>邀請碼</span>
+            <template v-if="userInfo.authProvider !== 'guest'">
+              <strong>{{ userInfo.invitationCode }}</strong>
+              <button type="button" aria-label="複製邀請碼" title="複製邀請碼" @click="copyInvitationCode">複製</button>
+            </template>
+            <strong v-else class="is-muted">完成註冊後取得</strong>
+          </div>
+        </div>
+
+        <section class="member-sidebar-wallet" aria-label="錢包餘額">
+          <div class="member-sidebar-section-heading"><span>錢包餘額</span><small>WALLET</small></div>
+          <WalletBalances :user="userInfo" variant="cards" />
+        </section>
+      </aside>
+
+      <main class="member-profile-main">
+        <div class="member-sections" role="tablist" aria-label="玩家資料分頁">
+          <button v-for="section in sections" :key="section.key" type="button" role="tab" :aria-selected="activeSection === section.key" :class="{ active: activeSection === section.key }" @click="activeSection = section.key"><span aria-hidden="true">{{ section.mark }}</span>{{ section.label }}</button>
+        </div>
+
+        <div class="member-profile-panel">
+          <section v-if="activeSection === 'profile'" class="member-content profile-editor">
+            <header><div><p>EDIT PROFILE</p><h2>編輯個人資料</h2><small class="profile-guide">暱稱與簡介可隨時修改；生日與電子郵件設定後不可再次變更</small></div><button class="btn-gold" type="button" :disabled="profileSaving" @click="saveProfile">{{ profileSaving ? '儲存中…' : '儲存資料' }}</button></header>
+            <div class="profile-grid">
+              <div><label class="input-label" :for="`${fieldIdPrefix}profile-account`">帳號</label><input :id="`${fieldIdPrefix}profile-account`" :value="userInfo.account" class="input-field input-readonly" readonly disabled /></div>
+              <div><label class="input-label" :for="`${fieldIdPrefix}profile-id`">玩家 ID</label><input :id="`${fieldIdPrefix}profile-id`" :value="userInfo.id" class="input-field input-readonly" readonly disabled /></div>
+              <div><label class="input-label" :for="`${fieldIdPrefix}profile-name`">暱稱</label><input :id="`${fieldIdPrefix}profile-name`" v-model="profileForm.name" class="input-field" maxlength="20" :aria-invalid="!!profileErrors.name" :aria-describedby="`${fieldIdPrefix}profile-name-error`" /><small v-if="profileErrors.name" :id="`${fieldIdPrefix}profile-name-error`" class="profile-field-error">{{ profileErrors.name }}</small></div>
+              <div><label class="input-label" :for="`${fieldIdPrefix}profile-email`">電子郵件 <em v-if="userInfo.emailLocked">（已設定）</em></label><input :id="`${fieldIdPrefix}profile-email`" v-model="profileForm.email" type="email" class="input-field" :readonly="userInfo.emailLocked" :disabled="userInfo.emailLocked" :aria-invalid="!!profileErrors.email" :aria-describedby="`${fieldIdPrefix}profile-email-error`" /><small v-if="profileErrors.email" :id="`${fieldIdPrefix}profile-email-error`" class="profile-field-error">{{ profileErrors.email }}</small></div>
+              <div><label class="input-label" :for="`${fieldIdPrefix}profile-birthday`">生日 <em v-if="userInfo.birthdayLocked">（已設定）</em></label><input :id="`${fieldIdPrefix}profile-birthday`" v-model="profileForm.birthday" type="date" class="input-field" min="1900-01-01" :max="birthdayMax" :readonly="userInfo.birthdayLocked" :disabled="userInfo.birthdayLocked" :aria-invalid="!!profileErrors.birthday" :aria-describedby="`${fieldIdPrefix}profile-birthday-error`" /><small v-if="profileErrors.birthday" :id="`${fieldIdPrefix}profile-birthday-error`" class="profile-field-error">{{ profileErrors.birthday }}</small></div>
+              <div><label class="input-label">手機號碼</label><input :value="userInfo.phone || '尚未綁定'" class="input-field input-readonly" readonly disabled /></div>
+              <div class="profile-bio"><label class="input-label" :for="`${fieldIdPrefix}profile-bio`">個人簡介</label><textarea :id="`${fieldIdPrefix}profile-bio`" v-model="profileForm.bio" class="input-field" rows="4" maxlength="120" /><small>{{ profileForm.bio.length }} / 120</small></div>
+            </div>
+          </section>
+
+          <section v-else-if="activeSection === 'bindings'" class="member-content">
+            <header><div><p>ACCOUNT SECURITY</p><h2>帳號綁定</h2></div><span>綁定後無法解除</span></header>
+            <div class="binding-list">
+              <article v-for="option in bindingOptions" :key="option.key">
+                <div class="binding-mark" :class="`provider-${option.key}`">{{ option.mark }}</div>
+                <div><strong>{{ option.label }}</strong><small>{{ option.description }}</small></div>
+                <span :class="{ bound: userInfo.accountBindings[option.key] }">{{ userInfo.accountBindings[option.key] ? '已綁定' : '未綁定' }}</span>
+                <button v-if="option.key === 'phone' && !userInfo.accountBindings.phone" type="button" @click="startPhoneBinding">綁定</button>
+                <button v-else-if="option.key === 'google' && !userInfo.accountBindings.google" type="button" :disabled="bindingLoading === 'google'" @click="bindGoogle">{{ bindingLoading === 'google' ? '連線中…' : '綁定' }}</button>
+                <button v-else type="button" disabled>已綁定</button>
+              </article>
+            </div>
+            <div v-if="bindingStage === 'phone-entry'" class="phone-binding-panel">
+              <label class="input-label" :for="`${fieldIdPrefix}binding-phone`">手機號碼</label>
+              <div class="phone-binding-row"><input :id="`${fieldIdPrefix}binding-phone`" v-model="phoneForm" class="input-field" inputmode="numeric" maxlength="10" placeholder="09xxxxxxxx" @input="phoneForm = phoneForm.replace(/\D/g, '')" /><button type="button" class="btn-gold" @click="sendPhoneCode">發送驗證碼</button></div>
+              <small class="binding-hint">僅支援台灣 09 開頭的 10 碼手機號碼</small>
+              <p v-if="phoneError" class="profile-field-error" role="alert">{{ phoneError }}</p>
+            </div>
+            <div v-else-if="bindingStage === 'phone-code'" class="phone-binding-panel">
+              <label class="input-label" :for="`${fieldIdPrefix}binding-code`">驗證碼</label>
+              <div class="phone-binding-row"><input :id="`${fieldIdPrefix}binding-code`" v-model="phoneCode" class="input-field" inputmode="numeric" maxlength="6" placeholder="請輸入 6 碼驗證碼" @input="phoneCode = phoneCode.replace(/\D/g, '')" /><button type="button" class="btn-gold" :disabled="phoneVerifying || phoneCode.length !== 6" @click="verifyPhoneCode">{{ phoneVerifying ? '驗證中…' : '確認驗證' }}</button></div>
+              <div class="binding-code-meta"><small>測試驗證碼：123456</small><div><button type="button" class="binding-back" @click="startPhoneBinding">返回修改</button><button type="button" :disabled="phoneCountdown > 0" @click="sendPhoneCode">{{ phoneCountdown > 0 ? `${phoneCountdown} 秒後可重發` : '重新發送' }}</button></div></div>
+              <p v-if="phoneError" class="profile-field-error" role="alert">{{ phoneError }}</p>
+            </div>
+          </section>
+
+          <section v-else-if="activeSection === 'vip'" class="member-content vip-content">
+            <header><div><p>VIP JOURNEY</p><h2>VIP {{ userInfo.vip }}・{{ currentVipLevel.name }}</h2></div><button class="btn-outline-purple" type="button" @click="openVipMechanism">VIP機制說明</button></header>
+            <div class="vip-main-grid">
+              <article class="vip-panel vip-current-panel"><div class="vip-panel-label">目前等級</div><strong class="vip-current-number" :style="{ color: currentVipLevel.color }">VIP {{ userInfo.vip }}</strong><b>{{ currentVipLevel.name }}</b><div class="vip-stat-list"><span>歷史最高 <strong>VIP {{ vipUpgrade.highestVip }}</strong></span><span>歷史儲值 <strong>{{ vipUpgrade.historicalDeposit.toLocaleString() }} 金幣</strong></span><span>歷史投注 <strong>{{ vipUpgrade.historicalWager.toLocaleString() }} 金幣</strong></span><span>活躍指數 <strong>0</strong></span></div><small class="vip-muted">活躍指數功能規劃中，數值僅供預覽</small></article>
+              <article class="vip-panel vip-benefit-panel"><div class="vip-panel-label">等級權益</div><div class="vip-benefit-row"><span>贈禮手續費</span><strong>{{ currentVipLevel.p2pFee }}</strong></div><div class="vip-benefit-row"><span>本級升級獎勵</span><strong>{{ currentVipLevel.upgradeReward }}</strong></div><button class="btn-gold vip-reward-button" type="button" :disabled="!currentVipReward || vipRewardClaimed" @click="claimCurrentVipReward">{{ !currentVipReward ? '無可領取獎勵' : vipRewardClaimed ? '已領取' : '領取獎勵' }}</button></article>
+              <article class="vip-panel vip-upgrade-panel"><div class="vip-panel-label">升級條件・全數達成</div><div v-if="isMaxVip" class="vip-max-state">已達目前最高等級</div><div v-else-if="isVip2Undefined" class="vip-undefined-state">VIP2 升級條件待設定</div><template v-else><div class="vip-next-line"><span>下一級 VIP {{ nextVipLevel.level }}・{{ nextVipLevel.name }}</span><strong>{{ nextVipLevel.upgradeRequirement }}</strong></div><div class="vip-progress-row"><span>歷史儲值</span><b>{{ vipUpgrade.deposit.current.toLocaleString() }} / {{ nextVipLevel.historicalDeposit?.toLocaleString() }}</b><i><em :style="{ width: `${depositPct}%` }" /></i></div><div class="vip-progress-row"><span>當月有效投注</span><b>{{ vipUpgrade.wager.current.toLocaleString() }} / {{ nextVipLevel.monthlyWager?.toLocaleString() }}</b><i><em :style="{ width: `${wagerPct}%` }" /></i></div><small class="vip-muted">資料要求：無額外要求</small></template></article>
+              <article class="vip-panel vip-maintain-panel"><div class="vip-panel-label">保級狀態・全數達成</div><div class="vip-maintain-status" :class="{ ready: maintainReady }">{{ vipUpgrade.upgradeProtection ? '本月升級保護中' : maintainReady ? '本月已達保級條件' : '本月保級進度' }}</div><div class="vip-progress-row"><span>月儲值</span><b>{{ vipUpgrade.monthlyDeposit.toLocaleString() }} / {{ currentVipLevel.monthlyDeposit?.toLocaleString() || '無條件' }}</b><i><em :style="{ width: `${maintainDepositPct}%` }" /></i></div><div class="vip-progress-row"><span>月投注</span><b>{{ vipUpgrade.monthlyWager.toLocaleString() }} / {{ currentVipLevel.monthlyWager?.toLocaleString() || '無條件' }}</b><i><em :style="{ width: `${maintainWagerPct}%` }" /></i></div><div class="vip-progress-row"><span>活躍天數</span><b>{{ vipUpgrade.activeDays }} / {{ currentVipLevel.activeDays || '無條件' }} 天</b><i><em :style="{ width: `${maintainActivePct}%` }" /></i></div></article>
+            </div>
+          </section>
+
+          <section v-else-if="activeSection === 'login'" class="member-content member-login-records-content">
+            <header><div><p>LOGIN HISTORY</p><h2>登入紀錄</h2></div><span>示範資料</span></header>
+            <p class="login-records-guide">查看帳號的登入來源與裝置。以下內容僅供版型展示，非你的實際登入紀錄。</p>
+            <div class="login-records-table-wrap">
+              <table class="login-records-table">
+                <thead><tr><th>登入時間</th><th>官網 / APP</th><th>IP</th><th>裝置</th></tr></thead>
+                <tbody><tr v-for="record in loginRecords" :key="record.time"><td>{{ record.time }}</td><td><span class="login-channel"><span aria-hidden="true">{{ record.channel === 'APP' ? '▣' : '▤' }}</span>{{ record.channel }}</span></td><td>{{ record.ip }}</td><td>{{ record.device }}</td></tr></tbody>
+              </table>
+            </div>
+            <small class="login-records-note">時間以 GMT+8 顯示；IP 為文件專用示範位址。</small>
+          </section>
+
+          <section v-else-if="activeSection === 'rewards'" class="member-content member-rewards-content">
+            <LobbyRewardCardContent embedded />
+          </section>
+
+          <section v-else class="member-content"><header><div><p>GAME HISTORY</p><h2>遊戲紀錄</h2></div></header><LobbyGameRecords :key="sessionKey" /></section>
+        </div>
+        <button class="member-logout" type="button" @click="openLogoutConfirm">登出目前帳號</button>
+      </main>
     </div>
-
-    <section v-if="activeSection === 'profile'" class="member-content profile-editor">
-      <header><div><p>EDIT PROFILE</p><h2>編輯個人資料</h2><small class="profile-guide">暱稱與簡介可隨時修改；生日與電子郵件設定後不可再次變更</small></div><button class="btn-gold" type="button" :disabled="profileSaving" @click="saveProfile">{{ profileSaving ? '儲存中…' : '儲存資料' }}</button></header>
-      <div class="profile-grid">
-        <div><label class="input-label" :for="`${fieldIdPrefix}profile-account`">帳號</label><input :id="`${fieldIdPrefix}profile-account`" :value="userInfo.account" class="input-field input-readonly" readonly disabled /></div>
-        <div><label class="input-label" :for="`${fieldIdPrefix}profile-id`">玩家 ID</label><input :id="`${fieldIdPrefix}profile-id`" :value="userInfo.id" class="input-field input-readonly" readonly disabled /></div>
-        <div><label class="input-label" :for="`${fieldIdPrefix}profile-name`">暱稱</label><input :id="`${fieldIdPrefix}profile-name`" v-model="profileForm.name" class="input-field" maxlength="20" :aria-invalid="!!profileErrors.name" :aria-describedby="`${fieldIdPrefix}profile-name-error`" /><small v-if="profileErrors.name" :id="`${fieldIdPrefix}profile-name-error`" class="profile-field-error">{{ profileErrors.name }}</small></div>
-        <div><label class="input-label" :for="`${fieldIdPrefix}profile-email`">電子郵件 <em v-if="userInfo.emailLocked">（已設定）</em></label><input :id="`${fieldIdPrefix}profile-email`" v-model="profileForm.email" type="email" class="input-field" :readonly="userInfo.emailLocked" :disabled="userInfo.emailLocked" :aria-invalid="!!profileErrors.email" :aria-describedby="`${fieldIdPrefix}profile-email-error`" /><small v-if="profileErrors.email" :id="`${fieldIdPrefix}profile-email-error`" class="profile-field-error">{{ profileErrors.email }}</small></div>
-        <div><label class="input-label" :for="`${fieldIdPrefix}profile-birthday`">生日 <em v-if="userInfo.birthdayLocked">（已設定）</em></label><input :id="`${fieldIdPrefix}profile-birthday`" v-model="profileForm.birthday" type="date" class="input-field" min="1900-01-01" :max="birthdayMax" :readonly="userInfo.birthdayLocked" :disabled="userInfo.birthdayLocked" :aria-invalid="!!profileErrors.birthday" :aria-describedby="`${fieldIdPrefix}profile-birthday-error`" /><small v-if="profileErrors.birthday" :id="`${fieldIdPrefix}profile-birthday-error`" class="profile-field-error">{{ profileErrors.birthday }}</small></div>
-        <div><label class="input-label">手機號碼</label><input :value="userInfo.phone || '尚未綁定'" class="input-field input-readonly" readonly disabled /></div>
-        <div class="profile-bio"><label class="input-label" :for="`${fieldIdPrefix}profile-bio`">個人簡介</label><textarea :id="`${fieldIdPrefix}profile-bio`" v-model="profileForm.bio" class="input-field" rows="4" maxlength="120" /><small>{{ profileForm.bio.length }} / 120</small></div>
-      </div>
-    </section>
-
-    <section v-else-if="activeSection === 'bindings'" class="member-content">
-      <header><div><p>ACCOUNT SECURITY</p><h2>帳號綁定</h2></div><span>綁定後無法解除</span></header>
-      <div class="binding-list">
-        <article v-for="option in bindingOptions" :key="option.key">
-          <div class="binding-mark" :class="`provider-${option.key}`">{{ option.mark }}</div>
-          <div><strong>{{ option.label }}</strong><small>{{ option.description }}</small></div>
-          <span :class="{ bound: userInfo.accountBindings[option.key] }">{{ userInfo.accountBindings[option.key] ? '已綁定' : '未綁定' }}</span>
-          <button v-if="option.key === 'phone' && !userInfo.accountBindings.phone" type="button" @click="startPhoneBinding">綁定</button>
-          <button v-else-if="option.key === 'google' && !userInfo.accountBindings.google" type="button" :disabled="bindingLoading === 'google'" @click="bindGoogle">{{ bindingLoading === 'google' ? '連線中…' : '綁定' }}</button>
-          <button v-else type="button" disabled>已綁定</button>
-        </article>
-      </div>
-      <div v-if="bindingStage === 'phone-entry'" class="phone-binding-panel">
-        <label class="input-label" :for="`${fieldIdPrefix}binding-phone`">手機號碼</label>
-        <div class="phone-binding-row"><input :id="`${fieldIdPrefix}binding-phone`" v-model="phoneForm" class="input-field" inputmode="numeric" maxlength="10" placeholder="09xxxxxxxx" @input="phoneForm = phoneForm.replace(/\D/g, '')" /><button type="button" class="btn-gold" @click="sendPhoneCode">發送驗證碼</button></div>
-        <small class="binding-hint">僅支援台灣 09 開頭的 10 碼手機號碼</small>
-        <p v-if="phoneError" class="profile-field-error" role="alert">{{ phoneError }}</p>
-      </div>
-      <div v-else-if="bindingStage === 'phone-code'" class="phone-binding-panel">
-        <label class="input-label" :for="`${fieldIdPrefix}binding-code`">驗證碼</label>
-        <div class="phone-binding-row"><input :id="`${fieldIdPrefix}binding-code`" v-model="phoneCode" class="input-field" inputmode="numeric" maxlength="6" placeholder="請輸入 6 碼驗證碼" @input="phoneCode = phoneCode.replace(/\D/g, '')" /><button type="button" class="btn-gold" :disabled="phoneVerifying || phoneCode.length !== 6" @click="verifyPhoneCode">{{ phoneVerifying ? '驗證中…' : '確認驗證' }}</button></div>
-        <div class="binding-code-meta"><small>測試驗證碼：123456</small><div><button type="button" class="binding-back" @click="startPhoneBinding">返回修改</button><button type="button" :disabled="phoneCountdown > 0" @click="sendPhoneCode">{{ phoneCountdown > 0 ? `${phoneCountdown} 秒後可重發` : '重新發送' }}</button></div></div>
-        <p v-if="phoneError" class="profile-field-error" role="alert">{{ phoneError }}</p>
-      </div>
-    </section>
-
-    <section v-else-if="activeSection === 'vip'" class="member-content vip-content">
-      <header><div><p>VIP JOURNEY</p><h2>VIP {{ userInfo.vip }}・{{ currentVipLevel.name }}</h2></div><button class="btn-outline-purple" type="button" @click="openVipMechanism">VIP機制說明</button></header>
-      <div class="vip-main-grid">
-        <article class="vip-panel vip-current-panel"><div class="vip-panel-label">目前等級</div><strong class="vip-current-number" :style="{ color: currentVipLevel.color }">VIP {{ userInfo.vip }}</strong><b>{{ currentVipLevel.name }}</b><div class="vip-stat-list"><span>歷史最高 <strong>VIP {{ vipUpgrade.highestVip }}</strong></span><span>歷史儲值 <strong>{{ vipUpgrade.historicalDeposit.toLocaleString() }} 金幣</strong></span><span>歷史投注 <strong>{{ vipUpgrade.historicalWager.toLocaleString() }} 金幣</strong></span><span>活躍指數 <strong>0</strong></span></div><small class="vip-muted">活躍指數功能規劃中，數值僅供預覽</small></article>
-        <article class="vip-panel vip-benefit-panel"><div class="vip-panel-label">等級權益</div><div class="vip-benefit-row"><span>贈禮手續費</span><strong>{{ currentVipLevel.p2pFee }}</strong></div><div class="vip-benefit-row"><span>本級升級獎勵</span><strong>{{ currentVipLevel.upgradeReward }}</strong></div><button class="btn-gold vip-reward-button" type="button" :disabled="!currentVipReward || vipRewardClaimed" @click="claimCurrentVipReward">{{ !currentVipReward ? '無可領取獎勵' : vipRewardClaimed ? '已領取' : '領取獎勵' }}</button></article>
-        <article class="vip-panel vip-upgrade-panel"><div class="vip-panel-label">升級條件・全數達成</div><div v-if="isMaxVip" class="vip-max-state">已達目前最高等級</div><div v-else-if="isVip2Undefined" class="vip-undefined-state">VIP2 升級條件待設定</div><template v-else><div class="vip-next-line"><span>下一級 VIP {{ nextVipLevel.level }}・{{ nextVipLevel.name }}</span><strong>{{ nextVipLevel.upgradeRequirement }}</strong></div><div class="vip-progress-row"><span>歷史儲值</span><b>{{ vipUpgrade.deposit.current.toLocaleString() }} / {{ nextVipLevel.historicalDeposit?.toLocaleString() }}</b><i><em :style="{ width: `${depositPct}%` }" /></i></div><div class="vip-progress-row"><span>當月有效投注</span><b>{{ vipUpgrade.wager.current.toLocaleString() }} / {{ nextVipLevel.monthlyWager?.toLocaleString() }}</b><i><em :style="{ width: `${wagerPct}%` }" /></i></div><small class="vip-muted">資料要求：無額外要求</small></template></article>
-        <article class="vip-panel vip-maintain-panel"><div class="vip-panel-label">保級狀態・全數達成</div><div class="vip-maintain-status" :class="{ ready: maintainReady }">{{ vipUpgrade.upgradeProtection ? '本月升級保護中' : maintainReady ? '本月已達保級條件' : '本月保級進度' }}</div><div class="vip-progress-row"><span>月儲值</span><b>{{ vipUpgrade.monthlyDeposit.toLocaleString() }} / {{ currentVipLevel.monthlyDeposit?.toLocaleString() || '無條件' }}</b><i><em :style="{ width: `${maintainDepositPct}%` }" /></i></div><div class="vip-progress-row"><span>月投注</span><b>{{ vipUpgrade.monthlyWager.toLocaleString() }} / {{ currentVipLevel.monthlyWager?.toLocaleString() || '無條件' }}</b><i><em :style="{ width: `${maintainWagerPct}%` }" /></i></div><div class="vip-progress-row"><span>活躍天數</span><b>{{ vipUpgrade.activeDays }} / {{ currentVipLevel.activeDays || '無條件' }} 天</b><i><em :style="{ width: `${maintainActivePct}%` }" /></i></div></article>
-      </div>
-    </section>
-
-    <section v-else-if="activeSection === 'rewards'" class="member-content member-rewards-content">
-      <LobbyRewardCardContent embedded />
-    </section>
-
-    <section v-else class="member-content"><header><div><p>GAME HISTORY</p><h2>遊戲紀錄</h2></div></header><LobbyGameRecords :key="sessionKey" /></section>
-    <button class="member-logout" type="button" @click="openLogoutConfirm">登出目前帳號</button>
 
     <div v-if="showProfileConfirm" class="profile-confirm-overlay" role="alertdialog" aria-modal="true" :aria-labelledby="`${fieldIdPrefix}profile-confirm-title`">
       <div class="profile-confirm-card"><h2 :id="`${fieldIdPrefix}profile-confirm-title`">確認儲存一次性資料？</h2><p>以下資料儲存後將無法再次修改：</p><ul><li v-if="!userInfo.birthdayLocked && pendingProfileSave?.birthday">生日</li><li v-if="!userInfo.emailLocked && pendingProfileSave?.email">電子郵件</li></ul><div><button type="button" class="btn-outline-purple" @click="cancelProfileSave">返回修改</button><button type="button" class="btn-gold" :disabled="profileSaving" @click="commitProfileSave">{{ profileSaving ? '儲存中…' : '確認並儲存' }}</button></div></div>
@@ -407,20 +432,34 @@ async function bindGoogle() {
 .member-profile-view--embedded { max-width: none; }
 .member-page-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:14px; }
 .member-page-heading h1 { margin: 3px 0 0; font-size: 24px; font-weight: 900; }
-.section-kicker,.member-name p,.member-content header p,.avatar-picker header p,.member-modal-kicker { margin:0; color:var(--color-gold); font-size:8px; font-weight:900; letter-spacing:.17em; }
+.section-kicker,.member-content header p,.avatar-picker header p,.member-modal-kicker { margin:0; color:var(--color-gold); font-size:8px; font-weight:900; letter-spacing:.17em; }
 .member-page-close { padding: 1px 9px; color:var(--color-text-muted); background:none; font-size:28px; line-height:1; }
-.member-identity { display:grid; grid-template-columns:92px minmax(180px,1fr) minmax(300px,430px); align-items:center; gap:18px; padding:18px; margin-bottom:14px; border:1px solid rgba(245,200,66,.23); border-radius:20px; background:linear-gradient(145deg,rgba(245,200,66,.07),rgba(168,85,247,.06)); }
-.member-avatar { position:relative; width:82px; height:82px; border:3px solid var(--color-gold); border-radius:50%; background:linear-gradient(145deg,#6b21a8,#a855f7); font-size:38px; }
-.member-avatar i { position:absolute; left:50%; bottom:-7px; transform:translateX(-50%); padding:3px 8px; border-radius:99px; color:#1b0a25; background:var(--color-gold); font-size:8px; font-style:normal; font-weight:900; }
-.member-name h2 { margin:4px 0; font-size:25px; }
-.member-identity-meta { display:flex; flex-wrap:wrap; gap:7px; }
-.member-identity-meta span,.member-identity-meta b { padding:4px 7px; border-radius:7px; color:var(--color-text-muted); background:rgba(255,255,255,.05); font-size:8px; }
-.member-invitation-code { display:inline-flex; align-items:center; gap:5px; }.member-invitation-code button { padding:2px 5px; border:1px solid rgba(245,200,66,.3); border-radius:5px; color:var(--color-gold); background:rgba(245,200,66,.08); font-size:7px; font-weight:800; }
-.member-identity-meta b { color:var(--color-gold); }
-.member-wallet-summary { display:grid; gap:8px; min-width:0; }
-.member-activity-balances { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
-.member-activity-balances>div { min-width:0; padding:7px 9px; border:1px solid rgba(255,255,255,.1); border-radius:9px; background:rgba(0,0,0,.16); }.member-activity-balances span { display:block; color:var(--color-text-muted); font-size:8px; }.member-activity-balances strong { display:block; margin-top:3px; overflow:hidden; color:var(--color-text); font-size:12px; text-align:right; text-overflow:ellipsis; }
-.profile-notice { padding:9px 12px; border:1px solid rgba(74,222,128,.25); border-radius:9px; color:#86efac; background:rgba(74,222,128,.08); font-size:10px; }
+.profile-notice { padding:9px 12px; margin-bottom:12px; border:1px solid rgba(74,222,128,.25); border-radius:9px; color:#86efac; background:rgba(74,222,128,.08); font-size:10px; }
+.member-profile-shell { display:grid; grid-template-columns:260px minmax(0,1fr); min-height:560px; overflow:hidden; border:1px solid rgba(245,200,66,.2); border-radius:20px; background:linear-gradient(145deg,rgba(245,200,66,.045),rgba(168,85,247,.08)); box-shadow:0 16px 44px rgba(0,0,0,.2); }
+.member-profile-sidebar { min-width:0; padding:18px; border-right:1px solid rgba(255,255,255,.1); background:linear-gradient(180deg,rgba(31,17,65,.82),rgba(18,9,43,.72)); }
+.member-sidebar-identity { display:flex; flex-direction:column; align-items:center; text-align:center; }
+.member-avatar { position:relative; width:82px; height:82px; border:3px solid var(--color-gold); border-radius:50%; background:linear-gradient(145deg,#6b21a8,#a855f7); font-size:38px; box-shadow:0 0 24px rgba(168,85,247,.3); }
+.member-avatar i { position:absolute; left:50%; bottom:-7px; transform:translateX(-50%); padding:3px 8px; border-radius:99px; color:#1b0a25; background:var(--color-gold); font-size:8px; font-style:normal; font-weight:900; white-space:nowrap; }
+.member-sidebar-kicker { margin:12px 0 0; color:var(--color-gold); font-size:8px; font-weight:900; letter-spacing:.17em; }
+.member-sidebar-name { max-width:100%; margin:3px 0 0; overflow:hidden; color:var(--color-text); font-size:18px; font-weight:900; text-overflow:ellipsis; white-space:nowrap; }
+.member-sidebar-vip { display:inline-flex; align-items:center; gap:5px; padding:5px 11px; margin-top:9px; border:1px solid rgba(245,200,66,.3); border-radius:999px; color:var(--color-gold); background:rgba(245,200,66,.08); font-size:10px; font-weight:900; }
+.member-sidebar-details { display:grid; gap:6px; margin-top:18px; }
+.member-sidebar-row { display:flex; align-items:center; gap:8px; min-width:0; padding:9px 10px; border:1px solid rgba(255,255,255,.1); border-radius:10px; background:rgba(255,255,255,.045); }
+.member-sidebar-row>span { flex-shrink:0; color:var(--color-text-muted); font-size:9px; font-weight:800; }
+.member-sidebar-row>strong { min-width:0; margin-left:auto; overflow:hidden; color:var(--color-text); font-size:10px; font-weight:800; text-align:right; text-overflow:ellipsis; white-space:nowrap; }
+.member-sidebar-row>strong.is-muted { color:var(--color-text-muted); font-size:8px; font-weight:700; }
+.member-sidebar-invitation button { flex-shrink:0; padding:3px 6px; border:1px solid rgba(245,200,66,.3); border-radius:6px; color:var(--color-gold); background:rgba(245,200,66,.08); font-size:8px; font-weight:800; }
+.member-sidebar-wallet { padding:13px 11px; margin-top:14px; border:1px solid rgba(255,255,255,.12); border-radius:14px; background:rgba(0,0,0,.16); }
+.member-sidebar-section-heading { display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:8px; }
+.member-sidebar-section-heading span { color:var(--color-text); font-size:11px; font-weight:900; }
+.member-sidebar-section-heading small { color:var(--color-text-muted); font-size:7px; font-weight:900; letter-spacing:.12em; }
+.member-profile-sidebar .wallet-balances.cards { display:flex; flex-direction:column; gap:5px; }
+.member-profile-sidebar .wallet-balances.cards .wallet-balance-item { display:flex; align-items:center; justify-content:space-between; gap:7px; padding:7px 9px; border-color:rgba(255,255,255,.08); border-radius:8px; }
+.member-profile-sidebar .wallet-balances.cards .wallet-label { margin:0; font-size:9px; }
+.member-profile-sidebar .wallet-balances.cards .wallet-amount { font-size:11px; }
+.member-profile-main { display:flex; min-width:0; min-height:0; flex-direction:column; padding:18px; background:linear-gradient(155deg,rgba(44,59,158,.18),rgba(32,43,130,.1)); }
+.member-profile-panel { min-height:0; flex:1; overflow-y:auto; padding-right:3px; scrollbar-color:rgba(192,132,252,.55) transparent; scrollbar-width:thin; }
+.member-profile-panel::-webkit-scrollbar { width:6px; }.member-profile-panel::-webkit-scrollbar-thumb { border-radius:99px; background:rgba(192,132,252,.55); }
 .avatar-picker { padding:16px; margin-bottom:14px; border:1px solid var(--color-border); border-radius:17px; background:rgba(15,0,32,.72); }
 .avatar-picker-overlay { position:fixed; inset:0; z-index:1050; display:grid; place-items:center; overflow-y:auto; padding:16px; background:rgba(0,0,0,.58); backdrop-filter:blur(5px); }
 .avatar-picker-overlay .avatar-picker { width:min(760px,100%); max-height:calc(100dvh - 32px); overflow-y:auto; margin:0; box-shadow:0 18px 55px rgba(0,0,0,.55); }
@@ -437,9 +476,18 @@ async function bindGoogle() {
 .avatar-save { width:100%; justify-content:center; margin-top:12px; }.avatar-save:disabled { opacity:.45; cursor:not-allowed; }
 .avatar-frame-coming { display:flex; flex-direction:column; align-items:center; gap:5px; padding:24px 12px; border:1px dashed var(--color-border); border-radius:12px; color:var(--color-text-muted); }.avatar-frame-coming>span { color:var(--color-gold); font-size:30px; }.avatar-frame-coming strong { color:var(--color-text); font-size:12px; }.avatar-frame-coming small { font-size:9px; }.avatar-frame-coming button { padding:7px 12px; margin-top:6px; border:1px solid rgba(255,255,255,.1); border-radius:8px; color:var(--color-text-muted); background:rgba(255,255,255,.05); font-size:9px; }
 .member-sections { display:grid; grid-template-columns:repeat(5,1fr); gap:7px; padding:6px; margin-bottom:14px; border:1px solid var(--color-border); border-radius:15px; background:rgba(15,0,32,.58); }
-.member-sections button { display:flex; align-items:center; justify-content:center; gap:7px; padding:10px; border-radius:10px; color:var(--color-text-muted); font-size:10px; font-weight:800; }
+.member-sections button { display:flex; align-items:center; justify-content:center; gap:7px; padding:10px; border-radius:16px; color:var(--color-text-muted); font-size:16px; font-weight:800; }
 .member-sections button span { display:grid; width:23px; height:23px; place-items:center; border-radius:7px; background:rgba(168,85,247,.1); font-size:8px; }.member-sections button.active { color:#1b0a25; background:var(--color-gold); }
 .member-content { padding:20px; margin-bottom:14px; border:1px solid var(--color-border); border-radius:18px; background:rgba(26,10,46,.66); }.member-content header>span { color:var(--color-text-muted); font-size:9px; }
+.login-records-guide { margin:0 0 14px; color:var(--color-text-muted); font-size:10px; line-height:1.7; }
+.login-records-table-wrap { overflow-x:auto; border:1px solid rgba(255,255,255,.1); border-radius:12px; background:rgba(0,0,0,.14); }
+.login-records-table { width:100%; min-width:620px; border-collapse:collapse; color:var(--color-text); font-size:10px; }
+.login-records-table th { padding:11px 12px; color:var(--color-gold); background:rgba(168,85,247,.12); font-size:9px; font-weight:900; text-align:left; white-space:nowrap; }
+.login-records-table td { padding:12px; border-top:1px solid rgba(255,255,255,.07); color:var(--color-text-muted); white-space:nowrap; }
+.login-records-table tbody tr:hover td { background:rgba(168,85,247,.08); color:var(--color-text); }
+.login-channel { display:inline-flex; align-items:center; gap:6px; color:var(--color-text); font-weight:800; }
+.login-channel>span { display:grid; width:22px; height:22px; place-items:center; border-radius:6px; color:var(--color-gold); background:rgba(245,200,66,.1); font-size:11px; }
+.login-records-note { display:block; margin-top:10px; color:var(--color-text-muted); font-size:9px; }
 .profile-grid { display:grid; grid-template-columns:1fr 1fr; gap:13px; }.profile-bio { position:relative; grid-column:1/-1; }.profile-bio textarea { resize:vertical; }.profile-bio small { position:absolute; right:8px; bottom:7px; color:var(--color-text-muted); font-size:8px; }
 .profile-grid em { color:var(--color-text-muted); font-size:8px; font-style:normal; }.input-readonly { opacity:.65; cursor:not-allowed; }.profile-field-error { display:block; margin-top:5px; color:#fca5a5; font-size:9px; }.profile-guide { display:block; max-width:420px; margin-top:5px; color:var(--color-text-muted); font-size:9px; line-height:1.55; }
 .binding-list { display:grid; gap:8px; }.binding-list article { display:grid; grid-template-columns:40px 1fr auto 70px; align-items:center; gap:11px; padding:12px; border:1px solid rgba(255,255,255,.07); border-radius:12px; background:rgba(0,0,0,.14); }.binding-mark { display:grid; width:38px; height:38px; place-items:center; border-radius:11px; color:#fff; background:#6b21a8; font-size:11px; font-weight:900; }.provider-facebook { background:#1877f2; }.provider-line { background:#06c755; }.provider-apple { background:#555; }.provider-google { background:#ea4335; }.binding-list article>div:nth-child(2) { display:flex; flex-direction:column; }.binding-list strong { font-size:11px; }.binding-list small { color:var(--color-text-muted); font-size:8px; }.binding-list article>span { padding:4px 7px; border-radius:99px; color:var(--color-text-muted); background:rgba(255,255,255,.05); font-size:8px; }.binding-list article>span.bound { color:#86efac; background:rgba(74,222,128,.08); }.binding-list article>button { padding:7px; border:1px solid var(--color-border); border-radius:8px; color:var(--color-purple-light); font-size:9px; font-weight:800; }
@@ -450,6 +498,6 @@ async function bindGoogle() {
 .vip-reward-button { width:100%; justify-content:center; margin-top:10px; padding:9px 14px; font-size:10px; box-shadow:none; }.vip-reward-button:disabled { opacity:.45; cursor:not-allowed; transform:none; box-shadow:none; }.vip-mechanism-tabs { display:flex; gap:6px; margin-bottom:12px; }.vip-mechanism-tabs button { flex:1; padding:9px 12px; border:1px solid var(--color-border); border-radius:9px; color:var(--color-text-muted); background:rgba(168,85,247,.06); font-size:10px; font-weight:800; }.vip-mechanism-tabs button.active { color:#1b0a25; border-color:var(--color-gold); background:var(--color-gold); }.vip-rules-grid { display:grid; gap:9px; max-height:60vh; overflow:auto; }.vip-rule-card { padding:13px; border:1px solid rgba(255,255,255,.12); border-radius:11px; background:rgba(15,0,32,.24); }.vip-rule-card h3 { margin:0; color:var(--color-gold); font-size:11px; }.vip-rule-card p { margin:5px 0 0; color:var(--color-text-muted); font-size:10px; line-height:1.7; }
 .member-logout { width:100%; padding:11px; border:1px solid rgba(248,113,113,.24); border-radius:11px; color:#fca5a5; background:rgba(248,113,113,.07); font-size:10px; font-weight:900; }.member-modal-kicker { text-align:center; }.vip-benefits { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }.vip-benefits>div { padding:12px; border:1px solid rgba(245,200,66,.17); border-radius:11px; background:rgba(245,200,66,.05); }.vip-benefits span,.vip-benefits strong { display:block; }.vip-benefits span { color:var(--color-text-muted); font-size:8px; }.vip-benefits strong { margin-top:3px; color:var(--color-gold); font-size:14px; }.vip-condition { padding:12px; margin-top:8px; border:1px solid var(--color-border); border-radius:11px; background:rgba(168,85,247,.07); }.vip-condition span { color:var(--color-purple-light); font-size:9px; font-weight:900; }.vip-condition p { margin:5px 0 0; color:var(--color-text-muted); font-size:10px; line-height:1.7; }
 .profile-confirm-overlay { position:fixed; inset:0; z-index:1100; display:grid; place-items:center; padding:16px; background:rgba(0,0,0,.58); backdrop-filter:blur(4px); }.profile-confirm-card { width:min(420px,100%); padding:22px; border:1px solid rgba(255,255,255,.22); border-radius:17px; background:linear-gradient(160deg,#3a315d,#211a3c); box-shadow:0 16px 48px rgba(0,0,0,.5); }.profile-confirm-card h2 { margin:0 0 8px; font-size:18px; }.profile-confirm-card p { margin:0; color:var(--color-text-muted); font-size:11px; line-height:1.7; }.profile-confirm-card ul { margin:8px 0 0; padding-left:18px; color:var(--color-text); font-size:11px; line-height:1.7; }.profile-confirm-card>div { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }.profile-confirm-card button { min-width:92px; justify-content:center; }
-@media(max-width:800px){.member-identity{grid-template-columns:74px 1fr}.member-wallet-summary{grid-column:1/-1}.member-avatar{width:68px;height:68px}.avatar-grid{grid-template-columns:repeat(5,1fr)}.vip-main-grid{grid-template-columns:1fr}.vip-level-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:520px){.member-sections{grid-template-columns:1fr 1fr}.profile-grid,.vip-progress-grid{grid-template-columns:1fr}.binding-list article{grid-template-columns:36px 1fr auto}.binding-list article>span{display:none}.phone-binding-row{flex-direction:column}.phone-binding-row .btn-gold{width:100%;justify-content:center}.vip-level-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){.member-profile-shell{grid-template-columns:1fr;min-height:0}.member-profile-sidebar{display:grid;grid-template-columns:100px minmax(0,1fr);gap:12px;border-right:0;border-bottom:1px solid rgba(255,255,255,.1)}.member-sidebar-identity{grid-row:span 2}.member-sidebar-details{margin-top:0}.member-sidebar-wallet{grid-column:1/-1;margin-top:0}.member-profile-main{min-height:560px}.member-sections{grid-template-columns:repeat(3,minmax(0,1fr))}.member-avatar{width:68px;height:68px;font-size:32px}.avatar-grid{grid-template-columns:repeat(5,1fr)}.vip-main-grid{grid-template-columns:1fr}.vip-level-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:520px){.member-profile-sidebar{display:block}.member-sidebar-identity{margin-bottom:13px}.member-profile-main{min-height:520px;padding:12px}.member-sections{grid-template-columns:1fr 1fr}.profile-grid,.vip-progress-grid{grid-template-columns:1fr}.binding-list article{grid-template-columns:36px 1fr auto}.binding-list article>span{display:none}.phone-binding-row{flex-direction:column}.phone-binding-row .btn-gold{width:100%;justify-content:center}.vip-level-grid{grid-template-columns:repeat(2,1fr)}}
 </style>

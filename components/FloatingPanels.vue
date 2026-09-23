@@ -6,6 +6,109 @@ const { openAgeGate } = useAgeGateState()
 
 const base = baseURL.replace(/\/$/, '')
 
+type FloatingPanelKey = 'deposit-mobile' | 'play-mobile' | 'deposit-desktop' | 'play-desktop'
+type FloatingPanelPosition = { active: boolean; left: number; top: number }
+
+const panelPositions = reactive<Record<FloatingPanelKey, FloatingPanelPosition>>({
+  'deposit-mobile': { active: false, left: 0, top: 0 },
+  'play-mobile': { active: false, left: 0, top: 0 },
+  'deposit-desktop': { active: false, left: 0, top: 0 },
+  'play-desktop': { active: false, left: 0, top: 0 },
+})
+const dragState = reactive<{
+  key: FloatingPanelKey | null
+  pointerId: number | null
+  offsetX: number
+  offsetY: number
+  originLeft: number
+  originTop: number
+  startX: number
+  startY: number
+  moved: boolean
+}>({ key: null, pointerId: null, offsetX: 0, offsetY: 0, originLeft: 0, originTop: 0, startX: 0, startY: 0, moved: false })
+const suppressClicks = reactive<Record<FloatingPanelKey, boolean>>({
+  'deposit-mobile': false,
+  'play-mobile': false,
+  'deposit-desktop': false,
+  'play-desktop': false,
+})
+
+function panelStyle(key: FloatingPanelKey) {
+  const position = panelPositions[key]
+  if (!position.active) return undefined
+  return {
+    left: `${position.left}px`,
+    top: `${position.top}px`,
+    right: 'auto',
+    bottom: 'auto',
+    zIndex: 230,
+  }
+}
+
+function clampPanelPosition(key: FloatingPanelKey, element: HTMLElement, left: number, top: number) {
+  const maxLeft = Math.max(0, window.innerWidth - element.offsetWidth)
+  const maxTop = Math.max(0, window.innerHeight - element.offsetHeight)
+  panelPositions[key].left = Math.min(Math.max(0, left), maxLeft)
+  panelPositions[key].top = Math.min(Math.max(0, top), maxTop)
+}
+
+function startPanelDrag(key: FloatingPanelKey, event: PointerEvent) {
+  if (event.pointerType === 'mouse' && event.button !== 0) return
+  const element = event.currentTarget as HTMLElement | null
+  if (!element) return
+  const rect = element.getBoundingClientRect()
+  panelPositions[key].active = true
+  panelPositions[key].left = rect.left
+  panelPositions[key].top = rect.top
+  dragState.key = key
+  dragState.pointerId = event.pointerId
+  dragState.offsetX = event.clientX - rect.left
+  dragState.offsetY = event.clientY - rect.top
+  dragState.originLeft = rect.left
+  dragState.originTop = rect.top
+  dragState.startX = event.clientX
+  dragState.startY = event.clientY
+  dragState.moved = false
+  element.setPointerCapture?.(event.pointerId)
+}
+
+function movePanelDrag(key: FloatingPanelKey, event: PointerEvent) {
+  if (dragState.key !== key || dragState.pointerId !== event.pointerId) return
+  const element = event.currentTarget as HTMLElement | null
+  if (!element) return
+  const deltaX = event.clientX - dragState.startX
+  const deltaY = event.clientY - dragState.startY
+  if (Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4) dragState.moved = true
+  clampPanelPosition(key, element, dragState.originLeft + deltaX, dragState.originTop + deltaY)
+}
+
+function finishPanelDrag(key: FloatingPanelKey, event: PointerEvent) {
+  if (dragState.key !== key || dragState.pointerId !== event.pointerId) return
+  const element = event.currentTarget as HTMLElement | null
+  if (dragState.moved) {
+    suppressClicks[key] = true
+    window.setTimeout(() => { suppressClicks[key] = false }, 0)
+  }
+  element?.releasePointerCapture?.(event.pointerId)
+  dragState.key = null
+  dragState.pointerId = null
+}
+
+function suppressDraggedClick(key: FloatingPanelKey, event: MouseEvent) {
+  if (!suppressClicks[key]) return
+  suppressClicks[key] = false
+  event.preventDefault()
+  event.stopPropagation()
+}
+
+function handlePanelAction(key: FloatingPanelKey, action: () => void) {
+  if (suppressClicks[key]) {
+    suppressClicks[key] = false
+    return
+  }
+  action()
+}
+
 function handlePlay() {
   if (isLoggedIn.value) {
     openAgeGate(() => router.push('/lobby'))
@@ -25,16 +128,48 @@ function handleDeposit() {
 
 <template>
   <!-- ══ 手機版：圖片式點擊按鈕 ══ -->
-  <button class="fp-mobile-img-btn fp-mobile-img-left lg:hidden" @click="handleDeposit" aria-label="立即儲">
+  <button
+    class="fp-mobile-img-btn fp-mobile-img-left lg:hidden"
+    :class="{ 'is-dragging': dragState.key === 'deposit-mobile' }"
+    :style="panelStyle('deposit-mobile')"
+    data-fp-drag-target="deposit-mobile"
+    @pointerdown="startPanelDrag('deposit-mobile', $event)"
+    @pointermove="movePanelDrag('deposit-mobile', $event)"
+    @pointerup="finishPanelDrag('deposit-mobile', $event)"
+    @pointercancel="finishPanelDrag('deposit-mobile', $event)"
+    @click="handlePanelAction('deposit-mobile', handleDeposit)"
+    aria-label="立即儲（可拖曳）"
+  >
     <img :src="`${base}/btn_002.png`" alt="立即儲" />
   </button>
 
-  <button class="fp-mobile-img-btn fp-mobile-img-right lg:hidden" @click="handlePlay" aria-label="立即玩">
+  <button
+    class="fp-mobile-img-btn fp-mobile-img-right lg:hidden"
+    :class="{ 'is-dragging': dragState.key === 'play-mobile' }"
+    :style="panelStyle('play-mobile')"
+    data-fp-drag-target="play-mobile"
+    @pointerdown="startPanelDrag('play-mobile', $event)"
+    @pointermove="movePanelDrag('play-mobile', $event)"
+    @pointerup="finishPanelDrag('play-mobile', $event)"
+    @pointercancel="finishPanelDrag('play-mobile', $event)"
+    @click="handlePanelAction('play-mobile', handlePlay)"
+    aria-label="立即玩（可拖曳）"
+  >
     <img :src="`${base}/btn_001.png`" alt="立即玩" />
   </button>
 
   <!-- ══ 左側：立即儲 ══ -->
-  <div class="fp fp-left hidden lg:flex">
+  <div
+    class="fp fp-left hidden lg:flex"
+    :class="{ 'is-dragging': dragState.key === 'deposit-desktop' }"
+    :style="panelStyle('deposit-desktop')"
+    data-fp-drag-target="deposit-desktop"
+    @pointerdown="startPanelDrag('deposit-desktop', $event)"
+    @pointermove="movePanelDrag('deposit-desktop', $event)"
+    @pointerup="finishPanelDrag('deposit-desktop', $event)"
+    @pointercancel="finishPanelDrag('deposit-desktop', $event)"
+    @click.capture="suppressDraggedClick('deposit-desktop', $event)"
+  >
     <!-- 圖片浮在卡片上方 -->
     <div class="fp-hero-wrap" aria-hidden="true">
       <img class="fp-hero-img" :src="`${base}/btn_002.png`" alt="" />
@@ -75,7 +210,17 @@ function handleDeposit() {
   </div>
 
   <!-- ══ 右側：立即玩 / 玩家資訊 ══ -->
-  <div class="fp fp-right hidden lg:flex">
+  <div
+    class="fp fp-right hidden lg:flex"
+    :class="{ 'is-dragging': dragState.key === 'play-desktop' }"
+    :style="panelStyle('play-desktop')"
+    data-fp-drag-target="play-desktop"
+    @pointerdown="startPanelDrag('play-desktop', $event)"
+    @pointermove="movePanelDrag('play-desktop', $event)"
+    @pointerup="finishPanelDrag('play-desktop', $event)"
+    @pointercancel="finishPanelDrag('play-desktop', $event)"
+    @click.capture="suppressDraggedClick('play-desktop', $event)"
+  >
     <!-- 圖片浮在卡片上方 -->
     <div class="fp-hero-wrap" aria-hidden="true">
       <img class="fp-hero-img" :src="`${base}/btn_001.png`" alt="" />

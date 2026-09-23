@@ -1,4 +1,4 @@
-export type MemberSection = 'profile' | 'bindings' | 'vip' | 'rewards' | 'history'
+export type MemberSection = 'profile' | 'bindings' | 'vip' | 'login' | 'rewards' | 'history'
 
 /**
  * 玩家資料主彈窗的跨元件狀態。
