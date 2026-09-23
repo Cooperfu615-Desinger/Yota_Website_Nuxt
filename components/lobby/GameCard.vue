@@ -72,7 +72,7 @@ function handlePlay(mode: 'real' | 'demo') {
 
     <!-- Hover 操作層 -->
     <div class="game-card-overlay">
-      <button class="game-card-btn game-card-btn-play" @click="handlePlay('real')">真錢玩</button>
+      <button class="game-card-btn game-card-btn-play" @click="handlePlay('real')">立即玩</button>
       <button class="game-card-btn game-card-btn-demo" @click="handlePlay('demo')">試玩</button>
     </div>
   </div>

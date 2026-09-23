@@ -1446,6 +1446,14 @@ body {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   overflow: visible;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.fp.is-dragging,
+.fp-mobile-img-btn.is-dragging {
+  cursor: grabbing;
 }
 
 /* 圖片浮在卡片上方的容器（height:0 讓卡片版面不受影響） */
@@ -1475,6 +1483,8 @@ body {
   border: none;
   background: transparent;
   cursor: pointer;
+  touch-action: none;
+  user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
