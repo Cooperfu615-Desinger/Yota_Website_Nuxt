@@ -52,9 +52,15 @@ function clampPanelPosition(key: FloatingPanelKey, element: HTMLElement, left: n
   panelPositions[key].top = Math.min(Math.max(0, top), maxTop)
 }
 
+function getPanelElement(event: PointerEvent) {
+  const target = event.currentTarget as HTMLElement | null
+  return target?.closest<HTMLElement>('[data-fp-drag-target]') ?? target
+}
+
 function startPanelDrag(key: FloatingPanelKey, event: PointerEvent) {
   if (event.pointerType === 'mouse' && event.button !== 0) return
-  const element = event.currentTarget as HTMLElement | null
+  const pointerTarget = event.currentTarget as HTMLElement | null
+  const element = getPanelElement(event)
   if (!element) return
   const rect = element.getBoundingClientRect()
   panelPositions[key].active = true
@@ -69,12 +75,12 @@ function startPanelDrag(key: FloatingPanelKey, event: PointerEvent) {
   dragState.startX = event.clientX
   dragState.startY = event.clientY
   dragState.moved = false
-  element.setPointerCapture?.(event.pointerId)
+  pointerTarget?.setPointerCapture?.(event.pointerId)
 }
 
 function movePanelDrag(key: FloatingPanelKey, event: PointerEvent) {
   if (dragState.key !== key || dragState.pointerId !== event.pointerId) return
-  const element = event.currentTarget as HTMLElement | null
+  const element = getPanelElement(event)
   if (!element) return
   const deltaX = event.clientX - dragState.startX
   const deltaY = event.clientY - dragState.startY
@@ -84,21 +90,14 @@ function movePanelDrag(key: FloatingPanelKey, event: PointerEvent) {
 
 function finishPanelDrag(key: FloatingPanelKey, event: PointerEvent) {
   if (dragState.key !== key || dragState.pointerId !== event.pointerId) return
-  const element = event.currentTarget as HTMLElement | null
+  const pointerTarget = event.currentTarget as HTMLElement | null
   if (dragState.moved) {
     suppressClicks[key] = true
     window.setTimeout(() => { suppressClicks[key] = false }, 0)
   }
-  element?.releasePointerCapture?.(event.pointerId)
+  pointerTarget?.releasePointerCapture?.(event.pointerId)
   dragState.key = null
   dragState.pointerId = null
-}
-
-function suppressDraggedClick(key: FloatingPanelKey, event: MouseEvent) {
-  if (!suppressClicks[key]) return
-  suppressClicks[key] = false
-  event.preventDefault()
-  event.stopPropagation()
 }
 
 function handlePanelAction(key: FloatingPanelKey, action: () => void) {
@@ -164,15 +163,21 @@ function handleDeposit() {
     :class="{ 'is-dragging': dragState.key === 'deposit-desktop' }"
     :style="panelStyle('deposit-desktop')"
     data-fp-drag-target="deposit-desktop"
-    @pointerdown="startPanelDrag('deposit-desktop', $event)"
-    @pointermove="movePanelDrag('deposit-desktop', $event)"
-    @pointerup="finishPanelDrag('deposit-desktop', $event)"
-    @pointercancel="finishPanelDrag('deposit-desktop', $event)"
-    @click.capture="suppressDraggedClick('deposit-desktop', $event)"
   >
     <!-- 圖片浮在卡片上方 -->
-    <div class="fp-hero-wrap" aria-hidden="true">
-      <img class="fp-hero-img" :src="`${base}/btn_002.png`" alt="" />
+    <div class="fp-hero-wrap">
+      <img
+        class="fp-hero-img"
+        :class="{ 'is-dragging': dragState.key === 'deposit-desktop' }"
+        :src="`${base}/btn_002.png`"
+        alt=""
+        draggable="false"
+        aria-label="拖曳立即儲浮窗"
+        @pointerdown="startPanelDrag('deposit-desktop', $event)"
+        @pointermove="movePanelDrag('deposit-desktop', $event)"
+        @pointerup="finishPanelDrag('deposit-desktop', $event)"
+        @pointercancel="finishPanelDrag('deposit-desktop', $event)"
+      />
     </div>
 
     <div class="fp-body">
@@ -215,15 +220,21 @@ function handleDeposit() {
     :class="{ 'is-dragging': dragState.key === 'play-desktop' }"
     :style="panelStyle('play-desktop')"
     data-fp-drag-target="play-desktop"
-    @pointerdown="startPanelDrag('play-desktop', $event)"
-    @pointermove="movePanelDrag('play-desktop', $event)"
-    @pointerup="finishPanelDrag('play-desktop', $event)"
-    @pointercancel="finishPanelDrag('play-desktop', $event)"
-    @click.capture="suppressDraggedClick('play-desktop', $event)"
   >
     <!-- 圖片浮在卡片上方 -->
-    <div class="fp-hero-wrap" aria-hidden="true">
-      <img class="fp-hero-img" :src="`${base}/btn_001.png`" alt="" />
+    <div class="fp-hero-wrap">
+      <img
+        class="fp-hero-img"
+        :class="{ 'is-dragging': dragState.key === 'play-desktop' }"
+        :src="`${base}/btn_001.png`"
+        alt=""
+        draggable="false"
+        aria-label="拖曳立即玩浮窗"
+        @pointerdown="startPanelDrag('play-desktop', $event)"
+        @pointermove="movePanelDrag('play-desktop', $event)"
+        @pointerup="finishPanelDrag('play-desktop', $event)"
+        @pointercancel="finishPanelDrag('play-desktop', $event)"
+      />
     </div>
 
     <div class="fp-body">
