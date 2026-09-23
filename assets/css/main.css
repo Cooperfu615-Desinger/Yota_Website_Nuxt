@@ -2303,6 +2303,9 @@ body {
 
 /* ── Game Filter Bar（第一層群組 + 第二層選項） ── */
 .game-grid-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   padding: 16px 16px 24px;
   max-width: 1600px;
   margin: 0 auto;
