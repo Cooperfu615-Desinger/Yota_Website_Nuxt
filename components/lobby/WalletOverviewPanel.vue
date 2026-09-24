@@ -42,7 +42,7 @@ const rewardConditions = [
         <div class="wallet-section-heading">
           <div>
             <p class="wallet-kicker">EXCHANGE STATUS</p>
-            <h3>銀幣交換資訊</h3>
+            <h3>銀幣交換</h3>
           </div>
           <span class="wallet-rate-badge">1 金幣 = 100 銀幣</span>
         </div>
@@ -64,7 +64,7 @@ const rewardConditions = [
         <div class="wallet-section-heading">
           <div>
             <p class="wallet-kicker">VAULT ACCESS</p>
-            <h3>保險箱使用狀態</h3>
+            <h3>保險箱狀態</h3>
           </div>
           <span class="wallet-vault-symbol" aria-hidden="true">▣</span>
         </div>
@@ -122,7 +122,7 @@ const rewardConditions = [
 .wallet-balance-card.tone-silver { color: #c7d2fe; border-color: rgba(199,210,254,.3); }
 .wallet-balance-card.tone-bronze { color: #fbbf80; border-color: rgba(251,191,128,.3); }
 .wallet-balance-card.tone-vault { color: #c084fc; border-color: rgba(192,132,252,.38); }
-.wallet-balance-topline { display: flex; align-items: center; gap: 8px; color: var(--color-text-muted); font-size: 11px; font-weight: 800; }
+.wallet-balance-topline { display: flex; align-items: center; gap: 8px; color: var(--color-text-muted); font-size: 15px; font-weight: 800; }
 .wallet-balance-icon { display: grid; width: 25px; height: 25px; place-items: center; border: 1px solid currentColor; border-radius: 8px; color: inherit; font-size: 10px; font-weight: 900; }
 .wallet-balance-card strong { display: block; margin-top: 18px; color: currentColor; font-size: 23px; line-height: 1; }
 .wallet-balance-card small { display: block; margin-top: 8px; color: var(--color-text-muted); font-size: 10px; }
