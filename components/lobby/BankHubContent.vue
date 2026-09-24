@@ -5,12 +5,12 @@ const route = useRoute()
 const router = useRouter()
 const { isLoggedIn, openLogin } = useAppState()
 
-const tabs: { key: BankTab; label: string; icon: string; description: string }[] = [
-  { key: 'overview', label: '錢包總覽', icon: '◈', description: '查看錢包與使用狀態' },
-  { key: 'vault', label: '保險箱', icon: '▣', description: '管理金幣保管與取出' },
-  { key: 'exchange', label: '交換', icon: '⇄', description: '交換金幣與銀幣' },
-  { key: 'gifts', label: '贈禮', icon: '✦', description: '送出與處理贈禮申請' },
-  { key: 'records', label: '紀錄', icon: '≡', description: '查看交易與帳務紀錄' },
+const tabs: { key: BankTab; label: string }[] = [
+  { key: 'overview', label: '錢包總覽' },
+  { key: 'vault', label: '保險箱' },
+  { key: 'exchange', label: '交換' },
+  { key: 'gifts', label: '贈禮' },
+  { key: 'records', label: '紀錄' },
 ]
 
 const activeTab = ref<BankTab>('overview')
@@ -83,11 +83,7 @@ watch(() => route.query, applyQuery)
           :aria-controls="`bank-panel-${tab.key}`"
           @click="selectTab(tab.key)"
         >
-          <span class="bank-hub-tab-icon" aria-hidden="true">{{ tab.icon }}</span>
-          <span class="bank-hub-tab-copy">
-            <strong>{{ tab.label }}</strong>
-            <small>{{ tab.description }}</small>
-          </span>
+          <strong>{{ tab.label }}</strong>
         </button>
       </nav>
 
@@ -206,13 +202,14 @@ watch(() => route.query, applyQuery)
   display: flex;
   min-width: 0;
   align-items: center;
-  gap: 9px;
+  justify-content: center;
+  min-height: 48px;
   padding: 12px 11px;
   border: 1px solid transparent;
   border-radius: 12px;
   color: var(--color-text-muted);
   background: transparent;
-  text-align: left;
+  text-align: center;
   transition: border-color .18s ease, color .18s ease, background .18s ease, transform .18s ease;
 }
 
@@ -230,45 +227,9 @@ watch(() => route.query, applyQuery)
   box-shadow: 0 7px 20px rgba(245, 200, 66, .18);
 }
 
-.bank-hub-tab-icon {
-  display: grid;
-  width: 30px;
-  height: 30px;
-  flex: 0 0 auto;
-  place-items: center;
-  border-radius: 9px;
-  color: var(--color-gold);
-  background: rgba(168, 85, 247, .14);
-  font-size: 16px;
+.bank-hub-tab strong {
+  font-size: 15px;
   font-weight: 900;
-}
-
-.bank-hub-tab.active .bank-hub-tab-icon {
-  color: #180c2d;
-  background: rgba(15, 0, 32, .12);
-}
-
-.bank-hub-tab-copy {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.bank-hub-tab-copy strong {
-  overflow: hidden;
-  font-size: 12px;
-  font-weight: 900;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.bank-hub-tab-copy small {
-  overflow: hidden;
-  color: inherit;
-  opacity: .68;
-  font-size: 9px;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -281,7 +242,6 @@ watch(() => route.query, applyQuery)
 
 @media (max-width: 980px) {
   .bank-hub-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .bank-hub-tab-copy small { display: none; }
 }
 
 @media (max-width: 620px) {
@@ -290,8 +250,6 @@ watch(() => route.query, applyQuery)
   .bank-hub-status { align-self: flex-start; }
   .bank-hub-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding: 6px; }
   .bank-hub-tab { padding: 10px 9px; }
-  .bank-hub-tab-icon { width: 27px; height: 27px; font-size: 14px; }
-  .bank-hub-tab-copy strong { font-size: 11px; }
   .bank-hub-tab:last-child { grid-column: 1 / -1; }
 }
 </style>
