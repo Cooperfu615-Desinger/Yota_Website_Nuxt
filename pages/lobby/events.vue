@@ -3,5 +3,5 @@ definePageMeta({ layout: 'lobby' })
 </script>
 
 <template>
-  <SharedEventsContent />
+  <LobbyEventsContent />
 </template>

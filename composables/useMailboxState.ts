@@ -26,7 +26,7 @@ export const useMailboxState = () => {
     const message = messages.value.find(item => item.id === id)
     if (!message?.reward || message.reward.claimed) return false
     message.reward.claimed = true
-    addWalletReward(message.reward.wallet, message.reward.amount, '信箱附件領取', message.title)
+    addWalletReward(message.reward.wallet, message.reward.amount, '最新消息附件領取', message.title)
     return true
   }
 

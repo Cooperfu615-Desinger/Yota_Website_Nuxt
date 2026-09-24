@@ -84,7 +84,7 @@ function createInitialTransactions(): FinancialTransaction[] {
     {
       id: 'TX-MOCK-002',
       type: 'reward',
-      title: '信箱附件領取',
+      title: '最新消息附件領取',
       amount: 50000,
       wallet: 'gold',
       status: 'success',

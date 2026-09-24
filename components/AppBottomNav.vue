@@ -74,18 +74,18 @@ function handleShop(event: MouseEvent) {
       <span>遊戲</span>
     </button>
 
-    <!-- 信箱 -->
+    <!-- 最新消息 -->
     <button
       class="bottom-nav-item"
       type="button"
       :class="{ active: isActive('/lobby/inbox') }"
-      aria-label="信箱"
+      aria-label="最新消息"
       @click="pushProtected('/lobby/inbox')"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16v12H4V6Zm0 0 8 7 8-7"/>
       </svg>
-      <span>信箱</span>
+      <span>最新消息</span>
     </button>
 
     <!-- 聊天 -->
