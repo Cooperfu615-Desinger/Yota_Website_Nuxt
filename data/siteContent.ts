@@ -689,7 +689,8 @@ export const siteContent = {
       highestVip: 6,
       upgradeProtection: true,
       deposit: { current: 48600, target: 55000 },
-      wager: { current: 8920000, target: 10000000 },
+      wagerGold: { current: 20000, target: 1500 },
+      wagerSilver: { current: 8920000, target: 550000 },
     },
     vipTargets: [0, 1000, null, 5000, 10000, 20000, 35000, 55000, 80000, 100000, 150000, 250000, 400000, 650000, 1000000, 1500000],
     vipLevels: [
@@ -747,7 +748,7 @@ export const siteContent = {
         name: '藍寶石',
         color: '#F472B6',
         limit: '藍寶石會員', benefits: ['贈禮手續費 5%', '升級獎勵：銀幣 1,800'], rebate: '無', feeDiscount: '5%',
-        upgradeRequirement: '歷史儲值 55,000 金幣 AND 當月投注 550,000 金幣', maintainRequirement: '月儲值 28,000 金幣 AND 月投注 280,000 金幣 AND 活躍 20 天', historicalDeposit: 55000, monthlyWager: 550000, monthlyDeposit: 28000, activeDays: 20, upgradeReward: '銀幣 1,800', p2pFee: '5%',
+        upgradeRequirement: '歷史儲值 55,000 金幣 AND 當月投注金幣 1,500、銀幣 550,000', maintainRequirement: '月儲值 28,000 金幣 AND 月投注 280,000 金幣 AND 活躍 20 天', historicalDeposit: 55000, monthlyWager: 550000, monthlyDeposit: 28000, activeDays: 20, upgradeReward: '銀幣 1,800', p2pFee: '5%',
       },
       {
         level: 8,
