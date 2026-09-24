@@ -47,7 +47,7 @@ const navSections = [
     { to: '/lobby/vault?tab=exchange', label: '交換', icon: '⇄' },
     { to: '/lobby/vault?tab=gifts', label: '贈禮', icon: '🎁' },
     { to: '/lobby/vault?tab=records', label: '紀錄', icon: '📋' },
-    { to: '/lobby/inbox', label: '信箱', icon: '📬' },
+    { to: '/lobby/inbox', label: '最新消息', icon: '📬' },
     { to: '/lobby/member?tab=rewards', label: '獎勵卡', icon: '🎁' },
     { to: '/lobby/chat', label: '聊天', icon: '💬' },
     { to: '/lobby/settings', label: '設置', icon: '⚙️' },

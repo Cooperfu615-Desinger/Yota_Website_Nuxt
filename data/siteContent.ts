@@ -150,6 +150,21 @@ export interface EventItem {
   deposit?: boolean   // true = 儲值相關活動（顯示於銀行活動 Tab）
 }
 
+export type LobbyEventType = 'sale' | 'tournament' | 'vip'
+
+export interface LobbyEvent {
+  id: number
+  type: LobbyEventType
+  title: string
+  summary: string
+  prize: string
+  details: string
+  startTime: string
+  endTime: string
+  icon: string
+  accent: string
+}
+
 export interface FaqItem {
   q: string
   a: string
@@ -538,6 +553,19 @@ export const siteContent = {
     { id: 7, title: '每週儲值回饋', subtitle: '每週累積儲值，回饋最高 15% 點數', status: 'active', endDate: '長期', prize: '+15%', gradient: 'linear-gradient(135deg,#0a1a2d,#1d4ed8)', deposit: true },
     { id: 8, title: 'VIP 儲值加碼', subtitle: 'VIP 等級越高，儲值加碼越多', status: 'active', endDate: '長期', prize: '最高 +30%', gradient: 'linear-gradient(135deg,#2d0a2d,#9333ea)', deposit: true },
   ] satisfies EventItem[],
+  // 與 APP 定版的活動內容對齊；檔期改為 WEB 原型可驗證的示範日期，非正式營運公告。
+  lobbyEvents: [
+    { id: 1, type: 'sale', title: '限時儲值優惠', summary: 'App Store／Google Play 儲值限時加碼。', prize: '+20%', details: '活動期間完成指定商店儲值，即可依方案取得對應加碼銀幣。實際付款仍使用 APP 既有商店流程。', startTime: '2026/09/20 12:00', endTime: '2026/10/07 23:59', icon: '✦', accent: '#fb923c' },
+    { id: 2, type: 'tournament', title: '雷神之錘爭霸戰', summary: '累積贏分競賽，即刻加入挑戰！', prize: '10,000,000 銀幣', details: '活動期間遊玩指定老虎機，依累積贏分進行排名。活動結束後由系統結算 Mock 名次。', startTime: '2026/09/01 00:00', endTime: '2026/10/31 23:59', icon: '⚡', accent: '#facc15' },
+    { id: 3, type: 'vip', title: 'VIP 尊榮升級', summary: '同時達成儲值與投注門檻，提升兩項核心回饋。', prize: '返水／手續費減免', details: '活動期間依 APP VIP0～VIP10 規格計算；升級需同時達成儲值與投注，保級則擇一達成。', startTime: '2026/01/01 00:00', endTime: '長期', icon: '♛', accent: '#c084fc' },
+    { id: 4, type: 'tournament', title: '深海捕魚祭', summary: '捕獲特殊魚種，活動積分翻倍。', prize: '3,000,000 銀幣', details: '遊玩捕魚分類並捕獲活動魚種即可累積積分；Boss 魚種提供額外倍率。', startTime: '2026/09/15 10:00', endTime: '2026/10/15 10:00', icon: '◈', accent: '#67e8f9' },
+    { id: 5, type: 'sale', title: '週末狂歡包', summary: '週末限定商店加碼活動。', prize: '最高 +15%', details: '活動開始後，指定 App Store／Google Play 方案會顯示週末加碼內容。', startTime: '2026/09/26 00:00', endTime: '2026/09/27 23:59', icon: '✦', accent: '#f472b6' },
+    { id: 6, type: 'vip', title: '黑卡會員邀請', summary: '限 VIP7 以上玩家參與的排名活動。', prize: '限定頭像框', details: '符合 VIP 等級即可於活動開始後報名，最終依活動積分決定限定獎勵。', startTime: '2026/10/01 12:00', endTime: '2026/10/07 12:00', icon: '♛', accent: '#cbd5e1' },
+    { id: 7, type: 'tournament', title: '百家樂連勝王', summary: '挑戰最高連勝紀錄，奪取排名獎金。', prize: '5,000,000 銀幣', details: '依活動期間內單次最高連勝局數排名，相同局數則以先達成者優先。', startTime: '2026/08/01 12:00', endTime: '2026/08/15 18:00', icon: '♠', accent: '#4ade80' },
+    { id: 8, type: 'sale', title: '幸運輪盤加碼', summary: '每日完成指定任務即可獲得一次轉盤機會。', prize: '最高 888,888 銀幣', details: '每日簽到完成後可參加一次 Mock 輪盤；獎勵與簽到獎勵分開計算。', startTime: '2026/09/01 00:00', endTime: '2026/09/30 23:59', icon: '✧', accent: '#fde68a' },
+    { id: 9, type: 'tournament', title: '新手衝等賽', summary: '新註冊玩家限定的成長競賽。', prize: '1,000,000 銀幣', details: '活動開始後完成遊戲與社交任務即可累積成長積分。', startTime: '2026/10/10 00:00', endTime: '2026/10/17 23:59', icon: '✪', accent: '#93c5fd' },
+    { id: 10, type: 'vip', title: '夏季回饋賽', summary: '夏季限定累積投注回饋活動。', prize: '2,000,000 銀幣', details: '活動已結束，最終排名與獎勵皆為本機 Mock 展示資料。', startTime: '2026/08/01 00:00', endTime: '2026/08/30 23:59', icon: '♛', accent: '#f87171' },
+  ] satisfies LobbyEvent[],
   faq: {
     categories: [
       { key: 'account' as FaqCategory, label: '帳號相關' },
