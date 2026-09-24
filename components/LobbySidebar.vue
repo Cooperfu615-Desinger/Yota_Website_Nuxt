@@ -32,7 +32,10 @@ function isActive(to: string) {
 
 const navSections = [
   [{ to: '/', label: '首頁', icon: '⌂' }],
-  [{ to: '/lobby', label: '遊戲大廳', icon: '🎮' }],
+  [
+    { to: '/lobby', label: '遊戲大廳', icon: '🎮' },
+    { to: '/lobby/live', label: '直播', icon: '◉' },
+  ],
   [
     { to: '/lobby/daily', label: '每日任務', icon: '📅' },
     { to: '/lobby/offers', label: '優惠', icon: '🎟️' },
@@ -60,7 +63,7 @@ const navSections = [
 
 const protectedPaths = new Set([
   '/lobby/daily', '/lobby/bank', '/lobby/member', '/lobby/vault', '/lobby/inbox',
-  '/lobby/gifts', '/lobby/chat', '/lobby/exchange', '/lobby/transactions', '/lobby/settings',
+  '/lobby/gifts', '/lobby/chat', '/lobby/exchange', '/lobby/transactions', '/lobby/settings', '/lobby/live',
 ])
 
 function handleNavigation(event: MouseEvent, to: string) {

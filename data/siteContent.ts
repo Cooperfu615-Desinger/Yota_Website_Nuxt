@@ -312,6 +312,58 @@ const eventLeaderboardRest = [
 const eventLeaderboardPreview = [...eventLeaderboardTop3, ...eventLeaderboardRest.slice(0, 2)] satisfies LeaderboardItem[]
 
 export const siteContent = {
+  live: {
+    title: '直播',
+    eyebrow: 'LIVE LOUNGE',
+    subtitle: '互動示範',
+    tabs: [
+      { id: 'lobby', label: '直播大廳' }, { id: 'upcoming', label: '直播預告' },
+      { id: 'rank', label: '直播排行' }, { id: 'me', label: '我的' },
+    ],
+    categories: ['全部', '體育', '電競', '遊戲', '娛樂'],
+    streams: [
+      { id: 1, name: '薇薇', title: '晚安電台・一起聊聊今天', category: '娛樂', status: 'LIVE', viewers: 1286, icon: '♫' },
+      { id: 2, name: 'FIFA Live', title: '足球之夜・賽前聊天室', category: '體育', status: 'LIVE', viewers: 865, icon: '⚽' },
+      { id: 3, name: '琪琪', title: '遊戲同樂會', category: '遊戲', status: 'LIVE', viewers: 642, icon: '🎮' },
+      { id: 4, name: '洛洛', title: '週末音樂時光', category: '娛樂', status: '下播中', viewers: 0, icon: '♫' },
+      { id: 5, name: '電競研究室', title: '決賽精彩回顧', category: '電競', status: '下播中', viewers: 0, icon: '🎮' },
+      { id: 6, name: '欣欣', title: '陪你度過午後', category: '娛樂', status: '下播中', viewers: 0, icon: '♧' },
+    ],
+    ranks: {
+      receive: ['薇薇', '琪琪', 'FIFA Live', '欣欣', '洛洛'],
+      send: ['星辰', '小宇', 'Lucky', '可可', '阿哲'],
+    },
+    rankTypes: [{ id: 'receive', label: '收禮榜' }, { id: 'send', label: '送禮榜' }],
+    periods: [{ id: 'month', label: '月榜' }, { id: 'week', label: '週榜' }, { id: 'day', label: '日榜' }],
+    histories: [{ id: 'watch', label: '觀看紀錄' }, { id: 'gift', label: '贈禮紀錄' }],
+    roomTabs: [{ id: 'chat', label: '聊天' }, { id: 'live', label: '直播' }, { id: 'rank', label: '排行' }],
+    roomSupporters: [{ name: '小星', score: 1280 }, { name: 'Lucky', score: 960 }, { name: '小宇', score: 520 }],
+    messages: [
+      { name: '小宇', text: '主播今天想跟大家聊什麼？', host: false },
+      { name: '', text: '歡迎大家！一起聊聊最近的生活吧。', host: true },
+      { name: 'Lucky', text: '這個時間來放鬆一下，剛剛好。', host: false },
+      { name: '', text: '很開心見到你們，歡迎在聊天室留言！', host: true },
+      { name: '小星', text: '大家午安！', host: false },
+    ],
+    copy: {
+      loginTitle: '登入後進入直播', loginText: '關注喜歡的主播，參與聊天並查看本次觀看與贈禮紀錄。', loginAction: '立即登入 / 註冊',
+      search: '搜尋直播', searchPlaceholder: '搜尋主播或直播標題', favorite: '最愛', follow: '關注', following: '已關注', unfollow: '取消關注',
+      emptySearch: '找不到符合條件的直播', emptySearchText: '試試其他分類或搜尋名稱，也可以關注喜歡的主播。',
+      emptyUpcoming: '目前尚無直播預告', emptyUpcomingText: '主播公布開播時間後，將顯示於此。',
+      emptyWatch: '還沒有觀看紀錄', emptyWatchText: '在直播大廳開啟直播，即可查看本次瀏覽紀錄。',
+      emptyGift: '還沒有贈禮紀錄', emptyGiftText: '在直播間送出示範愛心後，即可查看本次贈禮紀錄。',
+      offline: '期待下次相見', rankNote: '示範排行・非真實交易資料', unranked: '尚未上榜', giftValue: '禮物值',
+      sessionNote: '紀錄僅保留於本次直播頁使用期間，離開頁面或重新整理後重置。',
+      watchNote: '本次瀏覽・示範紀錄', freeGift: '免費示範，不扣款', heart: '愛心', giftSent: '送出一顆示範愛心！',
+      back: '返回直播大廳', staticImage: '靜態畫面展示', liveDemo: 'LIVE · 示範', paused: '畫面示意已暫停', offlineRoom: '主播目前下播中',
+      pauseAction: '暫停示意', playAction: '播放示意', unmuteAction: '取消靜音示意', muteAction: '靜音示意',
+      playerNote: '播放器示意 · 未連接影音服務', chatLabel: '直播間聊天訊息', messageLabel: '直播間訊息',
+      messagePlaceholder: '說點甚麼…', giftAction: '開啟示範贈禮', sendAction: '發送示範訊息', send: '送出',
+      chatNote: '本機聊天示範，訊息不會傳送給其他人', roomWelcome: '歡迎來到直播間，一起交流與分享生活。',
+      roomNote: '目前使用虛構主播照片展示版型；影片、音訊與觀眾數皆非即時資料。', supportersTitle: '本場支持榜', supportersNote: '示範排行，非真實送禮資料。',
+      photoAlt: '直播畫面示範：虛構主播在錄音室，並非實際串流',
+    },
+  },
   marqueeAnnouncements: [
     { type: 'system', text: '【系統公告】官網改版上線，體驗全新遊戲大廳！' },
     { type: 'win', text: '🎉 恭喜 <b>玩家王**</b> 贏得 <b style="color:var(--color-gold);">88,888 金幣</b>' },
