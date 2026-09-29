@@ -4,6 +4,7 @@ const router = useRouter()
 const route = useRoute()
 const { toggleDrawer } = useMobileMenuState()
 const { openAgeGate } = useAgeGateState()
+const { newsUnread } = useMessageCentersState()
 const lobbySidebarMobileOpen = useState('lobby-sidebar-mobile-open', () => false)
 
 const isActive = (path: string) => route.path === path
@@ -79,13 +80,14 @@ function handleShop(event: MouseEvent) {
       class="bottom-nav-item"
       type="button"
       :class="{ active: isActive('/lobby/inbox') }"
-      aria-label="最新消息"
+      :aria-label="isLoggedIn && newsUnread ? `最新消息，${newsUnread} 則未讀` : '最新消息'"
       @click="pushProtected('/lobby/inbox')"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16v12H4V6Zm0 0 8 7 8-7"/>
       </svg>
       <span>最新消息</span>
+      <i v-if="isLoggedIn && newsUnread" class="bottom-news-dot" aria-hidden="true" />
     </button>
 
     <!-- 聊天 -->
@@ -103,3 +105,7 @@ function handleShop(event: MouseEvent) {
     </button>
   </nav>
 </template>
+
+<style scoped>
+.bottom-nav-item{position:relative}.bottom-news-dot{position:absolute;top:5px;right:calc(50% - 18px);width:7px;height:7px;border-radius:50%;background:#ec4899}
+</style>
