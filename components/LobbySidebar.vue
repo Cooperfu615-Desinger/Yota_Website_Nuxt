@@ -4,6 +4,11 @@ const sidebarDesktopCollapsed = useState('lobby-sidebar-desktop-collapsed', () =
 const route = useRoute()
 const { isLoggedIn, openLogin } = useAppState()
 const { openLogoutConfirm } = useLogoutState()
+const { newsUnread, inboxUnread } = useMessageCentersState()
+function unreadFor(to: string) {
+  if (!isLoggedIn.value) return 0
+  return to === '/lobby/inbox' ? newsUnread.value : to === '/lobby/mailbox' ? inboxUnread.value : 0
+}
 
 function closeMobile() { sidebarMobileOpen.value = false }
 
@@ -51,6 +56,7 @@ const navSections = [
     { to: '/lobby/vault?tab=gifts', label: '贈禮', icon: '🎁' },
     { to: '/lobby/vault?tab=records', label: '紀錄', icon: '📋' },
     { to: '/lobby/inbox', label: '最新消息', icon: '📬' },
+    { to: '/lobby/mailbox', label: '信箱', icon: '✉' },
     { to: '/lobby/member?tab=rewards', label: '獎勵卡', icon: '🎁' },
     { to: '/lobby/chat', label: '聊天', icon: '💬' },
     { to: '/lobby/settings', label: '設置', icon: '⚙️' },
@@ -62,7 +68,7 @@ const navSections = [
 ]
 
 const protectedPaths = new Set([
-  '/lobby/daily', '/lobby/bank', '/lobby/member', '/lobby/vault', '/lobby/inbox',
+  '/lobby/daily', '/lobby/bank', '/lobby/member', '/lobby/vault', '/lobby/inbox', '/lobby/mailbox',
   '/lobby/gifts', '/lobby/chat', '/lobby/exchange', '/lobby/transactions', '/lobby/settings', '/lobby/live',
 ])
 
@@ -102,10 +108,12 @@ function handleNavigation(event: MouseEvent, to: string) {
           class="lobby-nav-item"
           :class="{ 'lobby-nav-active': isActive(item.to) }"
           :title="sidebarDesktopCollapsed ? item.label : undefined"
+          :aria-label="unreadFor(item.to) ? `${item.label}，${unreadFor(item.to)} 則未讀` : item.label"
           @click="handleNavigation($event, item.to)"
         >
           <span class="lobby-nav-icon" aria-hidden="true">{{ item.icon }}</span>
           <span class="lobby-nav-label">{{ item.label }}</span>
+          <span v-if="unreadFor(item.to)" class="center-nav-unread" aria-hidden="true">{{ unreadFor(item.to) > 99 ? '99+' : unreadFor(item.to) }}</span>
         </NuxtLink>
       </template>
     </nav>
@@ -124,6 +132,7 @@ function handleNavigation(event: MouseEvent, to: string) {
 </template>
 
 <style scoped>
+.lobby-nav-item{position:relative}.center-nav-unread{display:grid;place-items:center;min-width:20px;height:20px;padding:0 5px;margin-left:auto;border-radius:999px;background:#db2777;color:white;font-size:11px;font-weight:800}.sidebar-desktop-collapsed .center-nav-unread{position:absolute;top:4px;right:4px;min-width:16px;height:16px;font-size:10px}
 .sidebar-overlay-enter-active,
 .sidebar-overlay-leave-active { transition: opacity 0.3s; }
 .sidebar-overlay-enter-from,

@@ -136,6 +136,9 @@ export const useAppState = () => {
     } else {
       profile.value.invitationCode = resolveInvitationCode(false, profile.value.invitationCode)
     }
+    if (!wasLoggedIn || profile.value.account !== previousAccount || provider !== previousProvider) {
+      useMessageCentersState().resetMessageCenters()
+    }
     isLoggedIn.value = true
     if (closeAfterLogin) closeLogin()
     if (import.meta.client) {
@@ -169,6 +172,7 @@ export const useAppState = () => {
     useGiftState().resetGiftState()
     useSocialState().resetSocialState()
     useSupportTicketState().resetSupportTicketState()
+    useMessageCentersState().resetMessageCenters()
     protectedDestination.value = null
     if (import.meta.client) {
       localStorage.removeItem(LS_LOGIN_KEY)

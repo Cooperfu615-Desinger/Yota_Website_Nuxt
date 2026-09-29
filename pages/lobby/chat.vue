@@ -16,6 +16,8 @@ const activeChannel = ref<Channel>('world')
 const { blockPlayer, isBlockedPlayer } = useSocialState()
 const route = useRoute()
 const router = useRouter()
+const { supportActivityDraft } = useMessageCentersState()
+const activityDraftText = ref('')
 const {
   supportCategories,
   maxOngoing,
@@ -77,6 +79,7 @@ function openConversation(conv: PrivateConversation) {
 function backToList() { activeConvId.value = null }
 
 function openSupportList() {
+  activityDraftText.value = ''
   activeSupportTicketId.value = null
   supportDraftCategoryKey.value = null
   choosingSupportCategory.value = false
@@ -104,6 +107,7 @@ function startSupportQuestion() {
 }
 
 function selectSupportCategory(categoryKey: SupportQuestionCategoryKey) {
+  activityDraftText.value = ''
   if (!canCreateTicket.value) {
     showNotice(`同時最多只能有 ${maxOngoing} 筆進行中的提問。`)
     return
@@ -297,7 +301,15 @@ function applyChannelQuery() {
   activeChannel.value = 'world'
 }
 
-onMounted(applyChannelQuery)
+onMounted(() => {
+  applyChannelQuery()
+  if (activeChannel.value === 'support' && supportActivityDraft.value) {
+    const activityTitle = supportActivityDraft.value
+    supportActivityDraft.value = ''
+    supportDraftCategoryKey.value = 'event'
+    activityDraftText.value = `我想詢問活動「${activityTitle}」：`
+  }
+})
 watch(() => route.query.channel, applyChannelQuery)
 onUnmounted(() => {
   if (noticeTimer) clearTimeout(noticeTimer)
@@ -387,10 +399,13 @@ onUnmounted(() => {
           <span class="support-ticket-status draft">草稿</span>
         </div>
         <LobbyChatThread
+          :key="`draft-${supportDraftCategoryKey}-${activityDraftText}`"
           :messages="[]"
+          :initial-draft="activityDraftText"
+          :send-disabled="!canCreateTicket"
           placeholder="請輸入問題內容…"
           :notice-title="`請描述「${supportDraftCategory.label}」`"
-          notice-text="送出第一則訊息後才會正式建立提問；目前離開不會留下紀錄。"
+          :notice-text="canCreateTicket ? '送出第一則訊息後才會正式建立提問；目前離開不會留下紀錄。' : `目前已有進行中的提問，同時最多 ${maxOngoing} 筆。可以先編輯草稿，請完成既有提問後再送出。`"
           @send="sendSupport"
         />
       </template>

@@ -10,6 +10,8 @@ const props = withDefaults(defineProps<{
   readonly?: boolean
   readonlyTitle?: string
   readonlyText?: string
+  initialDraft?: string
+  sendDisabled?: boolean
 }>(), {
   placeholder: '輸入訊息…',
   noticeTitle: '',
@@ -18,14 +20,17 @@ const props = withDefaults(defineProps<{
   readonly: false,
   readonlyTitle: '此提問已結案',
   readonlyText: '如有其他問題，請返回提問紀錄後新增提問。',
+  initialDraft: '',
+  sendDisabled: false,
 })
 const emit = defineEmits<{
   send: [text: string]
   selectUser: [user: string]
 }>()
 
-const inputText = ref('')
+const inputText = ref(props.initialDraft)
 function send() {
+  if (props.sendDisabled) return
   const text = inputText.value.trim()
   if (!text) return
   emit('send', text)
@@ -113,6 +118,7 @@ function send() {
         class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 transition-all"
         style="background:linear-gradient(135deg,var(--color-purple-mid),var(--color-purple)); color:#fff;"
         aria-label="傳送"
+        :disabled="props.sendDisabled"
         @click="send"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -124,6 +130,7 @@ function send() {
 </template>
 
 <style scoped>
+button:disabled{opacity:.4;cursor:not-allowed}
 .avatar-btn {
   background: rgba(168,85,247,0.2);
   border: 1px solid rgba(168,85,247,0.3);
