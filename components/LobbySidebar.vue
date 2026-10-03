@@ -17,7 +17,7 @@ function isActive(to: string) {
   const query = new URLSearchParams(queryString || '')
   if (path === '/lobby/member') {
     const tab = query.get('tab')
-    return route.path === path && (tab ? route.query.tab === tab : route.query.tab !== 'rewards')
+    return route.path === path && (!tab || route.query.tab === tab)
   }
   if (path === '/') return route.path === '/'
   if (path === '/lobby') return route.path === '/lobby'
@@ -57,7 +57,6 @@ const navSections = [
     { to: '/lobby/vault?tab=records', label: '紀錄', icon: '📋' },
     { to: '/lobby/inbox', label: '最新消息', icon: '📬' },
     { to: '/lobby/mailbox', label: '信箱', icon: '✉' },
-    { to: '/lobby/member?tab=rewards', label: '獎勵卡', icon: '🎁' },
     { to: '/lobby/chat', label: '聊天', icon: '💬' },
     { to: '/lobby/settings', label: '設置', icon: '⚙️' },
   ],

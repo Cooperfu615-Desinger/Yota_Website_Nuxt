@@ -390,10 +390,6 @@ async function bindGoogle() {
             <small class="login-records-note">時間以 GMT+8 顯示；IP 為文件專用示範位址。</small>
           </section>
 
-          <section v-else-if="activeSection === 'rewards'" class="member-content member-rewards-content">
-            <LobbyRewardCardContent embedded />
-          </section>
-
           <section v-else class="member-content"><header><div><p>GAME HISTORY</p><h2>遊戲紀錄</h2></div></header><LobbyGameRecords :key="sessionKey" /></section>
         </div>
         <button class="member-logout" type="button" @click="openLogoutConfirm">登出目前帳號</button>
