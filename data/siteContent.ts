@@ -15,7 +15,7 @@ export interface DailyCheckinConfig {
 }
 export type EventStatus = 'active' | 'upcoming' | 'ended'
 export type FaqCategory = 'account' | 'deposit' | 'game' | 'install'
-export type MemberTab = 'profile' | 'bindings' | 'history' | 'vip' | 'rewards'
+export type MemberTab = 'profile' | 'bindings' | 'history' | 'vip'
 
 export type PlayerStatus = '在線' | '遊戲中' | '閒置'
 
@@ -834,7 +834,6 @@ export const siteContent = {
       { key: 'profile' as MemberTab, label: '基本資料', icon: '👤' },
       { key: 'bindings' as MemberTab, label: '帳號綁定', icon: '🔗' },
       { key: 'vip' as MemberTab, label: 'VIP 等級', icon: '👑' },
-      { key: 'rewards' as MemberTab, label: '獎勵卡', icon: '🎁' },
       { key: 'history' as MemberTab, label: '遊戲紀錄', icon: '📊' },
     ],
   },
@@ -842,9 +841,6 @@ export const siteContent = {
     milestones: [
       { days: 5,  reward: '里程碑' },
       { days: 7,  reward: '里程碑' },
-      { days: 10, reward: '活動銀幣 10,000' },
-      { days: 15, reward: '活動銀幣 10,000' },
-      { days: 20, reward: '活動銀幣 5,000' },
       { days: 25, reward: '里程碑' },
       { days: 30, reward: '里程碑' },
     ] satisfies CheckinMilestone[],

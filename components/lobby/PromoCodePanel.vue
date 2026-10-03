@@ -47,7 +47,6 @@ function closeConfirm() {
 }
 
 function productExpiry(promo: PromoCode) {
-  if (promo.cardExpiresAt) return `${promo.cardExpiresAt} 23:59（台北時間）`
   if (promo.currency === 'activity-gold') return '第一版僅入帳與顯示，使用及到期規則待後端確認'
   return '入帳後無使用期限（原型）'
 }
@@ -86,8 +85,7 @@ function productExpiry(promo: PromoCode) {
     <section v-if="receivedPromo" class="promo-success" role="status" aria-live="polite">
       <strong>✓ 領取成功</strong>
       <span>{{ PROMO_CURRENCY_LABELS[receivedPromo.currency] }} +{{ receivedPromo.amount.toLocaleString() }}</span>
-      <small v-if="receivedPromo.currency === 'activity-silver'">已新增至個人資訊的獎勵卡分頁，啟用後即可使用。</small>
-      <small v-else-if="receivedPromo.currency === 'activity-gold'">已加入活動金餘額，目前僅入帳與顯示。</small>
+      <small v-if="receivedPromo.currency === 'activity-gold'">已加入活動金餘額，目前僅入帳與顯示。</small>
       <small v-else>已立即加入對應錢包，可至交易紀錄查看。</small>
     </section>
 
@@ -121,7 +119,6 @@ function productExpiry(promo: PromoCode) {
                   <div><dt>優惠碼</dt><dd>{{ pendingPromo.code }}</dd></div>
                   <div><dt>可兌換期限（台北時間）</dt><dd>{{ formatDate(pendingPromo.startsAt) }} ～ {{ formatDate(pendingPromo.endsAt) }}</dd></div>
                   <div><dt>商品使用期限</dt><dd>{{ productExpiry(pendingPromo) }}</dd></div>
-                  <div v-if="pendingPromo.currency === 'activity-silver'"><dt>獎勵卡規則</dt><dd>流水目標 {{ pendingPromo.turnoverTarget?.toLocaleString() }}・轉換上限 {{ pendingPromo.conversionLimit?.toLocaleString() }}</dd></div>
                 </dl>
                 <p class="promo-confirm-note">確認後立即領取，取消不會使用優惠碼。</p>
                 <p v-if="error" class="promo-error" role="alert">{{ error }}</p>

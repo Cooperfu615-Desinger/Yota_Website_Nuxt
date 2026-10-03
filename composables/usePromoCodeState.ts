@@ -8,7 +8,6 @@ export interface PromoCodeResult {
 export const usePromoCodeState = () => {
   const { isLoggedIn, userInfo } = useAppState()
   const financial = useFinancialState()
-  const rewardCards = useRewardCardState()
   const claimsByMember = useState<Record<string, string[]>>('promoCodeClaims', () => ({}))
   const activityGoldByMember = useState<Record<string, number>>('activityGoldBalances', () => ({}))
 
@@ -41,19 +40,6 @@ export const usePromoCodeState = () => {
         [key]: activityGoldBalance.value + promo.amount,
       }
       granted = Boolean(financial.recordActivityReward('activity-gold', promo.amount, '優惠碼獎勵', source))
-    } else if (promo.currency === 'activity-silver') {
-      granted = rewardCards.grantPromoRewardCard({
-        id: `promo-${key}-${code}`,
-        milestoneDay: 0,
-        title: promo.title,
-        currency: 'activity-silver',
-        amount: promo.amount,
-        totalTurnover: 0,
-        turnoverTarget: promo.turnoverTarget ?? 0,
-        conversionLimit: promo.conversionLimit ?? 0,
-        expiresAt: promo.cardExpiresAt ?? promo.endsAt.slice(0, 10).replace(/-/g, '/'),
-      }, source)
-      if (granted) financial.recordActivityReward('activity-silver', promo.amount, '優惠碼獎勵', source)
     } else {
       granted = Boolean(financial.addWalletReward(promo.currency, promo.amount, '優惠碼獎勵', `${source}・${PROMO_CURRENCY_LABELS[promo.currency]}`))
     }
