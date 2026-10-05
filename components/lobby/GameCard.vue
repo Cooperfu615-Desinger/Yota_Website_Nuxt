@@ -27,7 +27,7 @@ function handlePlay(mode: 'real' | 'demo') {
   <div class="game-card">
     <!-- 圖示區（留白內層） -->
     <div class="game-card-inner">
-      <!-- 有圖：完整顯示 AVIF -->
+      <!-- 有圖：完整顯示遊戲圖片 -->
       <img
         v-if="game.imageSrc"
         :src="resolvePublicAsset(game.imageSrc)"
