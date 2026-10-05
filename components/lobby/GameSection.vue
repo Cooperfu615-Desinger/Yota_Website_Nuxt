@@ -5,6 +5,8 @@ defineProps<{
   title: string
   games: GameItem[]
   favoriteKeys?: string[]
+  cardSize?: number
+  imageScale?: number
 }>()
 
 const emit = defineEmits<{
@@ -15,7 +17,15 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <section v-if="games.length" class="lobby-game-section">
+  <section
+    v-if="games.length"
+    class="lobby-game-section"
+    :class="{ 'lobby-game-section--sized': cardSize }"
+    :style="{
+      '--lobby-card-size': cardSize ? `${cardSize}px` : undefined,
+      '--lobby-card-image-scale': imageScale,
+    }"
+  >
     <div class="lobby-game-section-head">
       <h2>{{ title }}</h2>
       <button type="button" @click="emit('viewAll')">全部</button>
