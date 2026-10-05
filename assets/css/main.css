@@ -2906,6 +2906,28 @@ body {
   border-radius: 8px;
 }
 
+/* 大廳圖片滿版呈現：正方形裁切，放大 50% 消除 PNG 外圍留白 */
+.game-grid-wrap .game-card-inner {
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  overflow: hidden;
+}
+
+.game-grid-wrap .game-card-img {
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+  transform: scale(1.5);
+  transform-origin: center;
+}
+
+.game-grid-wrap .game-card-cover--fallback {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  border-radius: 0;
+}
+
 .game-card-cover-inner {
   font-size: 36px;
   font-weight: 900;

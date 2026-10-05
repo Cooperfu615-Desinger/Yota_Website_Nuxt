@@ -161,6 +161,9 @@ function enterGame() {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
+  transform: scale(1.6);
+  transform-origin: center;
 }
 
 .launch-mode {
