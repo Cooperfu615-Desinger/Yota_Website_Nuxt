@@ -18,6 +18,11 @@ const emit = defineEmits<{
   play: [key: string, mode: 'real' | 'demo']
 }>()
 
+const sectionPresentation: Partial<Record<string, { cardSize: number; imageScale: number }>> = {
+  continue: { cardSize: 232, imageScale: 1.2 },
+  slots: { cardSize: 202, imageScale: 1.1 },
+}
+
 </script>
 
 <template>
@@ -37,6 +42,8 @@ const emit = defineEmits<{
       :title="section.title"
       :games="section.games"
       :favorite-keys="favoriteKeys"
+      :card-size="sectionPresentation[section.key]?.cardSize"
+      :image-scale="sectionPresentation[section.key]?.imageScale"
       @view-all="emit('viewCategory', section.key)"
       @toggle-favorite="emit('toggleFavorite', $event)"
       @play="(key, mode) => emit('play', key, mode)"

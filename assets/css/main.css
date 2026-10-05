@@ -2561,7 +2561,7 @@ body {
 .lobby-game-row {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(142px, 172px);
+  grid-auto-columns: var(--lobby-card-size, minmax(142px, 172px));
   gap: 12px;
   overflow-x: auto;
   padding-bottom: 6px;
@@ -2591,6 +2591,28 @@ body {
 
 .lobby-game-row-card .game-card-rtp-value {
   font-size: 11px;
+}
+
+/* 指定尺寸的區塊：整張卡片固定為正方形，圖片填滿文字區以外的高度 */
+.lobby-game-section--sized .game-card {
+  display: flex;
+  flex-direction: column;
+  height: var(--lobby-card-size);
+}
+
+.game-grid-wrap .lobby-game-section--sized .game-card-inner {
+  flex: 1;
+  min-height: 0;
+  aspect-ratio: auto;
+}
+
+.lobby-game-section--sized .game-card-body {
+  flex-shrink: 0;
+}
+
+/* 指定尺寸的區塊先完整呈現圖片，再套用各自的縮放比例 */
+.game-grid-wrap .lobby-game-section--sized .game-card-img {
+  object-fit: contain;
 }
 
 .lobby-list-tools {
@@ -2917,7 +2939,7 @@ body {
   height: 100%;
   object-fit: cover;
   border-radius: 0;
-  transform: scale(1.5);
+  transform: scale(var(--lobby-card-image-scale, 1.5));
   transform-origin: center;
 }
 
