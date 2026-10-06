@@ -315,6 +315,30 @@ const eventLeaderboardRest = [
 const eventLeaderboardPreview = [...eventLeaderboardTop3, ...eventLeaderboardRest.slice(0, 2)] satisfies LeaderboardItem[]
 
 export const siteContent = {
+  // APP main 0b5fdc6 wallet UI examples; no reward issuance or settlement integration.
+  walletOverview: {
+    wallets: [
+      { key: 'gold', label: '金幣', note: '遊戲錢包，不含保險箱' },
+      { key: 'silver', label: '銀幣', note: '各項獎勵共用的遊戲餘額' },
+      { key: 'bronze', label: '銅幣', note: '獨立記錄，不併入銀幣兌換' },
+    ],
+    filters: [
+      { key: 'active', label: '累計中' },
+      { key: 'queued', label: '排隊中' },
+      { key: 'completed', label: '已完成' },
+    ],
+    demo: {
+      quota: 8000,
+      quotaGranted: 20000,
+      quotaUsed: 12000,
+      unsettledSilver: 0,
+      conditions: [
+        { id: 'WR-001', source: '新手登入獎勵', receivedAt: '2026/09/18 10:00', amount: 20000, turnoverMultiplier: 1, quotaMultiplier: 1, progress: 20000, status: 'completed' },
+        { id: 'WR-002', source: '每日簽到獎勵', receivedAt: '2026/09/19 09:30', amount: 10000, turnoverMultiplier: 2, quotaMultiplier: 1, progress: 12000, status: 'active' },
+        { id: 'WR-003', source: '儲值加贈優惠', receivedAt: '2026/09/20 15:20', amount: 5000, turnoverMultiplier: 1, quotaMultiplier: 1, progress: 0, status: 'queued' },
+      ],
+    },
+  },
   live: {
     title: '直播',
     eyebrow: 'LIVE LOUNGE',

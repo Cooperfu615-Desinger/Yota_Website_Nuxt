@@ -6,12 +6,6 @@ import {
   type GiftRequest,
 } from '~/utils/giftRequest'
 import { calculateVaultTransfer, canSubmitVaultTransfer } from '~/utils/vaultTransfer'
-import {
-  calculateWalletExchange,
-  canSubmitWalletExchange,
-  GOLD_TO_SILVER_RATE,
-  type WalletExchangeDirection,
-} from '~/utils/walletExchange'
 
 type VaultTab = 'vault' | 'transfer' | 'exchange'
 type NoticeType = 'success' | 'error'
@@ -31,7 +25,6 @@ const {
   openLogin,
   depositToVault,
   withdrawFromVault,
-  exchangeWalletCurrency,
 } = useAppState()
 const {
   friends,
@@ -85,11 +78,7 @@ const giftActionConfirmLabel = computed(() => {
   return '確認取消'
 })
 const giftNow = ref(0)
-const exchangeDirection = ref<WalletExchangeDirection>('gold-to-silver')
-const exchangeAmount = ref(0)
-const exchangeNotice = ref<{ type: NoticeType; text: string } | null>(null)
 let transferNoticeTimer: ReturnType<typeof setTimeout> | null = null
-let exchangeNoticeTimer: ReturnType<typeof setTimeout> | null = null
 let giftClockTimer: ReturnType<typeof setInterval> | null = null
 
 const maxAmount = computed(() => mode.value === 'deposit' ? userInfo.value.balance : userInfo.value.vaultBalance)
@@ -117,25 +106,12 @@ const searchablePlayers = computed(() =>
   siteContent.chat.onlinePlayers.filter(player => !isBlockedPlayer(player.playerId)),
 )
 const friendIds = computed(() => friends.value.map(friend => friend.playerId))
-const exchangeSourceBalance = computed(() =>
-  exchangeDirection.value === 'gold-to-silver' ? userInfo.value.balance : userInfo.value.silverBalance
-)
-const exchangeSummary = computed(() => calculateWalletExchange(exchangeDirection.value, exchangeAmount.value))
-const canConfirmExchange = computed(() =>
-  canSubmitWalletExchange(exchangeDirection.value, exchangeAmount.value, exchangeSourceBalance.value)
-)
-const exchangeStep = computed(() => exchangeDirection.value === 'gold-to-silver' ? 1 : GOLD_TO_SILVER_RATE)
-
 watch([mode, maxAmount], () => {
   if (amount.value > maxAmount.value) amount.value = maxAmount.value
 })
 
 watch(maxTransferAmount, (maximum) => {
   if (transferAmount.value > maximum) transferAmount.value = maximum
-})
-
-watch([exchangeDirection, exchangeSourceBalance], () => {
-  if (exchangeAmount.value > exchangeSourceBalance.value) exchangeAmount.value = exchangeSourceBalance.value
 })
 
 watch(pendingGiftAction, async (action) => {
@@ -173,7 +149,6 @@ watch(() => route.query, () => {
 
 onUnmounted(() => {
   if (transferNoticeTimer) clearTimeout(transferNoticeTimer)
-  if (exchangeNoticeTimer) clearTimeout(exchangeNoticeTimer)
   if (giftClockTimer) clearInterval(giftClockTimer)
   if (import.meta.client && giftDialogReturnFocus?.isConnected) giftDialogReturnFocus.focus()
 })
@@ -248,40 +223,11 @@ function setTransferPercent(percent: number) {
   transferAmount.value = Math.floor(maxTransferAmount.value * percent)
 }
 
-function setExchangeDirection(direction: WalletExchangeDirection) {
-  exchangeDirection.value = direction
-  exchangeAmount.value = 0
-  exchangeNotice.value = null
-}
-
-function onExchangeAmountInput(e: Event) {
-  let v = parseInt((e.target as HTMLInputElement).value.replace(/[^0-9]/g, ''), 10)
-  if (isNaN(v) || v < 0) v = 0
-  if (v > exchangeSourceBalance.value) v = exchangeSourceBalance.value
-  exchangeAmount.value = v
-}
-
-function setExchangePercent(percent: number) {
-  let value = Math.floor(exchangeSourceBalance.value * percent)
-  if (exchangeDirection.value === 'silver-to-gold') {
-    value = Math.floor(value / GOLD_TO_SILVER_RATE) * GOLD_TO_SILVER_RATE
-  }
-  exchangeAmount.value = value
-}
-
 function showTransferNotice(type: NoticeType, text: string) {
   transferNotice.value = { type, text }
   if (transferNoticeTimer) clearTimeout(transferNoticeTimer)
   transferNoticeTimer = setTimeout(() => {
     transferNotice.value = null
-  }, 3200)
-}
-
-function showExchangeNotice(type: NoticeType, text: string) {
-  exchangeNotice.value = { type, text }
-  if (exchangeNoticeTimer) clearTimeout(exchangeNoticeTimer)
-  exchangeNoticeTimer = setTimeout(() => {
-    exchangeNotice.value = null
   }, 3200)
 }
 
@@ -400,30 +346,6 @@ function confirmGiftAction() {
   closeGiftActionDialog()
 }
 
-function confirmExchange() {
-  if (exchangeAmount.value <= 0) {
-    showExchangeNotice('error', '請輸入兌換金額。')
-    return
-  }
-  if (exchangeDirection.value === 'silver-to-gold' && exchangeAmount.value % GOLD_TO_SILVER_RATE !== 0) {
-    showExchangeNotice('error', '銀幣換金幣需以 100 銀幣為單位。')
-    return
-  }
-
-  const result = exchangeWalletCurrency(exchangeDirection.value, exchangeAmount.value)
-  if (!result) {
-    showExchangeNotice('error', '目前餘額不足，請重新輸入兌換金額。')
-    return
-  }
-
-  const fromLabel = result.direction === 'gold-to-silver' ? '金幣' : '銀幣'
-  const toLabel = result.direction === 'gold-to-silver' ? '銀幣' : '金幣'
-  showExchangeNotice(
-    'success',
-    `已兌換 ${result.fromAmount.toLocaleString()} ${fromLabel}，獲得 ${result.toAmount.toLocaleString()} ${toLabel}。`
-  )
-  exchangeAmount.value = 0
-}
 </script>
 
 <template>
@@ -685,136 +607,7 @@ function confirmExchange() {
           />
         </div>
 
-        <div v-else key="exchange" class="exchange-tab-content lg:grid lg:grid-cols-[300px_1fr] lg:gap-6 flex flex-col gap-4">
-          <!-- 左欄：匯率與餘額 -->
-          <aside class="card-purple p-5 flex flex-col gap-4 exchange-summary-panel">
-            <div class="rounded-xl p-4" style="background:rgba(0,0,0,0.25);">
-              <div class="text-xs mb-1" style="color:var(--color-text-muted);">金幣</div>
-              <div class="text-2xl font-black" style="color:var(--color-gold);">{{ userInfo.balance.toLocaleString() }}</div>
-            </div>
-            <div class="rounded-xl p-4" style="background:rgba(0,0,0,0.25);">
-              <div class="text-xs mb-1" style="color:var(--color-text-muted);">銀幣</div>
-              <div class="text-2xl font-black" style="color:#C0C7D1;">{{ userInfo.silverBalance.toLocaleString() }}</div>
-            </div>
-            <div class="rounded-xl p-4" style="background:rgba(168,85,247,0.12); border:1px solid var(--color-border);">
-              <div class="text-xs mb-1" style="color:var(--color-text-muted);">兌換比值</div>
-              <div class="text-lg font-black" style="color:var(--color-gold);">1 金幣 = 100 銀幣</div>
-              <div class="text-xs mt-1" style="color:var(--color-text-muted);">金銀幣互換不收手續費。</div>
-            </div>
-          </aside>
-
-          <!-- 右欄：兌換表單 -->
-          <section class="card-purple p-5 exchange-form-panel">
-            <h2 class="text-lg font-black mb-1">金銀幣交換</h2>
-            <p class="text-sm mb-4" style="color:var(--color-text-muted);">選擇交換方向後輸入金額，系統會依 1:100 比值即時換算。</p>
-
-            <div class="exchange-direction-tabs tab-bar mb-4" role="tablist" aria-label="金銀幣交換方向">
-              <button
-                class="tab-btn"
-                :class="{ active: exchangeDirection === 'gold-to-silver' }"
-                role="tab"
-                :aria-selected="exchangeDirection === 'gold-to-silver'"
-                @click="setExchangeDirection('gold-to-silver')"
-              >
-                金幣換銀幣
-              </button>
-              <button
-                class="tab-btn"
-                :class="{ active: exchangeDirection === 'silver-to-gold' }"
-                role="tab"
-                :aria-selected="exchangeDirection === 'silver-to-gold'"
-                @click="setExchangeDirection('silver-to-gold')"
-              >
-                銀幣換金幣
-              </button>
-            </div>
-
-            <div
-              v-if="exchangeNotice"
-              class="mb-4 rounded-xl px-4 py-3 text-sm font-bold"
-              :style="exchangeNotice.type === 'success'
-                ? 'background:rgba(74,222,128,0.14); color:#86efac; border:1px solid rgba(74,222,128,0.3);'
-                : 'background:rgba(248,113,113,0.14); color:#fca5a5; border:1px solid rgba(248,113,113,0.3);'"
-            >
-              {{ exchangeNotice.text }}
-            </div>
-
-            <div class="grid gap-4">
-              <div>
-                <label class="input-label" for="exchange-amount">
-                  {{ exchangeDirection === 'gold-to-silver' ? '交換金幣' : '交換銀幣' }}
-                </label>
-                <div class="rounded-xl p-4" style="background:rgba(0,0,0,0.3); border:1px solid var(--color-border);">
-                  <input
-                    id="exchange-amount"
-                    :value="exchangeAmount"
-                    type="text"
-                    inputmode="numeric"
-                    class="w-full bg-transparent outline-none text-3xl font-black text-center mb-3"
-                    :style="`color:${exchangeDirection === 'gold-to-silver' ? 'var(--color-gold)' : '#C0C7D1'};`"
-                    placeholder="0"
-                    @input="onExchangeAmountInput"
-                  />
-                  <input
-                    :value="exchangeAmount"
-                    type="range"
-                    min="0"
-                    :max="exchangeSourceBalance"
-                    :step="exchangeStep"
-                    class="w-full accent-[#F5C842]"
-                    aria-label="兌換金額拉桿"
-                    @input="onExchangeAmountInput"
-                  />
-                  <div class="grid grid-cols-5 gap-2 mt-3">
-                    <button type="button" class="text-xs font-bold rounded-lg py-2" style="background:rgba(255,255,255,0.07); color:var(--color-text-muted);" @click="setExchangePercent(0)">0%</button>
-                    <button type="button" class="text-xs font-bold rounded-lg py-2" style="background:rgba(255,255,255,0.07); color:var(--color-text-muted);" @click="setExchangePercent(0.25)">25%</button>
-                    <button type="button" class="text-xs font-bold rounded-lg py-2" style="background:rgba(255,255,255,0.07); color:var(--color-text-muted);" @click="setExchangePercent(0.5)">50%</button>
-                    <button type="button" class="text-xs font-bold rounded-lg py-2" style="background:rgba(255,255,255,0.07); color:var(--color-text-muted);" @click="setExchangePercent(0.75)">75%</button>
-                    <button type="button" class="text-xs font-bold rounded-lg py-2" style="background:rgba(168,85,247,0.18); color:var(--color-gold); border:1px solid rgba(245,200,66,0.25);" @click="setExchangePercent(1)">MAX</button>
-                  </div>
-                </div>
-                <p
-                  v-if="exchangeDirection === 'silver-to-gold' && exchangeAmount > 0 && exchangeAmount % GOLD_TO_SILVER_RATE !== 0"
-                  class="text-xs mt-2"
-                  style="color:#fca5a5;"
-                >
-                  銀幣換金幣需以 100 銀幣為單位。
-                </p>
-              </div>
-
-              <div class="grid sm:grid-cols-3 gap-3">
-                <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.22);">
-                  <div class="text-xs mb-1" style="color:var(--color-text-muted);">扣除</div>
-                  <div class="font-black">
-                    {{ exchangeSummary.fromAmount.toLocaleString() }}
-                    {{ exchangeDirection === 'gold-to-silver' ? '金幣' : '銀幣' }}
-                  </div>
-                </div>
-                <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.22);">
-                  <div class="text-xs mb-1" style="color:var(--color-text-muted);">手續費</div>
-                  <div class="font-black" style="color:#86efac;">0</div>
-                </div>
-                <div class="rounded-xl p-3" style="background:rgba(0,0,0,0.22);">
-                  <div class="text-xs mb-1" style="color:var(--color-text-muted);">獲得</div>
-                  <div class="font-black" style="color:var(--color-gold);">
-                    {{ exchangeSummary.toAmount.toLocaleString() }}
-                    {{ exchangeDirection === 'gold-to-silver' ? '銀幣' : '金幣' }}
-                  </div>
-                </div>
-              </div>
-
-              <button
-                class="btn-gold w-full justify-center text-lg py-3"
-                style="border-radius:14px;"
-                :disabled="!canConfirmExchange"
-                :style="!canConfirmExchange ? 'opacity:0.5;cursor:not-allowed;' : ''"
-                @click="confirmExchange"
-              >
-                確認交換
-              </button>
-            </div>
-          </section>
-        </div>
+        <LobbyExchangeContent v-else key="exchange" />
       </Transition>
     </template>
 
@@ -940,15 +733,6 @@ function confirmExchange() {
 .vault-preview-grid span { display: block; color: var(--color-text-muted); font-size: 10px; }
 .vault-preview-grid strong { display: block; margin-top: 5px; color: var(--color-text); font-size: 15px; }
 .vault-submit-disabled { opacity: .5; cursor: not-allowed; }
-
-.exchange-tab-content { width: 100%; max-width: 1180px; margin: 0 auto; }
-.exchange-summary-panel,
-.exchange-form-panel { min-width: 0; }
-.exchange-summary-panel > div { border: 1px solid rgba(255,255,255,.1) !important; background: linear-gradient(145deg, rgba(0,0,0,.26), rgba(168,85,247,.06)) !important; }
-.exchange-summary-panel > div:last-child { border-color: rgba(245,200,66,.28) !important; background: linear-gradient(145deg, rgba(245,200,66,.12), rgba(168,85,247,.08)) !important; }
-.exchange-direction-tabs { padding: 5px; border: 1px solid rgba(168,85,247,.22); border-radius: 13px; background: rgba(0,0,0,.18); }
-.exchange-direction-tabs .tab-btn { min-height: 42px; border-radius: 9px; font-size: 12px; }
-.exchange-form-panel .btn-gold { border-radius: 14px; }
 
 .gift-tab-content {
   display: flex;
