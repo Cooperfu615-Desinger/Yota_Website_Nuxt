@@ -1,6 +1,6 @@
 # WEB-SPEC-07｜錢包、銀行與交易
 
-巨亨ONLINE Web 規格書｜Phase 2 功能分冊初版｜2026-09-15
+巨亨ONLINE Web 規格書｜v0.2｜初版 2026-09-15，更新 2026-10-06
 
 | 文件項目 | 內容 |
 |---|---|
@@ -9,7 +9,7 @@
 | Plane Figma 單 | `YOTAPLATFO-466` |
 | Plane Nuxt 單 | `YOTAPLATFO-479` |
 | APP 參考 | APP 第 08、09 章：銀行、儲值與優惠碼；保險箱、贈禮與兌換 |
-| 目前來源 | `20-frontend.md` §4、`pages/lobby/bank.vue`、`VaultContent.vue`、`ExchangeContent.vue`、`TransactionRecords.vue`、`useFinancialState.ts`、API inventory §5 |
+| 目前來源 | `20-frontend.md` §4、`BankHubContent.vue`、`WalletOverviewPanel.vue`、`VaultContent.vue`、`ExchangeContent.vue`、`TransactionRecords.vue`、`useFinancialState.ts`、`useWalletOverview.ts`、API inventory §5 |
 | 適用範圍 | 錢包顯示、儲值、保險箱存取、金銀兌換與交易紀錄 |
 | 目前狀態 | 前端財務 state、Mock 交易與畫面已存在；支付、帳務冪等、非同步入帳與正式服務尚未完成 |
 
@@ -45,12 +45,26 @@
 
 | 頁面／區塊 | 內容 | 主要元件 |
 |---|---|---|
-| 錢包摘要 | 金幣、銀幣、銅幣、保險箱餘額 | `WalletBalances.vue`、`useFinancialState.ts` |
+| 錢包總覽 | 三幣餘額、可換得金幣、剩餘額度、優惠流水分類與明細、規則說明 | `WalletOverviewPanel.vue`、`useWalletOverview.ts` |
 | 銀行 | 儲值方案、支付方式、優惠入口 | `BankContent.vue`、`SharedDepositContent.vue` |
 | 儲值確認 | 方案、金額、付款欄位、處理結果 | `DepositContent.vue` |
 | 保險箱 | 存入、取回、贈禮與相關入口 | `VaultContent.vue` |
-| 兌換 | 金→銀、銀→金、金額與預覽 | `ExchangeContent.vue`、`VaultContent.vue` |
+| 交換 | 銀→金試算、額度上限、所得保險箱預覽；金→銀暫不開放 | `ExchangeContent.vue` |
 | 交易紀錄 | 類型、金額、錢包、狀態、時間與說明 | `TransactionRecords.vue` |
+
+### 4.1 2026-10-06 錢包總覽與 APP 對齊
+
+`目前 Web 原型`：依使用者確認，以 APP UI／UX、功能與顯示內容為準，保留 Web 視覺風格。參考 APP GitLab `main` 的 `0b5fdc632b59f3590aabd16ae6af9f98409234f3`；錢包與交換相關來源與 APP 開發分支 `f02a646` 相同，未以此宣稱線上部署已驗證。
+
+- 總覽僅列金、銀、銅三幣餘額；保險箱仍由銀行獨立分頁管理。
+- 可交換銀幣＝`min(max(0, 銀幣餘額 − 未結算投入), max(0, 剩餘兌換額度))`；額度不是額外銀幣。總覽與交換頁共用計算及示範資料。
+- APP 示範額度為已取得 20,000 − 已使用 12,000＝剩餘 8,000 銀，未結算投入 0；餘額足夠時可試算為 80 金。
+- 優惠流水預設「累計中」，可切換「排隊中／已完成」並查看各分類筆數、已完成／目標／尚需有效投注，以及優惠編號、領取時間、銀幣數量與倍率。
+- 流水與額度均為固定示範資料，未接入正式領獎、遊戲結算或額度發放；說明彈窗呈現 APP 原型規則，不代表正式帳務已完成。
+- 銀→金僅試算，所得顯示為進入保險箱；送出停用，不扣銀幣、額度或新增交易。金→銀顯示規則確認中。
+- `待確認`：精度、最小交換單位、單次／每日限制及金→銀是否保留。試算輸入與小數金幣預覽沿用 APP，不能視為正式交易契約。
+
+`驗證證據`（2026-10-06）：錢包總覽純函式及既有交換、錢包消費、保險箱、贈禮測試共 22 項通過；Nuxt SSG generate 完成。`tests/walletOverview.browser.mjs` 在獨立瀏覽器內載入實際靜態成品，1440×1000 與 390×844 的分類、明細、說明彈窗、鍵盤焦點、試算上限、快捷比例、超限提示、分頁與餘額不變檢查通過，無 hydration 警告或缺少 chunk。未驗證遠端部署或正式服務；測試未啟動本機預覽服務。
 
 ## 5. 欄位說明
 
@@ -75,7 +89,7 @@
 | deposit success | Mock 後寫入餘額／紀錄 | 正式需支付確認與帳務入帳一致 |
 | deposit failed | 目前路徑不完整 | 需失敗原因、重試、取消與退款語意 |
 | vault transfer | 目前前端直接更新 state | 正式需交易原子性、權限與冪等 |
-| exchange | 金銀換算並檢查倍數 | server 需依匯率、餘額與併發重驗 |
+| exchange | 銀→金按餘額與示範額度試算，送出停用；金→銀未開放 | 精度與限制待確認，正式交易需 server 與帳務契約 |
 | transaction list | 顯示 Mock 列表 | 正式需分頁、時間、狀態與查詢失敗 |
 
 ## 7. 查詢、排序與分頁
@@ -89,12 +103,12 @@
 
 | 操作 | 前提 | 目前結果 | 正式待確認 |
 |---|---|---|---|
-| 查看錢包 | 已登入 | 顯示四種餘額 | snapshot、更新與 stale 資料 |
+| 查看錢包 | 已登入 | 總覽顯示三幣餘額；保險箱餘額由保險箱分頁查看 | snapshot、更新與 stale 資料 |
 | 選儲值方案 | 已登入／銀行頁 | 開啟付款確認 | 可用通道、優惠與限制 |
 | 建立儲值 | 方案與欄位有效 | Mock 延遲後成功 | order、支付、processing、失敗與退款 |
 | 存入保險箱 | 主錢包餘額足夠 | 更新 vault／主錢包 state | 原子交易、手續費與錯誤提示 |
 | 取回保險箱 | 保險箱餘額足夠 | 更新主錢包 | 明確 `VAULT_OUT`，不可顯示成現金提款 |
-| 金銀兌換 | 金額大於 0、銀→金為 100 倍數 | 前端計算並更新 state | 匯率版本、併發與 server 重驗 |
+| 銀→金試算 | 正整數銀幣，且不超過可交換上限 | 預覽所得保險箱金幣，不更新餘額／額度／交易 | 精度、最小單位、限額、匯率版本與帳務重驗 |
 | 查看交易紀錄 | 已登入 | 顯示交易列表 | query、分頁、狀態與資料一致性 |
 
 ## 9. 頁面狀態
@@ -158,6 +172,7 @@
 | 版本 | 日期 | 內容 |
 |---|---|---|
 | v0.1 | 2026-09-15 | 依目前 Web 財務元件、state、純函式與 API inventory 建立 17 節分冊初版；正式支付與帳務未驗收。 |
+| v0.2 | 2026-10-06 | 錢包總覽與相連交換頁對齊 APP：三幣、示範額度、流水分類、明細、規則彈窗及交換試算；保留 Web 風格，未擴充贈禮／交易規則。 |
 
 ## 17. 交付檢查表
 

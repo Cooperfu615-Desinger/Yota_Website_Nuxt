@@ -91,7 +91,7 @@ watch(() => route.query, applyQuery)
         <Transition name="bank-panel-fade" mode="out-in">
           <LobbyWalletOverviewPanel v-if="activeTab === 'overview'" key="overview" />
           <LobbyVaultContent v-else-if="activeTab === 'vault'" key="vault" embedded initial-tab="vault" />
-          <LobbyVaultContent v-else-if="activeTab === 'exchange'" key="exchange" embedded initial-tab="exchange" />
+          <LobbyExchangeContent v-else-if="activeTab === 'exchange'" key="exchange" />
           <LobbyVaultContent v-else-if="activeTab === 'gifts'" key="gifts" embedded initial-tab="transfer" />
           <LobbyTransactionRecords v-else key="records" />
         </Transition>
