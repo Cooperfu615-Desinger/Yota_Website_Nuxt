@@ -303,8 +303,9 @@ function applyChannelQuery() {
 
 onMounted(() => {
   applyChannelQuery()
-  if (activeChannel.value === 'support' && supportActivityDraft.value) {
-    const activityTitle = supportActivityDraft.value
+  const linkedActivity = siteContent.lobbyEvents.find(event => String(event.id) === route.query.activity && event.action?.target === 'support')
+  const activityTitle = linkedActivity?.title || supportActivityDraft.value
+  if (activeChannel.value === 'support' && activityTitle) {
     supportActivityDraft.value = ''
     supportDraftCategoryKey.value = 'event'
     activityDraftText.value = `我想詢問活動「${activityTitle}」：`

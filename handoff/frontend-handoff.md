@@ -122,8 +122,8 @@ handoff/                     交接文件
 - 跑馬燈文案 `marqueeAnnouncements`
 - Banner 輪播 `bannerSlides`
 - 首頁快速入口 `homepage.quickLinks`
-- 首頁熱門活動 `homepage.featuredEvents`
-- 首頁最新消息 `homepage.news`
+- 首頁熱門活動 `homepage.featuredEventIds` 選取共用 `lobbyEvents`（2026-10-07）
+- 首頁最新消息 `messageCenters.announcements`，與 `/events`、`/lobby/inbox` 共用公告（2026-10-07）
 - **共用遊戲資料 `games`（24 款，含 key / category / provider / rtp / color / badge）**
 - **遊戲分類 `gameCategories`（7 個分類）**
 - 排行榜資料 `leaderboard.tabs`

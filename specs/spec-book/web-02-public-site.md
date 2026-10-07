@@ -10,7 +10,7 @@
 | Plane Nuxt 單 | `YOTAPLATFO-474` |
 | APP 參考 | APP 總綱、10. 每日簽到／活動／排行榜；平台公開頁為 Web 專屬 |
 | 目前來源 | `00-overview.md`、`20-frontend.md` §10、`_index-table.md`、`data/siteContent.ts`、`components/shared/*` |
-| 適用範圍 | 首頁、活動、排行榜、教學、儲值、客服與公開會員入口 |
+| 適用範圍 | 首頁、最新消息（含活動）、排行榜、教學、儲值、客服與公開會員入口 |
 | 目前狀態 | 公開頁與共用內容元件存在；內容以靜態資料與 Mock 為主，CMS／正式動態資料尚未完成 |
 
 ## 1. 這個功能是什麼
@@ -46,12 +46,14 @@
 | 頁面／區塊 | 目前內容 | 資料來源 |
 |---|---|---|
 | `/` 首頁 | Header、跑馬燈、Banner、快速入口、最新消息、熱門活動、熱門遊戲、排行榜快報、Footer | `data/siteContent.ts`、首頁元件 |
-| `/events` | 活動列表、狀態分類、活動詳情 Modal | `SharedEventsContent.vue`、`siteContent.ts` |
+| `/events` | 最新消息；左側活動／遊戲公告／維護公告／系統公告，桌機列表與詳情、手機列表切換詳情 | `MessageCenterContent.vue`、`EventsContent.vue`、`siteContent.ts` |
 | `/leaderboard` | 排行榜頁、Top 3、後續名次與更新提示 | `SharedLeaderboardContent.vue`、`siteContent.ts` |
 | `/tutorial` | 新手教學、遊戲介紹、下載／導流、試玩入口 | `SharedTutorialContent.vue`、`siteContent.ts` |
 | `/deposit` | 儲值方案、付款方式介紹、登入後儲值導流 | `SharedDepositContent.vue` |
 | `/support` | FAQ、客服入口、登入後客服導流 | `SharedSupportContent.vue` |
 | `/member` | 目前 redirect 至登入後會員頁 | `pages/member.vue` |
+
+首頁、桌機導覽與手機抽屜的原「活動」入口統一為「最新消息」，保留 `/events` 路徑。公開頁與 `/lobby/inbox` 共用最新消息元件與內容；官網保留 Header／Footer 及 WEB 風格。首頁消息摘要取自 `messageCenters.announcements`，熱門活動依 `homepage.featuredEventIds` 取自 `lobbyEvents`，並連到同一筆詳情。舊宣傳圖不套用到名稱不同的新活動。
 
 公開頁的內容順序與畫面區塊由目前原型提供參考；正式視覺與響應式細節依 Figma 交付補充。
 
@@ -79,7 +81,9 @@
 
 ## 7. 查詢、排序與分頁
 
-- 活動目前依 `active`、`upcoming`、`ended` 類別顯示，不是 APP 的 `sale`、`tournament`、`vip` 類型維度。
+- 最新消息預設「活動」，另有遊戲公告、維護公告、系統公告；活動狀態依既有有效期間顯示，不再使用舊公開頁的狀態分頁。
+- `/events?category=game&message=1` 可直接閱讀公告；`/events?category=events&event=2` 可直接閱讀活動。SSG 首頁面完成 hydration 後套用 query。
+- 未登入可閱讀完整內容，顯示總數，不顯示或寫入個人已讀／未讀；登入後與大廳共用本次瀏覽的閱讀狀態。
 - 排行榜目前有 `multi`、`win`、`wealth` 三種榜單；更新提示由本地假計時產生。
 - 公開頁目前沒有真正的 server-side 分頁、關鍵字搜尋或內容版本篩選。
 - 若正式內容量需要分頁，需由 CMS／API 定義 cursor、排序、時區、快取與失敗回應；本章不自行指定。
@@ -89,7 +93,8 @@
 | 操作 | 前提 | 目前結果 | 正式待確認 |
 |---|---|---|---|
 | 點擊首頁 Banner | Banner 有目標設定 | 導向指定頁或執行既有入口 | 是否允許外部 URL、追蹤參數與開新分頁 |
-| 點擊活動卡 | 活動資料存在 | 開啟詳情 Modal 或進入內容 | 報名、分享與登入後狀態 |
+| 點擊活動卡／公告摘要 | 資料存在 | 進入對應分類及詳情，未登入也可閱讀 | 正式 CMS 發布與撤回 |
+| 點擊活動會員操作 | 依既有活動動作與有效期間 | 未登入先登入，再接續儲值／VIP／遊戲／客服目標；客服保留活動名稱草稿但不自動送出 | 正式參與資格與服務端權限 |
 | 點擊排行榜入口 | 公開頁可直接進入 | 進入 `/leaderboard` | 是否顯示完整即時榜單 |
 | 點擊開始遊戲 | 未登入或已登入 | 導向登入／`/lobby` | 年齡驗證觸發點與登入後返回路徑 |
 | 點擊儲值 | 未登入或已登入 | 公開頁介紹或導向銀行 | 正式支付前是否必須登入 |
@@ -134,6 +139,8 @@
 | `WEB-AC-02-004` | 導流 | 需要身份的遊戲、儲值、客服與會員操作會導向正確登入／大廳入口，且保留返回目的地。 |
 | `WEB-AC-02-005` | SSG／響應式 | 公開頁在 Web baseURL、桌機與手機環境可產生並具可讀內容；實際執行證據另於 `WEB-SPEC-13` 記錄。 |
 
+2026-10-07 驗證證據：消息中心 11 項單元測試與 SSG generate 通過；隔離 Chromium 於 1440×1000、390×844 驗證公開四分類、首頁直接連結、過期活動限制、個人信箱登入保護、客服登入接續及閱讀狀態共享。既有信箱領取／刪除／登出重置瀏覽器回歸亦通過。公開頁測試為 `tests/publicNews.browser.mjs`，未啟動預覽服務；未驗證遠端部署或正式 CMS。手機既有浮動入口仍可能覆蓋部分頁首，本次沿用原位置。
+
 ## 14. 這個功能需要的資料
 
 - `siteContent.ts` 的 Banner、公告、首頁、活動、排行榜、FAQ、遊戲與教學資料。
@@ -156,6 +163,7 @@
 
 | 版本 | 日期 | 內容 |
 |---|---|---|
+| v0.2 | 2026-10-07 | 公開活動頁統一為最新消息，對齊登入後共用內容、首頁摘要、直接連結與登入接續；仍為 Mock，未代表正式 CMS 上線。 |
 | v0.1 | 2026-09-15 | 依 Web `00-overview`、`20-frontend`、現有路由與共用元件建立 17 節分冊初版；正式 CMS、排行榜與活動服務未驗收。 |
 
 ## 17. 交付檢查表

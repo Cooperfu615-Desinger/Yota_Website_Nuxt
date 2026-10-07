@@ -95,7 +95,7 @@
             <h3 class="footer-col-title">快速連結</h3>
             <ul class="footer-links">
               <li><NuxtLink to="/">首頁</NuxtLink></li>
-              <li><NuxtLink to="/events">活動</NuxtLink></li>
+              <li><NuxtLink to="/events">最新消息</NuxtLink></li>
               <li><NuxtLink to="/leaderboard">排行榜</NuxtLink></li>
               <li><NuxtLink to="/deposit">儲值</NuxtLink></li>
               <li><NuxtLink to="/tutorial">新手教學</NuxtLink></li>

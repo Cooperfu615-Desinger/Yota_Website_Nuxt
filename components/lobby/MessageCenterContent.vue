@@ -2,12 +2,13 @@
 import { siteContent } from '~/data/siteContent'
 import { canDeleteInboxMessage, getClaimableGold, type InboxCategory, type NewsCategory, type CenterMessage } from '~/utils/messageCenters'
 
-const props = defineProps<{ mode: 'news' | 'inbox' }>()
+const props = defineProps<{ mode: 'news' | 'inbox'; publicAccess?: boolean }>()
 const route = useRoute()
 const { isLoggedIn, openLogin } = useAppState()
 const { announcements, messages, readEventIds, newsUnread, inboxUnread, markRead,
   deleteMessage, claimRewards, claimCategory, claimableCount, claiming } = useMessageCentersState()
 const isInbox = computed(() => props.mode === 'inbox')
+const canBrowse = computed(() => isLoggedIn.value || (props.publicAccess && !isInbox.value))
 const title = computed(() => isInbox.value ? '信箱' : '最新消息')
 const categories = computed(() => isInbox.value ? siteContent.messageCenters.inboxCategories : siteContent.messageCenters.newsCategories)
 const category = ref<NewsCategory | InboxCategory>(isInbox.value ? 'system' : 'events')
@@ -24,6 +25,21 @@ let media: MediaQueryList | undefined
 function updateScreen() { compact.value = !!media?.matches }
 const totalUnread = computed(() => isInbox.value ? inboxUnread.value : newsUnread.value)
 const batchCount = computed(() => isInbox.value ? claimableCount(category.value as InboxCategory) : 0)
+
+const eventId = computed(() => mounted.value && typeof route.query.event === 'string' ? Number(route.query.event) : undefined)
+function countFor(key: string) {
+  return key === 'events' && !isInbox.value ? siteContent.lobbyEvents.length : source.value.filter(item => item.type === key).length
+}
+function applyNewsQuery() {
+  if (isInbox.value) return
+  const key = siteContent.messageCenters.newsCategories.find(item => item.key === route.query.category)?.key ?? 'events'
+  category.value = key
+  const id = typeof route.query.message === 'string' ? Number(route.query.message) : NaN
+  const entry = filtered.value.find(item => item.id === id)
+  selectedId.value = entry?.id ?? filtered.value[0]?.id ?? null
+  showDetail.value = !!entry
+}
+watch(() => route.query, () => { if (mounted.value) applyNewsQuery() })
 
 function unreadFor(key: string) {
   return key === 'events' && !isInbox.value
@@ -65,13 +81,14 @@ onMounted(() => {
   updateScreen()
   media.addEventListener('change', updateScreen)
   mounted.value = true
+  applyNewsQuery()
 })
 onUnmounted(() => media?.removeEventListener('change', updateScreen))
 </script>
 
 <template>
   <div class="lobby-page message-center-page px-4 py-5">
-    <section v-if="!isLoggedIn" class="message-guest card-purple">
+    <section v-if="!canBrowse" class="message-guest card-purple">
       <span class="message-guest-icon" aria-hidden="true">{{ isInbox ? '✉' : '◈' }}</span>
       <h1>{{ title }}</h1>
       <p>{{ isInbox ? '登入後查看個人通知、補單進度與信件附件。' : '登入後查看活動、遊戲公告、維護公告與系統公告。' }}</p>
@@ -85,7 +102,7 @@ onUnmounted(() => media?.removeEventListener('change', updateScreen))
           <p class="message-intro">{{ isInbox ? '你的專屬通知與獎勵，都在這裡。' : '掌握最新活動與服務資訊。個人通知請至信箱查看。' }}</p>
         </div>
         <div class="message-heading-actions">
-          <span class="message-total">未讀 {{ totalUnread }} 則</span>
+          <span class="message-total">{{ isLoggedIn ? `未讀 ${totalUnread} 則` : `共 ${siteContent.lobbyEvents.length + announcements.length} 則消息` }}</span>
           <button v-if="isInbox" type="button" class="message-batch btn-gold" :disabled="!batchCount || claiming" @click="claim()">一鍵領取 <span>{{ batchCount }}</span></button>
         </div>
       </header>
@@ -94,21 +111,21 @@ onUnmounted(() => media?.removeEventListener('change', updateScreen))
         <nav class="message-category-rail" :aria-label="`${title}分類`">
           <button v-for="item in categories" :key="item.key" type="button" class="message-category"
             :class="{ active: category === item.key }" :aria-pressed="category === item.key"
-            :aria-label="`${item.label}，未讀 ${unreadFor(item.key)} 則`" @click="selectCategory(item.key)">
+            :aria-label="isLoggedIn ? `${item.label}，未讀 ${unreadFor(item.key)} 則` : `${item.label}，共 ${countFor(item.key)} 則`" @click="selectCategory(item.key)">
             <span class="message-category-icon" aria-hidden="true">{{ item.icon }}</span>
             <strong>{{ item.label }}</strong>
-            <span v-if="unreadFor(item.key)" class="message-category-count">{{ unreadFor(item.key) }}</span>
+            <span v-if="isLoggedIn && unreadFor(item.key)" class="message-category-count">{{ unreadFor(item.key) }}</span>
           </button>
         </nav>
         <div class="message-center-content">
-          <LobbyEventsContent v-if="!isInbox && category === 'events'" embedded :compact="compact" />
+          <LobbyEventsContent v-if="!isInbox && category === 'events'" embedded :compact="compact" :initial-event-id="eventId" />
           <div v-else class="message-panels">
             <section class="message-list" :aria-label="`${currentLabel}列表`">
-              <div class="message-list-summary"><strong>{{ currentLabel }}</strong><span>{{ filtered.length }} 則 · 未讀 {{ unreadFor(category) }}</span></div>
+              <div class="message-list-summary"><strong>{{ currentLabel }}</strong><span>{{ filtered.length }} 則<span v-if="isLoggedIn"> · 未讀 {{ unreadFor(category) }}</span></span></div>
               <div class="message-list-scroll">
                 <article v-for="message in filtered" :key="message.id" class="message-entry" :class="{ selected: selectedId === message.id, read: message.read }">
                   <button type="button" class="message-entry-main" :aria-pressed="selectedId === message.id" @click="selectMessage(message)">
-                    <span class="message-entry-meta"><time>{{ message.date }}</time><span :class="{ unread: !message.read }">{{ message.read ? '已讀' : '未讀' }}</span></span>
+                    <span class="message-entry-meta"><time>{{ message.date }}</time><span v-if="isLoggedIn" :class="{ unread: !message.read }">{{ message.read ? '已讀' : '未讀' }}</span></span>
                     <strong>{{ message.title }}</strong>
                     <span class="message-preview">{{ message.content.replace(/\s+/g, ' ') }}</span>
                     <span v-if="isInbox && message.attachment" class="message-attachment-tag">{{ message.attachment.claimed ? '附件已領取' : getClaimableGold(message) ? `可領取 · ${message.attachment.amount}` : `附件 · ${message.attachment.amount}` }}</span>
