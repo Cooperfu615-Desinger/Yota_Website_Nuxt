@@ -24,8 +24,12 @@ function setLeaderboardTab(tabKey: LeaderboardTabKey) {
 }
 
 const quickLinks = siteContent.homepage.quickLinks
-const news = siteContent.homepage.news
-const featuredEvents = siteContent.homepage.featuredEvents
+const news = [...siteContent.messageCenters.announcements].sort((a, b) => b.date.localeCompare(a.date))
+const newsLabel = (type: string) => siteContent.messageCenters.newsCategories.find(item => item.key === type)?.label ?? '公告'
+const featuredEvents = siteContent.homepage.featuredEventIds.flatMap(id => {
+  const event = siteContent.lobbyEvents.find(item => item.id === id)
+  return event ? [event] : []
+})
 const featuredGames = siteContent.games.slice(0, 9)
 </script>
 
@@ -65,11 +69,11 @@ const featuredGames = siteContent.games.slice(0, 9)
           <span class="section-title-line" aria-hidden="true" />
         </div>
         <div class="card-purple p-3 flex flex-col gap-2">
-          <article v-for="(item, i) in news" :key="i" class="news-item">
-            <span class="news-badge" :class="item.type">{{ item.label }}</span>
+          <NuxtLink v-for="item in news" :key="item.id" :to="{ path: '/events', query: { category: item.type, message: item.id } }" class="news-item no-underline">
+            <span class="news-badge" :class="item.type === 'system' ? 'system' : 'announce'">{{ newsLabel(item.type) }}</span>
             <p class="news-title">{{ item.title }}</p>
-            <time class="news-time">{{ item.time }}</time>
-          </article>
+            <time class="news-time">{{ item.date }}</time>
+          </NuxtLink>
         </div>
         <div class="flex justify-center mt-3">
           <NuxtLink to="/events" class="section-more-btn">查看更多</NuxtLink>
@@ -87,25 +91,16 @@ const featuredGames = siteContent.games.slice(0, 9)
         <div class="events-scroll px-4">
           <NuxtLink
             v-for="event in featuredEvents"
-            :key="event.title"
-            :to="event.to"
+            :key="event.id"
+            :to="{ path: '/events', query: { category: 'events', event: event.id } }"
             class="events-scroll-card card-purple no-underline block overflow-hidden flex-shrink-0"
             :aria-label="event.title"
           >
-            <!-- 活動主視覺圖（有圖優先顯示圖） -->
-            <img
-              v-if="event.imageSrc"
-              :src="baseURL.replace(/\/$/, '') + event.imageSrc"
-              :alt="event.title"
-              class="w-full h-auto block"
-            />
-            <!-- 無圖 fallback：漸層色塊 -->
-            <div
-              v-else
-              class="w-full aspect-video flex items-center justify-center"
-              :style="{ background: event.background }"
-            >
-              <span class="font-black text-white text-lg">{{ event.title }}</span>
+            <div class="featured-news-card" :style="{ '--event-accent': event.accent }">
+              <span class="featured-news-icon" aria-hidden="true">{{ event.icon }}</span>
+              <strong>{{ event.title }}</strong>
+              <p>{{ event.summary }}</p>
+              <span class="featured-news-more">查看活動 →</span>
             </div>
           </NuxtLink>
         </div>
@@ -223,4 +218,10 @@ const featuredGames = siteContent.games.slice(0, 9)
 <style scoped>
 .tab-fade-enter-active, .tab-fade-leave-active { transition: opacity 0.2s; }
 .tab-fade-enter-from, .tab-fade-leave-to { opacity: 0; }
+.featured-news-card { display: flex; flex-direction: column; align-items: flex-start; min-height: 220px; height: 100%; padding: 22px; background: linear-gradient(135deg, color-mix(in srgb, var(--event-accent) 16%, #1a0a2e), #1a0a2e); }
+.featured-news-icon { margin-bottom: 15px; color: var(--event-accent); font-size: 32px; }
+.featured-news-card strong { font-size: 18px; font-weight: 900; color: var(--color-text); }
+.featured-news-card p { margin: 10px 0 16px; font-size: 13px; line-height: 1.7; color: var(--color-text-muted); }
+.featured-news-more { margin-top: auto; color: var(--color-gold); font-size: 12px; font-weight: 800; }
+@media (max-width: 600px) { .featured-news-card { padding: 16px; min-height: 230px; } }
 </style>

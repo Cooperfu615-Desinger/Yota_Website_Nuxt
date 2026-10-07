@@ -3,9 +3,8 @@ import { siteContent, type LobbyEvent } from '~/data/siteContent'
 import { getLobbyEventAvailability, type LobbyEventAvailability } from '~/utils/lobbyEventAvailability'
 import { getLobbyEventAction } from '~/utils/lobbyEventAction'
 
-const props = withDefaults(defineProps<{ embedded?: boolean; compact?: boolean }>(), { embedded: false, compact: false })
+const props = withDefaults(defineProps<{ embedded?: boolean; compact?: boolean; initialEventId?: number }>(), { embedded: false, compact: false })
 
-const route = useRoute()
 const router = useRouter()
 const { isLoggedIn, openLogin } = useAppState()
 const lobbyEvents = siteContent.lobbyEvents
@@ -16,6 +15,11 @@ const showMobileDetail = ref(false)
 const eventsShell = ref<HTMLElement | null>(null)
 const notice = ref('')
 const selectedEvent = computed<LobbyEvent>(() => lobbyEvents.find(event => event.id === selectedId.value) ?? lobbyEvents[0]!)
+watch(() => props.initialEventId, id => {
+  if (!lobbyEvents.some(event => event.id === id)) return
+  selectedId.value = id!
+  showMobileDetail.value = true
+}, { immediate: true })
 const selectedStatus = computed(() => statusOf(selectedEvent.value))
 const selectedAction = computed(() => getLobbyEventAction(selectedEvent.value, now.value))
 const mounted = ref(false)
@@ -45,12 +49,12 @@ function selectEvent(event: LobbyEvent) {
 function handleAction(event: LobbyEvent) {
   const action = getLobbyEventAction(event, now.value)
   if (!action) return
+  const paths = { store: '/lobby/bank', vip: '/lobby/member?tab=vip', games: '/lobby', support: `/lobby/chat?channel=support&activity=${event.id}` }
   if (!isLoggedIn.value) {
-    openLogin(route.fullPath)
+    openLogin(paths[action.target])
     return
   }
   if (action.target === 'support') supportActivityDraft.value = event.title
-  const paths = { store: '/lobby/bank', vip: '/lobby/member?tab=vip', games: '/lobby', support: '/lobby/chat?channel=support' }
   router.push(paths[action.target])
 }
 
@@ -98,7 +102,7 @@ watch([mounted, isLoggedIn, selectedId, isCompact, showMobileDetail, readEventId
           >
             <span class="event-list-icon" aria-hidden="true">{{ event.icon }}</span>
             <span class="event-list-copy">
-              <span class="event-list-top"><span class="event-status" :class="`event-status--${statusOf(event)}`">{{ statusLabels[statusOf(event)] }}</span><span v-if="!readEventIds.includes(event.id)" class="event-unread">未讀</span></span>
+              <span class="event-list-top"><span class="event-status" :class="`event-status--${statusOf(event)}`">{{ statusLabels[statusOf(event)] }}</span><span v-if="isLoggedIn && !readEventIds.includes(event.id)" class="event-unread">未讀</span></span>
               <strong>{{ event.title }}</strong>
               <span class="event-list-summary">{{ event.summary }}</span>
               <span class="event-list-date">開始：{{ event.startTime }}</span>

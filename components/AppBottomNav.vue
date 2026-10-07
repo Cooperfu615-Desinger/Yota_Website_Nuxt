@@ -10,6 +10,7 @@ const lobbySidebarMobileOpen = useState('lobby-sidebar-mobile-open', () => false
 const isActive = (path: string) => route.path === path
 const inLobby = computed(() => route.path === '/lobby' || route.path.startsWith('/lobby/'))
 const isLobbyActive = computed(() => route.path === '/lobby')
+const newsPath = computed(() => inLobby.value ? '/lobby/inbox' : '/events')
 const shopPath = computed(() => inLobby.value ? '/lobby/bank' : '/deposit')
 const shopActive = computed(() => inLobby.value ? route.path === '/lobby/bank' : route.path === '/deposit')
 
@@ -79,9 +80,9 @@ function handleShop(event: MouseEvent) {
     <button
       class="bottom-nav-item"
       type="button"
-      :class="{ active: isActive('/lobby/inbox') }"
+      :class="{ active: isActive(newsPath) }"
       :aria-label="isLoggedIn && newsUnread ? `最新消息，${newsUnread} 則未讀` : '最新消息'"
-      @click="pushProtected('/lobby/inbox')"
+      @click="inLobby ? pushProtected(newsPath) : router.push(newsPath)"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16v12H4V6Zm0 0 8 7 8-7"/>

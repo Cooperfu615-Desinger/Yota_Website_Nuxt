@@ -5,7 +5,7 @@ const { drawerOpen, closeDrawer } = useMobileMenuState()
 
 const navLinks = [
   { to: '/',           label: '首頁' },
-  { to: '/events',     label: '活動' },
+  { to: '/events',     label: '最新消息' },
   { to: '/leaderboard',label: '排行榜' },
   { to: '/deposit',    label: '儲值' },
   { to: '/tutorial',   label: '新手教學' },
@@ -15,7 +15,7 @@ const navLinks = [
 // 抽屜導覽（手機版，順序依需求）
 const drawerLinks = [
   { to: '/deposit',    label: '儲值',    icon: '💰' },
-  { to: '/events',     label: '活動',    icon: '🎉' },
+  { to: '/events',     label: '最新消息',    icon: '🎉' },
   { to: '/leaderboard',label: '排行榜',  icon: '🏆' },
   { to: '/tutorial',   label: '新手教學',icon: '📖' },
   { to: '/support',    label: '客服中心',icon: '🎧' },

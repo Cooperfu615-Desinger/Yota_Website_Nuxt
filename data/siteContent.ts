@@ -434,22 +434,12 @@ export const siteContent = {
   homepage: {
     quickLinks: [
       { key: 'deposit', to: '/deposit', label: '儲值', color: 'var(--color-gold)' },
-      { key: 'events', to: '/events', label: '活動', color: '#f87171' },
+      { key: 'events', to: '/events', label: '最新消息', color: '#f87171' },
       { key: 'leaderboard', to: '/leaderboard', label: '排行榜', color: '#4ade80' },
       { key: 'tutorial', to: '/tutorial', label: '教學', color: 'var(--color-purple-glow)' },
     ] satisfies HomepageQuickLink[],
-    news: [
-      { type: 'system',   label: '系統', title: '排行榜最終倒數中！名次隨時洗牌，把握最後衝刺機會，全力搶分奪獎！', time: '1小時前' },
-      { type: 'announce', label: '公告', title: '系統維護公告：2026/10/10 凌晨 05:00–06:30', time: '3小時前' },
-      { type: 'promo',    label: '優惠', title: '排行榜決賽已進入關鍵時刻，名次隨時可能翻盤！活動期間完成指定條件可獲得高額獎勵', time: '19小時前' },
-      { type: 'notice',   label: '通知', title: '最終排名爭奪戰全面開打！活動進入關鍵時刻，每一分積分都可能影響名次變動', time: '昨天' },
-      { type: 'announce', label: '公告', title: '為提供更穩定且優質的服務體驗，系統將於指定時段進行維護作業，維護期間部分功能將暫停服務', time: '2026/02/10' },
-    ] satisfies NewsItem[],
-    featuredEvents: [
-      { to: '/events',  title: '百萬大獎賽',   imageSrc: '/event_001.png', background: 'linear-gradient(135deg,#1a003a,#7C3AED)' },
-      { to: '/events',  title: '春節限定活動', imageSrc: '/event_002.png', background: 'linear-gradient(135deg,#2d0a0a,#991b1b)' },
-      { to: '/events',  title: '新手首儲禮',   imageSrc: '/event_003.png', background: 'linear-gradient(135deg,#1a0a00,#D97706)' },
-    ] satisfies FeaturedEventCard[],
+    // Featured entries reference the shared news catalogue; no separate event copy or artwork.
+    featuredEventIds: [2, 4, 3],
   },
   gameCategories: [
     { key: 'all',      label: '全部',   icon: '🎮' },

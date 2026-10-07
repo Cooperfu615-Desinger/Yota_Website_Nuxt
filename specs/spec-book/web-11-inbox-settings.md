@@ -9,7 +9,7 @@
 | Plane Figma 單 | `YOTAPLATFO-470` |
 | Plane Nuxt 單 | `YOTAPLATFO-483` |
 | APP 參考 | APP 12「信箱、通知與設定」；Web 以 `/lobby/inbox` 與 `/lobby/settings` 的目前實作為基準 |
-| 目前來源 | `pages/lobby/inbox.vue`、`pages/lobby/settings.vue`、`MailboxContent.vue`、`useMailboxState.ts`、`usePreferencesState.ts`、`useSocialState.ts` |
+| 目前來源 | `pages/lobby/inbox.vue`、`pages/lobby/mailbox.vue`、`pages/lobby/settings.vue`、`MessageCenterContent.vue`、`useMessageCentersState.ts`、`usePreferencesState.ts`、`useSocialState.ts` |
 | 適用範圍 | 登入後信箱、系統／營運／帳務訊息、附件領取、刪除、偏好、黑名單、法律文件與登出 |
 | 目前狀態 | local／Mock 狀態；推播、跨裝置同步、批次操作與正式 session 尚未完成 |
 
@@ -43,22 +43,26 @@
 
 ## 4. 畫面內容
 
+2026-10-07 現況補充：最新消息與個人信箱已分開。`/events` 是未登入可閱讀的公開最新消息，`/lobby/inbox` 是登入後最新消息，兩者共用 `MessageCenterContent.vue`（news 模式）、`EventsContent.vue` 與 `useMessageCentersState.ts`。分類為活動、遊戲公告、維護公告、系統公告。公開頁不呈現個人已讀／未讀，登入後則共用本次瀏覽的閱讀狀態。
+
+個人信箱位於 `/lobby/mailbox`，同一元件的 inbox 模式仍需登入，分類為系統通知、活動推廣、補單通知、個人訊息。已讀、附件領取、刪除分開管理，未領附件不可刪除，不能重複領取。公開最新消息沒有領取或刪除信件操作。
+
 | 頁面／區塊 | 內容 | 目前來源 |
 |---|---|---|
-| 信箱列表 | 分類、未讀點、類型、時間、標題、預覽與附件標籤 | `/lobby/inbox`、`MailboxContent.vue` |
-| 信件詳情 | 完整內文、附件、已讀／領取結果、刪除與返回 | `useMailboxState.ts`、信箱元件 |
+| 信箱列表 | 分類、未讀點、類型、時間、標題、預覽與附件標籤 | `/lobby/mailbox`、`MessageCenterContent.vue` |
+| 信件詳情 | 完整內文、附件、已讀／領取結果、刪除與返回 | `useMessageCentersState.ts`、信箱元件 |
 | 設定 | 音樂／音效、主題、語言、黑名單、法律與登出 | `/lobby/settings`、設定元件 |
 | Legal Modal | 會員條款、隱私政策、平台服務規範 | `useLegalState.ts`、`LegalModal.vue` |
 | Logout Modal | 登出確認、清理狀態、返回官網 | `useLogoutState.ts`、`LogoutConfirmModal.vue` |
 
-目前信箱提供「營運公告」與「系統通知」篩選；`system` 與 `deposit` 歸在系統通知，`event` 歸在營運公告。手機版詳情以 overlay 呈現，關閉後返回列表與原分類。
+目前消息中心分類按鈕固定在左側；桌機並列列表與詳情，手機切換列表與詳情，返回後保留原分類。
 
 ## 5. 欄位說明
 
 | 欄位 | 顯示／輸入內容 | 限制與目前狀態 |
 |---|---|---|
-| message | 信件 ID、類型、標題、預覽、內文、時間與已讀狀態 | 目前 `system | event | deposit`；正式需服務端 schema |
-| category | 營運公告／系統通知 | 分類規則需與未讀彙總及多語內容一致 |
+| message | 信件 ID、類型、標題、預覽、內文、時間與已讀狀態 | 信箱為 `system | promo | topup | personal`；正式需服務端 schema |
+| category | 最新消息四類／個人信箱四類，分開管理 | 分類規則需與未讀彙總及多語內容一致 |
 | attachment | 幣別、數量、說明、可領／已領／失敗 | 一次性領取由服務端原子性消費 |
 | source／reference | 活動、儲值、任務、獎勵、客服來源與交易 ID | 必須可追溯，不可只依畫面文字 |
 | preference | `musicEnabled`、`soundEnabled`、`theme`、`language`、`pushEnabled` | 目前只持久化部分欄位；正式同步規則待確認 |
@@ -77,7 +81,7 @@
 | `saved`／`save-failed` | 偏好變更顯示保存結果，不把 DOM 變更當成服務端同步 |
 | `blocked`／`legal-open`／`logout-confirm` | 黑名單、法律與登出 Modal 的狀態需可關閉／返回 |
 
-目前 `runMock` 以約 700ms 延遲模擬附件領取；這是原型互動，不是服務端延遲、付款或獎勵完成證據。
+目前附件由 `useMessageCentersState.ts` 更新示範錢包與紀錄，未領附件不可刪除；這是原型互動，不是正式付款或獎勵完成證據。
 
 ## 7. 查詢、排序與分頁
 
@@ -150,7 +154,7 @@
 - `musicEnabled`、`soundEnabled`、`theme`、`language`、`pushEnabled`、保存來源與跨裝置版本。
 - 黑名單玩家識別、關係變更、法律文件版本／同意紀錄、session／token 撤銷與登出結果。
 
-目前 `useMailboxState.ts` 以 `useState` 種子信件，`usePreferencesState.ts` 只以 localStorage 保存部分偏好；正式 API inventory 尚未接實際 `$fetch`。
+目前 `useMessageCentersState.ts` 以 `useState` 種子信件，`usePreferencesState.ts` 只以 localStorage 保存部分偏好；正式 API inventory 尚未接實際 `$fetch`。
 
 ## 15. 待確認事項
 
@@ -167,6 +171,7 @@
 | 版本 | 日期 | 內容 |
 |---|---|---|
 | v0.1 | 2026-09-15 | 依目前信箱、設定、偏好、黑名單與登出 state 建立功能分冊初版。 |
+| v0.3 | 2026-10-07 | 補充公開最新消息與登入後最新消息共用、個人信箱路由與權限邊界；未新增正式通知或帳務能力。 |
 | v0.2 | 2026-09-15 | 對齊 APP 17 節規格責任，補齊 User Story、資料、驗收、待確認與交付檢查。 |
 
 ## 17. 交付檢查表
