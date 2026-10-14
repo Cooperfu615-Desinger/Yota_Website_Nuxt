@@ -1,6 +1,7 @@
 import { siteContent } from '~/data/siteContent'
 import { resolveVipReward } from '~/utils/vipReward'
 import { resolveInvitationCode } from '~/utils/invitationCode'
+import { applyAccountBinding, normalizeAccountBindings, type AccountBindingRequest, type AccountBindingState } from '~/utils/accountBindings'
 
 const LS_LOGIN_KEY = 'jh_isLoggedIn'
 const LS_USER_KEY = 'jh_userInfo'
@@ -22,13 +23,7 @@ interface UserProfile {
   phone: string
   invitationCode: string
   authProvider: AuthProvider
-  accountBindings: {
-    phone: boolean
-    facebook: boolean
-    line: boolean
-    apple: boolean
-    google: boolean
-  }
+  accountBindings: AccountBindingState
 }
 
 function normalizeProfile(saved?: Partial<UserProfile>): UserProfile {
@@ -51,10 +46,11 @@ function normalizeProfile(saved?: Partial<UserProfile>): UserProfile {
       saved?.invitationCode ?? (import.meta.client ? undefined : base.invitationCode),
     ),
     authProvider: (saved?.authProvider || base.authProvider) as AuthProvider,
-    accountBindings: {
-      ...base.accountBindings,
-      ...(saved?.accountBindings ?? {}),
-    },
+    accountBindings: normalizeAccountBindings(
+      saved ? saved.accountBindings : base.accountBindings,
+      saved?.authProvider || base.authProvider,
+      String(saved?.email ?? base.email),
+    ),
   }
 }
 
@@ -115,6 +111,8 @@ export const useAppState = () => {
     const previousAccount = profile.value.account
     const previousProvider = profile.value.authProvider
     const wasLoggedIn = isLoggedIn.value
+    const identityChanged = !wasLoggedIn || provider !== previousProvider || !!(account && account !== previousAccount)
+    if (identityChanged) profile.value = normalizeProfile()
     vipClaimedRewardLevels.value = []
     if (name) profile.value.name = name
     if (account) profile.value.account = account
@@ -131,10 +129,19 @@ export const useAppState = () => {
       profile.value.emailLocked = false
       profile.value.birthday = ''
       profile.value.birthdayLocked = false
-      profile.value.accountBindings = { ...profile.value.accountBindings, phone: false, google: false }
+      profile.value.accountBindings = normalizeAccountBindings(undefined, 'guest', '')
       profile.value.invitationCode = ''
     } else {
       profile.value.invitationCode = resolveInvitationCode(false, profile.value.invitationCode)
+      if (identityChanged && (provider === 'google' || provider === 'apple' || provider === 'facebook')) {
+        profile.value.email = ''
+        profile.value.emailLocked = false
+        profile.value.phone = ''
+        profile.value.accountBindings = normalizeAccountBindings(undefined, provider, '')
+      }
+      if (provider === 'google' || provider === 'apple' || provider === 'facebook' || provider === 'phone') {
+        profile.value.accountBindings = { ...profile.value.accountBindings, [provider]: true }
+      }
     }
     if (!wasLoggedIn || profile.value.account !== previousAccount || provider !== previousProvider) {
       useMessageCentersState().resetMessageCenters()
@@ -180,14 +187,24 @@ export const useAppState = () => {
     }
   }
 
-  function updateProfile(updates: Partial<Pick<UserProfile, 'name' | 'avatar' | 'avatarId' | 'bio' | 'birthday' | 'birthdayLocked' | 'email' | 'emailLocked' | 'phone'>>) {
-    profile.value = normalizeProfile({ ...profile.value, ...updates })
+  function updateProfile(updates: Partial<Pick<UserProfile, 'name' | 'avatar' | 'avatarId' | 'bio' | 'birthday' | 'birthdayLocked'>>) {
+    if (!isLoggedIn.value) return
+    // Basic-profile saves cannot bypass contact verification or replace bindings.
+    const allowed: Partial<UserProfile> = {}
+    for (const key of ['name', 'avatar', 'avatarId', 'bio', 'birthday', 'birthdayLocked'] as const) {
+      if (updates[key] !== undefined) Object.assign(allowed, { [key]: updates[key] })
+    }
+    profile.value = normalizeProfile({ ...profile.value, ...allowed })
     persistProfile()
   }
 
-  function setAccountBinding(provider: keyof UserProfile['accountBindings'], bound: boolean) {
-    profile.value.accountBindings[provider] = bound
+  function completeAccountBinding(request: AccountBindingRequest, expectedIdentity: string) {
+    if (!isLoggedIn.value) return false
+    const updated = applyAccountBinding(profile.value, expectedIdentity, request)
+    if (updated === profile.value) return false
+    profile.value = updated
     persistProfile()
+    return true
   }
 
   function consumeProtectedDestination() {
@@ -226,7 +243,7 @@ export const useAppState = () => {
     vipClaimedRewardLevels,
     logout,
     updateProfile,
-    setAccountBinding,
+    completeAccountBinding,
     consumeProtectedDestination,
     initFromStorage,
     completeDeposit: financial.completeDeposit,

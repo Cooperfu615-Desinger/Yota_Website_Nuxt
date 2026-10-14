@@ -106,6 +106,10 @@ watch(showLoginModal, visible => {
   errorMessage.value = ''
 })
 
+watch(() => router.currentRoute.value.fullPath, () => {
+  if (showLoginModal.value && modalView.value === 'social') closeLogin()
+})
+
 function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -215,24 +219,25 @@ async function verifyPhone() {
   loading.value = false
 }
 
-async function startSocialLogin(provider: Provider, source: SocialSource = 'login') {
+function startSocialLogin(provider: Provider, source: SocialSource = 'login') {
   activeProvider.value = provider
   socialSource.value = source
   modalView.value = 'social'
   authStage.value = 'connecting'
-  await delay(700)
-  authStage.value = 'confirm'
 }
 
-async function confirmSocialLogin() {
-  if (!activeProvider.value) return
-  authStage.value = 'logging-in'
-  await delay(900)
+function completeSocialLogin() {
   const provider = activeProvider.value
-  finishLogin(`${providerInfo[provider].label}玩家`, provider)
+  if (!showLoginModal.value || modalView.value !== 'social' || !provider) return
+  // The shared authorization dialog has already shown its success step.
+  login(`${providerInfo[provider].label}玩家`, provider)
+  const destination = consumeProtectedDestination()
+  if (destination) router.push(destination)
 }
 
 async function cancelSocialLogin() {
+  if (!showLoginModal.value) return
+  const cancelledProvider = activeProvider.value
   const shouldReturnToRecovery = socialSource.value === 'recovery'
   modalView.value = shouldReturnToRecovery ? 'forgot' : 'login'
   if (shouldReturnToRecovery) recoveryStep.value = 'social'
@@ -240,6 +245,10 @@ async function cancelSocialLogin() {
   activeProvider.value = null
   socialSource.value = 'login'
   if (shouldReturnToRecovery) await focusRecoveryTarget(recoveryPrimaryAction)
+  else {
+    await nextTick()
+    document.querySelector<HTMLButtonElement>(`button.social-${cancelledProvider}`)?.focus()
+  }
 }
 
 async function openForgotPassword() {
@@ -401,7 +410,7 @@ onUnmounted(() => {
 <template>
   <Teleport to="body">
     <Transition name="modal-fade">
-      <div v-if="showLoginModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title" @click.self="closeLogin">
+      <div v-if="showLoginModal && modalView !== 'social'" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title" @click.self="closeLogin">
         <div class="modal-box auth-modal-box">
           <div class="modal-inner auth-modal-inner">
             <button class="modal-close" aria-label="關閉" @click="closeLogin">×</button>
@@ -412,27 +421,6 @@ onUnmounted(() => {
               <strong id="auth-modal-title">{{ authStage === 'success' ? '登入成功' : '正在建立安全連線' }}</strong>
               <span>{{ authStage === 'success' ? '即將返回原本的操作' : '這是前端 Mock，不會傳送真實帳密' }}</span>
             </div>
-
-            <template v-else-if="modalView === 'social' && activeProvider">
-              <p class="auth-eyebrow">SOCIAL SIGN IN</p>
-              <h2 id="auth-modal-title" class="modal-title">{{ providerInfo[activeProvider].label }} 登入</h2>
-              <div class="social-confirm-card" :class="providerInfo[activeProvider].className">
-                <div class="social-confirm-logo">{{ providerInfo[activeProvider].short }}</div>
-                <template v-if="authStage === 'connecting'">
-                  <div class="auth-spinner" />
-                  <strong>正在連線至 {{ providerInfo[activeProvider].label }}</strong>
-                  <span>請稍候片刻</span>
-                </template>
-                <template v-else>
-                  <strong>允許巨亨 ONLINE 使用此帳號登入？</strong>
-                  <span>將建立示範帳號，不會取得真實社群資料。</span>
-                </template>
-              </div>
-              <div v-if="authStage === 'confirm'" class="auth-actions">
-                <button type="button" class="btn-outline-purple" @click="cancelSocialLogin">取消</button>
-                <button type="button" class="btn-gold" @click="confirmSocialLogin">允許並繼續</button>
-              </div>
-            </template>
 
             <template v-else-if="modalView === 'login'">
               <p class="auth-eyebrow">WELCOME BACK</p>
@@ -646,6 +634,14 @@ onUnmounted(() => {
       </div>
     </Transition>
   </Teleport>
+  <SocialAuthorizationDialog
+    v-if="showLoginModal && modalView === 'social' && activeProvider"
+    :key="activeProvider"
+    :provider="activeProvider"
+    mode="login"
+    @complete="completeSocialLogin"
+    @close="cancelSocialLogin"
+  />
 </template>
 
 <style scoped>
