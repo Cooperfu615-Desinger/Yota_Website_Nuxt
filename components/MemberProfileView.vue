@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { siteContent } from '~/data/siteContent'
-import { validateMemberBirthday, validateMemberEmail, validateMemberNickname } from '~/utils/memberProfile'
+import { validateMemberBirthday, validateMemberNickname } from '~/utils/memberProfile'
 import { resolveVipReward } from '~/utils/vipReward'
 
 const props = withDefaults(defineProps<{ embedded?: boolean }>(), { embedded: false })
 const emit = defineEmits<{ close: [] }>()
+const route = useRoute()
 
-type BindingProvider = 'phone' | 'google'
-
-const { isLoggedIn, userInfo, openLogin, updateProfile, setAccountBinding, claimVipReward, vipClaimedRewardLevels } = useAppState()
+const { isLoggedIn, userInfo, openLogin, updateProfile, claimVipReward, vipClaimedRewardLevels } = useAppState()
 const { openLogoutConfirm } = useLogoutState()
 const { activeSection, sessionKey } = useMemberProfileState()
 const fieldIdPrefix = computed(() => props.embedded ? 'member-modal-' : 'member-page-')
@@ -19,20 +18,11 @@ const showAvatarPicker = ref(false)
 const avatarPickerTab = ref<'avatar' | 'frame'>('avatar')
 const pendingAvatarId = ref(1)
 const profileNotice = ref('')
-const profileErrors = reactive({ name: '', email: '', birthday: '' })
+const profileErrors = reactive({ name: '', birthday: '' })
 const showProfileConfirm = ref(false)
 const profileSaving = ref(false)
-const pendingProfileSave = ref<{ name: string; email: string; birthday: string; bio: string } | null>(null)
-const bindingLoading = ref<BindingProvider | null>(null)
-const bindingStage = ref<'idle' | 'phone-entry' | 'phone-code'>('idle')
-const phoneForm = ref('')
-const phoneCode = ref('')
-const phoneError = ref('')
-const phoneCountdown = ref(0)
-const phoneVerifying = ref(false)
-let phoneTimer: ReturnType<typeof setInterval> | null = null
-
-const profileForm = reactive({ name: '', email: '', birthday: '', bio: '' })
+const pendingProfileSave = ref<{ name: string; birthday: string; bio: string } | null>(null)
+const profileForm = reactive({ name: '', birthday: '', bio: '' })
 const loginRecords = [
   { time: '2026/09/21 14:32:08', channel: 'APP', ip: '192.0.2.18', device: 'iPhone 15 Pro · iOS 18' },
   { time: '2026/09/20 20:15:36', channel: '官網', ip: '198.51.100.24', device: 'Windows 11 · Chrome' },
@@ -50,10 +40,6 @@ const avatars = [
   { id: 15, emoji: '🪐', name: '星軌', requirement: 'VIP 10+' }, { id: 16, emoji: '🦈', name: '深海', requirement: '活動獎勵' },
   { id: 17, emoji: '🧧', name: '招財', requirement: '活動獎勵' }, { id: 18, emoji: '🎴', name: '花札', requirement: '活動獎勵' },
   { id: 19, emoji: '🎯', name: '必中', requirement: '活動獎勵' }, { id: 20, emoji: '🏆', name: '冠軍', requirement: '活動獎勵' },
-]
-const bindingOptions: { key: BindingProvider; label: string; mark: string; description: string }[] = [
-  { key: 'phone', label: '手機號碼', mark: '09', description: '使用驗證碼登入與帳號復原' },
-  { key: 'google', label: 'Google', mark: 'G', description: '連結 Google 快速登入' },
 ]
 const sections = [
   { key: 'profile' as const, label: '基本資料', mark: '人' },
@@ -87,12 +73,10 @@ const maintainReady = computed(() => maintainDepositPct.value >= 100 && maintain
 
 function resetProfileForm() {
   profileForm.name = userInfo.value.name
-  profileForm.email = userInfo.value.email
   profileForm.birthday = userInfo.value.birthday
   profileForm.bio = userInfo.value.bio
   pendingAvatarId.value = userInfo.value.avatarId
   profileErrors.name = ''
-  profileErrors.email = ''
   profileErrors.birthday = ''
 }
 
@@ -103,7 +87,6 @@ watch([showVipOverviewModal, vipMechanismTab], async ([opened, tab]) => {
   await nextTick()
   vipOverviewTableWrap.value?.querySelector('tr.current')?.scrollIntoView({ block: 'center' })
 })
-onUnmounted(() => { if (phoneTimer) clearInterval(phoneTimer) })
 
 function openVipMechanism() {
   vipMechanismTab.value = 'overview'
@@ -133,16 +116,15 @@ function claimCurrentVipReward() {
 
 function validateProfile() {
   profileErrors.name = validateMemberNickname(profileForm.name)
-  profileErrors.email = userInfo.value.emailLocked ? '' : validateMemberEmail(profileForm.email)
   profileErrors.birthday = userInfo.value.birthdayLocked ? '' : validateMemberBirthday(profileForm.birthday)
-  return !profileErrors.name && !profileErrors.email && !profileErrors.birthday
+  return !profileErrors.name && !profileErrors.birthday
 }
 
 function saveProfile() {
   profileNotice.value = ''
   if (!validateProfile()) return
-  pendingProfileSave.value = { name: profileForm.name.trim(), email: profileForm.email.trim(), birthday: profileForm.birthday, bio: profileForm.bio.trim() }
-  const hasOneTimeFields = (!userInfo.value.emailLocked && !!profileForm.email.trim()) || (!userInfo.value.birthdayLocked && !!profileForm.birthday)
+  pendingProfileSave.value = { name: profileForm.name.trim(), birthday: profileForm.birthday, bio: profileForm.bio.trim() }
+  const hasOneTimeFields = !userInfo.value.birthdayLocked && !!profileForm.birthday
   if (hasOneTimeFields) { showProfileConfirm.value = true; return }
   void commitProfileSave()
 }
@@ -154,8 +136,6 @@ async function commitProfileSave() {
   const next = pendingProfileSave.value
   updateProfile({
     name: next.name,
-    email: next.email,
-    emailLocked: userInfo.value.emailLocked || !!next.email,
     birthday: next.birthday,
     birthdayLocked: userInfo.value.birthdayLocked || !!next.birthday,
     bio: next.bio,
@@ -190,68 +170,6 @@ function saveAvatar() {
   profileNotice.value = '頭像已更新'
 }
 
-function startPhoneBinding() {
-  phoneForm.value = ''
-  phoneCode.value = ''
-  phoneError.value = ''
-  bindingStage.value = 'phone-entry'
-}
-
-function startPhoneCountdown() {
-  if (phoneTimer) clearInterval(phoneTimer)
-  phoneCountdown.value = 60
-  phoneTimer = setInterval(() => {
-    phoneCountdown.value -= 1
-    if (phoneCountdown.value <= 0 && phoneTimer) {
-      clearInterval(phoneTimer)
-      phoneTimer = null
-    }
-  }, 1000)
-}
-
-function sendPhoneCode() {
-  phoneError.value = ''
-  if (!/^09\d{8}$/.test(phoneForm.value)) {
-    phoneError.value = '請輸入 09 開頭的 10 碼手機號碼'
-    return
-  }
-  phoneCode.value = ''
-  bindingStage.value = 'phone-code'
-  startPhoneCountdown()
-  profileNotice.value = '驗證碼已發送（Mock：123456）'
-}
-
-async function verifyPhoneCode() {
-  phoneError.value = ''
-  if (!/^\d{6}$/.test(phoneCode.value)) {
-    phoneError.value = '請輸入 6 碼驗證碼'
-    return
-  }
-  if (phoneCode.value !== '123456') {
-    phoneError.value = '驗證碼錯誤，請輸入 123456'
-    return
-  }
-  phoneVerifying.value = true
-  await new Promise(resolve => setTimeout(resolve, 650))
-  updateProfile({ phone: `${phoneForm.value.slice(0, 4)}***${phoneForm.value.slice(-3)}` })
-  setAccountBinding('phone', true)
-  phoneVerifying.value = false
-  bindingStage.value = 'idle'
-  phoneCode.value = ''
-  phoneError.value = ''
-  if (phoneTimer) { clearInterval(phoneTimer); phoneTimer = null }
-  phoneCountdown.value = 0
-  profileNotice.value = '手機號碼綁定成功'
-}
-
-async function bindGoogle() {
-  if (userInfo.value.accountBindings.google || bindingLoading.value) return
-  bindingLoading.value = 'google'
-  await new Promise(resolve => setTimeout(resolve, 850))
-  setAccountBinding('google', true)
-  bindingLoading.value = null
-  profileNotice.value = 'Google 綁定成功'
-}
 </script>
 
 <template>
@@ -260,7 +178,7 @@ async function bindGoogle() {
       <div class="text-5xl mb-4">🔒</div>
       <h1 class="text-xl font-black mb-2">個人資訊</h1>
       <p class="text-sm mb-5" style="color:var(--color-text-muted);">登入後即可管理個人資料、帳號綁定與 VIP 等級</p>
-      <button class="btn-gold w-full justify-center" @click="openLogin('/lobby/member')">立即登入 / 註冊</button>
+      <button class="btn-gold w-full justify-center" @click="openLogin(route.fullPath)">立即登入 / 註冊</button>
     </div>
   </div>
 
@@ -320,12 +238,12 @@ async function bindGoogle() {
 
         <div class="member-profile-panel">
           <section v-if="activeSection === 'profile'" class="member-content profile-editor">
-            <header><div><p>EDIT PROFILE</p><h2>編輯個人資料</h2><small class="profile-guide">暱稱與簡介可隨時修改；生日與電子郵件設定後不可再次變更</small></div><button class="btn-gold" type="button" :disabled="profileSaving" @click="saveProfile">{{ profileSaving ? '儲存中…' : '儲存資料' }}</button></header>
+            <header><div><p>EDIT PROFILE</p><h2>編輯個人資料</h2><small class="profile-guide">暱稱與簡介可隨時修改；生日僅能設定一次。Email 由帳號綁定管理</small></div><button class="btn-gold" type="button" :disabled="profileSaving" @click="saveProfile">{{ profileSaving ? '儲存中…' : '儲存資料' }}</button></header>
             <div class="profile-grid">
               <div><label class="input-label" :for="`${fieldIdPrefix}profile-account`">帳號</label><input :id="`${fieldIdPrefix}profile-account`" :value="userInfo.account" class="input-field input-readonly" readonly disabled /></div>
               <div><label class="input-label" :for="`${fieldIdPrefix}profile-id`">玩家 ID</label><input :id="`${fieldIdPrefix}profile-id`" :value="userInfo.id" class="input-field input-readonly" readonly disabled /></div>
               <div><label class="input-label" :for="`${fieldIdPrefix}profile-name`">暱稱</label><input :id="`${fieldIdPrefix}profile-name`" v-model="profileForm.name" class="input-field" maxlength="20" :aria-invalid="!!profileErrors.name" :aria-describedby="`${fieldIdPrefix}profile-name-error`" /><small v-if="profileErrors.name" :id="`${fieldIdPrefix}profile-name-error`" class="profile-field-error">{{ profileErrors.name }}</small></div>
-              <div><label class="input-label" :for="`${fieldIdPrefix}profile-email`">電子郵件 <em v-if="userInfo.emailLocked">（已設定）</em></label><input :id="`${fieldIdPrefix}profile-email`" v-model="profileForm.email" type="email" class="input-field" :readonly="userInfo.emailLocked" :disabled="userInfo.emailLocked" :aria-invalid="!!profileErrors.email" :aria-describedby="`${fieldIdPrefix}profile-email-error`" /><small v-if="profileErrors.email" :id="`${fieldIdPrefix}profile-email-error`" class="profile-field-error">{{ profileErrors.email }}</small></div>
+              <div><label class="input-label" :for="`${fieldIdPrefix}profile-email`">電子郵件</label><input :id="`${fieldIdPrefix}profile-email`" :value="userInfo.email || '尚未綁定'" type="text" class="input-field input-readonly" readonly disabled /><small class="profile-contact-status">{{ userInfo.accountBindings.email ? '已驗證並綁定' : userInfo.email ? '已設定，請至帳號綁定完成驗證' : '請至帳號綁定設定並驗證 Email' }}</small><button v-if="!userInfo.accountBindings.email" type="button" class="profile-binding-link" @click="activeSection = 'bindings'">前往帳號綁定 →</button></div>
               <div><label class="input-label" :for="`${fieldIdPrefix}profile-birthday`">生日 <em v-if="userInfo.birthdayLocked">（已設定）</em></label><input :id="`${fieldIdPrefix}profile-birthday`" v-model="profileForm.birthday" type="date" class="input-field" min="1900-01-01" :max="birthdayMax" :readonly="userInfo.birthdayLocked" :disabled="userInfo.birthdayLocked" :aria-invalid="!!profileErrors.birthday" :aria-describedby="`${fieldIdPrefix}profile-birthday-error`" /><small v-if="profileErrors.birthday" :id="`${fieldIdPrefix}profile-birthday-error`" class="profile-field-error">{{ profileErrors.birthday }}</small></div>
               <div><label class="input-label">手機號碼</label><input :value="userInfo.phone || '尚未綁定'" class="input-field input-readonly" readonly disabled /></div>
               <div class="profile-bio"><label class="input-label" :for="`${fieldIdPrefix}profile-bio`">個人簡介</label><textarea :id="`${fieldIdPrefix}profile-bio`" v-model="profileForm.bio" class="input-field" rows="4" maxlength="120" /><small>{{ profileForm.bio.length }} / 120</small></div>
@@ -333,29 +251,8 @@ async function bindGoogle() {
           </section>
 
           <section v-else-if="activeSection === 'bindings'" class="member-content">
-            <header><div><p>ACCOUNT SECURITY</p><h2>帳號綁定</h2></div><span>綁定後無法解除</span></header>
-            <div class="binding-list">
-              <article v-for="option in bindingOptions" :key="option.key">
-                <div class="binding-mark" :class="`provider-${option.key}`">{{ option.mark }}</div>
-                <div><strong>{{ option.label }}</strong><small>{{ option.description }}</small></div>
-                <span :class="{ bound: userInfo.accountBindings[option.key] }">{{ userInfo.accountBindings[option.key] ? '已綁定' : '未綁定' }}</span>
-                <button v-if="option.key === 'phone' && !userInfo.accountBindings.phone" type="button" @click="startPhoneBinding">綁定</button>
-                <button v-else-if="option.key === 'google' && !userInfo.accountBindings.google" type="button" :disabled="bindingLoading === 'google'" @click="bindGoogle">{{ bindingLoading === 'google' ? '連線中…' : '綁定' }}</button>
-                <button v-else type="button" disabled>已綁定</button>
-              </article>
-            </div>
-            <div v-if="bindingStage === 'phone-entry'" class="phone-binding-panel">
-              <label class="input-label" :for="`${fieldIdPrefix}binding-phone`">手機號碼</label>
-              <div class="phone-binding-row"><input :id="`${fieldIdPrefix}binding-phone`" v-model="phoneForm" class="input-field" inputmode="numeric" maxlength="10" placeholder="09xxxxxxxx" @input="phoneForm = phoneForm.replace(/\D/g, '')" /><button type="button" class="btn-gold" @click="sendPhoneCode">發送驗證碼</button></div>
-              <small class="binding-hint">僅支援台灣 09 開頭的 10 碼手機號碼</small>
-              <p v-if="phoneError" class="profile-field-error" role="alert">{{ phoneError }}</p>
-            </div>
-            <div v-else-if="bindingStage === 'phone-code'" class="phone-binding-panel">
-              <label class="input-label" :for="`${fieldIdPrefix}binding-code`">驗證碼</label>
-              <div class="phone-binding-row"><input :id="`${fieldIdPrefix}binding-code`" v-model="phoneCode" class="input-field" inputmode="numeric" maxlength="6" placeholder="請輸入 6 碼驗證碼" @input="phoneCode = phoneCode.replace(/\D/g, '')" /><button type="button" class="btn-gold" :disabled="phoneVerifying || phoneCode.length !== 6" @click="verifyPhoneCode">{{ phoneVerifying ? '驗證中…' : '確認驗證' }}</button></div>
-              <div class="binding-code-meta"><small>測試驗證碼：123456</small><div><button type="button" class="binding-back" @click="startPhoneBinding">返回修改</button><button type="button" :disabled="phoneCountdown > 0" @click="sendPhoneCode">{{ phoneCountdown > 0 ? `${phoneCountdown} 秒後可重發` : '重新發送' }}</button></div></div>
-              <p v-if="phoneError" class="profile-field-error" role="alert">{{ phoneError }}</p>
-            </div>
+            <header><div><p>ACCOUNT SECURITY</p><h2>帳號綁定</h2><small class="profile-guide">綁定手機、Email 或社群帳號，管理你的帳號驗證與登入方式。</small></div><span>綁定後無法解除或更換</span></header>
+            <AccountBindingPanel :id-prefix="fieldIdPrefix" />
           </section>
 
           <section v-else-if="activeSection === 'vip'" class="member-content vip-content">
@@ -397,7 +294,7 @@ async function bindGoogle() {
     </div>
 
     <div v-if="showProfileConfirm" class="profile-confirm-overlay" role="alertdialog" aria-modal="true" :aria-labelledby="`${fieldIdPrefix}profile-confirm-title`">
-      <div class="profile-confirm-card"><h2 :id="`${fieldIdPrefix}profile-confirm-title`">確認儲存一次性資料？</h2><p>以下資料儲存後將無法再次修改：</p><ul><li v-if="!userInfo.birthdayLocked && pendingProfileSave?.birthday">生日</li><li v-if="!userInfo.emailLocked && pendingProfileSave?.email">電子郵件</li></ul><div><button type="button" class="btn-outline-purple" @click="cancelProfileSave">返回修改</button><button type="button" class="btn-gold" :disabled="profileSaving" @click="commitProfileSave">{{ profileSaving ? '儲存中…' : '確認並儲存' }}</button></div></div>
+      <div class="profile-confirm-card"><h2 :id="`${fieldIdPrefix}profile-confirm-title`">確認儲存一次性資料？</h2><p>以下資料儲存後將無法再次修改：</p><ul><li v-if="!userInfo.birthdayLocked && pendingProfileSave?.birthday">生日</li></ul><div><button type="button" class="btn-outline-purple" @click="cancelProfileSave">返回修改</button><button type="button" class="btn-gold" :disabled="profileSaving" @click="commitProfileSave">{{ profileSaving ? '儲存中…' : '確認並儲存' }}</button></div></div>
     </div>
 
     <ClientOnly>
@@ -435,6 +332,9 @@ async function bindGoogle() {
 </template>
 
 <style scoped>
+.profile-contact-status { display:block; margin-top:7px; color:var(--color-text-muted); font-size:12px; line-height:1.6; }
+.profile-binding-link { margin-top:7px; color:var(--color-gold); font-size:12px; font-weight:700; }
+
 .member-profile-view { max-width: 1180px; margin: 0 auto; }
 .member-profile-view--embedded { max-width: none; }
 .member-page-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:14px; }
@@ -497,8 +397,6 @@ async function bindGoogle() {
 .login-records-note { display:block; margin-top:10px; color:var(--color-text-muted); font-size:9px; }
 .profile-grid { display:grid; grid-template-columns:1fr 1fr; gap:13px; }.profile-bio { position:relative; grid-column:1/-1; }.profile-bio textarea { resize:vertical; }.profile-bio small { position:absolute; right:8px; bottom:7px; color:var(--color-text-muted); font-size:8px; }
 .profile-grid em { color:var(--color-text-muted); font-size:8px; font-style:normal; }.input-readonly { opacity:.65; cursor:not-allowed; }.profile-field-error { display:block; margin-top:5px; color:#fca5a5; font-size:9px; }.profile-guide { display:block; max-width:420px; margin-top:5px; color:var(--color-text-muted); font-size:9px; line-height:1.55; }
-.binding-list { display:grid; gap:8px; }.binding-list article { display:grid; grid-template-columns:40px 1fr auto 70px; align-items:center; gap:11px; padding:12px; border:1px solid rgba(255,255,255,.07); border-radius:12px; background:rgba(0,0,0,.14); }.binding-mark { display:grid; width:38px; height:38px; place-items:center; border-radius:11px; color:#fff; background:#6b21a8; font-size:11px; font-weight:900; }.provider-facebook { background:#1877f2; }.provider-line { background:#06c755; }.provider-apple { background:#555; }.provider-google { background:#ea4335; }.binding-list article>div:nth-child(2) { display:flex; flex-direction:column; }.binding-list strong { font-size:11px; }.binding-list small { color:var(--color-text-muted); font-size:8px; }.binding-list article>span { padding:4px 7px; border-radius:99px; color:var(--color-text-muted); background:rgba(255,255,255,.05); font-size:8px; }.binding-list article>span.bound { color:#86efac; background:rgba(74,222,128,.08); }.binding-list article>button { padding:7px; border:1px solid var(--color-border); border-radius:8px; color:var(--color-purple-light); font-size:9px; font-weight:800; }
-.phone-binding-panel { padding:14px; margin-top:12px; border:1px solid rgba(168,85,247,.22); border-radius:12px; background:rgba(15,0,32,.35); }.phone-binding-row { display:flex; gap:8px; }.phone-binding-row .input-field { flex:1; }.phone-binding-row .btn-gold { flex-shrink:0; padding-inline:16px; justify-content:center; }.binding-hint { display:block; margin-top:6px; color:var(--color-text-muted); font-size:9px; }.binding-code-meta { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:7px; }.binding-code-meta small { color:var(--color-text-muted); font-size:9px; }.binding-code-meta div { display:flex; gap:10px; }.binding-code-meta button { color:var(--color-purple-light); font-size:9px; }.binding-code-meta button:disabled { color:var(--color-text-muted); cursor:not-allowed; }.binding-code-meta .binding-back { color:var(--color-text-muted); }
 .vip-progress-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }.vip-progress-grid article { padding:14px; border:1px solid rgba(255,255,255,.07); border-radius:12px; background:rgba(0,0,0,.14); }.vip-progress-grid article>div { display:flex; justify-content:space-between; font-size:10px; }.vip-progress-grid strong { color:var(--color-gold); }.vip-progress-grid i { display:block; height:7px; margin:10px 0 5px; overflow:hidden; border-radius:99px; background:rgba(168,85,247,.12); }.vip-progress-grid b { display:block; height:100%; border-radius:99px; background:linear-gradient(90deg,#a855f7,#f5c842); }.vip-progress-grid small { color:var(--color-text-muted); font-size:8px; }
 .vip-level-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:7px; margin-top:12px; }.vip-level-grid article { display:flex; flex-direction:column; gap:3px; padding:10px; border:1px solid rgba(255,255,255,.07); border-radius:10px; background:rgba(0,0,0,.12); }.vip-level-grid article.current { border-color:var(--color-gold); background:rgba(245,200,66,.08); }.vip-level-grid span { font-size:9px; font-weight:900; }.vip-level-grid strong { font-size:9px; }.vip-level-grid small { color:var(--color-text-muted); font-size:7px; }
 .vip-main-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }.vip-panel { min-height:178px; padding:16px; border:1px solid rgba(255,255,255,.22); border-radius:14px; background:rgba(18,10,43,.36); }.vip-panel-label { margin-bottom:9px; color:var(--color-text-muted); font-size:9px; font-weight:800; letter-spacing:.08em; }.vip-current-number { display:block; font-size:30px; font-weight:950; line-height:1.1; }.vip-current-panel>b { display:block; margin-top:4px; color:var(--color-text); font-size:13px; }.vip-stat-list { display:grid; gap:5px; margin-top:14px; }.vip-stat-list span { display:flex; justify-content:space-between; color:var(--color-text-muted); font-size:9px; }.vip-stat-list strong { color:var(--color-text); }.vip-muted { display:block; margin-top:10px; color:var(--color-text-muted); font-size:8px; line-height:1.6; }.vip-benefit-row { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 0; border-bottom:1px solid rgba(255,255,255,.08); color:var(--color-text-muted); font-size:9px; }.vip-benefit-row strong { color:var(--color-gold); font-size:11px; text-align:right; }.vip-next-line { display:grid; gap:4px; margin-bottom:12px; }.vip-next-line span { color:var(--color-purple-light); font-size:10px; font-weight:900; }.vip-next-line strong { color:var(--color-text); font-size:9px; line-height:1.6; }.vip-progress-row { display:grid; grid-template-columns:1fr auto; gap:5px 8px; margin-top:9px; color:var(--color-text-muted); font-size:8px; }.vip-progress-row b { color:var(--color-text); font-size:8px; font-weight:800; }.vip-progress-row i { grid-column:1/-1; display:block; height:6px; overflow:hidden; border-radius:99px; background:rgba(168,85,247,.15); }.vip-progress-row i em { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,var(--color-purple-glow),var(--color-gold)); }.vip-maintain-status { color:var(--color-text); font-size:12px; font-weight:900; }.vip-maintain-status.ready { color:#86efac; }.vip-max-state,.vip-undefined-state { display:grid; min-height:112px; place-items:center; color:var(--color-gold); font-size:14px; font-weight:900; text-align:center; }.vip-undefined-state { color:var(--color-purple-light); }.vip-overview-modal { max-width:min(1040px,calc(100vw - 30px)); }.vip-overview-table-wrap { max-height:60vh; overflow:auto; border:1px solid rgba(255,255,255,.15); border-radius:10px; }.vip-overview-table { width:100%; min-width:760px; border-collapse:collapse; font-size:9px; }.vip-overview-table th { position:sticky; top:0; z-index:1; padding:9px 8px; color:var(--color-gold); background:#292147; text-align:left; }.vip-overview-table td { padding:9px 8px; border-top:1px solid rgba(255,255,255,.08); color:var(--color-text-muted); vertical-align:top; line-height:1.55; }.vip-overview-table td:first-child { white-space:nowrap; }.vip-overview-table tr.current td { background:rgba(168,85,247,.18); }.vip-overview-table td strong { display:block; font-size:10px; }.vip-overview-table td small { display:block; margin-top:3px; color:var(--color-gold); font-size:7px; }

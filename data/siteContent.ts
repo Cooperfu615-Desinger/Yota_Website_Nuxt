@@ -715,6 +715,7 @@ export const siteContent = {
       invitationCode: 'YOTA7K2M',
       accountBindings: {
         phone: true,
+        email: false,
         facebook: false,
         line: false,
         apple: false,
