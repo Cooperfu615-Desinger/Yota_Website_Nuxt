@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import type { ChatPlayerProfile } from '~/data/siteContent'
 
-const props = defineProps<{ player: ChatPlayerProfile }>()
+const props = withDefaults(defineProps<{
+  player: ChatPlayerProfile
+  showTransfer?: boolean
+}>(), {
+  showTransfer: true,
+})
 const emit = defineEmits<{
   message: [player: ChatPlayerProfile]
   report: [player: ChatPlayerProfile]
@@ -100,12 +105,12 @@ function toggleFriend() {
 
             <section class="action-group">
               <p class="group-label">社交操作</p>
-              <div class="action-grid social">
+              <div class="action-grid social" :class="{ 'without-transfer': !props.showTransfer }">
                 <button type="button" class="action-btn friend" :class="{ active: isFriend }" @click="toggleFriend">
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM3 21a6 6 0 0 1 12 0"/>
                   </svg>
-                  <span>{{ isFriend ? '刪除好友' : '加好友' }}</span>
+                  <span>{{ isFriend ? '刪除好友' : '新增好友' }}</span>
                 </button>
                 <button type="button" class="action-btn gift" @click="emit('gift', props.player)">
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -113,7 +118,7 @@ function toggleFriend() {
                   </svg>
                   <span>贈禮</span>
                 </button>
-                <button type="button" class="action-btn transfer" @click="emit('transfer', props.player)">
+                <button v-if="props.showTransfer" type="button" class="action-btn transfer" @click="emit('transfer', props.player)">
                   <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 1v6m0 0 3-3m-3 3-3-3M7 23v-6m0 0 3 3m-3-3-3 3M19 12a7 7 0 0 0-11.9-5M5 12a7 7 0 0 0 11.9 5"/>
                   </svg>
@@ -127,7 +132,7 @@ function toggleFriend() {
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.9 9.9 0 0 1-4.2-.9L3 20l.9-3.6A7.7 7.7 0 0 1 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z"/>
               </svg>
-              <span>{{ isBlocked ? '已封鎖聊天' : '開始聊天' }}</span>
+              <span>{{ isBlocked ? '已封鎖聊天' : '私人聊天' }}</span>
             </button>
 
             <section class="security-box">
@@ -377,6 +382,10 @@ function toggleFriend() {
 
 .action-grid.social {
   grid-template-columns: repeat(3, 1fr);
+}
+
+.action-grid.social.without-transfer {
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .action-grid.security {

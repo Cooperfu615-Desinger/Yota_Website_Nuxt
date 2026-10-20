@@ -2,11 +2,13 @@
 const { initFromStorage } = useAppState()
 const { initSocialFromStorage } = useSocialState()
 const { initPreferences } = usePreferencesState()
+const { initGuildState } = useGuildState()
 
 onMounted(() => {
   initFromStorage()
   initSocialFromStorage()
   initPreferences()
+  initGuildState()
 })
 </script>
 

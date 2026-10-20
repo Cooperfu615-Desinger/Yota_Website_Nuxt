@@ -18,6 +18,14 @@ export type FaqCategory = 'account' | 'deposit' | 'game' | 'install'
 export type MemberTab = 'profile' | 'bindings' | 'history' | 'vip'
 
 export type PlayerStatus = '在線' | '遊戲中' | '閒置'
+export type GuildInviteStatus = 'pending' | 'accepted' | 'declined' | 'cancelled'
+
+export interface GuildChatInvite {
+  guildId: number
+  guildName: string
+  status: GuildInviteStatus
+  broadcast?: boolean
+}
 
 export interface ChatMessage {
   id: number
@@ -26,6 +34,7 @@ export interface ChatMessage {
   text: string
   time: string
   self?: boolean
+  guildInvite?: GuildChatInvite
 }
 
 export interface RecentGame {
@@ -138,6 +147,31 @@ export interface LeaderboardItem {
   game: string
   time?: string
   color?: string
+}
+
+export type GuildReviewMode = 'auto' | 'manual'
+
+export interface GuildItem {
+  rank: number
+  name: string
+  members: number
+  maxMembers: number
+  score: number
+  treasury: number
+  reviewMode: GuildReviewMode
+}
+
+export interface GuildMember {
+  title: string
+  avatar: string
+  name: string
+  influence: number
+  isOnline: boolean
+  lastOnlineAt: string
+  vip: number
+  gamePower: number
+  deposit: number
+  contribution: number
 }
 
 export interface EventItem {
@@ -314,7 +348,81 @@ const eventLeaderboardRest = [
 
 const eventLeaderboardPreview = [...eventLeaderboardTop3, ...eventLeaderboardRest.slice(0, 2)] satisfies LeaderboardItem[]
 
+const guildNames = [
+  '金色鳳凰聯盟', '星河旅團', '九天龍騎', '幸運星辰', '霓虹王座',
+  '深海寶藏', '赤焰戰魂', '雲端棋局', '招財貓俱樂部', '月影傳說',
+  '雷霆遠征', '藍海獵人', '王者集結', '紫晶秘境', '極光守望',
+  '風暴前線', '花火同盟', '黑曜騎士', '天機閣', '晨曦之門',
+  '幻夜行者', '翡翠方舟', '狂歡派對', '銀河掠奪', '金牌獵手',
+  '星願小隊', '夢境旅社', '無限榮耀', '極速傳說', '萬象棋社',
+  '火鳳燎原', '水晶領域', '逐夢者聯盟', '銀月守護', '蒼穹之巔',
+  '幸運轉輪', '龍門客棧', '暮光旅團', '璀璨之星', '永恆勝者',
+] as const
+
+const guilds = guildNames.map((name, index) => ({
+  rank: index + 1,
+  name,
+  members: 98 - ((index * 7) % 49),
+  maxMembers: [100, 120, 150][index % 3],
+  score: 1_288_000 - (index * 27_350),
+  treasury: 5_680_000 - (index * 18_500),
+  reviewMode: index % 3 === 0 ? 'auto' : 'manual',
+})) satisfies GuildItem[]
+
+const guildMemberNamePrefixes = [
+  '月影', '雷霆', '星河', '赤焰', '蒼穹', '霓虹', '深海', '晨曦', '幻夜', '翡翠',
+  '銀月', '暮光', '天機', '花火', '龍門', '金牌', '逐夢', '極光', '雲端', '無限',
+] as const
+
+const guildMemberNameSuffixes = ['旅人', '戰將', '守望', '領航', '獵手'] as const
+const guildMemberAvatars = ['🦊', '🐯', '🐼', '🦅', '🐺', '🦄', '🐲', '🦁', '🐙', '🦉', '🐸', '🐵', '🐰', '🐻', '🐯', '🦋', '🐳', '🦈', '🐝', '🦌'] as const
+
+const generatedGuildMemberNames = Array.from({ length: 90 }, (_, index) => {
+  const prefix = guildMemberNamePrefixes[index % guildMemberNamePrefixes.length]
+  const suffix = guildMemberNameSuffixes[Math.floor(index / guildMemberNamePrefixes.length)]
+  return `${prefix}${suffix}`
+})
+
+const guildMembers = [
+  { title: '總裁', avatar: '👑', name: '鳳凰會長', influence: 128_800, isOnline: true, lastOnlineAt: '目前在線', vip: 10, gamePower: 18_800_000, deposit: 680_000, contribution: 258_000 },
+  { title: '總經理', avatar: '🐉', name: '龍騎副官', influence: 96_600, isOnline: false, lastOnlineAt: '今天 08:42', vip: 8, gamePower: 15_600_000, deposit: 520_000, contribution: 188_000 },
+  { title: '主任', avatar: '🦁', name: '獅心守護', influence: 82_450, isOnline: true, lastOnlineAt: '目前在線', vip: 7, gamePower: 12_450_000, deposit: 386_000, contribution: 135_000 },
+  { title: '主任', avatar: '⭐', name: '星辰領航', influence: 76_200, isOnline: false, lastOnlineAt: '昨天 23:18', vip: 6, gamePower: 10_980_000, deposit: 312_000, contribution: 108_000 },
+  { title: '職員', avatar: '🃏', name: '王牌獵手', influence: 64_880, isOnline: true, lastOnlineAt: '目前在線', vip: 5, gamePower: 9_650_000, deposit: 265_000, contribution: 86_000 },
+  { title: '職員', avatar: '🎲', name: '幸運骰王', influence: 58_340, isOnline: false, lastOnlineAt: '今天 06:30', vip: 4, gamePower: 8_420_000, deposit: 198_000, contribution: 72_000 },
+  { title: '職員', avatar: '🧧', name: '富貴吉祥', influence: 47_920, isOnline: true, lastOnlineAt: '目前在線', vip: 3, gamePower: 6_880_000, deposit: 156_000, contribution: 54_000 },
+  { title: '職員', avatar: '👤', name: '玩家888', influence: 42_680, isOnline: true, lastOnlineAt: '目前在線', vip: 6, gamePower: 0, deposit: 0, contribution: 0 },
+  ...generatedGuildMemberNames.map((name, index) => ({
+    title: '職員' as const,
+    avatar: guildMemberAvatars[index % guildMemberAvatars.length],
+    name,
+    influence: 39_000 - (index * 280),
+    isOnline: index % 4 !== 1,
+    lastOnlineAt: index % 4 !== 1 ? '目前在線' : `${(index % 6) + 1} 小時前`,
+    vip: (index % 6) + 1,
+    gamePower: 5_880_000 - (index * 42_000),
+    deposit: 32_000 + ((index * 8_500) % 178_000),
+    contribution: 48_000 - (index * 420),
+  })),
+] satisfies GuildMember[]
+
+const guildAnnouncements = [
+  { id: 1, title: '本週集團任務已開放', content: '完成每日任務可累積集團影響力，記得和夥伴一起參加。', time: '今天 09:00' },
+  { id: 2, title: '週末團隊活動預告', content: '週六 20:00 開始限時團隊活動，請提前於聊天室集合。', time: '昨天 18:30' },
+  { id: 3, title: '集團規範提醒', content: '請保持友善交流，活動獎勵與排名以系統結算結果為準。', time: '10/12 12:00' },
+  { id: 4, title: '金庫使用公告', content: '集團金庫將優先用於團隊活動與成員福利，使用紀錄會同步更新。', time: '10/10 15:20' },
+] as const
+
+const guildChatMessages = [
+  { id: 1, user: '鳳凰會長', avatar: '👑', text: '大家記得查看今天的集團任務！', time: '14:20' },
+  { id: 2, user: '龍騎副官', avatar: '🐉', text: '週末活動我會準時上線，歡迎一起組隊。', time: '14:22' },
+  { id: 3, user: '獅心守護', avatar: '🦁', text: '收到，先把影響力衝上去！', time: '14:25' },
+] satisfies ChatMessage[]
+
 export const siteContent = {
+  guildMembers,
+  guildAnnouncements,
+  guildChatMessages,
   // APP main 0b5fdc6 wallet UI examples; no reward issuance or settlement integration.
   walletOverview: {
     wallets: [
@@ -612,6 +720,7 @@ export const siteContent = {
       },
     ] satisfies LeaderboardTab[],
   },
+  guilds,
   events: [
     { id: 1, title: '百萬大獎賽', subtitle: '累積積分衝頂，贏取百萬獎金', status: 'active', endDate: '2026/12/31', prize: '1,280,000 金幣', gradient: 'linear-gradient(135deg,#1a003a,#7C3AED)', imageSrc: '/event_01.avif' },
     { id: 2, title: '新手首儲禮', subtitle: '首次儲值享最高 100% 加碼', status: 'active', endDate: '長期', prize: '+100%', gradient: 'linear-gradient(135deg,#1a0a00,#D97706)', imageSrc: '/event_02.avif', deposit: true },

@@ -5,6 +5,8 @@ const route = useRoute()
 const { isLoggedIn, openLogin } = useAppState()
 const { openLogoutConfirm } = useLogoutState()
 const { newsUnread, inboxUnread } = useMessageCentersState()
+const { joinedGuild } = useGuildState()
+const guildEntryPath = computed(() => joinedGuild.value ? '/lobby/guild' : '/lobby/guilds')
 function unreadFor(to: string) {
   if (!isLoggedIn.value) return 0
   return to === '/lobby/inbox' ? newsUnread.value : to === '/lobby/mailbox' ? inboxUnread.value : 0
@@ -35,7 +37,7 @@ function isActive(to: string) {
   return route.path === path || route.path.startsWith(`${path}/`)
 }
 
-const navSections = [
+const navSections = computed(() => [
   [{ to: '/', label: '首頁', icon: '⌂' }],
   [
     { to: '/lobby', label: '遊戲大廳', icon: '🎮' },
@@ -46,6 +48,7 @@ const navSections = [
     { to: '/lobby/offers', label: '優惠', icon: '🎟️' },
     { to: '/lobby/events', label: '活動', icon: '🎉' },
     { to: '/lobby/leaderboard', label: '排行榜', icon: '🏆' },
+    { to: guildEntryPath.value, label: '集團', icon: '⚔️' },
     { to: '/lobby/bank', label: '儲值', icon: '🏦' },
   ],
   [
@@ -64,7 +67,7 @@ const navSections = [
     { to: '/lobby/tutorial', label: '新手教學', icon: '📖' },
     { to: '/lobby/support', label: '客服中心', icon: '🎧' },
   ],
-]
+])
 
 const protectedPaths = new Set([
   '/lobby/daily', '/lobby/bank', '/lobby/member', '/lobby/vault', '/lobby/inbox', '/lobby/mailbox',

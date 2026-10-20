@@ -1,10 +1,40 @@
 <script setup lang="ts">
 import type { OnlinePlayer } from '~/data/siteContent'
 
-const props = defineProps<{ players: OnlinePlayer[] }>()
+const props = withDefaults(defineProps<{
+  players: OnlinePlayer[]
+  title?: string
+  eyebrow?: string
+  showSearch?: boolean
+  showSearchMode?: boolean
+  showClose?: boolean
+  embedded?: boolean
+  canInvite?: boolean
+  showGuildInvite?: boolean
+  invitedPlayerIds?: string[]
+  selectionPurpose?: 'profile' | 'conversation'
+  selectedPlayerId?: string | null
+  emptyTitle?: string
+  emptyText?: string
+}>(), {
+  title: '玩家清單',
+  eyebrow: 'PLAYER DIRECTORY',
+  showSearch: true,
+  showSearchMode: true,
+  showClose: true,
+  embedded: false,
+  canInvite: false,
+  showGuildInvite: false,
+  invitedPlayerIds: () => [],
+  selectionPurpose: 'profile',
+  selectedPlayerId: null,
+  emptyTitle: '找不到符合的玩家',
+  emptyText: '請調整搜尋文字',
+})
 const emit = defineEmits<{
   select: [player: OnlinePlayer]
   friendAdded: [player: OnlinePlayer]
+  invite: [player: OnlinePlayer]
   close: []
 }>()
 
@@ -35,21 +65,21 @@ function quickAddFriend(player: OnlinePlayer) {
 </script>
 
 <template>
-  <aside class="roster-panel" @click.stop>
+  <aside :class="['roster-panel', { 'roster-panel-embedded': props.embedded }]" @click.stop>
     <header class="roster-header">
       <div>
-        <p>PLAYER DIRECTORY</p>
-        <h2>玩家清單</h2>
+        <p>{{ props.eyebrow }}</p>
+        <h2>{{ props.title }}</h2>
       </div>
-      <button class="roster-close" type="button" aria-label="關閉玩家清單" @click="emit('close')">
+      <button v-if="props.showClose" class="roster-close" type="button" aria-label="關閉玩家清單" @click="emit('close')">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
         </svg>
       </button>
     </header>
 
-    <section class="roster-search" aria-label="搜尋玩家">
-      <div class="search-mode" role="group" aria-label="搜尋方式">
+    <section v-if="props.showSearch" class="roster-search" aria-label="搜尋玩家">
+      <div v-if="props.showSearchMode" class="search-mode" role="group" aria-label="搜尋方式">
         <button
           type="button"
           :class="{ active: searchMode === 'name' }"
@@ -87,19 +117,27 @@ function quickAddFriend(player: OnlinePlayer) {
         v-for="player in filteredPlayers"
         :key="player.id"
         class="player-row"
+        :class="{ 'is-selected': props.selectedPlayerId === player.playerId }"
       >
         <button
           class="player-profile"
           type="button"
-          :aria-label="`查看 ${player.name} 的玩家資訊`"
+          :aria-label="props.selectionPurpose === 'conversation' ? `與 ${player.name} 聊天` : `查看 ${player.name} 的玩家資訊`"
           @click="emit('select', player)"
         >
-          <span class="player-avatar">{{ player.avatar }}</span>
-          <span class="player-name">{{ player.name }}</span>
+          <span class="player-avatar">
+            {{ player.avatar }}
+            <i v-if="props.selectionPurpose === 'conversation'" class="roster-status-dot" :class="`status-${player.status}`" aria-hidden="true" />
+          </span>
+          <span class="player-copy">
+            <span class="player-name">{{ player.name }}</span>
+            <small v-if="props.selectionPurpose === 'conversation'" class="player-status-text" :class="`status-${player.status}`">{{ player.status }}</small>
+          </span>
         </button>
         <button
           v-if="!isFriendPlayer(player.playerId) && !isBlockedPlayer(player.playerId)"
           class="quick-add"
+          :class="{ 'quick-add-labeled': props.canInvite }"
           type="button"
           :aria-label="`加入 ${player.name} 為好友`"
           @click.stop="quickAddFriend(player)"
@@ -107,14 +145,26 @@ function quickAddFriend(player: OnlinePlayer) {
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 5v14M5 12h14"/>
           </svg>
+          <span v-if="props.canInvite">加好友</span>
         </button>
+        <button
+          v-if="props.showGuildInvite"
+          class="invite-player"
+          type="button"
+          :disabled="!props.canInvite || props.invitedPlayerIds.includes(player.playerId)"
+          :aria-label="props.canInvite
+            ? `${props.invitedPlayerIds.includes(player.playerId) ? '已邀請' : '邀請'} ${player.name} 加入集團`
+            : '需要主任、總經理或總裁權限才能邀請加入集團'"
+          :title="props.canInvite ? '邀請加入集團' : '需要主任、總經理或總裁權限'"
+          @click.stop="emit('invite', player)"
+        >{{ !props.canInvite ? '需管理權限' : props.invitedPlayerIds.includes(player.playerId) ? '已邀請' : '邀請集團' }}</button>
       </li>
     </ul>
 
     <div v-else class="roster-empty">
       <span>⌕</span>
-      <strong>找不到符合的玩家</strong>
-      <p>請調整搜尋文字或切換搜尋方式</p>
+      <strong>{{ props.emptyTitle }}</strong>
+      <p>{{ props.emptyText }}</p>
     </div>
   </aside>
 </template>
@@ -137,6 +187,26 @@ function quickAddFriend(player: OnlinePlayer) {
   border-left: 1px solid rgba(168,85,247,0.3);
   box-shadow: -12px 0 36px rgba(0,0,0,0.55);
   animation: roster-slide 0.22s ease;
+}
+
+.roster-panel-embedded {
+  position: static;
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  flex: 1;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  animation: none;
+}
+
+.roster-panel-embedded .roster-header {
+  padding: 0 0 12px;
+}
+
+.roster-panel-embedded .roster-list {
+  padding: 0;
 }
 
 .roster-header {
@@ -293,6 +363,11 @@ function quickAddFriend(player: OnlinePlayer) {
   background: rgba(168,85,247,0.07);
 }
 
+.player-row.is-selected {
+  background: rgba(168,85,247,0.16);
+  box-shadow: inset 3px 0 var(--color-gold);
+}
+
 .player-profile {
   min-width: 0;
   display: flex;
@@ -303,6 +378,7 @@ function quickAddFriend(player: OnlinePlayer) {
 }
 
 .player-avatar {
+  position: relative;
   width: 36px;
   height: 36px;
   display: grid;
@@ -313,6 +389,14 @@ function quickAddFriend(player: OnlinePlayer) {
   border-radius: 12px;
   font-size: 18px;
 }
+
+.player-copy { display: grid; min-width: 0; gap: 3px; }
+.player-status-text { color: var(--color-text-muted); font-size: 10px; }
+.player-status-text.status-在線 { color: #34d399; }
+.player-status-text.status-遊戲中 { color: var(--color-gold-light); }
+.roster-status-dot { position: absolute; right: -2px; bottom: -2px; width: 10px; height: 10px; border: 2px solid var(--color-bg-card); border-radius: 50%; background: #9ca3af; }
+.roster-status-dot.status-在線 { background: #34d399; }
+.roster-status-dot.status-遊戲中 { background: var(--color-gold); }
 
 .player-name {
   overflow: hidden;
@@ -342,9 +426,56 @@ function quickAddFriend(player: OnlinePlayer) {
   filter: brightness(1.12);
 }
 
+.quick-add.quick-add-labeled {
+  width: auto;
+  min-width: 68px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
 .quick-add svg {
   width: 15px;
   height: 15px;
+}
+
+.quick-add.quick-add-labeled svg {
+  width: 13px;
+  height: 13px;
+}
+
+.invite-player {
+  min-height: 30px;
+  flex-shrink: 0;
+  padding: 0 9px;
+  border: 1px solid rgba(245,200,66,.44);
+  border-radius: 999px;
+  color: var(--color-gold-light);
+  background: rgba(245,200,66,.08);
+  font-size: 10px;
+  font-weight: 850;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .16s ease, border-color .16s ease;
+}
+
+.invite-player:hover:not(:disabled) {
+  border-color: rgba(245,200,66,.75);
+  background: rgba(245,200,66,.16);
+}
+
+.invite-player:disabled {
+  border-color: rgba(148,163,184,.22);
+  color: rgba(203,213,225,.55);
+  background: rgba(148,163,184,.08);
+  cursor: default;
 }
 
 .roster-empty {
@@ -380,7 +511,7 @@ function quickAddFriend(player: OnlinePlayer) {
 }
 
 @media (max-width: 420px) {
-  .roster-panel {
+  .roster-panel:not(.roster-panel-embedded) {
     width: 88%;
   }
 }
