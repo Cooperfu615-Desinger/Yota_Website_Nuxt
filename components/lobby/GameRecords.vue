@@ -1,140 +1,112 @@
 <script setup lang="ts">
-import { siteContent } from '~/data/siteContent'
-
-interface GameRecord {
-  id: number
-  time: number
-  game: string
-  bet: number
-  win: number
-  balance: number
-}
+import {
+  RECORD_CATEGORIES, RECORD_CURRENCIES, RECORD_PROVIDERS, createDemoRecords,
+  filterRecords, recordTotals, periodDates, taipeiDate, shiftDate, validRecordRange,
+  type GameRecord, type RecordQuery, type RecordPeriod,
+} from '~/utils/gameRecords'
 
 const PAGE_SIZE = 10
-const gameNames = siteContent.games.map(g => g.name)
-const betOptions = [50, 100, 200, 500, 1000]
-
+const id = useId()
+const period = ref<RecordPeriod>('today')
+const draft = ref<RecordQuery>({ startDate: '', endDate: '', currency: 'gold', category: 'all', provider: 'all' })
+const applied = ref<RecordQuery | null>(null)
 const allRecords = ref<GameRecord[]>([])
-const startDate = ref('')
-const endDate = ref('')
+const results = ref<GameRecord[]>([])
 const minDate = ref('')
 const maxDate = ref('')
-const results = ref<GameRecord[]>([])
-const hasQueried = ref(false)
 const currentPage = ref(1)
-
-function fmtDate(d: Date) {
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${y}-${m}-${day}`
+const hasQueried = computed(() => applied.value !== null)
+const currencyLabel = computed(() => `${RECORD_CURRENCIES.find(c => c.key === applied.value?.currency)?.label ?? '金'}幣`)
+const totals = computed(() => recordTotals(results.value))
+const pending = computed(() => applied.value && JSON.stringify(draft.value) !== JSON.stringify(applied.value))
+function refreshDates() {
+  maxDate.value = taipeiDate()
+  minDate.value = shiftDate(maxDate.value, -30)
+  if (period.value !== 'custom') Object.assign(draft.value, periodDates(period.value))
 }
-function rand(min: number, max: number) {
-  return Math.floor(Math.random() * (max - min + 1)) + min
-}
-
 onMounted(() => {
-  const today = new Date()
-  const min = new Date(today)
-  min.setDate(min.getDate() - 30)
-  maxDate.value = fmtDate(today)
-  minDate.value = fmtDate(min)
-  // 預填最近 30 天區間
-  startDate.value = minDate.value
-  endDate.value = maxDate.value
-
-  // 產生約 100 筆，隨機分布最近 30 天
-  const recs: GameRecord[] = []
-  let balance = 12580
-  for (let i = 0; i < 100; i++) {
-    const t = today.getTime() - Math.random() * 30 * 86400000
-    const bet = betOptions[rand(0, betOptions.length - 1)]
-    const win = rand(-bet, bet * 3)
-    balance += win
-    if (balance < 0) balance = rand(100, 2000)
-    recs.push({
-      id: i + 1,
-      time: t,
-      game: gameNames[rand(0, gameNames.length - 1)],
-      bet,
-      win,
-      balance,
-    })
-  }
-  recs.sort((a, b) => b.time - a.time)
-  allRecords.value = recs
+  refreshDates()
+  allRecords.value = createDemoRecords()
 })
-
-const rangeValid = computed(() =>
-  !!startDate.value && !!endDate.value && startDate.value <= endDate.value
-)
-
+const rangeValid = computed(() => validRecordRange(draft.value.startDate, draft.value.endDate, minDate.value, maxDate.value))
 function query() {
+  refreshDates()
   if (!rangeValid.value) return
-  const start = new Date(startDate.value + 'T00:00:00').getTime()
-  const end = new Date(endDate.value + 'T23:59:59').getTime()
-  results.value = allRecords.value.filter(r => r.time >= start && r.time <= end)
+  allRecords.value = createDemoRecords()
+  applied.value = { ...draft.value }
+  results.value = filterRecords(allRecords.value, applied.value)
   currentPage.value = 1
-  hasQueried.value = true
 }
-
 const totalPages = computed(() => Math.ceil(results.value.length / PAGE_SIZE))
 const pagedResults = computed(() => {
-  const startIdx = (currentPage.value - 1) * PAGE_SIZE
-  return results.value.slice(startIdx, startIdx + PAGE_SIZE).map((r, i) => ({ ...r, seq: startIdx + i + 1 }))
+  const start = (currentPage.value - 1) * PAGE_SIZE
+  return results.value.slice(start, start + PAGE_SIZE).map((r, i) => ({ ...r, seq: start + i + 1 }))
 })
-
-function goPage(p: number) {
-  if (p < 1 || p > totalPages.value) return
-  currentPage.value = p
-  nextTick(() => {
-    document.querySelector('.rec-pager .pg.on')?.scrollIntoView({ inline: 'center', block: 'nearest' })
-  })
+function goPage(page: number) {
+  if (page >= 1 && page <= totalPages.value) currentPage.value = page
 }
 </script>
 
 <template>
   <div class="card-purple mb-4">
-    <!-- 查詢區 -->
-    <div class="px-4 pb-2 flex flex-wrap items-end gap-2">
-      <div class="flex-1 min-w-[120px]">
-        <label class="input-label" for="rec-start">開始日期</label>
-        <input id="rec-start" v-model="startDate" type="date" class="input-field" :min="minDate" :max="maxDate" />
+    <form class="rec-filters" @submit.prevent="query">
+      <div>
+        <label class="input-label" :for="`${id}-period`">時間範圍</label>
+        <select :id="`${id}-period`" v-model="period" class="input-field" @change="refreshDates">
+          <option value="today">今日</option><option value="yesterday">昨日</option>
+          <option value="3">前3天</option><option value="5">前5天</option><option value="7">前7天</option><option value="custom">自訂</option>
+        </select>
       </div>
-      <div class="flex-1 min-w-[120px]">
-        <label class="input-label" for="rec-end">結束日期</label>
-        <input id="rec-end" v-model="endDate" type="date" class="input-field" :min="minDate" :max="maxDate" />
+      <div>
+        <label class="input-label" :for="`${id}-start`">開始日期</label>
+        <input :id="`${id}-start`" v-model="draft.startDate" type="date" class="input-field" :min="minDate" :max="maxDate" @input="period = 'custom'" />
       </div>
-      <button
-        class="btn-gold justify-center px-5 flex-shrink-0"
-        style="height:42px; border-radius:10px;"
-        :disabled="!rangeValid"
-        :style="!rangeValid ? 'opacity:0.5;cursor:not-allowed;' : ''"
-        @click="query"
-      >查詢</button>
-    </div>
-    <p v-if="!!startDate && !!endDate && startDate > endDate" class="px-4 pb-2 text-xs" style="color:#f87171;">
-      開始日期不可晚於結束日期
-    </p>
+      <div>
+        <label class="input-label" :for="`${id}-end`">結束日期</label>
+        <input :id="`${id}-end`" v-model="draft.endDate" type="date" class="input-field" :min="minDate" :max="maxDate" @input="period = 'custom'" />
+      </div>
+      <div>
+        <label class="input-label" :for="`${id}-currency`">幣別</label>
+        <select :id="`${id}-currency`" v-model="draft.currency" class="input-field"><option v-for="c in RECORD_CURRENCIES" :key="c.key" :value="c.key">{{ c.label }}</option></select>
+      </div>
+      <div>
+        <label class="input-label" :for="`${id}-category`">類別</label>
+        <select :id="`${id}-category`" v-model="draft.category" class="input-field"><option value="all">全部</option><option v-for="c in RECORD_CATEGORIES" :key="c.key" :value="c.key">{{ c.label }}</option></select>
+      </div>
+      <div>
+        <label class="input-label" :for="`${id}-provider`">供應商</label>
+        <select :id="`${id}-provider`" v-model="draft.provider" class="input-field"><option value="all">全部</option><option v-for="p in RECORD_PROVIDERS" :key="p" :value="p">{{ p }}</option></select>
+      </div>
+      <button class="btn-gold rec-query" type="submit" :disabled="!rangeValid">查詢</button>
+    </form>
+    <p class="rec-hint">日期以台灣時間計算；前3／5／7天不含今日。以下為示範紀錄。</p>
+    <p v-if="!rangeValid && maxDate" class="rec-hint rec-error" role="alert">請選擇最近30天內的有效日期，開始日期不可晚於結束日期。</p>
+    <p v-if="pending" class="rec-hint" role="status">條件已變更，請按「查詢」更新結果。</p>
 
     <!-- 結果 -->
     <div class="border-t" style="border-color:rgba(168,85,247,0.1);">
       <div v-if="!hasQueried" class="px-4 py-10 text-center text-sm" style="color:var(--color-text-muted);">
-        請選擇日期區間後查詢
+        請選擇篩選條件後查詢
       </div>
-      <div v-else-if="results.length === 0" class="px-4 py-10 text-center text-sm" style="color:var(--color-text-muted);">
+      <div v-if="hasQueried" class="rec-summary" aria-live="polite">
+        <strong>總計</strong><span>共 {{ results.length.toLocaleString() }} 筆</span>
+        <span>投注額：<strong>{{ totals.bet.toLocaleString() }}</strong> {{ currencyLabel }}</span>
+        <span>贏分：<strong :style="{ color: totals.win > 0 ? '#4ade80' : totals.win < 0 ? '#f87171' : 'inherit' }">{{ totals.win > 0 ? '+' : '' }}{{ totals.win.toLocaleString() }}</strong> {{ currencyLabel }}</span>
+        <small v-if="applied">{{ applied.startDate }} ～ {{ applied.endDate }} · 全部符合條件的紀錄</small>
+      </div>
+      <div v-if="hasQueried && results.length === 0" class="px-4 py-10 text-center text-sm" style="color:var(--color-text-muted);">
         查無紀錄
       </div>
-      <template v-else>
+      <template v-if="hasQueried && results.length">
         <div class="overflow-x-auto px-4 pt-3">
           <table class="w-full text-xs" style="border-collapse:collapse;">
             <thead>
               <tr style="color:var(--color-text-muted);">
                 <th class="text-center py-2 pr-3 whitespace-nowrap">編號</th>
                 <th class="text-right py-2 pr-3 whitespace-nowrap">遊戲名稱</th>
-                <th class="text-right py-2 pr-3 whitespace-nowrap">投注額（金幣）</th>
-                <th class="text-right py-2 pr-3 whitespace-nowrap">贏分（金幣）</th>
-                <th class="text-right py-2 whitespace-nowrap">錢包餘額（金幣）</th>
+                <th class="text-right py-2 pr-3 whitespace-nowrap">投注額（{{ currencyLabel }}）</th>
+                <th class="text-right py-2 pr-3 whitespace-nowrap">贏分（{{ currencyLabel }}）</th>
+                <th class="text-right py-2 whitespace-nowrap">錢包餘額（{{ currencyLabel }}）</th>
               </tr>
             </thead>
             <tbody>
@@ -173,6 +145,19 @@ function goPage(p: number) {
 </template>
 
 <style scoped>
+.rec-filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 16px; align-items: end; }
+.rec-filters > div { min-width: 0; }
+.rec-filters .input-field { width: 100%; min-width: 0; color-scheme: dark; }
+.rec-filters option { background: #1a0a2e; color: #f3e8ff; }
+.rec-query { min-height: 42px; justify-content: center; border-radius: 10px; grid-column: 3; }
+.rec-query:disabled { opacity: .5; cursor: not-allowed; }
+.rec-hint { margin: 0; padding: 0 16px 12px; font-size: 12px; color: var(--color-text-muted); }
+.rec-error { color: #f87171; }
+.rec-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; margin: 16px; padding: 14px; border: 1px solid var(--color-border); border-radius: 10px; background: rgba(168,85,247,.1); font-size: 13px; }
+.rec-summary > strong { color: var(--color-gold); }
+.rec-summary small { width: 100%; color: var(--color-text-muted); }
+@media (max-width: 600px) { .rec-filters { grid-template-columns: minmax(0, 1fr); } .rec-query { grid-column: auto; } }
+
 .pg-arrow {
   width: 32px;
   height: 32px;
@@ -190,7 +175,7 @@ function goPage(p: number) {
 
 /* 日期輸入框的日曆 icon 改白色 */
 input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1) brightness(1.8);
+  filter: none;
   cursor: pointer;
 }
 </style>
